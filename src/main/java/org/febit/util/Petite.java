@@ -1,0 +1,537 @@
+// Copyright (c) 2013-present, febit.org. All Rights Reserved.
+package org.febit.util;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.ServiceLoader;
+import java.util.Set;
+import org.febit.bean.AccessFactory;
+import org.febit.bean.Setter;
+import org.febit.convert.Convert;
+import org.febit.convert.TypeConverter;
+import org.febit.lang.Defaults;
+import org.febit.lang.IdentityMap;
+
+/**
+ * A Simple IoC.
+ *
+ * @author zqq90
+ */
+public class Petite {
+
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(Petite.class);
+    
+    protected static final Method[] EMPTY_METHODS = new Method[0];
+    protected static final Setter[] EMPTY_SETTERS = new Setter[0];
+
+    protected final TypeConverter defaultConverter;
+    protected final IdentityMap<Class> replaceTypes;
+    protected final Map<String, Object> beans;
+    protected final Map<String, String> replaceKeys;
+    protected final PropsManager propsMgr;
+    protected final GlobalBeanManager globalBeanMgr;
+
+    protected PetiteGlobalBeanProvider[] globalBeanProviders;
+    protected boolean inited = false;
+
+    public Petite() {
+        this.defaultConverter = new BeanTypeConverter();
+        this.propsMgr = new PropsManager();
+        this.globalBeanMgr = new GlobalBeanManager();
+        this.beans = new HashMap<>();
+        this.replaceTypes = new IdentityMap<>();
+        this.replaceKeys = new HashMap<>();
+    }
+
+    protected synchronized void _init() {
+        if (inited) {
+            return;
+        }
+        addGlobalBean(this);
+        initGlobalBeanProviders();
+        initGlobals();
+        inited = true;
+    }
+
+    public void init() {
+        if (inited) {
+            return;
+        }
+        _init();
+    }
+
+    protected void initGlobals() {
+        //globals
+        Object globalRaw = this.propsMgr.get("@global");
+        if (globalRaw == null) {
+            return;
+        }
+        final String[] beanNames = StringUtil.toArray(globalRaw.toString());
+        final int size = beanNames.length;
+        if (size != 0) {
+            //create beans
+            for (int i = 0; i < size; i++) {
+                get(beanNames[i]);
+            }
+        }
+    }
+
+    protected void initGlobalBeanProviders() {
+        ServiceLoader<PetiteGlobalBeanProvider> providerLoader = ServiceLoader.load(PetiteGlobalBeanProvider.class);
+        List<PetiteGlobalBeanProvider> providerList = new ArrayList<>();
+        for (PetiteGlobalBeanProvider provider : providerLoader) {
+            providerList.add(provider);
+        }
+        PetiteGlobalBeanProvider [] providers = providerList.toArray(new PetiteGlobalBeanProvider[providerList.size()]);
+        PriorityUtil.desc(providers);
+        this.globalBeanProviders  = providers;
+    }
+
+    public String resolveBeanName(Object bean) {
+        if (bean instanceof Class) {
+            return ((Class) bean).getName();
+        }
+        return bean.getClass().getName();
+    }
+
+    protected Class getReplacedType(Class type) {
+        final Class replaceWith = replaceTypes.get(type);
+        return replaceWith == null ? type : replaceWith;
+    }
+
+    protected String getReplacedKey(String key) {
+        final String replaceWith = replaceKeys.get(key);
+        return replaceWith == null ? key : replaceWith;
+    }
+
+    public void replace(Class replace, Class with) {
+        this.replaceTypes.put(replace, with);
+        this.replace(replace.getName(), with.getName());
+    }
+
+    public void replace(String replace, String with) {
+        this.replaceKeys.put(replace, with);
+        this.propsMgr.putProp(replace + ".@extends", with);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T get(Class<T> type) {
+        T bean = this.globalBeanMgr.get(type);
+        if (bean != null) {
+            return bean;
+        }
+        return (T) get(type.getName());
+    }
+
+    public Object get(final String key) {
+        Object bean = this.beans.get(key);
+        if (bean != null) {
+            return bean;
+        }
+        return createIfAbsent(key);
+    }
+
+    protected synchronized Object createIfAbsent(String key) {
+        //TODO: support replaced
+        Object bean = this.beans.get(key);
+        if (bean != null) {
+            return bean;
+        }
+        Class type = resolveType(key);
+        bean = createIfAbsent(type);
+        this.beans.put(key, bean);
+        return bean;
+    }
+
+    protected synchronized Object createIfAbsent(Class type) {
+        Object bean = this.globalBeanMgr.get(type);
+        if (bean != null) {
+            return bean;
+        }
+        init();
+        bean = newInstance(type);
+        inject(bean);
+        return bean;
+    }
+
+    protected Class resolveType(String key) {
+        String type;
+        key = getReplacedKey(key);
+        do {
+            type = key;
+            key = (String) this.propsMgr.get(key + ".@class");
+        } while (key != null);
+        try {
+            return ClassUtil.getClass(type);
+        } catch (ClassNotFoundException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    protected Object newInstance(Class key) {
+        key = getReplacedType(key);
+        Object bean = getFreshGlobalBeanInstance(key);
+        if (bean != null) {
+            return bean;
+        }
+        return ClassUtil.newInstance(getReplacedType(key));
+    }
+
+    protected Object getFreshGlobalBeanInstance(Class type) {
+        for (PetiteGlobalBeanProvider globalBeanProvider : this.globalBeanProviders) {
+            if (globalBeanProvider.isSupportType(type)) {
+                return globalBeanProvider.getInstance(type, this);
+            }
+        }
+        return null;
+    }
+
+    public void inject(Object bean) {
+        //FIXME:
+        inject(resolveBeanName(bean), bean);
+    }
+
+    public void inject(final String key, final Object bean) {
+        //ensure inited
+        init();
+
+        final Map<String, Setter> setters = AccessFactory.resolveSetters(bean.getClass());
+        final Map<String, Object> params = this.propsMgr.resolveParams(key);
+
+        //Setters
+        for (Map.Entry<String, Setter> entry : setters.entrySet()) {
+            String param = entry.getKey();
+            Setter setter = entry.getValue();
+
+            //inject param
+            Object paramValue = params.get(param);
+            if (paramValue != null) {
+                if (paramValue instanceof String) {
+                    paramValue = convert((String) paramValue, setter.getPropertyType());
+                }
+                setter.set(bean, paramValue);
+                continue;
+            }
+
+            //global
+            Object comp = this.globalBeanMgr.get(setter.getPropertyType());
+            if (comp != null) {
+                setter.set(bean, comp);
+                continue;
+            }
+        }
+
+        //Init
+        for (Method method : bean.getClass().getMethods()) {
+            if (method.getAnnotation(Petite.Init.class) == null) {
+                continue;
+            }
+            final Class[] argTypes = method.getParameterTypes();
+            final Object[] args;
+            if (argTypes.length == 0) {
+                args = Defaults.EMPTY_OBJECTS;
+            } else {
+                args = new Object[argTypes.length];
+                for (int i = 0; i < argTypes.length; i++) {
+                    args[i] = this.globalBeanMgr.get(argTypes[i]);
+                }
+            }
+            try {
+                method.invoke(bean, args);
+            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                //shouldn't be
+                throw new RuntimeException(ex);
+            }
+        }
+
+    }
+
+    public void add(Object bean) {
+        this.beans.put(resolveBeanName(bean), bean);
+    }
+
+    public void add(Class key, Object bean) {
+        this.beans.put(resolveBeanName(key), bean);
+    }
+
+    public void regist(Object bean) {
+        regist(resolveBeanName(bean), bean);
+    }
+
+    public void regist(String key, Object bean) {
+        inject(key, bean);
+        this.beans.put(key, bean);
+    }
+
+    protected Object convert(String string, Class cls) {
+        return Convert.convert(string, cls, defaultConverter);
+    }
+
+    public void setProps(Props props, Map<String, Object> parameters) {
+        this.propsMgr.setProps(props, parameters);
+    }
+
+    public Object getProps(String name) {
+        return this.propsMgr.get(name);
+    }
+
+    public void addGlobalBean(Object bean) {
+        this.globalBeanMgr.add(bean);
+    }
+
+    protected boolean isGlobalType(Class type) {
+        for (PetiteGlobalBeanProvider globalBeanProvider : this.globalBeanProviders) {
+            if (globalBeanProvider.isSupportType(type)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Documented
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.METHOD})
+    public static @interface Init {
+    }
+
+    protected class GlobalBeanManager {
+
+        protected final IdentityMap<Object> container = new IdentityMap<>();
+
+        //Store immature beans.
+        protected final IdentityMap internalCache = new IdentityMap(64);
+
+        public void add(Object bean) {
+            //regist all impls
+            Class rootType = bean.getClass();
+            for (Class cls : ClassUtil.impls(bean)) {
+                //only regist spec types
+                if (cls != rootType && !Petite.this.isGlobalType(cls)) {
+                    continue;
+                }
+                this.container.put(cls, bean);
+            }
+        }
+
+        public <T> T get(Class<T> type) {
+            T bean = (T) this.container.get(type);
+            if (bean != null) {
+                return bean;
+            }
+            if (!Petite.this.isGlobalType(type)) {
+                return null;
+            }
+            return createIfAbsent(type);
+        }
+
+        /**
+         * 如果缺失生成该类型服务.
+         * <p>
+         * NOTE: 使用 synchronized 保证不会返回未完全初始化的
+         * </p>
+         *
+         * @param <T>
+         * @param type
+         * @return
+         */
+        protected synchronized <T> T createIfAbsent(final Class<T> type) {
+            T target;
+            if ((target = (T) container.get(type)) != null) {
+                return target;
+            }
+            if ((target = (T) internalCache.get(type)) != null) {
+                return target;
+            }
+            Class replacedType = getReplacedType(type);
+            if (replacedType != type) {
+                if ((target = (T) container.get(replacedType)) != null) {
+                    return (T) container.putIfAbsent(type, target);
+                }
+                if ((target = (T) internalCache.get(replacedType)) != null) {
+                    return (T) internalCache.putIfAbsent(type, target);
+                }
+            }
+
+            target = (T) Petite.this.newInstance(replacedType);
+            internalCache.put(type, target);
+            if (replacedType != type) {
+                internalCache.put(replacedType, target);
+            }
+            Petite.this.inject(target.getClass().getName(), target);
+            container.put(type, target);
+            internalCache.remove(type);
+            if (replacedType != type) {
+                container.put(replacedType, target);
+                internalCache.remove(replacedType);
+            }
+            add(target);
+            return target;
+        }
+    }
+
+    protected static final class Entry {
+
+        protected final String name;
+        protected final Object value;
+        protected final Entry next;
+
+        protected Entry(String name, Object value, Entry next) {
+            this.name = name;
+            this.value = value;
+            this.next = next;
+        }
+    }
+
+    protected static class PropsManager {
+
+        protected final Map<String, Object> datas;
+        protected final Map<String, Entry> entrys;
+
+        public PropsManager() {
+            this.datas = new HashMap<>();
+            this.entrys = new HashMap<>();
+        }
+
+        public Object get(String key) {
+            return this.datas.get(key);
+        }
+
+        public void putProp(String key, Object value) {
+            this.datas.put(key, value);
+            int index = key.lastIndexOf('.');
+            int index2;
+            if (index > 0
+                    && (index2 = index + 1) < key.length()
+                    && key.charAt(index2) != '@') {
+                String beanName = key.substring(0, index);
+                this.entrys.put(beanName,
+                        new Entry(key.substring(index2), value, this.entrys.get(beanName)));
+            }
+        }
+
+        public void setProps(Props props, Map<String, Object> parameters) {
+            if (props == null) {
+                props = new Props();
+            }
+            final Map<String, Object> extras;
+            if (parameters != null) {
+                extras = new HashMap<>();
+                for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+                    String key = entry.getKey();
+                    if (key == null) {
+                        continue;
+                    }
+                    key = key.trim();
+                    Object value = entry.getValue();
+                    if (value instanceof String) {
+                        int len = key.length();
+                        if (len > 0) {
+                            if (key.charAt(len - 1) == '+') {
+                                props.append(key.substring(0, len - 1).trim(), (String) value);
+                            } else {
+                                props.set(key, (String) value);
+                            }
+                        }
+                    } else {
+                        extras.put(key, value);
+                    }
+                }
+            } else {
+                extras = null;
+            }
+
+            setProps(props);
+
+            if (extras != null) {
+                setProps(extras);
+            }
+        }
+
+        public void setProps(Props props) {
+            if (props == null) {
+                return;
+            }
+            for (String key : props.keySet()) {
+                putProp(key, props.get(key));
+            }
+        }
+
+        public void setProps(Map<String, Object> map) {
+            if (map == null) {
+                return;
+            }
+            for (Map.Entry<String, Object> entrySet : map.entrySet()) {
+                putProp(entrySet.getKey(), entrySet.getValue());
+            }
+        }
+
+        public Map<String, Object> resolveParams(String key) {
+            final LinkedList<String> keys = new LinkedList<>();
+            do {
+                keys.addFirst(key);
+                key = (String) this.datas.get(key + ".@class");
+            } while (key != null);
+
+            final Map<String, Object> params = new HashMap<>();
+            final Set<String> injected = new HashSet<>();
+            for (String beanName : keys) {
+                resolveParams(beanName, params, injected);
+            }
+            return params;
+        }
+
+        protected void resolveParams(final String beanName, final Map<String, Object> params, final Set<String> injected) {
+
+            if (injected.contains(beanName)) {
+                return;
+            }
+            injected.add(beanName);
+            //inject @extends first
+            Object extendProfiles = datas.get(beanName.concat(".@extends"));
+            if (extendProfiles != null) {
+                for (String profile : StringUtil.toArray(String.valueOf(extendProfiles))) {
+                    resolveParams(profile, params, injected);
+                }
+            }
+
+            Entry entry = entrys.get(beanName);
+            while (entry != null) {
+                params.put(entry.name, entry.value);
+                entry = entry.next;
+            }
+        }
+    }
+
+    protected class BeanTypeConverter implements TypeConverter {
+
+        @Override
+        public Object convert(String raw, Class type) {
+            if (raw == null) {
+                return null;
+            }
+            if (Object[].class.isAssignableFrom(type)) {
+                String[] names = StringUtil.toArrayExcludeCommit(raw);
+                Object[] beans = (Object[]) Array.newInstance(type.getComponentType(), names.length);
+                for (int i = 0; i < names.length; i++) {
+                    beans[i] = Petite.this.get(names[i]);
+                }
+                return beans;
+            }
+            return Petite.this.get(raw);
+        }
+
+    };
+
+}
