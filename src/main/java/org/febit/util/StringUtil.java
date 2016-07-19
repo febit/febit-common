@@ -896,4 +896,37 @@ public class StringUtil extends jodd.util.StringUtil {
         }
         return sb.toString();
     }
+    
+    public static String cutToLastIndexOf(String string, String substring) {
+		int i = string.lastIndexOf(substring);
+		if (i <0) {
+			return "";
+		}
+		return string.substring(0, i);
+	}
+    
+	public static String cutToLastIndexOf(String string, char c) {
+		int i = string.lastIndexOf(c);
+		if (i <0) {
+			return "";
+		}
+		return string.substring(0, i);
+	}
+
+	public static String cutFromLastIndexOf(String string, String substring) {
+		int i = string.lastIndexOf(substring);
+		if (i != -1) {
+			string = string.substring(i);
+		}
+		return string;
+	}
+    
+	public static String cutFromLastIndexOf(String string, char c) {
+		int i = string.lastIndexOf(c);
+		if (i != -1) {
+			string = string.substring(i);
+		}
+		return string;
+	}
+
 }
