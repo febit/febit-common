@@ -1,0 +1,57 @@
+package org.febit.util;
+
+import static org.testng.Assert.assertEquals;
+import org.testng.annotations.Test;
+
+/**
+ *
+ * @author zqq90
+ */
+public class PropsTest {
+
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(PropsTest.class);
+
+    private final String source = "\n"
+            + "YEAR = 2016\n"
+            + "PRODUCT = febit.org\n"
+            + "CODE_febit.org = 110001\n"
+            + "COPY_RIGHT = copyright ${YEAR} ${PRODUCT} (${CODE_${PRODUCT}})\n"
+            + "\n"
+            + "[book]\n"
+            + "copyright = ${COPY_RIGHT}\n"
+            + "\n"
+            + "[book2]\n"
+            + "YEAR=1999\n"
+            + "book1_copyright = ${book.copyright}\n"
+            + "CODE_febit.org=110002\n"
+            + "copyright = copyright ${YEAR} ${PRODUCT} (${CODE_${PRODUCT}})\n"
+            + "copyright2 = ${COPY_RIGHT}\n"
+            + "code = ${CODE_${PRODUCT}}\n"
+            + "";
+
+    @Test
+    public void test() {
+
+        Props props = new Props();
+
+        props.load(source);
+
+        assertEquals(props.get("YEAR"), "2016");
+        assertEquals(props.get("PRODUCT"), "febit.org");
+        assertEquals(props.get("CODE_febit.org"), "110001");
+        assertEquals(props.get("COPY_RIGHT"), "copyright 2016 febit.org (110001)");
+        
+        assertEquals(props.get("book.copyright"), "copyright 2016 febit.org (110001)");
+        
+        assertEquals(props.get("book2.code"), "110002");
+        assertEquals(props.get("book2.YEAR"), "1999");
+        assertEquals(props.get("book2.copyright"), "copyright 1999 febit.org (110002)");
+        assertEquals(props.get("book2.copyright2"), "copyright 2016 febit.org (110001)");
+        assertEquals(props.get("book2.book1_copyright"), "copyright 2016 febit.org (110001)");
+
+        assertEquals(props.get("book.copyright"), props.get("COPY_RIGHT"));
+        assertEquals(props.get("book2.copyright2"), props.get("COPY_RIGHT"));
+        assertEquals(props.get("book2.book1_copyright"), props.get("COPY_RIGHT"));
+    }
+
+}

@@ -169,8 +169,8 @@ public final class Props {
     public Set<String> keySet() {
         return this.data.keySet();
     }
-    
-    public int size(){
+
+    public int size() {
         return this.data.size();
     }
 
@@ -187,7 +187,7 @@ public final class Props {
                     append = pv.append;
                 }
             }
-            data.put(key, new Entry(value, append));
+            data.put(key, new Entry(key, value, append));
         }
     }
 
@@ -216,10 +216,10 @@ public final class Props {
         if (entry == null) {
             return null;
         }
-        return resolveValue(entry.value, 0);
+        return resolveValue(entry.space(), entry.value, 0);
     }
 
-    private String resolveValue(String template, int macrosTimes) {
+    private String resolveValue(String space, String template, int macrosTimes) {
         if (macrosTimes > 100) {
             //Note: MAX_MACROS
             return template;
@@ -245,7 +245,7 @@ public final class Props {
         final String partStart = template.substring(0, ndx - count);
 
         // Anyway, resolve ending first
-        final String resolvedEnding = resolveValue(template.substring(ndx + 2), ++macrosTimes);
+        final String resolvedEnding = resolveValue(space, template.substring(ndx + 2), ++macrosTimes);
 
         // If ${ is escaped
         if (escape) {
@@ -261,9 +261,16 @@ public final class Props {
         }
         final String partEnd = resolvedEnding.substring(end + 1);
         // find value and append
-        Entry entry = data.get(resolvedEnding.substring(0, end));
+        String key = resolvedEnding.substring(0, end);
+        Entry entry = null;
+        if (StringUtil.isNotEmpty(space)) {
+            entry = data.get(space + '.' + key);
+        }
+        if (entry == null) {
+            entry = data.get(key);
+        }
         if (entry != null && entry.value != null) {
-            return StringUtil.concat(partStart, resolveValue(entry.value, ++macrosTimes), partEnd);
+            return StringUtil.concat(partStart, resolveValue(entry.space(), entry.value, ++macrosTimes), partEnd);
         } else {
             return StringUtil.concat(partStart, partEnd);
         }
@@ -416,7 +423,7 @@ public final class Props {
                 }
                 continue;
             }
-            
+
             //STATE_VALUE || STATE_ESCAPE_NEWLINE
             if (true) {
                 switch (c) {
@@ -491,12 +498,18 @@ public final class Props {
 
     private static class Entry {
 
+        final String key;
         final String value;
         final boolean append;
 
-        Entry(final String value, boolean append) {
+        Entry(final String key, final String value, boolean append) {
+            this.key = key;
             this.value = value;
             this.append = append;
+        }
+        
+        String space(){
+            return StringUtil.cutToLastIndexOf(key, '.');
         }
     }
 
