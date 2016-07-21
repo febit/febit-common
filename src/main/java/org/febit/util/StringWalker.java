@@ -75,6 +75,13 @@ public class StringWalker {
     public int skipBlanks() {
         return skipFlag(BLANKS);
     }
+    
+    public String readToEnd() {
+        if (pos >= end) {
+            return "";
+        }
+        return new String(chars, pos, end - pos);
+    }
 
     public String readTo(final char endFlag, final boolean keepFlag) {
         final StringBuilder buf = buf();
