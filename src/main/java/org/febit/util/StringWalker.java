@@ -112,6 +112,14 @@ public class StringWalker {
         return buf.toString();
     }
 
+    public String readUntil(final Checker checker) {
+        return readToFlag(checker, true);
+    }
+    
+    public String readUntil(char flag) {
+        return readTo(flag, true);
+    }
+    
     public String readUntilSpace() {
         return readTo(' ', true);
     }
