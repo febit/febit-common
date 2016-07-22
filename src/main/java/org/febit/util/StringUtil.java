@@ -9,6 +9,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import jodd.util.URLDecoder;
 import jodd.util.UnsafeUtil;
@@ -285,15 +287,24 @@ public class StringUtil extends jodd.util.StringUtil {
      * @param array
      * @return
      */
-    public static String format(final String template, final Object... array) {
+    public static String format(final String template, final Object... array)  {
         if (template == null) {
             return null;
         }
         if (template.indexOf('{') < 0) {
             return template;
         }
-        final StringBuilder result = new StringBuilder(template.length());
-        final int len = template.length();
+        final StringBuilder out = new StringBuilder(template.length());
+        try {
+            format(out, template, array);
+        } catch (IOException ignore) {
+            //can't be
+        }
+        return out.toString();
+    }
+    
+    public static void format(final Appendable out, final String template, final Object... array) throws IOException{
+         final int len = template.length();
         final int arrayLen = array != null ? array.length : 0;
         int i = 0;
         int currentIndex = 0;
@@ -301,7 +312,7 @@ public class StringUtil extends jodd.util.StringUtil {
         while (i < len) {
             int ndx = template.indexOf('{', i);
             if (ndx == -1) {
-                result.append(i == 0 ? template : template.substring(i));
+                out.append(i == 0 ? template : template.substring(i));
                 break;
             }
             int j = ndx - 1;
@@ -309,12 +320,12 @@ public class StringUtil extends jodd.util.StringUtil {
                 j--;
             }
             int escapeCharcount = ndx - 1 - j;
-            result.append(template.substring(i,
+            out.append(template.substring(i,
                     escapeCharcount > 0
                             ? ndx - ((escapeCharcount + 1) >> 1)
                             : ndx));
             if ((escapeCharcount & 1) == 1) {
-                result.append('{');
+                out.append('{');
                 i = ndx + 1;
                 continue;
             }
@@ -332,11 +343,10 @@ public class StringUtil extends jodd.util.StringUtil {
                 }
             }
             if (index < arrayLen && index >= 0 && array[index] != null) {
-                result.append(array[index].toString());
+                out.append(array[index].toString());
             }
             i = ndxEnd + 1;
         }
-        return result.toString();
     }
 
     public static boolean isMobile(String string) {
