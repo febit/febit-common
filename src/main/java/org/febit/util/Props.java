@@ -416,7 +416,10 @@ public final class Props {
 
                     case ' ':
                     case '\t':
-                        // ignore whitespaces
+                        if (sb.length() > 0) {
+                            sb.append(c);
+                        }
+                        // ignore whitespaces before the key
                         break;
                     default:
                         sb.append(c);
