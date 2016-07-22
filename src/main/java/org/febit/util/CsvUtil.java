@@ -17,7 +17,7 @@ public class CsvUtil extends jodd.util.CsvUtil {
 
     public static Iter<String[]> linesIter(Reader reader) {
 
-        return FileUtil.linesIter(reader)
+        return FileUtil.lineReader(reader)
                 .map(new Function1<String[], String>() {
                     @Override
                     public String[] call(String line) {
