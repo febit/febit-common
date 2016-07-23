@@ -14,7 +14,7 @@ public abstract class LazyAgent<T> implements Serializable {
 
     protected abstract T create();
 
-    public T getOrCreate() {
+    public T get() {
         final T result = this.instance;
         if (result != null) {
             return result;
