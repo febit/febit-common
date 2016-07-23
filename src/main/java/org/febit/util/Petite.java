@@ -9,7 +9,6 @@ import java.lang.annotation.Target;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -23,6 +22,7 @@ import org.febit.convert.Convert;
 import org.febit.convert.TypeConverter;
 import org.febit.lang.Defaults;
 import org.febit.lang.IdentityMap;
+import org.febit.util.agent.LazyAgent;
 
 /**
  * A Simple IoC.
@@ -32,18 +32,29 @@ import org.febit.lang.IdentityMap;
 public class Petite {
 
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(Petite.class);
-    
+
     protected static final Method[] EMPTY_METHODS = new Method[0];
     protected static final Setter[] EMPTY_SETTERS = new Setter[0];
 
     protected final TypeConverter defaultConverter;
     protected final IdentityMap<Class> replaceTypes;
     protected final Map<String, Object> beans;
-    protected final Map<String, String> replaceKeys;
+    protected final Map<String, String> replaceNames;
     protected final PropsManager propsMgr;
     protected final GlobalBeanManager globalBeanMgr;
 
-    protected PetiteGlobalBeanProvider[] globalBeanProviders;
+    protected final LazyAgent<PetiteGlobalBeanProvider[]> globalBeanProviders = new LazyAgent<PetiteGlobalBeanProvider[]>() {
+        @Override
+        protected PetiteGlobalBeanProvider[] create() {
+            List<PetiteGlobalBeanProvider> providerList
+                    = CollectionUtil.read(ServiceLoader.load(PetiteGlobalBeanProvider.class));
+            PetiteGlobalBeanProvider[] providers
+                    = providerList.toArray(new PetiteGlobalBeanProvider[providerList.size()]);
+            PriorityUtil.desc(providers);
+            return providers;
+        }
+    };
+
     protected boolean inited = false;
 
     public Petite() {
@@ -52,17 +63,16 @@ public class Petite {
         this.globalBeanMgr = new GlobalBeanManager();
         this.beans = new HashMap<>();
         this.replaceTypes = new IdentityMap<>();
-        this.replaceKeys = new HashMap<>();
+        this.replaceNames = new HashMap<>();
     }
 
     protected synchronized void _init() {
         if (inited) {
             return;
         }
-        addGlobalBean(this);
-        initGlobalBeanProviders();
-        initGlobals();
         inited = true;
+        addGlobalBean(this);
+        initGlobals();
     }
 
     public void init() {
@@ -79,24 +89,22 @@ public class Petite {
             return;
         }
         final String[] beanNames = StringUtil.toArray(globalRaw.toString());
-        final int size = beanNames.length;
-        if (size != 0) {
-            //create beans
-            for (int i = 0; i < size; i++) {
-                get(beanNames[i]);
-            }
+        if (beanNames.length == 0) {
+            return;
         }
-    }
 
-    protected void initGlobalBeanProviders() {
-        ServiceLoader<PetiteGlobalBeanProvider> providerLoader = ServiceLoader.load(PetiteGlobalBeanProvider.class);
-        List<PetiteGlobalBeanProvider> providerList = new ArrayList<>();
-        for (PetiteGlobalBeanProvider provider : providerLoader) {
-            providerList.add(provider);
+        //In case of circular reference, create all instance at once, then inject them.
+        //create
+        final Object[] instances = new Object[beanNames.length];
+        for (int i = 0; i < beanNames.length; i++) {
+            String name = beanNames[i];
+            instances[i] = newInstance(resolveType(name));
+            addGlobalBean(instances[i]);
         }
-        PetiteGlobalBeanProvider [] providers = providerList.toArray(new PetiteGlobalBeanProvider[providerList.size()]);
-        PriorityUtil.desc(providers);
-        this.globalBeanProviders  = providers;
+        //inject
+        for (int i = 0; i < instances.length; i++) {
+            doInject(beanNames[i], instances[i]);
+        }
     }
 
     public String resolveBeanName(Object bean) {
@@ -111,9 +119,9 @@ public class Petite {
         return replaceWith == null ? type : replaceWith;
     }
 
-    protected String getReplacedKey(String key) {
-        final String replaceWith = replaceKeys.get(key);
-        return replaceWith == null ? key : replaceWith;
+    protected String getReplacedName(String name) {
+        final String replaceWith = replaceNames.get(name);
+        return replaceWith == null ? name : replaceWith;
     }
 
     public void replace(Class replace, Class with) {
@@ -122,7 +130,7 @@ public class Petite {
     }
 
     public void replace(String replace, String with) {
-        this.replaceKeys.put(replace, with);
+        this.replaceNames.put(replace, with);
         this.propsMgr.putProp(replace + ".@extends", with);
     }
 
@@ -135,44 +143,39 @@ public class Petite {
         return (T) get(type.getName());
     }
 
-    public Object get(final String key) {
-        Object bean = this.beans.get(key);
+    public Object get(final String name) {
+        Object bean = this.beans.get(name);
         if (bean != null) {
             return bean;
         }
-        return createIfAbsent(key);
+        return createIfAbsent(name);
     }
 
-    protected synchronized Object createIfAbsent(String key) {
-        //TODO: support replaced
-        Object bean = this.beans.get(key);
+    protected synchronized Object createIfAbsent(String name) {
+        Object bean = this.beans.get(name);
         if (bean != null) {
             return bean;
         }
-        Class type = resolveType(key);
-        bean = createIfAbsent(type);
-        this.beans.put(key, bean);
+        Class type = resolveType(name);
+        bean = createIfAbsent(name, type);
+        this.beans.put(name, bean);
         return bean;
     }
 
-    protected synchronized Object createIfAbsent(Class type) {
-        Object bean = this.globalBeanMgr.get(type);
-        if (bean != null) {
-            return bean;
-        }
+    protected synchronized Object createIfAbsent(String name, Class type) {
         init();
-        bean = newInstance(type);
-        inject(bean);
+        Object bean = newInstance(type);
+        inject(name != null ? name : resolveBeanName(bean), bean);
         return bean;
     }
 
-    protected Class resolveType(String key) {
+    protected Class resolveType(String name) {
         String type;
-        key = getReplacedKey(key);
+        name = getReplacedName(name);
         do {
-            type = key;
-            key = (String) this.propsMgr.get(key + ".@class");
-        } while (key != null);
+            type = name;
+            name = (String) this.propsMgr.get(name + ".@class");
+        } while (name != null);
         try {
             return ClassUtil.getClass(type);
         } catch (ClassNotFoundException ex) {
@@ -180,17 +183,17 @@ public class Petite {
         }
     }
 
-    protected Object newInstance(Class key) {
-        key = getReplacedType(key);
-        Object bean = getFreshGlobalBeanInstance(key);
+    protected Object newInstance(Class type) {
+        type = getReplacedType(type);
+        Object bean = getFreshGlobalBeanInstance(type);
         if (bean != null) {
             return bean;
         }
-        return ClassUtil.newInstance(getReplacedType(key));
+        return ClassUtil.newInstance(getReplacedType(type));
     }
 
     protected Object getFreshGlobalBeanInstance(Class type) {
-        for (PetiteGlobalBeanProvider globalBeanProvider : this.globalBeanProviders) {
+        for (PetiteGlobalBeanProvider globalBeanProvider : this.globalBeanProviders.get()) {
             if (globalBeanProvider.isSupportType(type)) {
                 return globalBeanProvider.getInstance(type, this);
             }
@@ -199,16 +202,19 @@ public class Petite {
     }
 
     public void inject(Object bean) {
-        //FIXME:
         inject(resolveBeanName(bean), bean);
     }
 
-    public void inject(final String key, final Object bean) {
+    public void inject(final String name, final Object bean) {
         //ensure inited
         init();
+        doInject(name, bean);
+    }
+
+    protected void doInject(final String name, final Object bean) {
 
         final Map<String, Setter> setters = AccessFactory.resolveSetters(bean.getClass());
-        final Map<String, Object> params = this.propsMgr.resolveParams(key);
+        final Map<String, Object> params = this.propsMgr.resolveParams(name);
 
         //Setters
         for (Map.Entry<String, Setter> entry : setters.entrySet()) {
@@ -234,7 +240,7 @@ public class Petite {
         }
 
         //Init
-        for (Method method : bean.getClass().getMethods()) {
+        for (Method method : ClassUtil.getAccessableMemberMethods(bean.getClass())) {
             if (method.getAnnotation(Petite.Init.class) == null) {
                 continue;
             }
@@ -262,17 +268,21 @@ public class Petite {
         this.beans.put(resolveBeanName(bean), bean);
     }
 
-    public void add(Class key, Object bean) {
-        this.beans.put(resolveBeanName(key), bean);
+    public void add(Class type, Object bean) {
+        this.beans.put(resolveBeanName(type), bean);
+    }
+
+    public void add(String name, Object bean) {
+        this.beans.put(name, bean);
     }
 
     public void regist(Object bean) {
         regist(resolveBeanName(bean), bean);
     }
 
-    public void regist(String key, Object bean) {
-        inject(key, bean);
-        this.beans.put(key, bean);
+    public void regist(String name, Object bean) {
+        inject(name, bean);
+        this.beans.put(name, bean);
     }
 
     protected Object convert(String string, Class cls) {
@@ -292,7 +302,7 @@ public class Petite {
     }
 
     protected boolean isGlobalType(Class type) {
-        for (PetiteGlobalBeanProvider globalBeanProvider : this.globalBeanProviders) {
+        for (PetiteGlobalBeanProvider globalBeanProvider : this.globalBeanProviders.get()) {
             if (globalBeanProvider.isSupportType(type)) {
                 return true;
             }
@@ -531,7 +541,6 @@ public class Petite {
             }
             return Petite.this.get(raw);
         }
-
-    };
+    }
 
 }

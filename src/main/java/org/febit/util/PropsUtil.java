@@ -20,7 +20,6 @@ import jodd.io.findfile.ClassScanner;
  */
 public class PropsUtil {
 
-    public static final String PROPS_LIST = "$$props";
     public static final ClasspathInputResolver CLASSPATH_INPUT_RESOLVER = new ClasspathInputResolver();
 
     public static Props scanClasspath(final Props props, final String... pathSets) {
@@ -76,7 +75,7 @@ public class PropsUtil {
         }
 
         private void resolveModules(Props src) {
-            resolveModules(src.remove("@mod"));
+            resolveModules(src.remove("@import"));
         }
 
         private void resolveModules(String modules) {
