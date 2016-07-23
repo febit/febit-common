@@ -37,6 +37,26 @@ public class CollectionUtil {
         return new ArrayList(expactSize);
     }
 
+    public static <T> List<T> read(Iterable<T> iterable) {
+        return read(iterable.iterator());
+    }
+
+    public static <T> List<T> read(Iterator<T> iter) {
+        List<T> list = new ArrayList<>();
+        while (iter.hasNext()) {
+            list.add(iter.next());
+        }
+        return list;
+    }
+
+    public static <T> List<T> read(Enumeration<T> e) {
+        List<T> list = new ArrayList<>();
+        while (e.hasMoreElements()) {
+            list.add(e.nextElement());
+        }
+        return list;
+    }
+
     public static java.util.HashSet createSet(int expectedSize) {
         return new java.util.HashSet(expectedSize * 4 / 3 + 1);
     }
