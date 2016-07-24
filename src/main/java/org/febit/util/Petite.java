@@ -156,16 +156,11 @@ public class Petite {
         if (bean != null) {
             return bean;
         }
-        Class type = resolveType(name);
-        bean = createIfAbsent(name, type);
-        this.beans.put(name, bean);
-        return bean;
-    }
-
-    protected synchronized Object createIfAbsent(String name, Class type) {
         init();
-        Object bean = newInstance(type);
-        inject(name != null ? name : resolveBeanName(bean), bean);
+        Class type = resolveType(name);
+        bean = newInstance(type);
+        inject(name, bean);
+        this.beans.put(name, bean);
         return bean;
     }
 
