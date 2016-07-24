@@ -155,6 +155,9 @@ public abstract class PrintAppendable implements Appendable, Closeable {
         return this;
     }
 
+    @Override
+    public abstract String toString();
+
     public static PrintAppendable wrap(final Appendable out) {
         return new PrintAppendable() {
 
@@ -187,6 +190,11 @@ public abstract class PrintAppendable implements Appendable, Closeable {
                 if (out instanceof Closeable) {
                     ((Closeable) out).close();
                 }
+            }
+
+            @Override
+            public String toString() {
+                return out.toString();
             }
         };
     }
@@ -222,6 +230,11 @@ public abstract class PrintAppendable implements Appendable, Closeable {
             public void close() throws IOException {
                 out.close();
             }
+
+            @Override
+            public String toString() {
+                return out.toString();
+            }
         };
     }
 
@@ -255,6 +268,11 @@ public abstract class PrintAppendable implements Appendable, Closeable {
             @Override
             public void close() throws IOException {
                 out.close();
+            }
+
+            @Override
+            public String toString() {
+                return out.toString();
             }
         };
     }
