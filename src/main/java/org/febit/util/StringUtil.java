@@ -9,8 +9,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import jodd.util.URLDecoder;
 import jodd.util.UnsafeUtil;
@@ -21,10 +19,120 @@ import org.febit.lang.Defaults;
  *
  * @author zqq90
  */
-public class StringUtil extends jodd.util.StringUtil {
+public class StringUtil {
 
     private static final char[] GT = "&gt;".toCharArray();
     private static final char[] LT = "&lt;".toCharArray();
+
+    public static boolean isEmpty(String src) {
+        return src == null || src.isEmpty();
+    }
+
+    public static boolean isAllEmpty(String... strings) {
+        for (String string : strings) {
+            if (!isEmpty(string)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean isBlank(String src) {
+        return (src == null) || jodd.util.StringUtil.containsOnlyWhitespaces(src);
+    }
+
+    public static boolean isNotBlank(String src) {
+        return (src != null) && !jodd.util.StringUtil.containsOnlyWhitespaces(src);
+    }
+
+    public static boolean isAllBlank(String... strings) {
+        return jodd.util.StringUtil.isAllBlank(strings);
+    }
+
+    public static boolean isNotEmpty(String src) {
+        return src != null && !src.isEmpty();
+    }
+
+    public static String remove(String s, String sub) {
+        return jodd.util.StringUtil.remove(s, sub);
+    }
+
+    public static String removeChars(String src, String chars) {
+        return jodd.util.StringUtil.removeChars(src, chars);
+    }
+
+    public static String removeChars(String src, char... chars) {
+        return jodd.util.StringUtil.removeChars(src, chars);
+    }
+
+    public static String remove(String src, char ch) {
+        return jodd.util.StringUtil.remove(src, ch);
+    }
+
+    public static String[] split(String src, String delimiter) {
+        return jodd.util.StringUtil.split(src, delimiter);
+    }
+
+    public static String[] splitc(String src, String d) {
+        return jodd.util.StringUtil.splitc(src, d);
+    }
+
+    public static String[] splitc(String src, char[] delimiters) {
+        return jodd.util.StringUtil.splitc(src, delimiters);
+    }
+
+    public static String[] splitc(String src, char delimiter) {
+        return jodd.util.StringUtil.splitc(src, delimiter);
+    }
+
+    public static String repeat(String src, int count) {
+        return jodd.util.StringUtil.repeat(src, count);
+    }
+
+    public static String repeat(char c, int count) {
+        return jodd.util.StringUtil.repeat(c, count);
+    }
+
+    public static int count(String src, String sub) {
+        return jodd.util.StringUtil.count(src, sub, 0);
+    }
+
+    public static int count(String src, String sub, int start) {
+        return jodd.util.StringUtil.count(src, sub, start);
+    }
+
+    public static int count(String src, char c) {
+        return jodd.util.StringUtil.count(src, c, 0);
+    }
+
+    public static int count(String src, char c, int start) {
+        return jodd.util.StringUtil.count(src, c, start);
+    }
+
+    public static void trim(String[] strings) {
+        for (int i = 0; i < strings.length; i++) {
+            String string = strings[i];
+            if (string != null) {
+                strings[i] = string.trim();
+            }
+        }
+    }
+
+    public static int indexOfChars(String string, String chars) {
+        return jodd.util.StringUtil.indexOfChars(string, chars, 0);
+    }
+
+    public static int indexOfChars(String string, String chars, int startindex) {
+        return jodd.util.StringUtil.indexOfChars(string, chars, startindex);
+    }
+
+    public static int indexOfChars(String string, char[] chars) {
+        return jodd.util.StringUtil.indexOfChars(string, chars, 0);
+    }
+
+    public static int indexOfChars(String string, char[] chars, int startindex) {
+        return jodd.util.StringUtil.indexOfChars(string, chars, startindex);
+    }
 
     public static String urlEncode(String src) {
         try {
@@ -287,7 +395,7 @@ public class StringUtil extends jodd.util.StringUtil {
      * @param array
      * @return
      */
-    public static String format(final String template, final Object... array)  {
+    public static String format(final String template, final Object... array) {
         if (template == null) {
             return null;
         }
@@ -302,9 +410,9 @@ public class StringUtil extends jodd.util.StringUtil {
         }
         return out.toString();
     }
-    
-    public static void format(final Appendable out, final String template, final Object... array) throws IOException{
-         final int len = template.length();
+
+    public static void format(final Appendable out, final String template, final Object... array) throws IOException {
+        final int len = template.length();
         final int arrayLen = array != null ? array.length : 0;
         int i = 0;
         int currentIndex = 0;
@@ -810,11 +918,11 @@ public class StringUtil extends jodd.util.StringUtil {
 
     public static String escapeHTMLTag(String str) {
         if (str != null) {
-            final char[] source = UnsafeUtil.getChars(str);
-            final int size = source.length;
+            final char[] src = UnsafeUtil.getChars(str);
+            final int size = src.length;
             final StringBuilder buffer = new StringBuilder(str.length() + (size > 1000 ? 200 : 100));
             for (int i = 0; i < size; i++) {
-                char c = source[i];
+                char c = src[i];
                 if (c == '<') {
                     buffer.append(LT);
                 } else if (c == '>') {
@@ -906,37 +1014,37 @@ public class StringUtil extends jodd.util.StringUtil {
         }
         return sb.toString();
     }
-    
-    public static String cutToLastIndexOf(String string, String substring) {
-		int i = string.lastIndexOf(substring);
-		if (i <0) {
-			return "";
-		}
-		return string.substring(0, i);
-	}
-    
-	public static String cutToLastIndexOf(String string, char c) {
-		int i = string.lastIndexOf(c);
-		if (i <0) {
-			return "";
-		}
-		return string.substring(0, i);
-	}
 
-	public static String cutFromLastIndexOf(String string, String substring) {
-		int i = string.lastIndexOf(substring);
-		if (i != -1) {
-			string = string.substring(i);
-		}
-		return string;
-	}
-    
-	public static String cutFromLastIndexOf(String string, char c) {
-		int i = string.lastIndexOf(c);
-		if (i != -1) {
-			string = string.substring(i);
-		}
-		return string;
-	}
+    public static String cutToLastIndexOf(String string, String substring) {
+        int i = string.lastIndexOf(substring);
+        if (i < 0) {
+            return "";
+        }
+        return string.substring(0, i);
+    }
+
+    public static String cutToLastIndexOf(String string, char c) {
+        int i = string.lastIndexOf(c);
+        if (i < 0) {
+            return "";
+        }
+        return string.substring(0, i);
+    }
+
+    public static String cutFromLastIndexOf(String string, String substring) {
+        int i = string.lastIndexOf(substring);
+        if (i != -1) {
+            string = string.substring(i);
+        }
+        return string;
+    }
+
+    public static String cutFromLastIndexOf(String string, char c) {
+        int i = string.lastIndexOf(c);
+        if (i != -1) {
+            string = string.substring(i);
+        }
+        return string;
+    }
 
 }
