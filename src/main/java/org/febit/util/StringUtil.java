@@ -85,12 +85,32 @@ public class StringUtil {
         return jodd.util.StringUtil.splitc(src, delimiter);
     }
 
+    public static int startsWithOne(String src, String[] dest) {
+        return jodd.util.StringUtil.startsWithOne(src, dest);
+    }
+
+    public static int startsWithOneIgnoreCase(String src, String[] dest) {
+        return jodd.util.StringUtil.startsWithOneIgnoreCase(src, dest);
+    }
+
     public static String repeat(String src, int count) {
         return jodd.util.StringUtil.repeat(src, count);
     }
 
     public static String repeat(char c, int count) {
         return jodd.util.StringUtil.repeat(c, count);
+    }
+
+    public static String replace(String s, String sub, String with) {
+        return jodd.util.StringUtil.replace(s, sub, with);
+    }
+
+    public static String replaceChar(String s, char sub, char with) {
+        return jodd.util.StringUtil.replaceChar(s, sub, with);
+    }
+
+    public static String replaceChars(String s, char[] sub, char[] with) {
+        return jodd.util.StringUtil.replaceChars(s, sub, with);
     }
 
     public static int count(String src, String sub) {
@@ -118,23 +138,121 @@ public class StringUtil {
         }
     }
 
-    public static int indexOfChars(String string, String chars) {
-        return jodd.util.StringUtil.indexOfChars(string, chars, 0);
+    public static int indexOfChars(String src, String chars) {
+        return jodd.util.StringUtil.indexOfChars(src, chars, 0);
     }
 
-    public static int indexOfChars(String string, String chars, int startindex) {
-        return jodd.util.StringUtil.indexOfChars(string, chars, startindex);
+    public static int indexOfChars(String src, String chars, int startindex) {
+        return jodd.util.StringUtil.indexOfChars(src, chars, startindex);
     }
 
-    public static int indexOfChars(String string, char[] chars) {
-        return jodd.util.StringUtil.indexOfChars(string, chars, 0);
+    public static int indexOfChars(String src, char[] chars) {
+        return jodd.util.StringUtil.indexOfChars(src, chars, 0);
     }
 
-    public static int indexOfChars(String string, char[] chars, int startindex) {
-        return jodd.util.StringUtil.indexOfChars(string, chars, startindex);
+    public static int indexOfChars(String src, char[] chars, int startindex) {
+        return jodd.util.StringUtil.indexOfChars(src, chars, startindex);
     }
 
-    public static String urlEncode(String src) {
+    public static int indexOfIgnoreCase(String src, char c, int startIndex, int endIndex) {
+        return jodd.util.StringUtil.indexOfIgnoreCase(src, c, startIndex, endIndex);
+    }
+
+    public static int indexOfIgnoreCase(String src, String subS) {
+        return jodd.util.StringUtil.indexOfIgnoreCase(src, subS, 0, src.length());
+    }
+
+    public static int indexOfIgnoreCase(String src, String subS, int startIndex) {
+        return jodd.util.StringUtil.indexOfIgnoreCase(src, subS, startIndex, src.length());
+    }
+
+    public static int indexOfIgnoreCase(String src, String sub, int startIndex, int endIndex) {
+        return jodd.util.StringUtil.indexOfIgnoreCase(src, sub, startIndex, endIndex);
+    }
+
+    public static int lastIndexOfIgnoreCase(String s, String subS) {
+        return jodd.util.StringUtil.lastIndexOfIgnoreCase(s, subS, s.length(), 0);
+    }
+
+    public static int lastIndexOfIgnoreCase(String src, String subS, int startIndex) {
+        return jodd.util.StringUtil.lastIndexOfIgnoreCase(src, subS, startIndex, 0);
+    }
+
+    public static int lastIndexOfIgnoreCase(String src, String sub, int startIndex, int endIndex) {
+        return jodd.util.StringUtil.lastIndexOfIgnoreCase(src, sub, startIndex, endIndex);
+    }
+
+    public static int lastIndexOfIgnoreCase(String src, char c, int startIndex, int endIndex) {
+        return jodd.util.StringUtil.lastIndexOfIgnoreCase(src, c, startIndex, endIndex);
+    }
+
+    public static int lastIndexOf(String src, String sub, int startIndex, int endIndex) {
+        return jodd.util.StringUtil.lastIndexOf(src, sub, startIndex, endIndex);
+    }
+
+    public static int lastIndexOf(String src, char c, int startIndex, int endIndex) {
+        return jodd.util.StringUtil.lastIndexOf(src, c, startIndex, endIndex);
+    }
+
+    public static String cutPrefix(String src, String prefix) {
+        if (src == null || !src.startsWith(prefix)) {
+            return src;
+        }
+        return src.substring(prefix.length());
+    }
+
+    public static String cutSuffix(String src, String suffix) {
+        if (src == null || !src.endsWith(suffix)) {
+            return src;
+        }
+        return src.substring(0, src.length() - suffix.length());
+    }
+
+    public static String cutSurrounding(String src, String fix) {
+        return jodd.util.StringUtil.cutSurrounding(src, fix, fix);
+    }
+
+    public static String cutSurrounding(String src, String prefix, String suffix) {
+        return jodd.util.StringUtil.cutSurrounding(src, prefix, suffix);
+    }
+
+    public static String cutBetween(String src, String left, String right) {
+        return jodd.util.StringUtil.cutBetween(src, left, right);
+    }
+
+    public static String cutToLastIndexOf(String string, String substring) {
+        int i = string.lastIndexOf(substring);
+        if (i < 0) {
+            return "";
+        }
+        return string.substring(0, i);
+    }
+
+    public static String cutToLastIndexOf(String string, char c) {
+        int i = string.lastIndexOf(c);
+        if (i < 0) {
+            return "";
+        }
+        return string.substring(0, i);
+    }
+
+    public static String cutFromLastIndexOf(String string, String substring) {
+        int i = string.lastIndexOf(substring);
+        if (i != -1) {
+            string = string.substring(i);
+        }
+        return string;
+    }
+
+    public static String cutFromLastIndexOf(String string, char c) {
+        int i = string.lastIndexOf(c);
+        if (i != -1) {
+            string = string.substring(i);
+        }
+        return string;
+    }
+
+    public static String encodeUri(String src) {
         try {
             return URLEncoder.encode(src, "UTF-8");
         } catch (UnsupportedEncodingException ex) {
@@ -142,7 +260,7 @@ public class StringUtil {
         }
     }
 
-    public static String urlDecode(String src) {
+    public static String decodeUri(String src) {
         return URLDecoder.decode(src, "UTF-8");
     }
 
@@ -566,21 +684,14 @@ public class StringUtil {
     }
 
     public static String strickFileName(final String str) {
-        if (str != null) {
-            return StringUtil.removeChars(str, ' ', '\t', '\f', '\n', '\r', '\b', '\\', '/', '<', '>', '*', '?', ':', '"', '|').trim();
+        if (str == null) {
+            return null;
         }
-        return null;
+        return StringUtil.removeChars(str, FILENAME_FORBIDS).trim();
     }
 
-    public static String escapeFileName(final String str) {
-        if (str != null) {
-            return StringUtil.removeChars(str, '\t', '\f', '\n', '\r', '\b', '\\', '/', '<', '>', '*', '?', ':', '"', '|').trim();
-        }
-        return null;
-    }
-
+    public static final char[] FILENAME_FORBIDS = {' ', '\t', '\f', '\n', '\r', '\b', '\\', '/', '<', '>', '*', '?', ':', '"', '|'};
     public static final char[] DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
-
     public static final char[] DIGITS_UPPER = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
     public static final char[] ASCII_CHARS = {'0', '0', '0', '1', '0', '2', '0', '3', '0', '4', '0', '5', '0', '6',
@@ -601,47 +712,34 @@ public class StringUtil {
         return toHexString(bs, DIGITS);
     }
 
-    public static String toHexString(final byte[] bs, final char[] myDigits) {
+    private static String toHexString(final byte[] bs, final char[] myDigits) {
         final int len;
-        if (bs != null && (len = bs.length) != 0) {
-            final char[] cs = new char[len << 1];
-            byte b;
-            for (int i = 0, j = 0; i < len; i++) {
-                cs[j++] = myDigits[((b = bs[i]) >>> 4) & 0xF];
-                cs[j++] = myDigits[b & 0xF];
-            }
-            return String.valueOf(cs);
+        if (bs == null || (len = bs.length) == 0) {
+            return null;
         }
-        return null;
+        final char[] cs = new char[len << 1];
+        byte b;
+        for (int i = 0, j = 0; i < len; i++) {
+            cs[j++] = myDigits[((b = bs[i]) >>> 4) & 0xF];
+            cs[j++] = myDigits[b & 0xF];
+        }
+        return String.valueOf(cs);
     }
 
-    public static int charTodigit(char c) {
-        if (c >= '0' && c <= '9') {
-            return c - '0';
+    public static byte[] decodeHex(final char[] chars) {
+        final int len = (chars.length / 2);
+        final byte[] out = new byte[len];
+        for (int i = 0, j = 0; i < len; i++) {
+            out[i] = (byte) (CharUtil.hexTodigit(chars[j++]) << 4 | CharUtil.hexTodigit(chars[j++]));
         }
-        if (c >= 'a' && c <= 'f') {
-            return c - 'a' + 10;
-        }
-        if (c >= 'A' && c <= 'F') {
-            return c - 'A' + 10;
-        }
-        throw new IllegalArgumentException("must [0-9a-zA-Z]");
+        return out;
     }
 
     public static byte[] hexToBytes(final String strIn) {
-        if (strIn != null) {
-            final int len;
-            final char[] chars = strIn.toCharArray();
-            final byte[] out = new byte[len = (chars.length / 2)];
-            //int h,l;
-            for (int i = 0, j = 0; i < len; i++) {
-                //h = char2digit(chars[j++]) << 4;
-                //l = char2digit(chars[j++]);
-                out[i] = (byte) (charTodigit(chars[j++]) << 4 | charTodigit(chars[j++]));
-            }
-            return out;
+        if (strIn == null) {
+            return null;
         }
-        return null;
+        return decodeHex(strIn.toCharArray());
     }
 
     public static String escapeForJsonString(String src, boolean wrap) {
@@ -834,20 +932,6 @@ public class StringUtil {
         }
     }
 
-    public static String cutPrefix(String string, String prefix) {
-        if (string.startsWith(prefix)) {
-            string = string.substring(prefix.length());
-        }
-        return string;
-    }
-
-    public static String cutSuffix(String string, String suffix) {
-        if (string.endsWith(suffix)) {
-            string = string.substring(0, string.length() - suffix.length());
-        }
-        return string;
-    }
-
     public static final String EMPTY = "";
 
     public static String upperFirst(String str) {
@@ -1013,38 +1097,6 @@ public class StringUtil {
             sb.append(item);
         }
         return sb.toString();
-    }
-
-    public static String cutToLastIndexOf(String string, String substring) {
-        int i = string.lastIndexOf(substring);
-        if (i < 0) {
-            return "";
-        }
-        return string.substring(0, i);
-    }
-
-    public static String cutToLastIndexOf(String string, char c) {
-        int i = string.lastIndexOf(c);
-        if (i < 0) {
-            return "";
-        }
-        return string.substring(0, i);
-    }
-
-    public static String cutFromLastIndexOf(String string, String substring) {
-        int i = string.lastIndexOf(substring);
-        if (i != -1) {
-            string = string.substring(i);
-        }
-        return string;
-    }
-
-    public static String cutFromLastIndexOf(String string, char c) {
-        int i = string.lastIndexOf(c);
-        if (i != -1) {
-            string = string.substring(i);
-        }
-        return string;
     }
 
 }

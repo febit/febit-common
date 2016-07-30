@@ -44,4 +44,36 @@ public class CharUtil {
     public static boolean isHexDigit(char c) {
         return (c >= '0' && c <= '9') || ((c >= 'a') && (c <= 'f')) || ((c >= 'A') && (c <= 'F'));
     }
+
+    public static int hexTodigit(char c) {
+        switch (c) {
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+                return c - '0';
+            case 'a':
+            case 'b':
+            case 'c':
+            case 'd':
+            case 'e':
+            case 'f':
+                return c - ('a' + 10);
+            case 'A':
+            case 'B':
+            case 'C':
+            case 'D':
+            case 'E':
+            case 'F':
+                return c - ('A' + 10);
+            default:
+                throw new IllegalArgumentException("must [0-9a-zA-Z]");
+        }
+    }
 }
