@@ -1,6 +1,7 @@
 // Copyright (c) 2013-present, febit.org. All Rights Reserved.
 package org.febit.util;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -81,6 +82,14 @@ public class CollectionUtil {
     @Deprecated
     public static java.util.HashSet<String> set(String... args) {
         return toSet(args);
+    }
+
+    public static Object[] toArray(List list) {
+        return list.toArray();
+    }
+
+    public static <T> T[] toArray(List<T> list, Class<T> componentType) {
+        return list.toArray((T[]) Array.newInstance(componentType, list.size()));
     }
 
     public static Object[] toArray(Object... args) {
