@@ -730,7 +730,7 @@ public class StringUtil {
         final int len = (chars.length / 2);
         final byte[] out = new byte[len];
         for (int i = 0, j = 0; i < len; i++) {
-            out[i] = (byte) (CharUtil.hexTodigit(chars[j++]) << 4 | CharUtil.hexTodigit(chars[j++]));
+            out[i] = (byte) (CharUtil.hexToDigit(chars[j++]) << 4 | CharUtil.hexToDigit(chars[j++]));
         }
         return out;
     }
@@ -830,7 +830,7 @@ public class StringUtil {
             buffer.append(c);
         }
     }
-
+    
     public static String escapeUTF8(String src) {
         return escapeUTF8(src, false);
     }

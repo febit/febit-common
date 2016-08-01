@@ -45,7 +45,7 @@ public class CharUtil {
         return (c >= '0' && c <= '9') || ((c >= 'a') && (c <= 'f')) || ((c >= 'A') && (c <= 'F'));
     }
 
-    public static int hexTodigit(char c) {
+    public static int hexToDigit(char c) {
         switch (c) {
             case '0':
             case '1':
@@ -64,14 +64,14 @@ public class CharUtil {
             case 'd':
             case 'e':
             case 'f':
-                return c - ('a' + 10);
+                return c - ('a' - 10);
             case 'A':
             case 'B':
             case 'C':
             case 'D':
             case 'E':
             case 'F':
-                return c - ('A' + 10);
+                return c - ('A' - 10);
             default:
                 throw new IllegalArgumentException("must [0-9a-zA-Z]");
         }
