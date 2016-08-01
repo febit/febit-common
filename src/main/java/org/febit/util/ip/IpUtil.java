@@ -14,7 +14,64 @@ public class IpUtil {
     protected static Pattern REGX_IP = Pattern.compile("^(\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])(\\.(\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])){3}$");
 
     public static long parseLong(final String ip) {
-        return int2long(parseInt(ip));
+        return ipv4ToLong(ip);
+    }
+
+    /**
+     * IPv4 to Long.
+     * 
+     * @param ipv4
+     * @return -lL if not a ip.
+     */
+    public static long ipv4ToLong(final String ipv4) {
+        if (ipv4 == null) {
+            return -1L;
+        }
+        final int length = ipv4.length();
+        if (length < 7 || length > 15) {
+            return -1L;
+        }
+
+        char[] chars = new char[length + 1];
+        chars[length] = '.';
+        ipv4.getChars(0, length, chars, 0);
+
+        int i = 0;
+
+        int pieceCount = 0;
+        long result = 0;
+        int piece = 0;
+        while (i <= length) {
+            char c = chars[i++];
+            switch (c) {
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                    piece = piece * 10 + c - '0';
+                    continue;
+                case '.':
+                    pieceCount++;
+                    if (pieceCount > 4) {
+                        return -1L;
+                    }
+                    if ((piece | 0xFF) != 0xFF) {
+                        return -1L;
+                    }
+                    result = (result << 8) + piece;
+                    piece = 0;
+                    continue;
+                default:
+                    return -1L;
+            }
+        }
+        return result;
     }
 
     public static boolean isIpv4(String ipv4) {
@@ -114,7 +171,7 @@ public class IpUtil {
         if (i <= 0) {
             return ip;
         }
-        return ip | ((1L << i) -1);
+        return ip | ((1L << i) - 1);
     }
 
     public static long int2long(final int i) {

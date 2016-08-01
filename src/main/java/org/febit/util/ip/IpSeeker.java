@@ -188,15 +188,14 @@ public class IpSeeker implements Iterable<IpSeeker.Location> {
     protected IpSeeker(String[] dict, int[][] segments, long[][] segmentIndexer) {
         this(null, dict, segments, segmentIndexer);
     }
-    
+
     protected IpSeeker(String[] originDict, String[] dict, int[][] segments, long[][] segmentIndexer) {
-        this.originDict = originDict!= null? originDict: dict;
+        this.originDict = originDict != null ? originDict : dict;
         this.dict = dict;
         this.segments = segments;
         this.segmentIndexers = segmentIndexer;
     }
-    
-    
+
     public String[] getDict() {
         String[] copy = new String[this.dict.length];
         System.arraycopy(this.dict, 0, copy, 0, copy.length);
@@ -239,7 +238,7 @@ public class IpSeeker implements Iterable<IpSeeker.Location> {
 
     public Location locate(long ipv4) {
         int segment = (int) ((ipv4 >>> 24) & 0xFF);
-        int little = (int) (ipv4 & 0xFFFFFF);
+        int little = (int) (ipv4 & 0x00FFFFFFL);
         return locate(segment, little);
     }
 
