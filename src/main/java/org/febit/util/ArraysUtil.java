@@ -39,6 +39,45 @@ public class ArraysUtil extends jodd.util.ArraysUtil {
         return i;
     }
 
+    /**
+     * Find which interval the number belongs to.
+     *
+     * <p>
+     * [x-1] &gt; number &lt;= [x] => x </p>
+     *
+     * @param intervals
+     * @param number
+     * @return from 0 to length
+     */
+    public static int findInterval(final int[] intervals, final int number) {
+        int start = 0;
+        int end = intervals.length - 1;
+        // <= min
+        if (number <= intervals[0]) {
+            return 0;
+        }
+        // > max
+        if (number > intervals[end]) {
+            return end + 1;
+        }
+
+        for (;;) {
+
+            int middle = (start + end) / 2;
+
+            // the last matched interval
+            if (middle == start) {
+                return end;
+            }
+
+            if (number > intervals[middle]) {
+                start = middle;
+            } else {
+                end = middle;
+            }
+        }
+    }
+
     public static long[] exportLongArray(Collection<Long> collection) {
         return exportLongArray(collection, 0L);
     }
