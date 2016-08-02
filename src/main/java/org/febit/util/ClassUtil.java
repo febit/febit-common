@@ -1,6 +1,7 @@
 // Copyright (c) 2013-present, febit.org. All Rights Reserved.
 package org.febit.util;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
@@ -15,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import jodd.io.StreamUtil;
 
 /**
  *
@@ -32,6 +34,20 @@ public class ClassUtil {
         return getDefaultClassLoader().getResourceAsStream(path.charAt(0) == '/'
                 ? path.substring(1)
                 : path);
+    }
+
+    public static String readResourceToString(String path, String encoding) {
+        InputStream input = openResourceStream(path);
+        if (input == null) {
+            return null;
+        }
+        try {
+            return new String(StreamUtil.readChars(input, encoding));
+        } catch (IOException ignore) {
+        } finally {
+            StreamUtil.close(input);
+        }
+        return null;
     }
 
     public static List<Method> getAccessableMemberMethods(Class type) {
@@ -312,7 +328,7 @@ public class ClassUtil {
     public static boolean isAbstract(Class cls) {
         return Modifier.isAbstract(cls.getModifiers());
     }
-    
+
     public static boolean isPublic(Class cls) {
         return Modifier.isPublic(cls.getModifiers());
     }
