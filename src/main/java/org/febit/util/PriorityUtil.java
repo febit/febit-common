@@ -1,6 +1,7 @@
 // Copyright (c) 2013-present, febit.org. All Rights Reserved.
 package org.febit.util;
 
+import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -63,7 +64,17 @@ public class PriorityUtil {
     }
 
     protected static int getPriority(Class<?> type) {
-        return getPriority(type.getAnnotation(Priority.class));
+        Priority priority = type.getAnnotation(Priority.class);
+        if (priority != null) {
+            return getPriority(priority);
+        }
+        for (Annotation annotation : type.getAnnotations()) {
+            priority = annotation.annotationType().getAnnotation(Priority.class);
+            if (priority != null) {
+                return getPriority(priority);
+            }
+        }
+        return PRI_NORMAL;
     }
 
     protected static int getPriority(Object bean) {
@@ -78,9 +89,58 @@ public class PriorityUtil {
 
     @Documented
     @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.TYPE})
+    @Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
     public static @interface Priority {
 
         int value() default PRI_NORMAL;
+    }
+
+    @Documented
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.TYPE})
+    @Priority(PRI_HIGHEST)
+    public static @interface Highest {
+    }
+
+    @Documented
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.TYPE})
+    @Priority(PRI_HIGHER)
+    public static @interface Higher {
+    }
+
+    @Documented
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.TYPE})
+    @Priority(PRI_HIGH)
+    public static @interface High {
+    }
+
+    @Documented
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.TYPE})
+    @Priority(PRI_NORMAL)
+    public static @interface Normal {
+    }
+
+    @Documented
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.TYPE})
+    @Priority(PRI_LOW)
+    public static @interface Low {
+    }
+
+    @Documented
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.TYPE})
+    @Priority(PRI_LOWER)
+    public static @interface Lower {
+    }
+
+    @Documented
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.TYPE})
+    @Priority(PRI_LOWEST)
+    public static @interface Lowest {
     }
 }
