@@ -40,7 +40,7 @@ public class ArraysUtil extends jodd.util.ArraysUtil {
     }
 
     /**
-     * Find which interval the number belongs to.
+     * Search which interval the number belongs to.
      *
      * <p>
      * [x-1] &gt; number &lt;= [x] => x </p>
@@ -49,7 +49,7 @@ public class ArraysUtil extends jodd.util.ArraysUtil {
      * @param number
      * @return from 0 to length
      */
-    public static int findInterval(final int[] intervals, final int number) {
+    public static int searchInterval(final int[] intervals, final int number) {
         int start = 0;
         int end = intervals.length - 1;
         // <= min
