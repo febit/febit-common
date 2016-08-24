@@ -13,6 +13,23 @@ import org.testng.annotations.*;
 public class IntsTest {
 
     @Test
+    public void mergeSortDistinctTest() {
+
+        assertEquals(new int[]{1, 2}, Ints.mergeSortDistinct(
+                new int[]{2, 1},
+                new int[]{1, 2}
+        ));
+        assertEquals(new int[]{1, 2, 3, 4, 5}, Ints.mergeSortDistinct(
+                new int[]{3, 5, 4},
+                new int[]{1, 2}
+        ));
+        assertEquals(new int[]{1, 2, 3, 4, 5}, Ints.mergeSortDistinct(
+                new int[]{1, 2, 2, 5, 4},
+                new int[]{2, 3, 4}
+        ));
+    }
+
+    @Test
     public void compressTest() {
         assertEquals("1", Ints.compress(new int[]{1}));
         assertEquals("1,2", Ints.compress(new int[]{1, 2}));
@@ -30,12 +47,12 @@ public class IntsTest {
         int[] parsedResult = Ints.uncompress(compressed);
         Arrays.sort(parsedResult);
         assertEquals(array, parsedResult);
-        
-        assertEquals(new int[]{1,2,3,4}, Ints.uncompress("1,2,3,4"));
-        assertEquals(new int[]{1,2,3,4}, Ints.uncompress("1-4"));
-        
+
+        assertEquals(new int[]{1, 2, 3, 4}, Ints.uncompress("1,2,3,4"));
+        assertEquals(new int[]{1, 2, 3, 4}, Ints.uncompress("1-4"));
+
         Atom atom = Ints.parseAtom("1-3, 5, 8, 20-100");
-        
+
         assertTrue(atom.contains(1));
         assertTrue(atom.contains(2));
         assertTrue(atom.contains(3));
@@ -50,6 +67,6 @@ public class IntsTest {
         assertFalse(atom.contains(9));
         assertFalse(atom.contains(19));
         assertFalse(atom.contains(101));
-        
+
     }
 }

@@ -56,6 +56,51 @@ public class Ints {
         return mark;
     }
 
+    /**
+     * Merge & Sort & Distinct.
+     *
+     * @param src1
+     * @param src2
+     * @return
+     */
+    public static int[] mergeSortDistinct(int[] src1, int[] src2) {
+
+        int[] marged = new int[src1.length + src2.length];
+
+        System.arraycopy(src1, 0, marged, 0, src1.length);
+        System.arraycopy(src2, 0, marged, src1.length, src2.length);
+
+        return sortDistinct(marged);
+    }
+
+    /**
+     * Sort & Distinct.
+     *
+     * @param src
+     * @return
+     */
+    public static int[] sortDistinct(int[] src) {
+        if (src == null || src.length == 0) {
+            return Defaults.EMPTY_INTS;
+        }
+        Arrays.sort(src);
+
+        //distinct
+        int pos = 0;
+        for (int i = 1; i < src.length; i++) {
+            if (src[pos] == src[i]) {
+                continue;
+            }
+            src[++pos] = src[i];
+        }
+
+        pos++;
+        if (pos == src.length) {
+            return src;
+        }
+        return ArraysUtil.subarray(src, 0, pos);
+    }
+
     public static String compress(int[] array) {
         if (array == null) {
             return "";
