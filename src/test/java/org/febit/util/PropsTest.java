@@ -27,6 +27,10 @@ public class PropsTest {
             + "copyright = copyright ${YEAR} ${PRODUCT} (${CODE_${PRODUCT}})\n"
             + "copyright2 = ${COPY_RIGHT}\n"
             + "code = ${CODE_${PRODUCT}}\n"
+            + "copyrightOfChapter1 = ${chapter1.copyright}\n"
+            + "[book2.chapter1]\n"
+            + "YEAR=1999-01\n"
+            + "copyright = copyright ${YEAR} ${PRODUCT} (${CODE_${PRODUCT}})\n"
             + "";
 
     @Test
@@ -40,9 +44,9 @@ public class PropsTest {
         assertEquals(props.get("PRODUCT"), "febit.org");
         assertEquals(props.get("CODE_febit.org"), "110001");
         assertEquals(props.get("COPY_RIGHT"), "copyright 2016 febit.org (110001)");
-        
+
         assertEquals(props.get("book.copyright"), "copyright 2016 febit.org (110001)");
-        
+
         assertEquals(props.get("book2.code"), "110002");
         assertEquals(props.get("book2.YEAR"), "1999");
         assertEquals(props.get("book2.copyright"), "copyright 1999 febit.org (110002)");
@@ -52,6 +56,9 @@ public class PropsTest {
         assertEquals(props.get("book.copyright"), props.get("COPY_RIGHT"));
         assertEquals(props.get("book2.copyright2"), props.get("COPY_RIGHT"));
         assertEquals(props.get("book2.book1_copyright"), props.get("COPY_RIGHT"));
+
+        assertEquals(props.get("book2.chapter1.copyright"), "copyright 1999-01 febit.org (110002)");
+        assertEquals(props.get("book2.chapter1.copyright"), props.get("book2.copyrightOfChapter1"));
     }
 
 }

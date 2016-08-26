@@ -212,6 +212,18 @@ public final class Props {
         put(key, value, append);
     }
 
+    protected Entry resolveEntry(String space, String key) {
+        Entry entry;
+        while (StringUtil.isNotEmpty(space)) {
+            entry = data.get(space + '.' + key);
+            if (entry != null) {
+                return entry;
+            }
+            space = StringUtil.cutToLastIndexOf(space, '.');
+        }
+        return data.get(key);
+    }
+
     private String resolveValue(Entry entry) {
         if (entry == null) {
             return null;
@@ -262,13 +274,7 @@ public final class Props {
         final String partEnd = resolvedEnding.substring(end + 1);
         // find value and append
         String key = resolvedEnding.substring(0, end);
-        Entry entry = null;
-        if (StringUtil.isNotEmpty(space)) {
-            entry = data.get(space + '.' + key);
-        }
-        if (entry == null) {
-            entry = data.get(key);
-        }
+        Entry entry = resolveEntry(space, key);
         if (entry != null && entry.value != null) {
             return StringUtil.concat(partStart, resolveValue(entry.space(), entry.value, ++macrosTimes), partEnd);
         } else {
@@ -510,8 +516,8 @@ public final class Props {
             this.value = value;
             this.append = append;
         }
-        
-        String space(){
+
+        String space() {
             return StringUtil.cutToLastIndexOf(key, '.');
         }
     }
