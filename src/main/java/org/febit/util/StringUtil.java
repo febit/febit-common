@@ -220,7 +220,39 @@ public class StringUtil {
         return jodd.util.StringUtil.cutBetween(src, left, right);
     }
 
-    public static String cutToLastIndexOf(String string, String substring) {
+    public static String cutTo(String src, String substring) {
+        int i = src.indexOf(substring);
+        if (i < 0) {
+            return src;
+        }
+        return src.substring(0, i);
+    }
+
+    public static String cutTo(String src, char c) {
+        int i = src.indexOf(c);
+        if (i < 0) {
+            return src;
+        }
+        return src.substring(0, i);
+    }
+
+    public static String cutFrom(String src, String substring) {
+        int i = src.indexOf(substring);
+        if (i < 0) {
+            return "";
+        }
+        return src.substring(i);
+    }
+
+    public static String cutFrom(String src, char c) {
+        int i = src.indexOf(c);
+        if (i < 0) {
+            return "";
+        }
+        return src.substring(i);
+    }
+
+    public static String cutToLast(String string, String substring) {
         int i = string.lastIndexOf(substring);
         if (i < 0) {
             return "";
@@ -228,7 +260,7 @@ public class StringUtil {
         return string.substring(0, i);
     }
 
-    public static String cutToLastIndexOf(String string, char c) {
+    public static String cutToLast(String string, char c) {
         int i = string.lastIndexOf(c);
         if (i < 0) {
             return "";
@@ -236,7 +268,7 @@ public class StringUtil {
         return string.substring(0, i);
     }
 
-    public static String cutFromLastIndexOf(String string, String substring) {
+    public static String cutFromLast(String string, String substring) {
         int i = string.lastIndexOf(substring);
         if (i != -1) {
             string = string.substring(i);
@@ -244,7 +276,7 @@ public class StringUtil {
         return string;
     }
 
-    public static String cutFromLastIndexOf(String string, char c) {
+    public static String cutFromLast(String string, char c) {
         int i = string.lastIndexOf(c);
         if (i != -1) {
             string = string.substring(i);
@@ -830,7 +862,7 @@ public class StringUtil {
             buffer.append(c);
         }
     }
-    
+
     public static String escapeUTF8(String src) {
         return escapeUTF8(src, false);
     }
