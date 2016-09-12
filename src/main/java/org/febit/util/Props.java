@@ -219,7 +219,7 @@ public final class Props {
             if (entry != null) {
                 return entry;
             }
-            space = StringUtil.cutToLastIndexOf(space, '.');
+            space = StringUtil.cutToLast(space, '.');
         }
         return data.get(key);
     }
@@ -518,7 +518,7 @@ public final class Props {
         }
 
         String space() {
-            return StringUtil.cutToLastIndexOf(key, '.');
+            return StringUtil.cutToLast(key, '.');
         }
     }
 
