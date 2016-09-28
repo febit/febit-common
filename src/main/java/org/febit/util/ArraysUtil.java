@@ -39,6 +39,11 @@ public class ArraysUtil extends jodd.util.ArraysUtil {
         return i;
     }
 
+    @Deprecated
+    public static int searchInterval(final int[] intervals, final int number) {
+        return findInterval(intervals, number);
+    }
+
     /**
      * Search which interval the number belongs to.
      *
@@ -49,7 +54,7 @@ public class ArraysUtil extends jodd.util.ArraysUtil {
      * @param number
      * @return from 0 to length
      */
-    public static int searchInterval(final int[] intervals, final int number) {
+    public static int findInterval(final int[] intervals, final int number) {
         int start = 0;
         int end = intervals.length - 1;
         // <= min
