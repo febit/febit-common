@@ -40,6 +40,22 @@ public class StringWalker {
         return pos;
     }
 
+    public char charAt(int index) {
+        return this.chars[index];
+    }
+
+    public char peek(int offset) {
+        return charAt(this.pos + offset);
+    }
+
+    public char peek() {
+        return this.chars[this.pos];
+    }
+
+    public void jump(int step) {
+        this.pos += step;
+    }
+
     public boolean isEnd() {
         return pos >= end;
     }
@@ -75,7 +91,7 @@ public class StringWalker {
     public int skipBlanks() {
         return skipFlag(BLANKS);
     }
-    
+
     public String readToEnd() {
         if (pos >= end) {
             return "";
@@ -122,11 +138,11 @@ public class StringWalker {
     public String readUntil(final Checker checker) {
         return readToFlag(checker, true);
     }
-    
+
     public String readUntil(char flag) {
         return readTo(flag, true);
     }
-    
+
     public String readUntilSpace() {
         return readTo(' ', true);
     }
@@ -136,11 +152,14 @@ public class StringWalker {
     }
 
     protected StringBuilder buf() {
-        if (_buf == null) {
-            _buf = new StringBuilder();
+        StringBuilder buf = this._buf;
+        if (buf == null) {
+            buf = new StringBuilder();
+            this._buf = buf;
+        } else {
+            buf.setLength(0);
         }
-        _buf.setLength(0);
-        return _buf;
+        return buf;
     }
 
     public static interface Checker {
