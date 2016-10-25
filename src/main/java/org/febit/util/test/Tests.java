@@ -16,9 +16,7 @@ public class Tests {
 
     static {
         Props props = PropsUtil.loadFromClasspath(new Props(), "tests.props", "tests.props.local");
-        PETITE = new Petite();
-        PETITE.setProps(props, null);
-        PETITE.init();
+        PETITE = Petite.builder().addProps(props).build();
     }
 
     public static <T> T get(final Class<T> type) {

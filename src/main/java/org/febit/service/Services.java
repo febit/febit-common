@@ -12,12 +12,11 @@ public class Services {
     private static Petite _PETITE;
 
     static {
-        _PETITE = new Petite();
-        _PETITE.init();
+        _PETITE = Petite.builder().build();
     }
 
     /**
-     * 
+     *
      * @param <T>
      * @param type
      * @return

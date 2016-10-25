@@ -57,6 +57,7 @@ public class Petite {
 
     protected boolean inited = false;
 
+    @Deprecated
     public Petite() {
         this.defaultConverter = new BeanTypeConverter();
         this.propsMgr = new PropsManager();
@@ -75,6 +76,7 @@ public class Petite {
         initGlobals();
     }
 
+    @Deprecated
     public void init() {
         if (inited) {
             return;
@@ -284,14 +286,20 @@ public class Petite {
         return Convert.convert(string, cls, defaultConverter);
     }
 
+    @Deprecated
     public void setProps(Props props, Map<String, Object> parameters) {
-        this.propsMgr.setProps(props, parameters);
+        addProps(props, parameters);
+    }
+
+    protected void addProps(Props props, Map<String, Object> parameters) {
+        this.propsMgr.addProps(props, parameters);
     }
 
     public Object getProps(String name) {
         return this.propsMgr.get(name);
     }
 
+    @Deprecated
     public void addGlobalBean(Object bean) {
         this.globalBeanMgr.add(bean);
     }
@@ -309,6 +317,44 @@ public class Petite {
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.METHOD})
     public static @interface Init {
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+
+        protected final Petite petite;
+
+        protected Builder() {
+            petite = new Petite();
+        }
+
+        public Builder addProps(Props props) {
+            this.petite.addProps(props, null);
+            return this;
+        }
+
+        public Builder addProps(Props props, Map<String, Object> parameters) {
+            this.petite.addProps(props, parameters);
+            return this;
+        }
+
+        public Builder addProps(Map<String, Object> parameters) {
+            this.petite.addProps(null, parameters);
+            return this;
+        }
+
+        public Builder addGlobalBean(Object bean) {
+            this.petite.addGlobalBean(bean);
+            return this;
+        }
+
+        public Petite build() {
+            petite._init();
+            return petite;
+        }
     }
 
     protected class GlobalBeanManager {
@@ -426,7 +472,7 @@ public class Petite {
             }
         }
 
-        public void setProps(Props props, Map<String, Object> parameters) {
+        public void addProps(Props props, Map<String, Object> parameters) {
             if (props == null) {
                 props = new Props();
             }
@@ -457,14 +503,14 @@ public class Petite {
                 extras = null;
             }
 
-            setProps(props);
+            addProps(props);
 
             if (extras != null) {
-                setProps(extras);
+                addProps(extras);
             }
         }
 
-        public void setProps(Props props) {
+        public void addProps(Props props) {
             if (props == null) {
                 return;
             }
@@ -473,7 +519,7 @@ public class Petite {
             }
         }
 
-        public void setProps(Map<String, Object> map) {
+        public void addProps(Map<String, Object> map) {
             if (map == null) {
                 return;
             }

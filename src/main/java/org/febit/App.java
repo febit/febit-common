@@ -60,11 +60,11 @@ public class App implements Singleton {
 
     protected void initPetite() {
         LOG.info("Loaded props: {}", _props.getModulesString());
-        this._petite = new Petite();
+        this._petite = Petite.builder()
+                .addProps(_props)
+                .addGlobalBean(this)
+                .build();
         Services.setPetite(_petite);
-        this._petite.setProps(_props, null);
-        this._petite.addGlobalBean(this);
-        this._petite.init();
         this._petite.regist("app", this);
     }
 
