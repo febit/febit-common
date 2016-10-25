@@ -30,6 +30,22 @@ public class TimeUtil {
         31 // 12
     };
 
+    private final static int[] DAYS_OF_YEAR_PER_MONTH = new int[]{
+        0,
+        31, // 1
+        59, // 2
+        90, // 3
+        120, // 4
+        151, // 5
+        181, // 6
+        212, // 7
+        243, // 8
+        273, // 9
+        304, // 10
+        334, // 11
+        365, // 12
+    };
+
     private static final int[] CONSTELLATION_DATES = new int[]{20, 19, 21, 20, 21, 22, 23, 23, 23, 24, 23, 22};
     private static final String[] CONSTELLATIONS = new String[]{"摩羯座", "水瓶座", "双鱼座", "白羊座", "金牛座", "双子座", "巨蟹座", "狮子座", "处女座", "天秤座", "天蝎座", "射手座", "摩羯座"};
 
@@ -65,6 +81,20 @@ public class TimeUtil {
             year--;
         }
         return (day + 2 * month + 3 * (month + 1) / 5 + year + year / 4 - year / 100 + year / 400) % 7 + 1;
+    }
+
+    /**
+     * Day of year.
+     *
+     * @param year
+     * @param month
+     * @param day
+     * @return
+     */
+    public static int dayOfYear(int year, int month, int day) {
+        return DAYS_OF_YEAR_PER_MONTH[month - 1]
+                + day
+                + (month >= 3 && isLeapYear(year) ? 1 : 0);
     }
 
     private static long toDay(long millis) {
