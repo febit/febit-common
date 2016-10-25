@@ -1,6 +1,7 @@
 // Copyright (c) 2013-present, febit.org. All Rights Reserved.
 package org.febit.util;
 
+import java.util.Calendar;
 import java.util.TimeZone;
 import org.febit.lang.Time;
 
@@ -83,6 +84,10 @@ public class TimeUtil {
         return (day + 2 * month + 3 * (month + 1) / 5 + year + year / 4 - year / 100 + year / 400) % 7 + 1;
     }
 
+    public static int dayOfWeek(int dayMark) {
+        return dayOfWeek(getYearOfDayMark(dayMark), getMonthOfDayMark(dayMark), getDayOfDayMark(dayMark));
+    }
+
     /**
      * Day of year.
      *
@@ -95,6 +100,10 @@ public class TimeUtil {
         return DAYS_OF_YEAR_PER_MONTH[month - 1]
                 + day
                 + (month >= 3 && isLeapYear(year) ? 1 : 0);
+    }
+
+    public static int dayOfYear(int dayMark) {
+        return dayOfYear(getYearOfDayMark(dayMark), getMonthOfDayMark(dayMark), getDayOfDayMark(dayMark));
     }
 
     private static long toDay(long millis) {
@@ -144,18 +153,62 @@ public class TimeUtil {
         return getConstellation(getConstellationIndex(month, day));
     }
 
-    static MonthEntry monthEntry;
-    static MonthMillisEntry monthMillisEntry;
+    private static MonthMarkEntry monthEntry;
+    private static MonthMillisEntry monthMillisEntry;
 
     public static long getMonthMillis() {
         return getMonthMillis(System.currentTimeMillis());
     }
 
-    public static int getMonth() {
-        return getMonth(System.currentTimeMillis());
+    public static int getDayMark() {
+        return getDayMark(System.currentTimeMillis());
     }
 
-    public static int addMonth(int month, int add) {
+    public static int getDayMark(final long ms) {
+        Time time = new Time(ms);
+        return time.year * 10000
+                + time.month * 100
+                + time.day;
+    }
+
+    public static long dayMarkToMillis(int day) {
+        return dayMarkToCalendar(day).getTimeInMillis();
+    }
+
+    public static int getYearOfDayMark(int day) {
+        return day / 10000;
+    }
+
+    public static int getMonthOfDayMark(int day) {
+        return (day % 10000) / 100;
+    }
+
+    public static int getDayOfDayMark(int day) {
+        return day % 100;
+    }
+
+    public static int getDayMark(Calendar calendar) {
+        return calendar.get(Calendar.YEAR) * 10000
+                + (calendar.get(Calendar.MONTH) + 1) * 100
+                + calendar.get(Calendar.DAY_OF_MONTH);
+    }
+
+    public static Calendar dayMarkToCalendar(int day) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(getYearOfDayMark(day), getMonthOfDayMark(day) - 1, getDayOfDayMark(day), 0, 0, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar;
+    }
+
+    public static int addDayMark(int day, int offset) {
+        return getDayMark(dayMarkToMillis(day) + offset * MILLIS_IN_DAY);
+    }
+
+    public static int getMonthMark() {
+        return getMonthMark(System.currentTimeMillis());
+    }
+
+    public static int addMonthMark(int month, int add) {
         int m = month % 100 + add;
         if (m > 0 && m <= 12) {
             return month + add;
@@ -167,8 +220,8 @@ public class TimeUtil {
         return y * 100 + m;
     }
 
-    public static int getMonth(final long ms) {
-        MonthEntry cached = monthEntry;
+    public static int getMonthMark(final long ms) {
+        MonthMarkEntry cached = monthEntry;
         if (cached != null) {
             long interval = ms - cached.time;
             if (interval >= 0 && interval < MILLIS_IN_DAY) {
@@ -177,7 +230,7 @@ public class TimeUtil {
         }
         Time time = new Time(ms);
         int month = time.year * 100 + time.month;
-        monthEntry = new MonthEntry(ms, month);
+        monthEntry = new MonthMarkEntry(ms, month);
         return month;
     }
 
@@ -194,18 +247,18 @@ public class TimeUtil {
         return month;
     }
 
-    static class MonthEntry {
+    private static class MonthMarkEntry {
 
         protected final long time;
         protected final int month;
 
-        protected MonthEntry(long time, int month) {
+        protected MonthMarkEntry(long time, int month) {
             this.time = toDayMillis(time);
             this.month = month;
         }
     }
 
-    static class MonthMillisEntry {
+    private static class MonthMillisEntry {
 
         protected final long time;
         protected final long month;

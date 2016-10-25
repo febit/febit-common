@@ -34,6 +34,47 @@ public class TimeUtilTest {
         assertEquals(TimeUtil.dayOfWeek(2016, 8, 8), dayOfWeek(2016, 8, 8));
     }
 
+    @Test
+    public void dayMarkToCalendarTest() {
+        assertEquals(TimeUtil.dayMarkToCalendar(19970202), getCalendar(1997, 2, 2));
+        assertEquals(TimeUtil.dayMarkToCalendar(19970701), getCalendar(1997, 7, 1));
+        assertEquals(TimeUtil.dayMarkToCalendar(20000101), getCalendar(2000, 1, 1));
+        assertEquals(TimeUtil.dayMarkToCalendar(20000303), getCalendar(2000, 3, 3));
+        assertEquals(TimeUtil.dayMarkToCalendar(20000808), getCalendar(2000, 8, 8));
+        assertEquals(TimeUtil.dayMarkToCalendar(20080808), getCalendar(2008, 8, 8));
+        assertEquals(TimeUtil.dayMarkToCalendar(20160202), getCalendar(2016, 2, 2));
+        assertEquals(TimeUtil.dayMarkToCalendar(20160808), getCalendar(2016, 8, 8));
+    }
+
+    @Test
+    public void dayMarkTest() {
+        assertEquals(TimeUtil.getDayMark(TimeUtil.dayMarkToMillis(19970202)), 19970202);
+        assertEquals(TimeUtil.getDayMark(TimeUtil.dayMarkToMillis(19970701)), 19970701);
+        assertEquals(TimeUtil.getDayMark(TimeUtil.dayMarkToMillis(20000303)), 20000303);
+        assertEquals(TimeUtil.getDayMark(TimeUtil.dayMarkToMillis(20000101)), 20000101);
+        assertEquals(TimeUtil.getDayMark(TimeUtil.dayMarkToMillis(20000808)), 20000808);
+        assertEquals(TimeUtil.getDayMark(TimeUtil.dayMarkToMillis(20080808)), 20080808);
+        assertEquals(TimeUtil.getDayMark(TimeUtil.dayMarkToMillis(20160202)), 20160202);
+        assertEquals(TimeUtil.getDayMark(TimeUtil.dayMarkToMillis(20160808)), 20160808);
+    }
+
+    @Test
+    public void addDayMarkTest() {
+        assertEquals(TimeUtil.addDayMark(20000808, -1), addDayMark(20000808, -1));
+        assertEquals(TimeUtil.addDayMark(20000808, -10), addDayMark(20000808, -10));
+        assertEquals(TimeUtil.addDayMark(20000808, -30), addDayMark(20000808, -30));
+        assertEquals(TimeUtil.addDayMark(20000808, -100), addDayMark(20000808, -100));
+        assertEquals(TimeUtil.addDayMark(20000808, -1000), addDayMark(20000808, -1000));
+
+        assertEquals(TimeUtil.addDayMark(20000808, 0), 20000808);
+
+        assertEquals(TimeUtil.addDayMark(20000808, 1), addDayMark(20000808, 1));
+        assertEquals(TimeUtil.addDayMark(20000808, 10), addDayMark(20000808, 10));
+        assertEquals(TimeUtil.addDayMark(20000808, 30), addDayMark(20000808, 30));
+        assertEquals(TimeUtil.addDayMark(20000808, 100), addDayMark(20000808, 100));
+        assertEquals(TimeUtil.addDayMark(20000808, 1000), addDayMark(20000808, 1000));
+    }
+
     protected static int dayOfYear(int year, int month, int day) {
         return getCalendar(year, month, day).get(Calendar.DAY_OF_YEAR);
     }
@@ -44,9 +85,16 @@ public class TimeUtilTest {
         return dayOfWeek > 0 ? dayOfWeek : 7;
     }
 
+    protected static int addDayMark(int day, int offset) {
+        Calendar calendar = TimeUtil.dayMarkToCalendar(day);
+        calendar.add(Calendar.DAY_OF_MONTH, offset);
+        return TimeUtil.getDayMark(calendar.getTimeInMillis());
+    }
+
     protected static Calendar getCalendar(int year, int month, int day) {
         Calendar calendar = Calendar.getInstance();
-        calendar.set(year, month - 1, day);
+        calendar.set(year, month - 1, day, 0, 0, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
         return calendar;
     }
 }
