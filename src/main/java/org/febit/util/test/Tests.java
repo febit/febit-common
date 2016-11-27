@@ -12,10 +12,21 @@ import org.febit.util.PropsUtil;
  */
 public class Tests {
 
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(Tests.class);
     private static final Petite PETITE;
 
     static {
-        Props props = PropsUtil.loadFromClasspath(new Props(), "tests.props", "tests.props.local");
+        Props props = new Props();
+        try {
+            PropsUtil.loadFromClasspath(props, "tests.props");
+        } catch (Exception e) {
+            LOG.warn(e.getLocalizedMessage());
+        }
+        try {
+            PropsUtil.loadFromClasspath(props, "tests.props.local");
+        } catch (Exception e) {
+            LOG.warn(e.getLocalizedMessage());
+        }
         PETITE = Petite.builder().addProps(props).build();
     }
 
