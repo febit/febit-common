@@ -56,9 +56,8 @@ public class Petite {
     };
 
     protected boolean inited = false;
-
-    @Deprecated
-    public Petite() {
+ 
+    protected Petite() {
         this.defaultConverter = new BeanTypeConverter();
         this.propsMgr = new PropsManager();
         this.globalBeanMgr = new GlobalBeanManager();
@@ -74,14 +73,6 @@ public class Petite {
         inited = true;
         addGlobalBean(this);
         initGlobals();
-    }
-
-    @Deprecated
-    public void init() {
-        if (inited) {
-            return;
-        }
-        _init();
     }
 
     protected void initGlobals() {
@@ -158,7 +149,6 @@ public class Petite {
         if (bean != null) {
             return bean;
         }
-        init();
         Class type = resolveType(name);
         bean = newInstance(type);
         inject(name, bean);
@@ -203,8 +193,6 @@ public class Petite {
     }
 
     public void inject(final String name, final Object bean) {
-        //ensure inited
-        init();
         doInject(name, bean);
     }
 
@@ -286,11 +274,6 @@ public class Petite {
         return Convert.convert(string, cls, defaultConverter);
     }
 
-    @Deprecated
-    public void setProps(Props props, Map<String, Object> parameters) {
-        addProps(props, parameters);
-    }
-
     protected void addProps(Props props, Map<String, Object> parameters) {
         this.propsMgr.addProps(props, parameters);
     }
@@ -299,8 +282,7 @@ public class Petite {
         return this.propsMgr.get(name);
     }
 
-    @Deprecated
-    public void addGlobalBean(Object bean) {
+    protected void addGlobalBean(Object bean) {
         this.globalBeanMgr.add(bean);
     }
 
