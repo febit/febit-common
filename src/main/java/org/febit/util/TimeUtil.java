@@ -106,6 +106,21 @@ public class TimeUtil {
         return dayOfYear(getYearOfDayMark(dayMark), getMonthOfDayMark(dayMark), getDayOfDayMark(dayMark));
     }
 
+    public static int offsetOfDayMarks(int daymark, int daymark2) {
+        int offset = daymark - daymark2;
+        if (offset >= -30 && offset <= 30) {
+            //same month
+            return offset;
+        }
+        if (getYearOfDayMark(daymark) == getYearOfDayMark(daymark2)) {
+            //same year
+            return dayOfYear(daymark) - dayOfYear(daymark2);
+        }
+        return (int) ((dayMarkToMillis(daymark)
+                - dayMarkToMillis(daymark2))
+                / MILLIS_IN_DAY);
+    }
+
     private static long toDay(long millis) {
         return (millis + TimeZone.getDefault().getRawOffset()) / MILLIS_IN_DAY;
     }
