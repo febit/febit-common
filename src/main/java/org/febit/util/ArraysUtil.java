@@ -87,7 +87,11 @@ public class ArraysUtil extends jodd.util.ArraysUtil {
      * Find which interval the number belongs to.
      *
      * <p>
-     * [x-1] &gt; number &lt;= [x] => x </p>
+     * number &lt;= [0] returns 0 </p>
+     * <p>
+     * [x-1] &lt; number &lt;= [x] returns x </p>
+     * <p>
+     * [length-1] &lt; number returns length </p>
      *
      * @param intervals
      * @param number
