@@ -274,7 +274,7 @@ public class Petite {
         return Convert.convert(string, cls, defaultConverter);
     }
 
-    protected void addProps(Props props, Map<String, Object> parameters) {
+    protected void addProps(Props props, Map<String, ?> parameters) {
         this.propsMgr.addProps(props, parameters);
     }
 
@@ -318,12 +318,12 @@ public class Petite {
             return this;
         }
 
-        public Builder addProps(Props props, Map<String, Object> parameters) {
+        public Builder addProps(Props props, Map<String, ?> parameters) {
             this.petite.addProps(props, parameters);
             return this;
         }
 
-        public Builder addProps(Map<String, Object> parameters) {
+        public Builder addProps(Map<String, ?> parameters) {
             this.petite.addProps(null, parameters);
             return this;
         }
@@ -454,14 +454,14 @@ public class Petite {
             }
         }
 
-        public void addProps(Props props, Map<String, Object> parameters) {
+        public void addProps(Props props, Map<String, ?> parameters) {
             if (props == null) {
                 props = new Props();
             }
             final Map<String, Object> extras;
             if (parameters != null) {
                 extras = new HashMap<>();
-                for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+                for (Map.Entry<String, ?> entry : parameters.entrySet()) {
                     String key = entry.getKey();
                     if (key == null) {
                         continue;
