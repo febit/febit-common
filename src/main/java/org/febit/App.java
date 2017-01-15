@@ -54,7 +54,7 @@ public class App implements Singleton {
         if (propsFiles.indexOf('*') >= 0) {
             PropsUtil.scanClasspath(_props, propsFiles);
         } else {
-            PropsUtil.loadFromClasspath(_props, propsFiles);
+            PropsUtil.load(_props, propsFiles);
         }
     }
 

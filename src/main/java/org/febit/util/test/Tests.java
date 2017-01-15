@@ -18,12 +18,12 @@ public class Tests {
     static {
         Props props = new Props();
         try {
-            PropsUtil.loadFromClasspath(props, "tests.props");
+            PropsUtil.load(props, "tests.props");
         } catch (Exception e) {
             LOG.warn(e.getLocalizedMessage());
         }
         try {
-            PropsUtil.loadFromClasspath(props, "tests.props.local");
+            PropsUtil.load(props, "tests.props.local");
         } catch (Exception e) {
             LOG.warn(e.getLocalizedMessage());
         }

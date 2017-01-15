@@ -27,6 +27,14 @@ public final class Props {
     private static final int STATE_COMMENT = 4;
     private static final int STATE_VALUE = 5;
 
+    public static Loader loader() {
+        return new Loader(new Props());
+    }
+
+    public static Loader loader(Props props) {
+        return new Loader(props != null ? props : new Props());
+    }
+
     private final Map<String, Entry> data;
     private List<String> modules;
 
@@ -57,14 +65,6 @@ public final class Props {
             parse(chars);
         }
         return this;
-    }
-
-    public Props load(Reader reader) throws IOException {
-        return load(StreamUtil.readChars(reader));
-    }
-
-    public Props load(InputStream input, String encoding) throws IOException {
-        return load(StreamUtil.readChars(input, encoding));
     }
 
     public void addModule(String module) {
@@ -108,6 +108,14 @@ public final class Props {
         }
         initModules();
         this.modules.addAll(module);
+    }
+
+    public void mergeModuleIfAbsent(String name, Props props) {
+        if (containsModule(name)) {
+            return;
+        }
+        merge(props);
+        addModule(name);
     }
 
     public void merge(final Props props) {
@@ -522,4 +530,94 @@ public final class Props {
         }
     }
 
+    public static class Loader {
+
+        protected final Props props;
+        protected Map<String, Props> modulePropsCache;
+
+        protected Loader(Props props) {
+            this.props = new Props();
+        }
+
+        public Props get() {
+            return props;
+        }
+
+        public Loader load(String path) throws IOException {
+            resolveModules(path);
+            return this;
+        }
+
+        public Loader load(Reader reader) throws IOException {
+            if (reader == null) {
+                return this;
+            }
+            return loadChars(StreamUtil.readChars(reader));
+        }
+
+        public Loader load(InputStream input) throws IOException {
+            return load(input, Resources.DEFAULT_ENCODING);
+        }
+
+        public Loader load(InputStream input, String encoding) throws IOException {
+            if (input == null) {
+                return this;
+            }
+            return loadChars(StreamUtil.readChars(input, encoding));
+        }
+
+        public Loader loadString(String source) {
+            if (source == null) {
+                return this;
+            }
+            return loadChars(source.toCharArray());
+        }
+
+        public Loader loadChars(char[] chars) {
+            if (chars == null) {
+                return this;
+            }
+            Props mod = createProps(chars);
+            resolveModules(mod);
+            this.props.merge(mod);
+            return this;
+        }
+
+        protected void resolveModules(Props src) {
+            resolveModules(src.remove("@import"));
+        }
+
+        protected void resolveModules(String modules) {
+            if (modules == null) {
+                return;
+            }
+            if (this.modulePropsCache == null) {
+                this.modulePropsCache = new HashMap<>();
+            }
+            for (String module : StringUtil.toArrayExcludeCommit(modules)) {
+                if (this.props.containsModule(module)) {
+                    continue;
+                }
+                Props moduleProps = modulePropsCache.get(module);
+                if (moduleProps == null) {
+                    moduleProps = loadProps(module);
+                    modulePropsCache.put(module, moduleProps);
+                    resolveModules(moduleProps);
+                }
+                this.props.mergeModuleIfAbsent(module, moduleProps);
+            }
+        }
+
+        protected static Props loadProps(final String path) {
+            try {
+                return createProps(Resources.readChars(path));
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+
+        protected static Props createProps(final char[] chars) {
+            return new Props().load(chars);
+        }
+    }
 }

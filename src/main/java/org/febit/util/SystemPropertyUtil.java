@@ -29,16 +29,16 @@ public class SystemPropertyUtil {
         return StringUtil.isNotEmpty(value) ? value : defaultValue;
     }
 
-    public static void importFromProps(String propsFiles) {
-        if (propsFiles == null) {
+    public static void importFromProps(String propsPath) {
+        if (propsPath == null) {
             return;
         }
 
         Props props = new Props();
-        if (propsFiles.indexOf('*') >= 0) {
-            PropsUtil.scanClasspath(props, propsFiles);
+        if (propsPath.indexOf('*') >= 0) {
+            PropsUtil.scanClasspath(props, propsPath);
         } else {
-            PropsUtil.loadFromClasspath(props, propsFiles);
+            PropsUtil.load(props, propsPath);
         }
 
         for (String key : props.keySet()) {
