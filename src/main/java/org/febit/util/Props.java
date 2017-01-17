@@ -35,6 +35,25 @@ public final class Props {
         return new Loader(props != null ? props : new Props());
     }
 
+    /**
+     * Shadow IOException by RuntimeException.
+     *
+     * @return
+     */
+    public static ShadowLoader shadowLoader() {
+        return new ShadowLoader(new Props());
+    }
+
+    /**
+     * Shadow IOException by RuntimeException.
+     *
+     * @param props
+     * @return
+     */
+    public static ShadowLoader shadowLoader(Props props) {
+        return new ShadowLoader(props != null ? props : new Props());
+    }
+
     private final Map<String, Entry> data;
     private List<String> modules;
 
@@ -530,7 +549,7 @@ public final class Props {
         }
     }
 
-    public static class Loader {
+    public static class Loader<T extends Loader> {
 
         protected final Props props;
         protected Map<String, Props> modulePropsCache;
@@ -543,51 +562,51 @@ public final class Props {
             return props;
         }
 
-        public Loader load(String path) throws IOException {
+        public T load(String path) throws IOException {
             resolveModules(path);
-            return this;
+            return (T) this;
         }
 
-        public Loader load(Reader reader) throws IOException {
+        public T load(Reader reader) throws IOException {
             if (reader == null) {
-                return this;
+                return (T) this;
             }
             return loadChars(StreamUtil.readChars(reader));
         }
 
-        public Loader load(InputStream input) throws IOException {
+        public T load(InputStream input) throws IOException {
             return load(input, Resources.DEFAULT_ENCODING);
         }
 
-        public Loader load(InputStream input, String encoding) throws IOException {
+        public T load(InputStream input, String encoding) throws IOException {
             if (input == null) {
-                return this;
+                return (T) this;
             }
             return loadChars(StreamUtil.readChars(input, encoding));
         }
 
-        public Loader loadString(String source) {
+        public T loadString(String source) throws IOException {
             if (source == null) {
-                return this;
+                return (T) this;
             }
             return loadChars(source.toCharArray());
         }
 
-        public Loader loadChars(char[] chars) {
+        public T loadChars(char[] chars) throws IOException {
             if (chars == null) {
-                return this;
+                return (T) this;
             }
             Props mod = createProps(chars);
             resolveModules(mod);
             this.props.merge(mod);
-            return this;
+            return (T) this;
         }
 
-        protected void resolveModules(Props src) {
+        protected void resolveModules(Props src) throws IOException {
             resolveModules(src.remove("@import"));
         }
 
-        protected void resolveModules(String modules) {
+        protected void resolveModules(String modules) throws IOException {
             if (modules == null) {
                 return;
             }
@@ -608,16 +627,73 @@ public final class Props {
             }
         }
 
-        protected static Props loadProps(final String path) {
+        protected static Props loadProps(final String path) throws IOException {
+            return createProps(Resources.readChars(path));
+        }
+
+        protected static Props createProps(final char[] chars) {
+            return new Props().load(chars);
+        }
+    }
+
+    public static class ShadowLoader extends Loader<ShadowLoader> {
+
+        public ShadowLoader(Props props) {
+            super(props);
+        }
+
+        @Override
+        public ShadowLoader loadChars(char[] chars) {
             try {
-                return createProps(Resources.readChars(path));
+                return super.loadChars(chars);
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
         }
 
-        protected static Props createProps(final char[] chars) {
-            return new Props().load(chars);
+        @Override
+        public ShadowLoader loadString(String source) {
+            try {
+                return super.loadString(source);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+
+        @Override
+        public ShadowLoader load(InputStream input, String encoding) {
+            try {
+                return super.load(input, encoding);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+
+        @Override
+        public ShadowLoader load(InputStream input) {
+            try {
+                return super.load(input);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+
+        @Override
+        public ShadowLoader load(Reader reader) {
+            try {
+                return super.load(reader);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+
+        @Override
+        public ShadowLoader load(String path) {
+            try {
+                return super.load(path);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 }

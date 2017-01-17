@@ -37,14 +37,10 @@ public class PropsUtil {
     }
 
     public static Props load(final Props props, final String... paths) {
-        Props.Loader loader = Props.loader();
+        Props.ShadowLoader loader = Props.shadowLoader();
         if (paths != null) {
             for (String path : paths) {
-                try {
-                    loader.load(path);
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
+                loader.load(path);
             }
         }
         return loader.get();

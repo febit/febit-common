@@ -1,7 +1,6 @@
 // Copyright (c) 2013-present, febit.org. All Rights Reserved.
 package org.febit.util;
 
-import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -15,14 +14,10 @@ public class CountryCodeUtil {
     private static final Map<String, String> COUNTRY_TO_CODE_MAP;
 
     static {
-        try {
-            CODE_TO_COUNTRY_MAP = Props.loader()
-                    .load("classpath:org/febit/util/country-code.dict")
-                    .get()
-                    .export();
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
+        CODE_TO_COUNTRY_MAP = Props.shadowLoader()
+                .load("classpath:org/febit/util/country-code.dict")
+                .get()
+                .export();
 
         Map<String, String> reverse = CollectionUtil.createMap(CODE_TO_COUNTRY_MAP.size());
         for (Map.Entry<String, String> entry : CODE_TO_COUNTRY_MAP.entrySet()) {
