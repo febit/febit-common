@@ -312,7 +312,7 @@ public class StringUtil {
         return src.substring(from, to);
     }
 
-    final static char[] fulldigits = {
+    final static char[] DIGITS_ALL = {
         '0', '1', '2', '3', '4', '5',
         '6', '7', '8', '9', 'A', 'B',
         'C', 'D', 'E', 'F', 'G', 'H',
@@ -335,10 +335,10 @@ public class StringUtil {
         }
 
         while (i <= -36) {
-            buf[charPos--] = fulldigits[(int) (-(i % 36))];
+            buf[charPos--] = DIGITS_ALL[(int) (-(i % 36))];
             i = i / 36;
         }
-        buf[charPos] = fulldigits[(int) (-i)];
+        buf[charPos] = DIGITS_ALL[(int) (-i)];
 
         if (negative) {
             buf[--charPos] = '-';
@@ -361,10 +361,10 @@ public class StringUtil {
         }
 
         while (i <= -62) {
-            buf[charPos--] = fulldigits[(int) (-(i % 62))];
+            buf[charPos--] = DIGITS_ALL[(int) (-(i % 62))];
             i = i / 62;
         }
-        buf[charPos] = fulldigits[(int) (-i)];
+        buf[charPos] = DIGITS_ALL[(int) (-i)];
 
         if (negative) {
             buf[--charPos] = '-';
@@ -705,10 +705,10 @@ public class StringUtil {
         }
         return true;
     }
-    private static final Pattern pattern_Emailaddr = Pattern.compile("[_a-zA-Z0-9.-]+@[_a-zA-Z0-9.-]+\\.[a-zA-Z0-9]{2,4}");
+    private static final Pattern PATTERN_EMAIL = Pattern.compile("[_a-zA-Z0-9.-]+@[_a-zA-Z0-9.-]+\\.[a-zA-Z0-9]{2,4}");
 
-    public static boolean isEmailAddr(String string) {
-        return match(pattern_Emailaddr, string);
+    public static boolean isEmail(String string) {
+        return match(PATTERN_EMAIL, string);
     }
 
     public static String randomUUID() {
@@ -1039,12 +1039,16 @@ public class StringUtil {
             final StringBuilder buffer = new StringBuilder(str.length() + (size > 1000 ? 200 : 100));
             for (int i = 0; i < size; i++) {
                 char c = src[i];
-                if (c == '<') {
-                    buffer.append(LT);
-                } else if (c == '>') {
-                    buffer.append(GT);
-                } else {
-                    buffer.append(c);
+                switch (c) {
+                    case '<':
+                        buffer.append(LT);
+                        break;
+                    case '>':
+                        buffer.append(GT);
+                        break;
+                    default:
+                        buffer.append(c);
+                        break;
                 }
             }
             return buffer.toString();
