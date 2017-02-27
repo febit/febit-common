@@ -37,7 +37,7 @@ public class PropsUtil {
     }
 
     public static Props load(final Props props, final String... paths) {
-        Props.ShadowLoader loader = Props.shadowLoader();
+        Props.ShadowLoader loader = Props.shadowLoader(props);
         if (paths != null) {
             for (String path : paths) {
                 loader.load(path);

@@ -555,7 +555,7 @@ public final class Props {
         protected Map<String, Props> modulePropsCache;
 
         protected Loader(Props props) {
-            this.props = new Props();
+            this.props = props != null ? props : new Props();
         }
 
         public Props get() {
