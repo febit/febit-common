@@ -194,6 +194,33 @@ public class StringUtil {
         return jodd.util.StringUtil.lastIndexOf(src, c, startIndex, endIndex);
     }
 
+    public static int lastIndexOfChars(String src, String chars, int startIndex, int endIndex) {
+        return lastIndexOfChars(src, chars.toCharArray(), startIndex, endIndex);
+    }
+
+    public static int lastIndexOfChars(String src, char[] chars, int startIndex, int endIndex) {
+        int total = src.length() - 1;
+        if (total < 0) {
+            return -1;
+        }
+        if (startIndex >= total) {
+            startIndex = total;
+        }
+        if (endIndex < 0) {
+            endIndex = 0;
+        }
+        int charsLen = chars.length;
+        for (int i = startIndex; i >= endIndex; i--) {
+            char c = src.charAt(i);
+            for (int j = 0; j < charsLen; j++) {
+                if (c == chars[j]) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
     public static String cutPrefix(String src, String prefix) {
         if (src == null || !src.startsWith(prefix)) {
             return src;
