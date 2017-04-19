@@ -24,7 +24,7 @@ public class TransferInputImpl implements TransferInput {
         this.to = to;
         this.isp = isp;
 
-        Tuple3<String, String, String> fixed = FixUtil.fixLocation(country, province, city);
+        Tuple3<String, String, String> fixed = LocationUtil.fixLocation(country, province, city);
         this.country = fixed._1;
         this.province = fixed._2;
         this.city = fixed._3;

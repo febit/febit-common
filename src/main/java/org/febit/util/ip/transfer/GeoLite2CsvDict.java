@@ -50,8 +50,8 @@ public class GeoLite2CsvDict {
             result.put(keyEntry.country, valueEntry.country);
             result.put(keyEntry.province, valueEntry.province);
             result.put(keyEntry.city, valueEntry.city);
-            result.put(FixUtil.fixProvince(keyEntry.province), valueEntry.province);
-            result.put(FixUtil.fixCity(keyEntry.city), valueEntry.city);
+            result.put(LocationUtil.fixProvince(keyEntry.province), valueEntry.province);
+            result.put(LocationUtil.fixCity(keyEntry.city), valueEntry.city);
             result.put(StringUtil.cutSuffix(StringUtil.cutSuffix(keyEntry.city, "市"), "县"), valueEntry.city);
         }
         return result;
