@@ -158,24 +158,24 @@ public class StringUtil {
         return jodd.util.StringUtil.indexOfIgnoreCase(src, c, startIndex, endIndex);
     }
 
-    public static int indexOfIgnoreCase(String src, String subS) {
-        return jodd.util.StringUtil.indexOfIgnoreCase(src, subS, 0, src.length());
+    public static int indexOfIgnoreCase(String src, String sub) {
+        return jodd.util.StringUtil.indexOfIgnoreCase(src, sub, 0, src.length());
     }
 
-    public static int indexOfIgnoreCase(String src, String subS, int startIndex) {
-        return jodd.util.StringUtil.indexOfIgnoreCase(src, subS, startIndex, src.length());
+    public static int indexOfIgnoreCase(String src, String sub, int startIndex) {
+        return jodd.util.StringUtil.indexOfIgnoreCase(src, sub, startIndex, src.length());
     }
 
     public static int indexOfIgnoreCase(String src, String sub, int startIndex, int endIndex) {
         return jodd.util.StringUtil.indexOfIgnoreCase(src, sub, startIndex, endIndex);
     }
 
-    public static int lastIndexOfIgnoreCase(String s, String subS) {
-        return jodd.util.StringUtil.lastIndexOfIgnoreCase(s, subS, s.length(), 0);
+    public static int lastIndexOfIgnoreCase(String s, String sub) {
+        return jodd.util.StringUtil.lastIndexOfIgnoreCase(s, sub, s.length(), 0);
     }
 
-    public static int lastIndexOfIgnoreCase(String src, String subS, int startIndex) {
-        return jodd.util.StringUtil.lastIndexOfIgnoreCase(src, subS, startIndex, 0);
+    public static int lastIndexOfIgnoreCase(String src, String sub, int startIndex) {
+        return jodd.util.StringUtil.lastIndexOfIgnoreCase(src, sub, startIndex, 0);
     }
 
     public static int lastIndexOfIgnoreCase(String src, String sub, int startIndex, int endIndex) {
