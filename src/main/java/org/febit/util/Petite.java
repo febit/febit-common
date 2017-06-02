@@ -144,14 +144,25 @@ public class Petite {
         return createIfAbsent(name);
     }
 
+    @SuppressWarnings("unchecked")
+    public <T> T create(Class<T> type) {
+        return (T) create(type.getName());
+    }
+
+    public Object create(final String name) {
+        Object bean;
+        Class type = resolveType(name);
+        bean = newInstance(type);
+        inject(name, bean);
+        return bean;
+    }
+
     protected synchronized Object createIfAbsent(String name) {
         Object bean = this.beans.get(name);
         if (bean != null) {
             return bean;
         }
-        Class type = resolveType(name);
-        bean = newInstance(type);
-        inject(name, bean);
+        bean = create(name);
         this.beans.put(name, bean);
         return bean;
     }
