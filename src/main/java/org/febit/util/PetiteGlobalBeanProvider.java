@@ -9,5 +9,5 @@ public interface PetiteGlobalBeanProvider {
 
     boolean isSupportType(Class type);
 
-    Object getInstance(Class type, Petite petite);
+    Object newInstance(Class type, Petite petite);
 }

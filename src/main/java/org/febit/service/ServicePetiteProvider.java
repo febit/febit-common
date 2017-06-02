@@ -29,7 +29,7 @@ public class ServicePetiteProvider implements PetiteGlobalBeanProvider {
     }
 
     @Override
-    public Object getInstance(Class type, Petite petite) {
+    public Object newInstance(Class type, Petite petite) {
         if (!isSupportType(type)) {
             return null;
         }

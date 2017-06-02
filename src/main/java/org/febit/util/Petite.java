@@ -56,7 +56,7 @@ public class Petite {
     };
 
     protected boolean inited = false;
- 
+
     protected Petite() {
         this.defaultConverter = new BeanTypeConverter();
         this.propsMgr = new PropsManager();
@@ -182,7 +182,7 @@ public class Petite {
     protected Object getFreshGlobalBeanInstance(Class type) {
         for (PetiteGlobalBeanProvider globalBeanProvider : this.globalBeanProviders.get()) {
             if (globalBeanProvider.isSupportType(type)) {
-                return globalBeanProvider.getInstance(type, this);
+                return globalBeanProvider.newInstance(type, this);
             }
         }
         return null;

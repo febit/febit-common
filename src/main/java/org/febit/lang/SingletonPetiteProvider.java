@@ -11,7 +11,7 @@ import org.febit.util.PriorityUtil;
  * @author zqq90
  */
 @PriorityUtil.Priority(PriorityUtil.PRI_LOWER)
-public class SingletonPetiteProvider implements PetiteGlobalBeanProvider{
+public class SingletonPetiteProvider implements PetiteGlobalBeanProvider {
 
     @Override
     public boolean isSupportType(Class type) {
@@ -22,7 +22,7 @@ public class SingletonPetiteProvider implements PetiteGlobalBeanProvider{
     }
 
     @Override
-    public Object getInstance(Class type, Petite petite) {
+    public Object newInstance(Class type, Petite petite) {
         if (!isSupportType(type)) {
             return null;
         }
