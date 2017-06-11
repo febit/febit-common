@@ -614,6 +614,7 @@ public final class Props {
                 this.modulePropsCache = new HashMap<>();
             }
             for (String module : StringUtil.toArrayExcludeCommit(modules)) {
+                module = Resources.normalize(module);
                 if (this.props.containsModule(module)) {
                     continue;
                 }
