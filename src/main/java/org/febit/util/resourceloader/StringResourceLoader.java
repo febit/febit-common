@@ -15,15 +15,25 @@ import org.febit.util.StringUtil;
 @PriorityUtil.Normal
 public class StringResourceLoader implements ResourceLoader {
 
+    protected static final String PREFIX_STRING = "string:";
+
     @Override
     public Reader openReader(String path, String encoding) throws IOException {
         if (path == null) {
             return null;
         }
-        if (!path.startsWith("string:")) {
+        if (!path.startsWith(PREFIX_STRING)) {
             return null;
         }
-        path = StringUtil.cutPrefix(path, "string:");
+        path = StringUtil.cutPrefix(path, PREFIX_STRING);
         return new StringReader(path);
+    }
+
+    @Override
+    public String normalize(String name) {
+        if (!name.startsWith(PREFIX_STRING)) {
+            return null;
+        }
+        return name;
     }
 }

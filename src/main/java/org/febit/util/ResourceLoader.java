@@ -11,4 +11,6 @@ import java.io.Reader;
 public interface ResourceLoader {
 
     Reader openReader(String path, String encoding) throws IOException;
+    
+    String normalize(String name);
 }

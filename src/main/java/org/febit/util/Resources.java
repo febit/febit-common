@@ -75,4 +75,18 @@ public class Resources {
     public static String readString(Reader reader) throws IOException {
         return new String(readChars(reader));
     }
+
+    public static String normalize(String name) {
+        if (name == null) {
+            return null;
+        }
+        String result;
+        for (ResourceLoader loader : LOADERS.get()) {
+            result = loader.normalize(name);
+            if (result != null) {
+                return result;
+            }
+        }
+        return name;
+    }
 }
