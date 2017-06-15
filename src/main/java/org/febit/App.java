@@ -12,6 +12,7 @@ import org.febit.util.Petite;
 import org.febit.util.PriorityUtil;
 import org.febit.util.Props;
 import org.febit.util.PropsUtil;
+import org.febit.util.Stopwatch;
 
 /**
  *
@@ -30,11 +31,13 @@ public class App implements Singleton {
     protected Object[] beans;
 
     public void start(String propsFiles) {
+        Stopwatch stopwatch = Stopwatch.startNew();
         loadProps(propsFiles);
         initPetite();
         try {
             startListeners();
-            LOG.info("> App start: " + name);
+            stopwatch.stop();
+            LOG.info("> App [{}] start in {} ms.", name, stopwatch.nowInMillis());
         } catch (Exception ex) {
             LOG.error("> Failed start: " + name, ex);
             stop();
@@ -43,8 +46,10 @@ public class App implements Singleton {
     }
 
     public void stop() {
+        Stopwatch stopwatch = Stopwatch.startNew();
         stopListeners();
-        LOG.info("> App stopped: " + name);
+        stopwatch.stop();
+        LOG.info("> App [{}] stopped in {} ms.", name, stopwatch.nowInMillis());
     }
 
     protected void loadProps(String propsFiles) {
