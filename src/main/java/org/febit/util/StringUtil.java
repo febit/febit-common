@@ -1141,7 +1141,6 @@ public class StringUtil {
     }
 
     public static String join(Collection list, String separator) {
-
         if (list == null) {
             return "";
         }
@@ -1158,6 +1157,42 @@ public class StringUtil {
                 notfirst = true;
             }
             sb.append(item);
+        }
+        return sb.toString();
+    }
+
+    public static <T> String join(T[] array, char separator) {
+        if (array == null) {
+            return "";
+        }
+        int size = array.length;
+        if (size == 0) {
+            return "";
+        }
+        final StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < size; i++) {
+            if (i != 0) {
+                sb.append(separator);
+            }
+            sb.append(array[i]);
+        }
+        return sb.toString();
+    }
+
+    public static <T> String join(T[] array, String separator) {
+        if (array == null) {
+            return "";
+        }
+        int size = array.length;
+        if (size == 0) {
+            return "";
+        }
+        final StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < size; i++) {
+            if (i != 0) {
+                sb.append(separator);
+            }
+            sb.append(array[i]);
         }
         return sb.toString();
     }
