@@ -8,10 +8,10 @@ import org.febit.convert.TypeConverter;
  *
  * @author zqq90
  */
-public class IntegerConverter implements TypeConverter<Integer> {
+public class LongArrayConverter implements TypeConverter<long[]> {
 
     @Override
-    public Integer convert(String value, Class type) {
-        return Convert.toInteger(value);
+    public long[] convert(String value, Class type) {
+        return Convert.toLongArray(value);
     }
 }

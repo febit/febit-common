@@ -15,7 +15,7 @@ import org.febit.util.StringUtil;
  */
 public class Convert {
 
-    protected static final IdentityMap<TypeConverter> map = new IdentityMap<>();
+    protected static final IdentityMap<TypeConverter> CONVERTERS = new IdentityMap<>();
 
     static {
         regist(String.class, new StringConverter());
@@ -24,6 +24,10 @@ public class Convert {
         regist(int[].class, new IntArrayConverter());
         regist(Integer.class, new IntegerConverter());
         regist(Integer[].class, new IntegerArrayConverter());
+        regist(long.class, new LongConverter());
+        regist(long[].class, new LongArrayConverter());
+        regist(Long.class, new LongObjectConverter());
+        regist(Long[].class, new LongObjectArrayConverter());
         regist(boolean.class, new BoolConverter());
         regist(boolean[].class, new BoolArrayConverter());
         regist(Boolean.class, new BooleanConverter());
@@ -39,12 +43,12 @@ public class Convert {
     }
 
     public static void regist(Class type, TypeConverter convert) {
-        map.put(type, convert);
+        CONVERTERS.put(type, convert);
     }
 
     public static Object convert(String string, Class type) {
         final TypeConverter convert;
-        if ((convert = map.get(type)) != null) {
+        if ((convert = CONVERTERS.get(type)) != null) {
             return convert.convert(string, type);
         }
         return string;
@@ -52,10 +56,24 @@ public class Convert {
 
     public static Object convert(String string, Class type, TypeConverter defaultConverter) {
         TypeConverter convert;
-        if ((convert = map.get(type)) == null) {
+        if ((convert = CONVERTERS.get(type)) == null) {
             convert = defaultConverter;
         }
         return convert.convert(string, type);
+    }
+
+    public static int toInt(String string) {
+        if (string == null || string.isEmpty() || "NaN".equals(string)) {
+            return 0;
+        }
+        return Integer.valueOf(string);
+    }
+
+    public static Integer toInteger(String string) {
+        if (string == null || string.isEmpty() || "NaN".equals(string)) {
+            return null;
+        }
+        return Integer.valueOf(string);
     }
 
     public static int[] toIntArray(String string) {
@@ -71,18 +89,57 @@ public class Convert {
         return entrys;
     }
 
-    public static int toInt(String string) {
-        if (string == null || "NaN".equals(string)) {
-            return 0;
-        }
-        return Integer.valueOf(string);
-    }
-    
-    public static long toLong(String string) {
+    public static Integer[] toIntegerArray(String string) {
         if (string == null) {
-            return 0;
+            return null;
+        }
+        final String[] strings = StringUtil.toArrayExcludeCommit(string);
+        final int len = strings.length;
+        final Integer[] entrys = new Integer[len];
+        for (int i = 0; i < len; i++) {
+            entrys[i] = toInteger(strings[i]);
+        }
+        return entrys;
+    }
+
+    public static long toLong(String string) {
+        if (string == null || string.isEmpty() || "NaN".equals(string)) {
+            return 0L;
         }
         return Long.valueOf(string);
+    }
+
+    public static Long toLongObject(String string) {
+        if (string == null || string.isEmpty() || "NaN".equals(string)) {
+            return null;
+        }
+        return Long.valueOf(string);
+    }
+
+    public static long[] toLongArray(String string) {
+        if (string == null) {
+            return null;
+        }
+        final String[] strings = StringUtil.toArrayExcludeCommit(string);
+        final int len = strings.length;
+        final long[] entrys = new long[len];
+        for (int i = 0; i < len; i++) {
+            entrys[i] = toLong(strings[i]);
+        }
+        return entrys;
+    }
+
+    public static Long[] toLongObjectArray(String string) {
+        if (string == null) {
+            return null;
+        }
+        final String[] strings = StringUtil.toArrayExcludeCommit(string);
+        final int len = strings.length;
+        final Long[] entrys = new Long[len];
+        for (int i = 0; i < len; i++) {
+            entrys[i] = toLongObject(strings[i]);
+        }
+        return entrys;
     }
 
     public static Class toClass(String string) {
@@ -118,19 +175,6 @@ public class Convert {
         final Class[] entrys = new Class[len];
         for (int i = 0; i < len; i++) {
             entrys[i] = toClass(strings[i]);
-        }
-        return entrys;
-    }
-
-    public static Integer[] toIntegerArray(String string) {
-        if (string == null) {
-            return null;
-        }
-        final String[] strings = StringUtil.toArrayExcludeCommit(string);
-        final int len = strings.length;
-        final Integer[] entrys = new Integer[len];
-        for (int i = 0; i < len; i++) {
-            entrys[i] = toInt(strings[i]);
         }
         return entrys;
     }

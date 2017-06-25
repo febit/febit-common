@@ -8,10 +8,10 @@ import org.febit.convert.TypeConverter;
  *
  * @author zqq90
  */
-public class IntegerConverter implements TypeConverter<Integer> {
+public class LongObjectConverter implements TypeConverter<Long> {
 
     @Override
-    public Integer convert(String value, Class type) {
-        return Convert.toInteger(value);
+    public Long convert(String value, Class type) {
+        return Convert.toLongObject(value);
     }
 }
