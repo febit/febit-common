@@ -4,11 +4,13 @@ package org.febit.util;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import jodd.util.collection.IntHashMap;
 import org.febit.lang.Defaults;
 import org.febit.lang.Function1;
@@ -261,5 +263,47 @@ public class CollectionUtil {
         Map<String, T> to = new HashMap<>();
         exportByKeyPrefix(src, to, prefix);
         return to;
+    }
+
+    public static <T, K> Map<K, List<T>> groupToMap(Collection<T> collection, Function1<K, T> keyFunc) {
+        return groupToMap(collection, keyFunc, new Function1<T, T>() {
+            @Override
+            public T call(T arg1) {
+                return arg1;
+            }
+        });
+    }
+
+    public static <T, K, V> Map<K, List<V>> groupToMap(Collection<T> collection, Function1<K, T> keyFunc, Function1<V, T> valueFunc) {
+        Map<K, List<V>> map = new HashMap<>();
+        groupToMap(map, collection, keyFunc, valueFunc);
+        return map;
+    }
+
+    public static <T, K> TreeMap<K, List<T>> groupToTreeMap(Collection<T> collection, Function1<K, T> keyFunc) {
+        return groupToTreeMap(collection, keyFunc, new Function1<T, T>() {
+            @Override
+            public T call(T arg1) {
+                return arg1;
+            }
+        });
+    }
+
+    public static <T, K, V> TreeMap<K, List<V>> groupToTreeMap(Collection<T> collection, Function1<K, T> keyFunc, Function1<V, T> valueFunc) {
+        TreeMap<K, List<V>> map = new TreeMap<>();
+        groupToMap(map, collection, keyFunc, valueFunc);
+        return map;
+    }
+
+    protected static <T, K, V> void groupToMap(Map<K, List<V>> map, Collection<T> collection, Function1<K, T> keyFunc, Function1<V, T> valueFunc) {
+        for (T t : collection) {
+            K key = keyFunc.call(t);
+            List<V> list = map.get(key);
+            if (list == null) {
+                list = new ArrayList<>();
+                map.put(key, list);
+            }
+            list.add(valueFunc.call(t));
+        }
     }
 }
