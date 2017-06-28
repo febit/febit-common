@@ -5,6 +5,8 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -35,6 +37,14 @@ import org.febit.lang.iter.ShortArrayIter;
  * @author zqq90
  */
 public class CollectionUtil {
+
+    public static <T extends Comparable<? super T>> void sort(List<T> list) {
+        Collections.sort(list);
+    }
+
+    public static <T> void sort(List<T> list, Comparator<? super T> c) {
+        Collections.sort(list, c);
+    }
 
     public static List createList(int expactSize) {
         return new ArrayList(expactSize);
