@@ -6,13 +6,23 @@ import java.util.Objects;
 /**
  *
  * @author zqq90
+ * @param <T1>
+ * @param <T2>
+ * @param <T3>
+ * @param <T4>
  */
 public class Tuple4<T1, T2, T3, T4> {
+
+    public static <T1, T2, T3, T4> Tuple4<T1, T2, T3, T4> create(T1 _1, T2 _2, T3 _3, T4 _4) {
+        return new Tuple4<>(_1, _2, _3, _4);
+    }
 
     public final T1 _1;
     public final T2 _2;
     public final T3 _3;
     public final T4 _4;
+
+    protected int _hashCode = 0;
 
     public Tuple4(T1 _1, T2 _2, T3 _3, T4 _4) {
         this._1 = _1;
@@ -23,11 +33,15 @@ public class Tuple4<T1, T2, T3, T4> {
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 97 * hash + Objects.hashCode(this._1);
-        hash = 97 * hash + Objects.hashCode(this._2);
-        hash = 97 * hash + Objects.hashCode(this._3);
-        hash = 97 * hash + Objects.hashCode(this._4);
+        int hash = _hashCode;
+        if (hash == 0) {
+            hash = 7;
+            hash = 97 * hash + Objects.hashCode(this._1);
+            hash = 97 * hash + Objects.hashCode(this._2);
+            hash = 97 * hash + Objects.hashCode(this._3);
+            hash = 97 * hash + Objects.hashCode(this._4);
+            _hashCode = hash;
+        }
         return hash;
     }
 
