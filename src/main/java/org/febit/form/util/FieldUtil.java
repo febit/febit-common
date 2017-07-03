@@ -34,7 +34,7 @@ public class FieldUtil {
         for (String rawId : rawIds) {
             try {
                 idList.add(Integer.parseInt(rawId));
-            }catch (NumberFormatException ignore) {
+            } catch (NumberFormatException ignore) {
             }
         }
         return idList.toArray(new Integer[idList.size()]);
@@ -56,7 +56,7 @@ public class FieldUtil {
         for (String rawId : rawIds) {
             try {
                 idList.add(Long.parseLong(rawId));
-            }catch (NumberFormatException ignore) {
+            } catch (NumberFormatException ignore) {
             }
         }
         return idList.toArray(new Long[idList.size()]);
@@ -75,7 +75,7 @@ public class FieldUtil {
         }
         return null;
     }
-    
+
     public static short toShort(final String value, short defaultValue) {
         if (value != null) {
             return Short.parseShort(value);

@@ -19,7 +19,7 @@ public class IpUtil {
 
     /**
      * IPv4 to Long.
-     * 
+     *
      * @param ipv4
      * @return -lL if not a ip.
      */

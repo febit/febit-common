@@ -6,6 +6,6 @@ package org.febit.form;
  */
 public interface BaseForm {
 
-  boolean valid(int profile, boolean add);
+    boolean valid(int profile, boolean add);
 
 }

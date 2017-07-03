@@ -43,6 +43,6 @@ public interface Iter<E> extends Iterator<E> {
     <T> Iter<T> flatMap(final Function1<Iterator<T>, E> func);
 
     Iter<E> filter(final Function1<Boolean, E> valid);
-    
+
     Iter<E> excludeNull();
 }

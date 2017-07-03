@@ -7,14 +7,14 @@ import java.util.Iterator;
  *
  * @author zqq90
  */
-public class IteratorIter<T> extends BaseIter<T>{
+public class IteratorIter<T> extends BaseIter<T> {
 
     protected final Iterator<T> iter;
 
     public IteratorIter(Iterator<T> iter) {
         this.iter = iter;
     }
-    
+
     @Override
     public boolean hasNext() {
         return this.iter.hasNext();
@@ -24,5 +24,5 @@ public class IteratorIter<T> extends BaseIter<T>{
     public T next() {
         return this.iter.next();
     }
-    
+
 }

@@ -18,7 +18,7 @@ import org.febit.util.ip.IpUtil;
  * @author zqq90
  */
 public class Transfer {
-    
+
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(Transfer.class);
 
     protected static final int IP_PART_MAX = 0x00FFFFFF;

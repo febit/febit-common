@@ -9,12 +9,12 @@ import org.testng.annotations.Test;
  * @author zqq90
  */
 public class StringWalkerTest {
-    
+
     @Test
     public void test() {
 
         StringWalker walker = new StringWalker("  \tfoo\t    bar \t key= value");
-        
+
         assertEquals(walker.readUntilBlanks(), "");
         assertEquals(walker.readTo('\t', true), "  ");
         walker.skipBlanks();

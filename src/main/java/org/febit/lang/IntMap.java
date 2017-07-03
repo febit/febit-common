@@ -8,7 +8,7 @@ import org.febit.lang.iter.BaseIter;
  *
  * @author zqq90
  */
-public final class IntMap<V> implements Iterable<IntMap.Entry<V>>{
+public final class IntMap<V> implements Iterable<IntMap.Entry<V>> {
 
     private static final int MAXIMUM_CAPACITY = 1 << 29;
 
@@ -186,17 +186,17 @@ public final class IntMap<V> implements Iterable<IntMap.Entry<V>>{
         tab[index] = new Entry(key, value, tab[index]);
         size++;
     }
-    
-    public Iter<Entry<V>> iterator(){
+
+    public Iter<Entry<V>> iterator() {
         return new BaseIter<Entry<V>>() {
             int cursor;
             Entry<V> currEntry;
-            
+
             @Override
             public boolean hasNext() {
                 final Entry<V>[] tab = IntMap.this.table;
-                while (currEntry == null && cursor < tab.length) {                    
-                    currEntry = IntMap.this.table[cursor ++];
+                while (currEntry == null && cursor < tab.length) {
+                    currEntry = IntMap.this.table[cursor++];
                 }
                 if (currEntry != null) {
                     return true;

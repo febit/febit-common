@@ -6,5 +6,5 @@ package org.febit.util.agent;
  * @author zqq90
  */
 public abstract class RetryAgent {
-    
+
 }

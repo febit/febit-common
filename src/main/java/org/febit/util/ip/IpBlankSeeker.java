@@ -54,7 +54,7 @@ public class IpBlankSeeker {
             if (ipv4 > datas[end]) {
                 return end + 1;
             }
-            
+
             if (start + 1 >= end) {
                 return end;
             }
@@ -87,7 +87,7 @@ public class IpBlankSeeker {
     public static IpBlankSeeker create(InputStream in) throws IOException {
         return create(StreamUtil.readBytes(in));
     }
-    
+
     public static IpBlankSeeker create(final byte[] buffer) {
         ByteBuffer byteBuffer = ByteBuffer.wrap(buffer);
         int len = byteBuffer.getInt();
