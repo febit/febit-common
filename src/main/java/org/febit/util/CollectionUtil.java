@@ -70,15 +70,15 @@ public class CollectionUtil {
         return list;
     }
 
-    public static java.util.HashSet createSet(int expectedSize) {
+    public static <K> java.util.HashSet<K> createSet(int expectedSize) {
         return new java.util.HashSet(expectedSize * 4 / 3 + 1);
     }
 
-    public static HashMap createHashMap(int expectedSize) {
+    public static <K, V> HashMap<K, V> createHashMap(int expectedSize) {
         return new HashMap(expectedSize * 4 / 3 + 1);
     }
 
-    public static Map createMap(int expectedSize) {
+    public static <K, V> Map<K, V> createMap(int expectedSize) {
         return createHashMap(expectedSize);
     }
 
