@@ -197,14 +197,14 @@ public class CollectionUtil {
         return new FlatMapIter<>(iter, func);
     }
 
-    public static Iter toIter(final Iterator iter) {
+    public static <T> Iter<T> toIter(final Iterator<T> iter) {
         if (iter == null) {
             return Defaults.EMPTY_ITER;
         }
         if (iter instanceof Iter) {
-            return (Iter) iter;
+            return (Iter<T>) iter;
         }
-        return new IteratorIter(iter);
+        return new IteratorIter<>(iter);
     }
 
     @SuppressWarnings("unchecked")
