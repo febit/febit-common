@@ -9,7 +9,7 @@ import jodd.util.UnsafeUtil;
  */
 public class StringWalker {
 
-    protected static Checker BLANKS = new Checker() {
+    protected static final Checker BLANKS = new Checker() {
         @Override
         public boolean isFlag(char c) {
             return CharUtil.isWhitespace(c);
