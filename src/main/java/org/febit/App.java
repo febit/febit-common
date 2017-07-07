@@ -70,7 +70,7 @@ public class App implements Singleton {
                 .addGlobalBean(this)
                 .build();
         Services.setPetite(_petite);
-        this._petite.regist("app", this);
+        this._petite.register("app", this);
     }
 
     protected void startListeners() {
@@ -129,7 +129,7 @@ public class App implements Singleton {
     }
 
     public void addBean(final Object bean) {
-        this._petite.regist(bean);
+        this._petite.register(bean);
     }
 
     public Object getBean(String name) {

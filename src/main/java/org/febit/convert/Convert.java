@@ -18,31 +18,36 @@ public class Convert {
     protected static final IdentityMap<TypeConverter> CONVERTERS = new IdentityMap<>();
 
     static {
-        regist(String.class, new StringConverter());
-        regist(String[].class, new StringArrayConverter());
-        regist(int.class, new IntConverter());
-        regist(int[].class, new IntArrayConverter());
-        regist(Integer.class, new IntegerConverter());
-        regist(Integer[].class, new IntegerArrayConverter());
-        regist(long.class, new LongConverter());
-        regist(long[].class, new LongArrayConverter());
-        regist(Long.class, new LongObjectConverter());
-        regist(Long[].class, new LongObjectArrayConverter());
-        regist(boolean.class, new BoolConverter());
-        regist(boolean[].class, new BoolArrayConverter());
-        regist(Boolean.class, new BooleanConverter());
-        regist(Boolean[].class, new BooleanArrayConverter());
-        regist(char[].class, new CharArrayConverter());
-        regist(Class.class, new ClassConverter());
-        regist(Class[].class, new ClassArrayConverter());
-        regist(Font.class, new FontConverter());
-        regist(Font[].class, new FontArrayConverter());
-        regist(Color.class, new ColorConverter());
-        regist(Color[].class, new ColorArrayConverter());
-        regist(TimeZone.class, new TimeZoneConverter());
+        register(String.class, new StringConverter());
+        register(String[].class, new StringArrayConverter());
+        register(int.class, new IntConverter());
+        register(int[].class, new IntArrayConverter());
+        register(Integer.class, new IntegerConverter());
+        register(Integer[].class, new IntegerArrayConverter());
+        register(long.class, new LongConverter());
+        register(long[].class, new LongArrayConverter());
+        register(Long.class, new LongObjectConverter());
+        register(Long[].class, new LongObjectArrayConverter());
+        register(boolean.class, new BoolConverter());
+        register(boolean[].class, new BoolArrayConverter());
+        register(Boolean.class, new BooleanConverter());
+        register(Boolean[].class, new BooleanArrayConverter());
+        register(char[].class, new CharArrayConverter());
+        register(Class.class, new ClassConverter());
+        register(Class[].class, new ClassArrayConverter());
+        register(Font.class, new FontConverter());
+        register(Font[].class, new FontArrayConverter());
+        register(Color.class, new ColorConverter());
+        register(Color[].class, new ColorArrayConverter());
+        register(TimeZone.class, new TimeZoneConverter());
     }
 
+    @Deprecated
     public static void regist(Class type, TypeConverter convert) {
+        register(type, convert);
+    }
+
+    public static void register(Class type, TypeConverter convert) {
         CONVERTERS.put(type, convert);
     }
 

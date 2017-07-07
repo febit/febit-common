@@ -272,13 +272,23 @@ public class Petite {
         this.beans.put(name, bean);
     }
 
-    public void regist(Object bean) {
-        regist(resolveBeanName(bean), bean);
+    public void register(Object bean) {
+        register(resolveBeanName(bean), bean);
     }
 
-    public void regist(String name, Object bean) {
+    public void register(String name, Object bean) {
         inject(name, bean);
         this.beans.put(name, bean);
+    }
+
+    @Deprecated
+    public void regist(Object bean) {
+        register(bean);
+    }
+
+    @Deprecated
+    public void regist(String name, Object bean) {
+        register(name, bean);
     }
 
     protected Object convert(String string, Class cls) {
@@ -358,10 +368,10 @@ public class Petite {
         protected final IdentityMap internalCache = new IdentityMap(64);
 
         public void add(Object bean) {
-            //regist all impls
+            //register all impls
             Class rootType = bean.getClass();
             for (Class cls : ClassUtil.impls(bean)) {
-                //only regist spec types
+                //only register spec types
                 if (cls != rootType && !Petite.this.isGlobalType(cls)) {
                     continue;
                 }
