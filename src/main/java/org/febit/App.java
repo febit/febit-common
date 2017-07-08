@@ -8,6 +8,7 @@ import org.febit.lang.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.febit.service.Services;
+import org.febit.util.ClassUtil;
 import org.febit.util.Petite;
 import org.febit.util.PriorityUtil;
 import org.febit.util.Props;
@@ -108,14 +109,12 @@ public class App implements Singleton {
         this._listeners = null;
     }
 
-    public Object createBean(String type) throws ClassNotFoundException,
-            InstantiationException, IllegalAccessException {
+    public Object createBean(String type) throws ClassNotFoundException {
         return createBean(ClassLoaderUtil.getDefaultClassLoader().loadClass(type));
     }
 
-    public Object createBean(Class type)
-            throws InstantiationException, IllegalAccessException {
-        final Object bean = type.newInstance();
+    public Object createBean(Class type) {
+        final Object bean = ClassUtil.newInstance(type);
         this._petite.inject(bean);
         return bean;
     }

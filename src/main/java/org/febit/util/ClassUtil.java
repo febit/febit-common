@@ -354,11 +354,11 @@ public class ClassUtil {
         }
     }
 
-    public static Object newInstance(final Class type) {
+    public static <T> T newInstance(final Class<T> type) {
         try {
             return type.newInstance();
         } catch (InstantiationException | IllegalAccessException ex) {
-            throw new RuntimeException(ex);
+            throw new RuntimeException("Failed to create instance: " + type, ex);
         }
     }
 

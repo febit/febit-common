@@ -6,6 +6,7 @@ import java.util.Map;
 import jodd.util.ReflectUtil;
 import org.febit.form.util.BaseFormUtil;
 import org.febit.lang.ConcurrentIdentityMap;
+import org.febit.util.ClassUtil;
 import org.febit.vtor.Vtor;
 
 /**
@@ -21,12 +22,7 @@ public abstract class BaseFormImpl<E, I> implements AddForm<E>, ModifyForm<E, I>
 
     @Override
     public E createAdded(final int profile) {
-        final E model;
-        try {
-            model = (E) modelType().newInstance();
-        } catch (InstantiationException | IllegalAccessException ex) {
-            throw new RuntimeException(ex);
-        }
+        final E model = (E) ClassUtil.newInstance(modelType());
         BaseFormUtil.transfer(this, model, true, profile);
         return model;
     }
@@ -66,12 +62,12 @@ public abstract class BaseFormImpl<E, I> implements AddForm<E>, ModifyForm<E, I>
         return __vtors;
     }
 
-    public Class modelType() {
-        Class type = CACHE.unsafeGet(this.getClass());
+    public Class<E> modelType() {
+        Class<E> type = CACHE.unsafeGet(this.getClass());
         if (type != null) {
             return type;
         }
-        type = ReflectUtil.getRawType(BaseFormImpl.class.getTypeParameters()[0], this.getClass());
+        type = (Class<E>) ReflectUtil.getRawType(BaseFormImpl.class.getTypeParameters()[0], this.getClass());
         CACHE.putIfAbsent(this.getClass(), type);
         return type;
     }

@@ -36,10 +36,6 @@ public class ServicePetiteProvider implements PetiteGlobalBeanProvider {
         if (ClassUtil.isAbstract(type)) {
             return null;
         }
-        try {
-            return type.newInstance();
-        } catch (InstantiationException | IllegalAccessException ex) {
-            throw new RuntimeException(ex);
-        }
+        return ClassUtil.newInstance(type);
     }
 }
