@@ -7,7 +7,6 @@ import jodd.util.ClassLoaderUtil;
 import org.febit.lang.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.febit.service.Services;
 import org.febit.util.ClassUtil;
 import org.febit.util.Petite;
 import org.febit.util.PriorityUtil;
@@ -69,8 +68,7 @@ public class App implements Singleton {
         this._petite = Petite.builder()
                 .addProps(_props)
                 .addGlobalBean(this)
-                .build();
-        Services.setPetite(_petite);
+                .buildWithServices();
         this._petite.register("app", this);
     }
 

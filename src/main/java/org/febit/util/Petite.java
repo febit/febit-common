@@ -22,6 +22,7 @@ import org.febit.convert.Convert;
 import org.febit.convert.TypeConverter;
 import org.febit.lang.Defaults;
 import org.febit.lang.IdentityMap;
+import org.febit.service.Services;
 import org.febit.util.agent.LazyAgent;
 
 /**
@@ -357,6 +358,11 @@ public class Petite {
         public Petite build() {
             petite._init();
             return petite;
+        }
+
+        public Petite buildWithServices() {
+            Services.setPetite(petite);
+            return build();
         }
     }
 
