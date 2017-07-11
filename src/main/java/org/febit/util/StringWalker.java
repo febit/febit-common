@@ -96,7 +96,9 @@ public class StringWalker {
         if (pos >= end) {
             return "";
         }
-        return new String(chars, pos, end - pos);
+        String str = new String(chars, pos, end - pos);
+        pos = end;
+        return str;
     }
 
     public String readTo(final char endFlag, final boolean keepFlag) {
