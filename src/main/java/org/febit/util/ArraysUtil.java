@@ -4,6 +4,7 @@ package org.febit.util;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -14,11 +15,19 @@ import java.util.Set;
  */
 public class ArraysUtil extends jodd.util.ArraysUtil {
 
+    public static Object get(final Object[] array, final int index) {
+        return get(array, index, null);
+    }
+
     public static Object get(final Object[] array, final int index, final Object defaultValue) {
         if (array != null && index < array.length) {
             return array[index];
         }
         return defaultValue;
+    }
+
+    public static String get(final String[] array, final int index) {
+        return get(array, index, null);
     }
 
     public static String get(final String[] array, final int index, final String defaultValue) {
@@ -166,7 +175,11 @@ public class ArraysUtil extends jodd.util.ArraysUtil {
         }
     }
 
-    public static <T> Set<T> asSet(T[] arr) {
+    public static <T> List<T> asList(T... arr) {
+        return Arrays.asList(arr);
+    }
+
+    public static <T> Set<T> asSet(T... arr) {
         return new ArraySet<>(arr);
     }
 
@@ -174,7 +187,7 @@ public class ArraysUtil extends jodd.util.ArraysUtil {
         return new ArrayMap(keys, values);
     }
 
-    public static <T> Iterator<T> iterator(T[] arr) {
+    public static <T> Iterator<T> iterator(T... arr) {
         return new ArrayIterator<>(arr);
     }
 
