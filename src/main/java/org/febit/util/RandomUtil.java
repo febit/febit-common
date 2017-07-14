@@ -4,7 +4,6 @@ package org.febit.util;
 import java.awt.Color;
 import java.util.Random;
 import jodd.util.StringPool;
-import jodd.util.UnsafeUtil;
 
 /**
  *
@@ -23,7 +22,7 @@ public class RandomUtil {
         while (count-- > 0) {
             result[count] = chars[rnd.nextInt(chars.length)];
         }
-        return UnsafeUtil.createString(result);
+        return new String(result);
     }
 
     public static String rnd(int count, String chars) {
