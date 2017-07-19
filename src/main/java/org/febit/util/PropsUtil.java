@@ -22,7 +22,6 @@ public class PropsUtil {
                 propsPathList.add(ed.getName());
             }
         };
-        scanner.setExcludeAllJars(true);
         scanner.setExcludeAllEntries(true);
         scanner.setIncludedEntries(pathSets);
         scanner.setIncludeResources(true);
