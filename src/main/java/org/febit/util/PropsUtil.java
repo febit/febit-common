@@ -30,11 +30,6 @@ public class PropsUtil {
         return props;
     }
 
-    @Deprecated
-    public static Props loadFromClasspath(final Props props, final String... pathSets) {
-        return load(props, pathSets);
-    }
-
     public static Props load(final Props props, final String... paths) {
         Props.ShadowLoader loader = Props.shadowLoader(props);
         if (paths != null) {

@@ -86,16 +86,6 @@ public class CollectionUtil {
         return new IntHashMap(expectedSize * 4 / 3 + 1);
     }
 
-    @Deprecated
-    public static java.util.HashSet<Object> set(Object... args) {
-        return toSet(args);
-    }
-
-    @Deprecated
-    public static java.util.HashSet<String> set(String... args) {
-        return toSet(args);
-    }
-
     public static Object[] toArray(List list) {
         return list.toArray();
     }

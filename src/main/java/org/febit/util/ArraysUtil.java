@@ -48,11 +48,6 @@ public class ArraysUtil extends jodd.util.ArraysUtil {
         return i;
     }
 
-    @Deprecated
-    public static int searchInterval(final int[] intervals, final int number) {
-        return findInterval(intervals, number);
-    }
-
     /**
      * Search which interval the number belongs to.
      *

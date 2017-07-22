@@ -42,11 +42,6 @@ public class Convert {
         register(TimeZone.class, new TimeZoneConverter());
     }
 
-    @Deprecated
-    public static void regist(Class type, TypeConverter convert) {
-        register(type, convert);
-    }
-
     public static void register(Class type, TypeConverter convert) {
         CONVERTERS.put(type, convert);
     }

@@ -78,7 +78,7 @@ public final class Time {
      * @Deprecated
      */
     @Deprecated
-    protected Time(long millisecond, int year, int month, int day, int hour, int minute, int dayofweek, boolean leap) {
+    Time(long millisecond, int year, int month, int day, int hour, int minute, int dayofweek, boolean leap) {
         this.millisecond = millisecond;
         this.year = year;
         this.month = month > 0 && month <= 12 ? month : month % 12 + 1;

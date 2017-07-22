@@ -282,16 +282,6 @@ public class Petite {
         this.beans.put(name, bean);
     }
 
-    @Deprecated
-    public void regist(Object bean) {
-        register(bean);
-    }
-
-    @Deprecated
-    public void regist(String name, Object bean) {
-        register(name, bean);
-    }
-
     protected Object convert(String string, Class cls) {
         return Convert.convert(string, cls, defaultConverter);
     }
