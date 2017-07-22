@@ -52,6 +52,16 @@ public class StringWalker {
         return this.chars[this.pos];
     }
 
+    public boolean match(char c, int offset) {
+        int i = this.pos + offset;
+        return i < this.end
+                && this.chars[i] == c;
+    }
+
+    public boolean match(char c) {
+        return match(c, 0);
+    }
+
     public void jump(int step) {
         this.pos += step;
     }

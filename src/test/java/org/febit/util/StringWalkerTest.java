@@ -15,8 +15,14 @@ public class StringWalkerTest {
 
         StringWalker walker = new StringWalker("  \tfoo\t    bar \t key= value");
 
+        assertTrue(walker.match(' '));
+        assertTrue(walker.match(' ', 1));
+        assertTrue(walker.match('\t', 2));
+        assertTrue(walker.match('f', 3));
+        assertFalse(walker.match(' ', 100));
         assertEquals(walker.readUntilBlanks(), "");
         assertEquals(walker.readTo('\t', true), "  ");
+        assertTrue(walker.match('\t'));
         walker.skipBlanks();
         assertEquals(walker.readUntilSpace(), "foo\t");
         walker.skipSpaces();
@@ -24,6 +30,8 @@ public class StringWalkerTest {
         walker.skipBlanks();
         assertEquals(walker.readTo('=', false), "key");
         walker.skipBlanks();
+        assertTrue(walker.match('v'));
         assertEquals(walker.readTo('&', false), "value");
+        assertFalse(walker.match(' '));
     }
 }
