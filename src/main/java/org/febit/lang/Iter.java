@@ -59,4 +59,6 @@ public interface Iter<E> extends Iterator<E> {
     Iter<E> filter(final Function1<Boolean, E> valid);
 
     Iter<E> excludeNull();
+
+    <T> T fold(T init, final Function2<T, T, E> func);
 }

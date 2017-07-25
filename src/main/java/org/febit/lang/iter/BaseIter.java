@@ -17,6 +17,7 @@ package org.febit.lang.iter;
 
 import java.util.Iterator;
 import org.febit.lang.Function1;
+import org.febit.lang.Function2;
 import org.febit.lang.Iter;
 import org.febit.util.CollectionUtil;
 
@@ -44,6 +45,13 @@ public abstract class BaseIter<E> implements Iter<E> {
     @Override
     public Iter<E> filter(final Function1<Boolean, E> valid) {
         return CollectionUtil.filter(this, valid);
+    }
+
+    public <T> T fold(T init, final Function2<T, T, E> func) {
+        while (this.hasNext()) {
+            init = func.call(init, this.next());
+        }
+        return init;
     }
 
     @Override

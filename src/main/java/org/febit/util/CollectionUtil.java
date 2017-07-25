@@ -180,6 +180,35 @@ public class CollectionUtil {
         return new ObjectArrayIter(o1);
     }
 
+    public static <T> Iter<T> toIter(final Iterator<T> iter) {
+        if (iter == null) {
+            return Defaults.EMPTY_ITER;
+        }
+        if (iter instanceof Iter) {
+            return (Iter<T>) iter;
+        }
+        return new IteratorIter<>(iter);
+    }
+
+    public static <T> Iter<T> toIter(final Iterable<T> iterable) {
+        if (iterable == null) {
+            return Defaults.EMPTY_ITER;
+        }
+        return toIter(iterable.iterator());
+    }
+
+    public static <K, V> Iter<Map.Entry<K, V>> toIter(final Map<K, V> map) {
+        if (map == null) {
+            return Defaults.EMPTY_ITER;
+        }
+        return toIter(map.entrySet());
+    }
+
+    @SuppressWarnings("unchecked")
+    public static Iter toIter(final Object o1) {
+        return toIter(toIterator(o1));
+    }
+
     public static <F, T> Iter<T> map(final Iterator<F> iter, final Function1<T, F> func) {
         return new OpMapIter<>(iter, func);
     }
@@ -199,21 +228,6 @@ public class CollectionUtil {
 
     public static <F, T> Iter<T> flatMap(final Iterator<F> iter, final Function1<Iterator<T>, F> func) {
         return new FlatMapIter<>(iter, func);
-    }
-
-    public static <T> Iter<T> toIter(final Iterator<T> iter) {
-        if (iter == null) {
-            return Defaults.EMPTY_ITER;
-        }
-        if (iter instanceof Iter) {
-            return (Iter<T>) iter;
-        }
-        return new IteratorIter<>(iter);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static Iter toIter(final Object o1) {
-        return toIter(toIterator(o1));
     }
 
     @SuppressWarnings("unchecked")
