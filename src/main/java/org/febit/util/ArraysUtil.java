@@ -65,8 +65,9 @@ public class ArraysUtil extends jodd.util.ArraysUtil {
     /**
      * Search which interval the number belongs to.
      *
-     * <p>
-     * [x-1] &gt; number &lt;= [x] => x </p>
+     * <pre>
+     * [x-1] &lt; number &lt;= [x] returns x
+     * </pre>
      *
      * @param intervals
      * @param number
@@ -104,12 +105,11 @@ public class ArraysUtil extends jodd.util.ArraysUtil {
     /**
      * Find which interval the number belongs to.
      *
-     * <p>
-     * number &lt;= [0] returns 0 </p>
-     * <p>
-     * [x-1] &lt; number &lt;= [x] returns x </p>
-     * <p>
-     * [length-1] &lt; number returns length </p>
+     * <pre>
+     * number &lt;= [0] returns 0
+     * [x-1] &lt; number &lt;= [x] returns x
+     * [length-1] &lt; number returns length
+     * </pre>
      *
      * @param intervals
      * @param number

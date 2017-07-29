@@ -71,7 +71,7 @@ public class Ints {
     }
 
     /**
-     * Merge & Sort & Distinct.
+     * Merge, Sort and Distinct.
      *
      * @param src1
      * @param src2
@@ -88,7 +88,7 @@ public class Ints {
     }
 
     /**
-     * Sort & Distinct.
+     * Sort and Distinct.
      *
      * @param src
      * @return
