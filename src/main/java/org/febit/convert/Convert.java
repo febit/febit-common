@@ -62,12 +62,12 @@ public class Convert {
         CONVERTERS.put(type, convert);
     }
 
-    public static Object convert(String string, Class type) {
-        final TypeConverter convert;
-        if ((convert = CONVERTERS.get(type)) != null) {
-            return convert.convert(string, type);
+    public static <T> T convert(String string, Class<T> type) {
+        final TypeConverter convert = CONVERTERS.get(type);
+        if (convert == null) {
+            throw new RuntimeException("Convert not support class: " + type);
         }
-        return string;
+        return (T) convert.convert(string, type);
     }
 
     public static Object convert(String string, Class type, TypeConverter defaultConverter) {
@@ -196,7 +196,10 @@ public class Convert {
     }
 
     public static boolean toBool(String string) {
-        return string != null && (string.equalsIgnoreCase("true") || string.equalsIgnoreCase("1") || string.equalsIgnoreCase("on"));
+        return string != null
+                && (string.equalsIgnoreCase("true")
+                || string.equalsIgnoreCase("1")
+                || string.equalsIgnoreCase("on"));
     }
 
     public static String[] toStringArray(String string) {
