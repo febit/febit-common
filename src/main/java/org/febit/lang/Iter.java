@@ -15,7 +15,9 @@
  */
 package org.febit.lang;
 
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 import org.febit.lang.iter.BaseIter;
 
@@ -50,6 +52,11 @@ public interface Iter<E> extends Iterator<E> {
         public Object next() {
             throw new NoSuchElementException();
         }
+
+        @Override
+        public List readList() {
+            return Collections.emptyList();
+        }
     };
 
     <T> Iter<T> map(final Function1<T, E> func);
@@ -61,4 +68,6 @@ public interface Iter<E> extends Iterator<E> {
     Iter<E> excludeNull();
 
     <T> T fold(T init, final Function2<T, T, E> func);
+
+    List<E> readList();
 }
