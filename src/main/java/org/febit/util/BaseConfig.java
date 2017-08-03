@@ -16,12 +16,15 @@
 package org.febit.util;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.febit.convert.Convert;
+import org.febit.lang.Function0;
 import org.febit.lang.Singleton;
+import org.febit.util.agent.LazyAgent;
 
 /**
  *
@@ -30,15 +33,21 @@ import org.febit.lang.Singleton;
  */
 public class BaseConfig<T extends BaseConfig> implements Singleton, Serializable {
 
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(BaseConfig.class);
     protected final Map<String, String> data;
+    protected final transient LazyAgent<Petite> petiteAgent = LazyAgent.create(new Function0<Petite>() {
+        @Override
+        public Petite call() {
+            return buildPetite();
+        }
+    });
 
     protected BaseConfig() {
-        this(new HashMap<String, String>());
+        this.data = new HashMap<>();
     }
 
     protected BaseConfig(Map<String, String> datas) {
-        this.data = datas;
+        this();
+        this.data.putAll(datas);
     }
 
     public boolean checkRequire(String key) {
@@ -77,18 +86,21 @@ public class BaseConfig<T extends BaseConfig> implements Singleton, Serializable
     @SuppressWarnings("unchecked")
     public T putAll(Props props) {
         this.data.putAll(props.export());
+        this.petiteAgent.reset();
         return (T) this;
     }
 
     @SuppressWarnings("unchecked")
     public T putAll(Map<String, String> datas) {
         this.data.putAll(datas);
+        this.petiteAgent.reset();
         return (T) this;
     }
 
     @SuppressWarnings("unchecked")
     public T put(String key, String value) {
         this.data.put(key, value);
+        this.petiteAgent.reset();
         return (T) this;
     }
 
@@ -141,8 +153,12 @@ public class BaseConfig<T extends BaseConfig> implements Singleton, Serializable
                 .build();
     }
 
+    public Petite getPetite() {
+        return petiteAgent.get();
+    }
+
     public Set<String> keySet() {
-        return this.data.keySet();
+        return Collections.unmodifiableSet(this.data.keySet());
     }
 
     public int size() {

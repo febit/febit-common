@@ -24,7 +24,7 @@ import org.febit.lang.Function0;
  */
 public abstract class LazyAgent<T> implements Serializable {
 
-    protected transient T instance;
+    protected transient volatile T instance;
 
     protected abstract T create();
 
@@ -34,6 +34,10 @@ public abstract class LazyAgent<T> implements Serializable {
             return result;
         }
         return _getOrCreate();
+    }
+
+    public void reset() {
+        this.instance = null;
     }
 
     protected synchronized T _getOrCreate() {
