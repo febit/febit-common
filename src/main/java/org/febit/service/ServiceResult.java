@@ -23,7 +23,7 @@ import java.util.Map;
  *
  * @author zqq90
  */
-public class ServiceResult {
+public class ServiceResult<T> {
 
     public static final int SUCCESS = 0;
     public static final int ERROR_SYS = 100;
@@ -67,9 +67,9 @@ public class ServiceResult {
     public final String msg;
     public final Object[] args;
     public Map<Object, Object> map;
-    public final Object value;
+    public final T value;
 
-    protected ServiceResult(Object value) {
+    protected ServiceResult(T value) {
         this.code = SUCCESS;
         this.msg = null;
         this.args = null;
@@ -120,7 +120,7 @@ public class ServiceResult {
         return "ServiceResult{" + "code=" + code + ", message=" + msg + ", arguments=" + Arrays.toString(args) + '}';
     }
 
-    public static ServiceResult success(Object val) {
+    public static <T> ServiceResult<T> success(T val) {
         return new ServiceResult(val);
     }
 
