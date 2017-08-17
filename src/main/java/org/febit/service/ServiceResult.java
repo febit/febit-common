@@ -54,6 +54,8 @@ public class ServiceResult<T> implements Serializable {
     public static final int ERROR_XSRF = 5401;
     //验证码错误
     public static final int ERROR_VERCODE = 5402;
+    //未登录
+    public static final int ERROR_NOT_LOGIN = 5403;
 
     public static final int ERROR_ADD = 6100;
     public static final int ERROR_DEL = 6200;
