@@ -15,6 +15,7 @@
  */
 package org.febit.service;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,8 +23,11 @@ import java.util.Map;
 /**
  *
  * @author zqq90
+ * @param <T>
  */
-public class ServiceResult<T> {
+public class ServiceResult<T> implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     public static final int SUCCESS = 0;
     public static final int ERROR_SYS = 100;
@@ -65,9 +69,9 @@ public class ServiceResult<T> {
 
     public final int code;
     public final String msg;
-    public final Object[] args;
-    public Map<Object, Object> map;
     public final T value;
+    private final Object[] args;
+    private Map<Object, Object> datas;
 
     protected ServiceResult(T value) {
         this.code = SUCCESS;
@@ -76,7 +80,7 @@ public class ServiceResult<T> {
         this.value = value;
     }
 
-    protected ServiceResult(int code, String message, Object[] arguments) {
+    protected ServiceResult(int code, String message, Object... arguments) {
         this.code = code;
         this.msg = message;
         this.args = arguments;
@@ -90,29 +94,32 @@ public class ServiceResult<T> {
         this.value = null;
     }
 
-    public final boolean success() {
+    public boolean success() {
         return code == SUCCESS;
     }
 
-    public final boolean failed() {
+    public boolean failed() {
         return code != SUCCESS;
     }
 
     public ServiceResult put(Object key, Object value) {
-        Map myMap = this.map;
-        if (myMap == null) {
-            this.map = myMap = new HashMap<>();
+        if (this.datas == null) {
+            this.datas = new HashMap<>();
         }
-        myMap.put(key, value);
+        this.datas.put(key, value);
         return this;
     }
 
     public Object get(Object key) {
-        return map != null ? map.get(key) : null;
+        return datas != null ? datas.get(key) : null;
     }
 
-    public Map<Object, Object> getMap() {
-        return map;
+    public Map<Object, Object> getDatas() {
+        return datas;
+    }
+
+    public Object[] getArgs() {
+        return args;
     }
 
     @Override
@@ -133,7 +140,7 @@ public class ServiceResult<T> {
     }
 
     public static ServiceResult error(String msg) {
-        return new ServiceResult(ERROR, msg, null);
+        return new ServiceResult(ERROR, msg);
     }
 
     public static ServiceResult error(String msg, Object... args) {
