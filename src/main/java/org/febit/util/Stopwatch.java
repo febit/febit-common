@@ -15,14 +15,13 @@
  */
 package org.febit.util;
 
-import java.io.Closeable;
 import java.util.concurrent.TimeUnit;
 
 /**
  *
  * @author zqq90
  */
-public class Stopwatch implements Closeable, AutoCloseable {
+public class Stopwatch {
 
     public static Stopwatch startNew() {
         return new Stopwatch().start();
@@ -55,6 +54,12 @@ public class Stopwatch implements Closeable, AutoCloseable {
         isStarted = false;
         elapsedNanos += System.nanoTime() - startNanos;
         return this;
+    }
+
+    public void stopIfRunning() {
+        if (isStarted) {
+            stop();
+        }
     }
 
     public Stopwatch reset() {
@@ -110,10 +115,4 @@ public class Stopwatch implements Closeable, AutoCloseable {
         return Long.toString(nowInNanos());
     }
 
-    @Override
-    public void close() {
-        if (isStarted) {
-            stop();
-        }
-    }
 }
