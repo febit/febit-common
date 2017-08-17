@@ -46,19 +46,18 @@ public class GeoLite2Csv {
 
     public static Iter<TransferInput> createIteratorFromFile(String filepath, final GeoLite2CsvDict dict) throws IOException {
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(filepath), "UTF-8"));
-
-        //skip title
-        reader.readLine();
-
-        return CsvUtil.linesIter(reader)
-                .map(new Function1<TransferInput, String[]>() {
-                    @Override
-                    public TransferInput call(String[] line) {
-                        return createTransferInput(line, dict);
-                    }
-                })
-                .excludeNull();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(filepath), "UTF-8"))) {
+            //skip title
+            String title = reader.readLine();
+            return CsvUtil.linesIter(reader)
+                    .map(new Function1<TransferInput, String[]>() {
+                        @Override
+                        public TransferInput call(String[] line) {
+                            return createTransferInput(line, dict);
+                        }
+                    })
+                    .excludeNull();
+        }
     }
 
     public static TransferInput createTransferInput(String[] arr, GeoLite2CsvDict dict) {

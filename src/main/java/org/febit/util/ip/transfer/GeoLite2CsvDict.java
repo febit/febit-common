@@ -108,8 +108,8 @@ public class GeoLite2CsvDict {
     public void load(String filepath) throws IOException {
         this.map.clear();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(filepath), "UTF-8"))) {
-            // skip head
-            reader.readLine();
+            // skip title
+            String title = reader.readLine();
             //
             Iter<String[]> lines = CsvUtil.linesIter(reader);
             while (lines.hasNext()) {

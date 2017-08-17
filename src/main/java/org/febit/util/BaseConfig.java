@@ -33,16 +33,15 @@ import org.febit.util.agent.LazyAgent;
  */
 public class BaseConfig<T extends BaseConfig> implements Singleton, Serializable {
 
-    protected final Map<String, String> data;
     protected final transient LazyAgent<Petite> petiteAgent = LazyAgent.create(new Function0<Petite>() {
         @Override
         public Petite call() {
             return buildPetite();
         }
     });
+    private final Map<String, String> data = new HashMap<>();
 
     protected BaseConfig() {
-        this.data = new HashMap<>();
     }
 
     protected BaseConfig(Map<String, String> datas) {
@@ -73,6 +72,10 @@ public class BaseConfig<T extends BaseConfig> implements Singleton, Serializable
 
     public String get(String key) {
         return data.get(key);
+    }
+
+    public Map<String, String> getAll() {
+        return Collections.unmodifiableMap(this.data);
     }
 
     public String getOrElse(String key, String defaultValue) {

@@ -16,11 +16,9 @@
 package org.febit.io;
 
 import java.io.BufferedReader;
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.NoSuchElementException;
-import jodd.io.StreamUtil;
 import org.febit.lang.Iter;
 import org.febit.lang.iter.BaseIter;
 
@@ -28,7 +26,7 @@ import org.febit.lang.iter.BaseIter;
  *
  * @author zqq90
  */
-public class LineReader extends BaseIter<String> implements Iter<String>, Closeable {
+public class LineReader extends BaseIter<String> implements Iter<String> {
 
     BufferedReader _reader;
     String cached;
@@ -72,9 +70,7 @@ public class LineReader extends BaseIter<String> implements Iter<String>, Closea
         return next;
     }
 
-    @Override
-    public void close() {
-        StreamUtil.close(_reader);
+    protected void close() {
         _reader = null;
     }
 }

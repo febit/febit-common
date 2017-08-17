@@ -15,6 +15,8 @@
  */
 package org.febit.lang.iter;
 
+import java.util.NoSuchElementException;
+
 /**
  *
  * @author zqq90
@@ -30,6 +32,10 @@ public final class BooleanArrayIter extends AbstractArrayIter<Boolean> {
 
     @Override
     public Boolean next() {
-        return array[++_index];
+        int i = ++_index;
+        if (i > this.max) {
+            throw new NoSuchElementException(String.valueOf(i));
+        }
+        return array[i];
     }
 }

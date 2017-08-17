@@ -16,6 +16,7 @@
 package org.febit.io;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -36,12 +37,16 @@ public class FileUtil extends jodd.io.FileUtil {
         }
     }
 
-    public static LineReader lineReader(final String file) throws IOException {
-        return lineReader(new FileInputStream(file));
+    public static FileInputStream open(final String file) throws FileNotFoundException {
+        return new FileInputStream(file);
     }
 
-    public static LineReader lineReader(final String file, String charset) throws IOException {
-        return lineReader(new FileInputStream(file), charset);
+    public static InputStreamReader openReader(final String file, String charset) throws UnsupportedEncodingException, FileNotFoundException {
+        return new InputStreamReader(open(file), charset);
+    }
+
+    public static InputStreamReader openReader(final InputStream input, String charset) throws UnsupportedEncodingException {
+        return new InputStreamReader(input, charset);
     }
 
     public static LineReader lineReader(final Reader reader) {
@@ -53,10 +58,6 @@ public class FileUtil extends jodd.io.FileUtil {
     }
 
     public static LineReader lineReader(final InputStream input, String charset) throws UnsupportedEncodingException {
-        return new LineReader(new InputStreamReader(input, charset));
-    }
-
-    public static LineReader lineReader(final InputStream input, Charset cs) throws UnsupportedEncodingException {
-        return new LineReader(new InputStreamReader(input, cs));
+        return new LineReader(openReader(input, charset));
     }
 }
