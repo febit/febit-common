@@ -15,9 +15,8 @@
  */
 package org.febit.util.agent;
 
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.febit.lang.Function1;
-import org.febit.util.CollectionUtil;
 
 /**
  *
@@ -28,14 +27,14 @@ import org.febit.util.CollectionUtil;
 public abstract class LazyMap<K, V> {
 
     protected static final int DEFAULT_INIT_CAPACITY = 12;
-    protected final Map<Object, V> pool;
+    protected final ConcurrentHashMap<Object, V> pool;
 
     protected LazyMap() {
         this(12);
     }
 
     protected LazyMap(int initialCapacity) {
-        this.pool = CollectionUtil.createMap(initialCapacity);
+        this.pool = new ConcurrentHashMap<>(initialCapacity);
     }
 
     public V get(K key) {
@@ -58,6 +57,10 @@ public abstract class LazyMap<K, V> {
         value = create(key);
         this.pool.put(actualKey, value);
         return value;
+    }
+
+    public void clear() {
+        pool.clear();
     }
 
     /**

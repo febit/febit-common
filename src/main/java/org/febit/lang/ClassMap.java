@@ -19,9 +19,9 @@ public final class ClassMap<V> {
 
     private static final int MAXIMUM_CAPACITY = 1 << 29;
 
-    private Entry<V>[] table;
-    private int threshold;
-    private int size;
+    private volatile Entry<V>[] table;
+    private volatile int threshold;
+    private volatile int size;
 
     @SuppressWarnings("unchecked")
     public ClassMap(int initialCapacity) {

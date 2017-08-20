@@ -23,9 +23,9 @@ abstract class AbstractIdentityMap<V> {
 
     private static final int MAXIMUM_CAPACITY = 1 << 29;
 
-    private Entry<V>[] table;
-    private int threshold;
-    private int size;
+    private volatile Entry<V>[] table;
+    private volatile int threshold;
+    private volatile int size;
 
     @SuppressWarnings("unchecked")
     public AbstractIdentityMap(int initialCapacity) {
@@ -82,7 +82,6 @@ abstract class AbstractIdentityMap<V> {
         final Entry<V>[] tab;
         final int index;
         e = (tab = table)[index = (key.hashCode() & (tab.length - 1))];
-
         while (e != null) {
             if (key == e.key) {
                 if (prev != null) {
