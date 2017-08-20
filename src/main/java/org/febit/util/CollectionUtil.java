@@ -31,6 +31,7 @@ import jodd.util.collection.IntHashMap;
 import org.febit.lang.Defaults;
 import org.febit.lang.Function1;
 import org.febit.lang.Iter;
+import org.febit.lang.iter.BaseIter;
 import org.febit.lang.iter.BooleanArrayIter;
 import org.febit.lang.iter.ByteArrayIter;
 import org.febit.lang.iter.CharArrayIter;
@@ -43,7 +44,6 @@ import org.febit.lang.iter.IterFilter;
 import org.febit.lang.iter.IteratorIter;
 import org.febit.lang.iter.LongArrayIter;
 import org.febit.lang.iter.ObjectArrayIter;
-import org.febit.lang.iter.OpMapIter;
 import org.febit.lang.iter.ShortArrayIter;
 
 /**
@@ -210,7 +210,18 @@ public class CollectionUtil {
     }
 
     public static <F, T> Iter<T> map(final Iterator<F> iter, final Function1<T, F> func) {
-        return new OpMapIter<>(iter, func);
+        return new BaseIter<T>() {
+
+            @Override
+            public boolean hasNext() {
+                return iter.hasNext();
+            }
+
+            @Override
+            public T next() {
+                return func.call(iter.next());
+            }
+        };
     }
 
     public static <T> Iter<T> excludeNull(final Iterator<T> iter) {
@@ -266,7 +277,7 @@ public class CollectionUtil {
                 return new ByteArrayIter((byte[]) o1);
             }
         }
-        return null;
+        throw new RuntimeException("Can't convert to iter: " + clazz);
     }
 
     public static <T> Map<String, T> exportByKeyPrefix(Map<String, T> src, Map<String, T> to, String prefix) {

@@ -71,6 +71,5 @@ public abstract class IterFilter<T> extends BaseIter<T> {
                 return valid != null && valid;
             }
         };
-
     }
 }
