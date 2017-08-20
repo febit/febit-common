@@ -16,6 +16,7 @@
 package org.febit.form;
 
 import org.febit.form.util.FieldUtil;
+import org.febit.util.StringUtil;
 
 /**
  *
@@ -26,10 +27,13 @@ public class IdForm {
     protected String id;
 
     public boolean requiredCheck() {
-        return id != null && !id.isEmpty();
+        return StringUtil.isNotEmpty(id);
     }
 
     public String getStringId() {
+        if (StringUtil.isEmpty(id)) {
+            return null;
+        }
         return id;
     }
 

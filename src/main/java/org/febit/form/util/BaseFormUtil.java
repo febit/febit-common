@@ -46,13 +46,12 @@ import org.febit.util.CollectionUtil;
  */
 public class BaseFormUtil {
 
-    private static final ConcurrentIdentityMap<FormEntry> CACHE = new ConcurrentIdentityMap<>(128);
     private static final Logger LOG = LoggerFactory.getLogger(BaseFormUtil.class);
+    private static final ConcurrentIdentityMap<FormEntry> CACHE = new ConcurrentIdentityMap<>(128);
 
     protected static class FormEntry {
 
         protected final IntHashMap addProfiles;
-
         protected final IntHashMap modifyProfiles;
 
         public FormEntry(IntHashMap addProfiles, IntHashMap modifyProfiles) {
@@ -263,9 +262,7 @@ public class BaseFormUtil {
                         || modifyProfiles != null) {
                     result.add(new FormItem(addProfiles, modifyProfiles, field));
                 } else {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("Skip field:" + field);
-                    }
+                    LOG.debug("Skip field: {}", field);
                 }
             }
             resolve(type.getSuperclass());

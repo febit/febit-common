@@ -16,6 +16,7 @@
 package org.febit.form;
 
 import org.febit.convert.Convert;
+import org.febit.util.StringUtil;
 
 /**
  *
@@ -30,17 +31,23 @@ public class IdsForm {
     }
 
     public int[] getIntIds() {
+        if (StringUtil.isEmpty(ids)) {
+            return null;
+        }
         return Convert.toIntArray(ids);
     }
 
     public long[] getLongIds() {
-        if (ids != null) {
-            return Convert.toLongArray(ids);
+        if (StringUtil.isEmpty(ids)) {
+            return null;
         }
-        return null;
+        return Convert.toLongArray(ids);
     }
 
     public String[] getStringIds() {
+        if (StringUtil.isEmpty(ids)) {
+            return null;
+        }
         return Convert.toStringArray(ids);
     }
 
@@ -49,6 +56,6 @@ public class IdsForm {
     }
 
     public boolean requiredCheck() {
-        return ids != null && !ids.isEmpty();
+        return StringUtil.isNotEmpty(ids);
     }
 }
