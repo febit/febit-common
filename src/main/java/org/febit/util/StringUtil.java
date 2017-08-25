@@ -353,67 +353,6 @@ public class StringUtil {
         return src.substring(from, to);
     }
 
-    final static char[] DIGITS_ALL = {
-        '0', '1', '2', '3', '4', '5',
-        '6', '7', '8', '9', 'A', 'B',
-        'C', 'D', 'E', 'F', 'G', 'H',
-        'I', 'J', 'K', 'L', 'M', 'N',
-        'O', 'P', 'Q', 'R', 'S', 'T',
-        'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b',
-        'c', 'd', 'e', 'f', 'g', 'h',
-        'i', 'j', 'k', 'l', 'm', 'n',
-        'o', 'p', 'q', 'r', 's', 't',
-        'u', 'v', 'w', 'x', 'y', 'z'
-    };
-
-    public static String toHalfString(int i) {
-        char[] buf = new char[13];
-        int charPos = 12;
-        boolean negative = (i < 0);
-
-        if (!negative) {
-            i = -i;
-        }
-
-        while (i <= -36) {
-            buf[charPos--] = DIGITS_ALL[(int) (-(i % 36))];
-            i = i / 36;
-        }
-        buf[charPos] = DIGITS_ALL[(int) (-i)];
-
-        if (negative) {
-            buf[--charPos] = '-';
-        }
-
-        while (charPos > 9) {
-            buf[--charPos] = '0';
-        }
-
-        return new String(buf, charPos, (13 - charPos));
-    }
-
-    public static String toMinString(long i) {
-        char[] buf = new char[13];
-        int charPos = 12;
-        boolean negative = (i < 0);
-
-        if (!negative) {
-            i = -i;
-        }
-
-        while (i <= -62) {
-            buf[charPos--] = DIGITS_ALL[(int) (-(i % 62))];
-            i = i / 62;
-        }
-        buf[charPos] = DIGITS_ALL[(int) (-i)];
-
-        if (negative) {
-            buf[--charPos] = '-';
-        }
-
-        return new String(buf, charPos, (13 - charPos));
-    }
-
     public static String toString(final FastCharBuffer buffer) {
         return UnsafeUtil.createString(buffer.toArray());
     }
@@ -480,11 +419,45 @@ public class StringUtil {
         return changed ? new String(arr) : input;
     }
 
-    public static String toTrimedUpperDBC(String input) {
+    public static String trimAndUpperDBC(String input) {
         if (input == null || input.isEmpty()) {
             return input;
         }
         return toDBC(input).trim().toUpperCase();
+    }
+
+    /**
+     * 是否是 半角字符
+     *
+     * @param c
+     * @return
+     */
+    public static boolean isDbcCase(char c) {
+        if (c <= 127) {
+            return true;
+        }
+        // 日文半角片假名和符号
+        if (c >= 65377 && c <= 65439) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 按 1全角=2半角 计算长度
+     *
+     * @param value
+     * @return
+     */
+    public static int getTextWidth(String value) {
+        int len = value.length();
+        int result = len;
+        for (int i = 0; i < len; i++) {
+            if (!isDbcCase(value.charAt(i))) {
+                result++;
+            }
+        }
+        return result;
     }
 
     private static boolean match(Pattern pattern, String string) {
@@ -763,11 +736,11 @@ public class StringUtil {
         return StringUtil.removeChars(str, FILENAME_FORBIDS).trim();
     }
 
-    public static final char[] FILENAME_FORBIDS = {' ', '\t', '\f', '\n', '\r', '\b', '\\', '/', '<', '>', '*', '?', ':', '"', '|'};
-    public static final char[] DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
-    public static final char[] DIGITS_UPPER = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+    private static final char[] FILENAME_FORBIDS = {' ', '\t', '\f', '\n', '\r', '\b', '\\', '/', '<', '>', '*', '?', ':', '"', '|'};
+    private static final char[] DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+    private static final char[] DIGITS_UPPER = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
-    public static final char[] ASCII_CHARS = {'0', '0', '0', '1', '0', '2', '0', '3', '0', '4', '0', '5', '0', '6',
+    private static final char[] ASCII_CHARS = {'0', '0', '0', '1', '0', '2', '0', '3', '0', '4', '0', '5', '0', '6',
         '0', '7', '0', '8', '0', '9', '0', 'A', '0', 'B', '0', 'C', '0', 'D', '0', 'E', '0', 'F', '1', '0', '1',
         '1', '1', '2', '1', '3', '1', '4', '1', '5', '1', '6', '1', '7', '1', '8', '1', '9', '1', 'A', '1', 'B',
         '1', 'C', '1', 'D', '1', 'E', '1', 'F', '2', '0', '2', '1', '2', '2', '2', '3', '2', '4', '2', '5', '2',
@@ -778,10 +751,6 @@ public class StringUtil {
     }
 
     public static String hex(final byte[] bs) {
-        return toHexString(bs, DIGITS);
-    }
-
-    public static String toHexString(final byte[] bs) {
         return toHexString(bs, DIGITS);
     }
 
@@ -808,7 +777,7 @@ public class StringUtil {
         return out;
     }
 
-    public static byte[] hexToBytes(final String strIn) {
+    public static byte[] decodeHex(final String strIn) {
         if (strIn == null) {
             return null;
         }
@@ -1005,8 +974,6 @@ public class StringUtil {
         }
     }
 
-    public static final String EMPTY = "";
-
     public static String upperFirst(String str) {
         if (str == null || str.length() == 0) {
             return str;
@@ -1019,58 +986,6 @@ public class StringUtil {
             return str;
         }
         return CharUtil.toLowerAscii(str.charAt(0)) + str.substring(1);
-    }
-
-    /**
-     * 是否是 半角字符
-     *
-     * @param c
-     * @return
-     */
-    public static boolean isDbcCase(char c) {
-        if (c <= 127) {
-            return true;
-        }
-        // 日文半角片假名和符号
-        if (c >= 65377 && c <= 65439) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * 按 1全角=2半角 计算长度
-     *
-     * @param value
-     * @return
-     */
-    public static int getDbcLength(String value) {
-        int len = value.length();
-        int result = len;
-        for (int i = 0; i < len; i++) {
-            if (!isDbcCase(value.charAt(i))) {
-                result++;
-            }
-        }
-        return result;
-    }
-
-    /**
-     * 按 1全角=2半角 计算长度
-     *
-     * @param value
-     * @param maxLen 最大长度
-     * @return
-     */
-    public static int getDbcLength(String value, final int maxLen) {
-        int len = value.length();
-        int result = len;
-        for (int i = 0; i < len && result < maxLen; i++) {
-            if (!isDbcCase(value.charAt(i))) {
-                result++;
-            }
-        }
-        return result <= maxLen ? result : maxLen;
     }
 
     public static String escapeHTMLTag(String str) {
