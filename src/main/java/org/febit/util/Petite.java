@@ -586,7 +586,7 @@ public class Petite {
                 return null;
             }
             if (Object[].class.isAssignableFrom(type)) {
-                String[] names = StringUtil.toArrayExcludeCommit(raw);
+                String[] names = StringUtil.toArrayOmitCommit(raw);
                 Object[] beans = (Object[]) Array.newInstance(type.getComponentType(), names.length);
                 for (int i = 0; i < names.length; i++) {
                     beans[i] = Petite.this.get(names[i]);

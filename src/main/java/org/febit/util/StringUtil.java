@@ -464,7 +464,12 @@ public class StringUtil {
         return string != null && pattern.matcher(string).matches();
     }
 
+    @Deprecated
     public static String[] toArrayExcludeCommit(String src) {
+        return toArrayOmitCommit(src);
+    }
+
+    public static String[] toArrayOmitCommit(String src) {
         final String[] array = toArray(src);
         int count = 0;
         for (String str : array) {

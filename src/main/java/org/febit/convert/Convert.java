@@ -96,7 +96,7 @@ public class Convert {
         if (string == null) {
             return null;
         }
-        final String[] strings = StringUtil.toArrayExcludeCommit(string);
+        final String[] strings = StringUtil.toArrayOmitCommit(string);
         final int len = strings.length;
         final int[] entrys = new int[len];
         for (int i = 0; i < len; i++) {
@@ -109,7 +109,7 @@ public class Convert {
         if (string == null) {
             return null;
         }
-        final String[] strings = StringUtil.toArrayExcludeCommit(string);
+        final String[] strings = StringUtil.toArrayOmitCommit(string);
         final int len = strings.length;
         final Integer[] entrys = new Integer[len];
         for (int i = 0; i < len; i++) {
@@ -136,7 +136,7 @@ public class Convert {
         if (string == null) {
             return null;
         }
-        final String[] strings = StringUtil.toArrayExcludeCommit(string);
+        final String[] strings = StringUtil.toArrayOmitCommit(string);
         final int len = strings.length;
         final long[] entrys = new long[len];
         for (int i = 0; i < len; i++) {
@@ -149,7 +149,7 @@ public class Convert {
         if (string == null) {
             return null;
         }
-        final String[] strings = StringUtil.toArrayExcludeCommit(string);
+        final String[] strings = StringUtil.toArrayOmitCommit(string);
         final int len = strings.length;
         final Long[] entrys = new Long[len];
         for (int i = 0; i < len; i++) {
@@ -173,7 +173,7 @@ public class Convert {
         if (string == null) {
             return null;
         }
-        final String[] strings = StringUtil.toArrayExcludeCommit(string);
+        final String[] strings = StringUtil.toArrayOmitCommit(string);
         final int len = strings.length;
         final boolean[] entrys = new boolean[len];
         for (int i = 0; i < len; i++) {
@@ -186,7 +186,7 @@ public class Convert {
         if (string == null) {
             return null;
         }
-        final String[] strings = StringUtil.toArrayExcludeCommit(string);
+        final String[] strings = StringUtil.toArrayOmitCommit(string);
         final int len = strings.length;
         final Class[] entrys = new Class[len];
         for (int i = 0; i < len; i++) {
@@ -213,7 +213,7 @@ public class Convert {
         if (string == null) {
             return null;
         }
-        final String[] strings = StringUtil.toArrayExcludeCommit(string);
+        final String[] strings = StringUtil.toArrayOmitCommit(string);
         final int len = strings.length;
         final Boolean[] entrys = new Boolean[len];
         for (int i = 0; i < len; i++) {

@@ -627,7 +627,7 @@ public final class Props {
             if (this.modulePropsCache == null) {
                 this.modulePropsCache = new HashMap<>();
             }
-            for (String module : StringUtil.toArrayExcludeCommit(modules)) {
+            for (String module : StringUtil.toArrayOmitCommit(modules)) {
                 module = Resources.normalize(module);
                 if (this.props.containsModule(module)) {
                     continue;
