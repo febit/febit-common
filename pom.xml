@@ -24,6 +24,7 @@
     <maven.compiler.source>1.7</maven.compiler.source>
     <maven.compiler.target>1.7</maven.compiler.target>
     <slf4j.version>1.7.12</slf4j.version>
+    <jodd.version>3.7.1</jodd.version>
   </properties>
   <developers>
     <developer>
@@ -198,7 +199,7 @@
     <dependency>
       <groupId>org.jodd</groupId>
       <artifactId>jodd-core</artifactId>
-      <version>3.7.1</version>
+      <version>${jodd.version}</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
