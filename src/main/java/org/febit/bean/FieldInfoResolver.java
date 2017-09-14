@@ -49,36 +49,54 @@ public class FieldInfoResolver implements Comparator<FieldInfo> {
 
     public FieldInfo[] resolve() {
 
-        for (Field field : ClassUtil.getAccessableMemberFields(beanType)) {
+        // member fields
+        for (Field field : ClassUtil.getMemberFields(beanType)) {
+            if (!filter(field)) {
+                continue;
+            }
             registField(formatName(field.getName()), field);
         }
 
+        // getters and setters
         for (Method method : beanType.getMethods()) {
-            if (!ClassUtil.isStatic(method)
-                    && method.getDeclaringClass() != Object.class) {
-                int argsCount = method.getParameterTypes().length;
-                String methodName = method.getName();
-                int methodNameLength = methodName.length();
-                if (method.getReturnType() == void.class) {
-                    if (argsCount == 1
-                            && methodNameLength > 3
-                            && methodName.startsWith("set")) {
-                        registSetterMethod(formatName(cutFieldName(methodName, 3)), method);
-                    }
-                } else {
-                    if (argsCount == 0) {
-                        if (methodNameLength > 3
-                                && methodName.startsWith("get")) {
-                            registGetterMethod(formatName(cutFieldName(methodName, 3)), method);
-                        } else if (methodNameLength > 2
-                                && methodName.startsWith("is")) {
-                            registGetterMethod(formatName(cutFieldName(methodName, 2)), method);
-                        }
-                    }
+            if (ClassUtil.isStatic(method)
+                    || method.getDeclaringClass() == Object.class) {
+                continue;
+            }
+            if (!filter(method)) {
+                continue;
+            }
+            int argsCount = method.getParameterTypes().length;
+            String methodName = method.getName();
+            int methodNameLength = methodName.length();
+            if (method.getReturnType() == void.class) {
+                if (argsCount == 1
+                        && methodNameLength > 3
+                        && methodName.startsWith("set")) {
+                    registSetterMethod(formatName(cutFieldName(methodName, 3)), method);
+                }
+            } else {
+                if (argsCount != 0) {
+                    continue;
+                }
+                if (methodNameLength > 3
+                        && methodName.startsWith("get")) {
+                    registGetterMethod(formatName(cutFieldName(methodName, 3)), method);
+                } else if (methodNameLength > 2
+                        && methodName.startsWith("is")) {
+                    registGetterMethod(formatName(cutFieldName(methodName, 2)), method);
                 }
             }
         }
         return fieldInfos.values().toArray(new FieldInfo[fieldInfos.size()]);
+    }
+
+    protected boolean filter(Field field) {
+        return ClassUtil.isInheritorAccessable(field, beanType);
+    }
+
+    protected boolean filter(Method method) {
+        return true;
     }
 
     protected FieldInfo getOrCreateFieldInfo(String name) {

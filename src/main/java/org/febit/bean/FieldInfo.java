@@ -50,8 +50,19 @@ public final class FieldInfo {
         return field;
     }
 
+    public boolean isFieldGettable() {
+        return this.field != null
+                && ClassUtil.isInheritorAccessable(field, owner);
+    }
+
+    public boolean isGettable() {
+        return this.getter != null || isFieldGettable();
+    }
+
     public boolean isFieldSettable() {
-        return ClassUtil.isSettable(this.field);
+        return this.field != null
+                && ClassUtil.isSettable(this.field)
+                && ClassUtil.isInheritorAccessable(field, owner);
     }
 
     public boolean isSettable() {

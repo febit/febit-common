@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import jodd.io.StreamUtil;
+import org.febit.lang.Function1;
 
 /**
  *
@@ -64,118 +66,122 @@ public class ClassUtil {
         return null;
     }
 
-    public static List<Method> getAccessableMemberMethods(Class type) {
-        final List<Method> methods = new ArrayList<>();
-        for (Class cls : classes(type)) {
-            for (Method method : cls.getDeclaredMethods()) {
-                int modifiers = method.getModifiers();
-                if (!Modifier.isStatic(modifiers)
-                        && (method.getDeclaringClass() == type
-                        || Modifier.isPublic(modifiers)
-                        || Modifier.isProtected(modifiers))) {
-                    setAccessible(method);
-                    methods.add(method);
-                }
+    public static List<Method> getAccessableMemberMethods(final Class type) {
+        return getDeclaredMethods(classes(type), new Function1<Boolean, Method>() {
+            @Override
+            public Boolean call(Method method) {
+                return !isStatic(method)
+                        && isInheritorAccessable(method, type);
             }
-        }
-        return methods;
+        });
     }
 
     public static List<Method> getPublicStaticMethods(Class type) {
-        final List<Method> methods = new ArrayList<>();
-        for (Class cls : impls(type)) {
-            for (Method method : cls.getDeclaredMethods()) {
+        return getDeclaredMethods(impls(type), new Function1<Boolean, Method>() {
+            @Override
+            public Boolean call(Method method) {
                 int modifiers = method.getModifiers();
-                if (!Modifier.isStatic(modifiers)) {
-                    continue;
-                }
-                if (!Modifier.isPublic(modifiers)) {
-                    continue;
-                }
-                setAccessible(method);
-                methods.add(method);
+                return Modifier.isStatic(modifiers)
+                        && Modifier.isPublic(modifiers);
             }
-        }
-        return methods;
+        });
     }
 
     public static List<Field> getPublicStaticFields(Class type) {
-        final List<Field> fields = new ArrayList<>();
-        for (Class cls : classes(type)) {
-            for (Field field : cls.getDeclaredFields()) {
+        return getFields(type, new Function1<Boolean, Field>() {
+            @Override
+            public Boolean call(Field field) {
                 int modifiers = field.getModifiers();
-                if (!Modifier.isStatic(modifiers)) {
-                    continue;
-                }
-                if (!Modifier.isPublic(modifiers)) {
-                    continue;
-                }
-                setAccessible(field);
-                fields.add(field);
+                return Modifier.isStatic(modifiers)
+                        && Modifier.isPublic(modifiers);
             }
-        }
-        return fields;
+        });
     }
 
     public static List<Field> getMemberFields(Class type) {
-        final List<Field> fields = new ArrayList<>();
-        for (Class cls : classes(type)) {
-            for (Field field : cls.getDeclaredFields()) {
+        return getFields(type, new Function1<Boolean, Field>() {
+            @Override
+            public Boolean call(Field field) {
+                return !isStatic(field);
+            }
+        });
+    }
+
+    public static List<Field> getAccessableMemberFields(final Class type) {
+        return getFields(type, new Function1<Boolean, Field>() {
+            @Override
+            public Boolean call(Field field) {
+                return !isStatic(field)
+                        && isInheritorAccessable(field, type);
+            }
+        });
+    }
+
+    public static List<Field> getSettableMemberFields(final Class type) {
+        return getFields(type, new Function1<Boolean, Field>() {
+            @Override
+            public Boolean call(Field field) {
                 int modifiers = field.getModifiers();
-                if (!Modifier.isStatic(modifiers)) {
-                    setAccessible(field);
-                    fields.add(field);
+                return !Modifier.isStatic(modifiers)
+                        && !Modifier.isFinal(modifiers)
+                        && isInheritorAccessable(field, type);
+            }
+        });
+    }
+
+    public static List<Field> getFields(Class type, Function1<Boolean, Field> filter) {
+        return getDeclaredFields(classes(type), filter);
+    }
+
+    protected static List<Method> getDeclaredMethods(Collection<Class> types, Function1<Boolean, Method> filter) {
+        final Map<String, Method> founds = new HashMap<>();
+        for (Class cls : types) {
+            for (Method method : cls.getDeclaredMethods()) {
+                if (!filter.call(method)) {
+                    continue;
+                }
+
+                StringBuilder keyBuf = new StringBuilder();
+                for (Class<?> parameterType : method.getParameterTypes()) {
+                    keyBuf.append(parameterType.getName())
+                            .append(',');
+                }
+                String key = keyBuf.toString();
+                Method old = founds.get(key);
+                if (old == null
+                        || old.getDeclaringClass()
+                                .isAssignableFrom(method.getDeclaringClass())) {
+                    founds.put(key, method);
                 }
             }
         }
-        return fields;
+        List<Method> methods = new ArrayList<>(founds.values());
+        setAccessible(methods);
+        return methods;
     }
 
-    public static List<Field> getAccessableMemberFields(Class type) {
-        final List<Field> fields = new ArrayList<>();
-        for (Class cls : classes(type)) {
+    protected static List<Field> getDeclaredFields(Collection<Class> types, Function1<Boolean, Field> filter) {
+        final Map<String, Field> founds = new HashMap<>();
+        for (Class cls : types) {
             for (Field field : cls.getDeclaredFields()) {
-                int modifiers = field.getModifiers();
-                if (!Modifier.isStatic(modifiers)
-                        && (field.getDeclaringClass() == type
-                        || Modifier.isPublic(modifiers)
-                        || Modifier.isProtected(modifiers))) {
-                    setAccessible(field);
-                    fields.add(field);
+                if (!filter.call(field)) {
+                    continue;
+                }
+                String key = field.getName();
+                Field old = founds.get(key);
+                if (old == null
+                        || old.getDeclaringClass()
+                                .isAssignableFrom(field.getDeclaringClass())) {
+                    founds.put(key, field);
                 }
             }
         }
-        return fields;
-    }
-
-    public static Map<String, Field> getSetableMemberFieldMap(Class type) {
-        final Map<String, Field> fields = new HashMap<>();
-        for (Field field : getSetableMemberFields(type)) {
-            fields.put(field.getName(), field);
-        }
-        return fields;
-    }
-
-    public static List<Field> getSetableMemberFields(Class type) {
-        final List<Field> fields = new ArrayList<>();
-        for (Class cls : classes(type)) {
-            for (Field field : cls.getDeclaredFields()) {
-                int modifiers = field.getModifiers();
-                if (!Modifier.isStatic(modifiers) && !Modifier.isFinal(modifiers)
-                        && (field.getDeclaringClass() == type
-                        || Modifier.isPublic(modifiers)
-                        || Modifier.isProtected(modifiers))) {
-
-                    setAccessible(field);
-                    fields.add(field);
-                }
-            }
-        }
+        List<Field> fields = new ArrayList<>(founds.values());
+        setAccessible(fields);
         return fields;
     }
 
     public static List<Class> impls(Object bean) {
-
         if (bean == null) {
             return Collections.EMPTY_LIST;
         }
@@ -222,35 +228,27 @@ public class ClassUtil {
     }
 
     private static char getAliasOfBaseType(final String name) {
-        //fast check if under root package and start with lower(except 'a')
-        if (name.charAt(0) > 'a' && name.indexOf('.', 1) < 0) {
-            if ("int".equals(name)) {
+        switch (name) {
+            case "int":
                 return 'I';
-            }
-            if ("long".equals(name)) {
+            case "long":
                 return 'J';
-            }
-            if ("short".equals(name)) {
+            case "short":
                 return 'S';
-            }
-            if ("boolean".equals(name)) {
+            case "boolean":
                 return 'Z';
-            }
-            if ("char".equals(name)) {
+            case "char":
                 return 'C';
-            }
-            if ("double".equals(name)) {
+            case "double":
                 return 'D';
-            }
-            if ("float".equals(name)) {
+            case "float":
                 return 'F';
-            }
-            if ("byte".equals(name)) {
+            case "byte":
                 return 'B';
-            }
-            if ("void".equals(name)) {
+            case "void":
                 return 'V';
-            }
+            default:
+                break;
         }
         return '\0';
     }
@@ -277,37 +275,31 @@ public class ClassUtil {
     }
 
     public static Class getPrimitiveClass(final String name) {
-        if (name != null && name.length() != 0 && name.charAt(0) > 'a' && name.indexOf('.', 1) < 0) {
-
-            if (name.equals("int")) {
-                return int.class;
-            }
-            if (name.equals("long")) {
-                return long.class;
-            }
-            if (name.equals("short")) {
-                return short.class;
-            }
-            if (name.equals("boolean")) {
-                return boolean.class;
-            }
-            if (name.equals("char")) {
-                return char.class;
-            }
-            if (name.equals("double")) {
-                return double.class;
-            }
-            if (name.equals("float")) {
-                return float.class;
-            }
-            if (name.equals("byte")) {
-                return byte.class;
-            }
-            if (name.equals("void")) {
-                return void.class;
-            }
+        if (name == null) {
+            return null;
         }
-        return null;
+        switch (name) {
+            case "int":
+                return int.class;
+            case "long":
+                return long.class;
+            case "short":
+                return short.class;
+            case "boolean":
+                return boolean.class;
+            case "char":
+                return char.class;
+            case "double":
+                return double.class;
+            case "float":
+                return float.class;
+            case "byte":
+                return byte.class;
+            case "void":
+                return void.class;
+            default:
+                return null;
+        }
     }
 
     public static Class getClass(final String name) throws ClassNotFoundException {
@@ -317,6 +309,34 @@ public class ClassUtil {
 
     private static Class getClassByInternalName(String name) throws ClassNotFoundException {
         return Class.forName(name, true, getDefaultClassLoader());
+    }
+
+    /**
+     * is accessable for inheritor.
+     *
+     * declaring class is inheritor, or is public or protected access.
+     *
+     * @param member
+     * @param inheritor
+     * @return
+     */
+    public static boolean isInheritorAccessable(Member member, Class inheritor) {
+        return inheritor == member.getDeclaringClass()
+                || isInheritorAccessable(member);
+    }
+
+    /**
+     * is accessable for inheritor.
+     *
+     * is public or protected access.
+     *
+     * @param member
+     * @return
+     */
+    public static boolean isInheritorAccessable(Member member) {
+        int modifiers = member.getModifiers();
+        return Modifier.isPublic(modifiers)
+                || Modifier.isProtected(modifiers);
     }
 
     public static boolean isStatic(Member member) {
@@ -349,6 +369,18 @@ public class ClassUtil {
 
     public static boolean isPublic(Member member) {
         return Modifier.isPublic(member.getModifiers());
+    }
+
+    public static void setAccessible(Collection<? extends AccessibleObject> accessibles) {
+        for (AccessibleObject accessible : accessibles) {
+            setAccessible(accessible);
+        }
+    }
+
+    public static <T extends AccessibleObject> void setAccessible(T... accessibles) {
+        for (T accessible : accessibles) {
+            setAccessible(accessible);
+        }
     }
 
     public static void setAccessible(AccessibleObject accessible) {

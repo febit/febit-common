@@ -500,13 +500,14 @@ public class Petite {
                     key = key.trim();
                     Object value = entry.getValue();
                     if (value instanceof String) {
+                        if (key.isEmpty()) {
+                            continue;
+                        }
                         int len = key.length();
-                        if (len > 0) {
-                            if (key.charAt(len - 1) == '+') {
-                                props.append(key.substring(0, len - 1).trim(), (String) value);
-                            } else {
-                                props.set(key, (String) value);
-                            }
+                        if (key.charAt(len - 1) == '+') {
+                            props.append(key.substring(0, len - 1).trim(), (String) value);
+                        } else {
+                            props.set(key, (String) value);
                         }
                     } else {
                         extras.put(key, value);
