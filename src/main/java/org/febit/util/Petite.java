@@ -35,6 +35,7 @@ import org.febit.bean.Setter;
 import org.febit.convert.Convert;
 import org.febit.convert.TypeConverter;
 import org.febit.lang.Defaults;
+import org.febit.lang.Function1;
 import org.febit.lang.IdentityMap;
 import org.febit.service.Services;
 import org.febit.util.agent.LazyAgent;
@@ -224,7 +225,8 @@ public class Petite {
 
     protected void doInject(final String name, final Object bean) {
 
-        final Map<String, Setter> setters = AccessFactory.resolveSetters(bean.getClass());
+        final Class beanType = bean.getClass();
+        final Map<String, Setter> setters = AccessFactory.resolveSetters(beanType);
         final Map<String, Object> params = this.propsMgr.resolveParams(name);
 
         //Setters
@@ -251,28 +253,35 @@ public class Petite {
         }
 
         //Init
-        for (Method method : ClassUtil.getAccessableMemberMethods(bean.getClass())) {
-            if (method.getAnnotation(Petite.Init.class) == null) {
-                continue;
+        List<Method> methods = ClassUtil.getDeclaredMethods(ClassUtil.classes(beanType), new Function1<Boolean, Method>() {
+            @Override
+            public Boolean call(Method method) {
+                return !ClassUtil.isStatic(method)
+                        && ClassUtil.isInheritorAccessable(method, beanType)
+                        && method.getAnnotation(Petite.Init.class) != null;
             }
-            final Class[] argTypes = method.getParameterTypes();
-            final Object[] args;
-            if (argTypes.length == 0) {
-                args = Defaults.EMPTY_OBJECTS;
-            } else {
-                args = new Object[argTypes.length];
-                for (int i = 0; i < argTypes.length; i++) {
-                    args[i] = this.globalBeanMgr.get(argTypes[i]);
-                }
-            }
+        });
+        for (Method method : methods) {
             try {
-                method.invoke(bean, args);
+                method.invoke(bean, resolveMethodArgs(method));
             } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                 //shouldn't be
                 throw new RuntimeException(ex);
             }
         }
+    }
 
+    protected Object[] resolveMethodArgs(Method method) {
+        final Class[] argTypes = method.getParameterTypes();
+        final Object[] args;
+        if (argTypes.length == 0) {
+            return Defaults.EMPTY_OBJECTS;
+        }
+        args = new Object[argTypes.length];
+        for (int i = 0; i < argTypes.length; i++) {
+            args[i] = this.globalBeanMgr.get(argTypes[i]);
+        }
+        return args;
     }
 
     public void add(Object bean) {
