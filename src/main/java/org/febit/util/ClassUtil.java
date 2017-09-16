@@ -133,14 +133,13 @@ public class ClassUtil {
         return getDeclaredFields(classes(type), filter);
     }
 
-    protected static List<Method> getDeclaredMethods(Collection<Class> types, Function1<Boolean, Method> filter) {
+    public static List<Method> getDeclaredMethods(Collection<Class> types, Function1<Boolean, Method> filter) {
         final Map<String, Method> founds = new HashMap<>();
         for (Class cls : types) {
             for (Method method : cls.getDeclaredMethods()) {
                 if (!filter.call(method)) {
                     continue;
                 }
-
                 StringBuilder keyBuf = new StringBuilder();
                 for (Class<?> parameterType : method.getParameterTypes()) {
                     keyBuf.append(parameterType.getName())
@@ -160,7 +159,7 @@ public class ClassUtil {
         return methods;
     }
 
-    protected static List<Field> getDeclaredFields(Collection<Class> types, Function1<Boolean, Field> filter) {
+    public static List<Field> getDeclaredFields(Collection<Class> types, Function1<Boolean, Field> filter) {
         final Map<String, Field> founds = new HashMap<>();
         for (Class cls : types) {
             for (Field field : cls.getDeclaredFields()) {
@@ -408,21 +407,21 @@ public class ClassUtil {
         }
     }
 
-    public static Method getPublicSetterMethod(Field field, Class parent) {
+    public static Method getPublicSetterMethod(Field field, Class type) {
         try {
-            return parent.getDeclaredMethod("set" + StringUtil.upperFirst(field.getName()), new Class[]{field.getType()});
+            return type.getDeclaredMethod("set" + StringUtil.upperFirst(field.getName()), new Class[]{field.getType()});
         } catch (NoSuchMethodException | SecurityException ignore) {
         }
         return null;
     }
 
-    public static Method getPublicGetterMethod(Field field, Class parent) {
+    public static Method getPublicGetterMethod(Field field, Class type) {
         String nameSuffix = StringUtil.upperFirst(field.getName());
         try {
             Method method;
-            method = parent.getDeclaredMethod("get" + nameSuffix, EMPTY_CLASS_ARRAY);
+            method = type.getDeclaredMethod("get" + nameSuffix, EMPTY_CLASS_ARRAY);
             if (method == null) {
-                method = parent.getDeclaredMethod("is" + nameSuffix, EMPTY_CLASS_ARRAY);
+                method = type.getDeclaredMethod("is" + nameSuffix, EMPTY_CLASS_ARRAY);
             }
             if (method != null) {
                 final Class returnType = method.getReturnType();
