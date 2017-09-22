@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// Copyright (c) 2013-2015, Webit Team. All Rights Reserved.
 package org.febit.form;
 
 import java.util.ArrayList;
