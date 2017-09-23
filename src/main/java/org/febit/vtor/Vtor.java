@@ -15,20 +15,84 @@
  */
 package org.febit.vtor;
 
+import java.util.Arrays;
+import org.febit.lang.Function1;
+import org.febit.util.StringUtil;
+
 /**
- * TODO: finish vtor
+ * A simple validate util, idea from jodd-vtor.
  *
  * @author zqq90
  */
 public class Vtor {
 
+    private static class Holder {
+
+        static final VtorChecker CHECKER = new VtorChecker();
+    }
+
+    /**
+     * Check bean.
+     *
+     * @param bean bean to check
+     * @return an empty array will returned if all passed.
+     */
+    public static Vtor[] check(Object bean) {
+        return Holder.CHECKER.check(bean);
+    }
+
+    /**
+     * Check bean.
+     *
+     * @param bean bean to check
+     * @param filter CheckConfig filter, please return true if accept/allow the Check
+     * @return an empty array will returned if all passed.
+     */
+    public Vtor[] check(Object bean, Function1<Boolean, VtorChecker.CheckConfig> filter) {
+        return Holder.CHECKER.check(bean, filter);
+    }
+
+    public static Vtor create(String name, Check check, Object[] args) {
+        return new Vtor(name, check.getDefaultMessage(args), check, args);
+    }
+
+    public static Vtor create(String name, String message, Object[] args) {
+        return new Vtor(name, message, null, args);
+    }
+
+    public static Vtor create(String name, String message, Check check, Object[] args) {
+        return new Vtor(name, message, check, args);
+    }
+
     public final String name;
     public final String message;
+    public final Check check;
     public final Object[] args;
 
-    public Vtor(String name, String message, Object[] args) {
+    public Vtor(String name, String message, Check check, Object[] args) {
         this.name = name;
         this.message = message;
+        this.check = check;
         this.args = args;
     }
+
+    public String formatMessage() {
+        return StringUtil.format(this.message, args);
+    }
+
+    public String formatMessage(String template) {
+        return StringUtil.format(template, args);
+    }
+
+    @Override
+    public String toString() {
+        return "Vtor{"
+                + "name=" + name
+                + ", message=" + message
+                + ", check=" + check
+                + ", args="
+                + Arrays.toString(args)
+                + '}';
+    }
+
 }
