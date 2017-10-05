@@ -75,4 +75,5 @@ public interface PathMacros {
 	 */
 	String[] extract(String actionPath);
 
+	String[] exactExtract(String actionPath);
 }

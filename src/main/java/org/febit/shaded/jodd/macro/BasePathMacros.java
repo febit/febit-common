@@ -155,6 +155,10 @@ public abstract class BasePathMacros implements PathMacros {
 		return process(actionPath, false);
 	}
 
+	public String[] exactExtract(String actionPath) {
+		return process(actionPath, true);
+	}
+
 	// ---------------------------------------------------------------- common
 
 	/**
