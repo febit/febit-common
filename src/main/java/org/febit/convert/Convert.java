@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 import org.febit.convert.impl.*;
 import org.febit.lang.IdentityMap;
 import org.febit.util.ClassUtil;
+import org.febit.util.PathFormat;
 import org.febit.util.StringUtil;
 
 /**
@@ -56,6 +57,16 @@ public class Convert {
         register(Color[].class, new ColorArrayConverter());
         register(TimeZone.class, new TimeZoneConverter());
         register(Pattern.class, new PatternConverter());
+
+        register(PathFormat.class, (TypeConverter) new TypeConverter() {
+            @Override
+            public Object convert(String raw, Class type) {
+                if (StringUtil.isEmpty(raw)) {
+                    return null;
+                }
+                return new PathFormat(raw);
+            }
+        });
     }
 
     public static void register(Class type, TypeConverter convert) {
