@@ -40,6 +40,7 @@ import org.febit.lang.iter.EnumerationIter;
 import org.febit.lang.iter.FlatMapIter;
 import org.febit.lang.iter.FloatArrayIter;
 import org.febit.lang.iter.IntArrayIter;
+import org.febit.lang.iter.IterConcatIter;
 import org.febit.lang.iter.IterFilter;
 import org.febit.lang.iter.IteratorIter;
 import org.febit.lang.iter.LongArrayIter;
@@ -166,7 +167,11 @@ public class CollectionUtil {
         return set;
     }
 
-    public static Iter toIter(final Enumeration o1) {
+    public static <T> Iter<T> concat(final Iterator<T>... iters) {
+        return new IterConcatIter<>(iters);
+    }
+
+    public static <T> Iter<T> toIter(final Enumeration<T> o1) {
         if (o1 == null) {
             return Defaults.EMPTY_ITER;
         }
@@ -205,7 +210,7 @@ public class CollectionUtil {
     }
 
     @SuppressWarnings("unchecked")
-    public static Iter toIter(final Object o1) {
+    public static Iter<?> toIter(final Object o1) {
         return toIter(toIterator(o1));
     }
 
@@ -242,7 +247,7 @@ public class CollectionUtil {
     }
 
     @SuppressWarnings("unchecked")
-    public static Iterator toIterator(final Object o1) {
+    public static Iterator<?> toIterator(final Object o1) {
         final Class clazz;
         if (o1 == null) {
             return Defaults.EMPTY_ITER;
