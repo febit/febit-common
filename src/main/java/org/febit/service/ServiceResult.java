@@ -29,7 +29,8 @@ public class ServiceResult<T> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public static final int SUCCESS = 0;
+    public static final int OK = 0;
+    public static final int SUCCESS = OK;
     public static final int ERROR_SYS = 100;
     public static final int REDIRECT = 3020;
 
@@ -67,7 +68,7 @@ public class ServiceResult<T> implements Serializable {
     public static final int ERROR_QUERY = 6400;
     public static final int ERROR_QUERY_NOTFOUND = 6404;
 
-    public static final ServiceResult SUCCESS_RESULT = new ServiceResult(SUCCESS);
+    public static final ServiceResult SUCCESS_RESULT = new ServiceResult(OK);
 
     public final int code;
     public final String msg;
@@ -76,7 +77,7 @@ public class ServiceResult<T> implements Serializable {
     private Map<Object, Object> datas;
 
     protected ServiceResult(T value) {
-        this.code = SUCCESS;
+        this.code = OK;
         this.msg = null;
         this.args = null;
         this.value = value;
@@ -97,11 +98,11 @@ public class ServiceResult<T> implements Serializable {
     }
 
     public boolean success() {
-        return code == SUCCESS;
+        return code == OK;
     }
 
     public boolean failed() {
-        return code != SUCCESS;
+        return code != OK;
     }
 
     public ServiceResult put(Object key, Object value) {
@@ -134,7 +135,7 @@ public class ServiceResult<T> implements Serializable {
     }
 
     public static ServiceResult successResult() {
-        return new ServiceResult(SUCCESS);
+        return new ServiceResult(OK);
     }
 
     public static ServiceResult error(int code) {
