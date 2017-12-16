@@ -32,7 +32,7 @@ public final class ObjectArrayIter<T> extends AbstractArrayIter<T> {
 
     @Override
     public T next() {
-        int i = ++_index;
+        int i = ++cursor;
         if (i > this.max) {
             throw new NoSuchElementException(String.valueOf(i));
         }

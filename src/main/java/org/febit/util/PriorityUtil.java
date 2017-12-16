@@ -40,19 +40,8 @@ public class PriorityUtil {
     public static final int PRI_LOWER = 1 << 8;
     public static final int PRI_LOWEST = 0;
 
-    protected static Comparator ASC = new Comparator() {
-        @Override
-        public int compare(Object o1, Object o2) {
-            return Integer.compare(getPriority(o1), getPriority(o2));
-        }
-    };
-
-    protected static Comparator DESC = new Comparator() {
-        @Override
-        public int compare(Object o1, Object o2) {
-            return Integer.compare(getPriority(o2), getPriority(o1));
-        }
-    };
+    protected static final Comparator<Object> ASC = (o1, o2) -> Integer.compare(getPriority(o1), getPriority(o2));
+    protected static final Comparator<Object> DESC = ASC.reversed();
 
     public static <T> void asc(T[] array) {
         Arrays.sort(array, ASC);

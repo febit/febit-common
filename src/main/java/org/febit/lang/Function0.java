@@ -19,6 +19,7 @@ package org.febit.lang;
  *
  * @author zqq90
  */
+@FunctionalInterface
 public interface Function0<R> {
 
     R call();

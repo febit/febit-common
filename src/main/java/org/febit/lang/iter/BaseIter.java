@@ -17,6 +17,7 @@ package org.febit.lang.iter;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Predicate;
 import org.febit.lang.Function1;
 import org.febit.lang.Function2;
 import org.febit.lang.Iter;
@@ -29,11 +30,6 @@ import org.febit.util.CollectionUtil;
 public abstract class BaseIter<E> implements Iter<E> {
 
     @Override
-    public void remove() {
-        throw new UnsupportedOperationException("remove");
-    }
-
-    @Override
     public <T> Iter<T> map(final Function1<T, E> func) {
         return CollectionUtil.map(this, func);
     }
@@ -44,7 +40,7 @@ public abstract class BaseIter<E> implements Iter<E> {
     }
 
     @Override
-    public Iter<E> filter(final Function1<Boolean, E> valid) {
+    public Iter<E> filter(final Predicate<E> valid) {
         return CollectionUtil.filter(this, valid);
     }
 

@@ -29,7 +29,18 @@ import org.febit.util.CollectionUtil;
  */
 public class AccessFactory {
 
-    public static Accessor createAccessor(final FieldInfo fieldInfo) {
+    static class Accessor {
+
+        final Getter getter;
+        final Setter setter;
+
+        Accessor(Getter getter, Setter setter) {
+            this.getter = getter;
+            this.setter = setter;
+        }
+    }
+
+    static Accessor createAccessor(final FieldInfo fieldInfo) {
         return new Accessor(createGetterIfAccessable(fieldInfo), createSetterIfAccessable(fieldInfo));
     }
 
@@ -45,7 +56,7 @@ public class AccessFactory {
         return map;
     }
 
-    public static Map<String, Accessor> resolveAccessors(Class cls) {
+    static Map<String, Accessor> resolveAccessors(Class cls) {
         final FieldInfo[] fieldInfos = FieldInfoResolver.resolve(cls);
         final Map<String, Accessor> map = CollectionUtil.createMap(fieldInfos.length);
         for (FieldInfo fieldInfo : fieldInfos) {

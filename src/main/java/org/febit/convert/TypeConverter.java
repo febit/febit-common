@@ -18,8 +18,14 @@ package org.febit.convert;
 /**
  *
  * @author zqq90
+ * @param <T>
  */
+@FunctionalInterface
 public interface TypeConverter<T> {
 
-    public T convert(String raw, Class<T> type);
+    T convert(String raw);
+
+    default T convert(String raw, Class<T> type) {
+        return convert(raw);
+    }
 }

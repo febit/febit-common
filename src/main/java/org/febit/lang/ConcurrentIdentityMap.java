@@ -15,7 +15,7 @@
  */
 package org.febit.lang;
 
-public final class ConcurrentIdentityMap<V> extends AbstractIdentityMap<V> {
+public final class ConcurrentIdentityMap<K, V> extends AbstractIdentityMap<K, V> {
 
     public ConcurrentIdentityMap() {
         super();
@@ -25,29 +25,29 @@ public final class ConcurrentIdentityMap<V> extends AbstractIdentityMap<V> {
         super(initialCapacity);
     }
 
-    public V unsafeGet(final Object key) {
+    public V unsafeGet(final K key) {
         return _get(key);
     }
 
-    public V get(Object key) {
+    public V get(K key) {
         synchronized (this) {
             return _get(key);
         }
     }
 
-    public V putIfAbsent(Object key, V value) {
+    public V putIfAbsent(K key, V value) {
         synchronized (this) {
             return _putIfAbsent(key, value);
         }
     }
 
-    public void put(Object key, V value) {
+    public void put(K key, V value) {
         synchronized (this) {
             _put(key, value);
         }
     }
 
-    public void remove(Object key) {
+    public void remove(K key) {
         synchronized (this) {
             _remove(key);
         }

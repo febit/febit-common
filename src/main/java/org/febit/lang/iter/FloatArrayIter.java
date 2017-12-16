@@ -32,7 +32,7 @@ public final class FloatArrayIter extends AbstractArrayIter {
 
     @Override
     public Object next() {
-        int i = ++_index;
+        int i = ++cursor;
         if (i > this.max) {
             throw new NoSuchElementException(String.valueOf(i));
         }

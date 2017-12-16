@@ -21,16 +21,16 @@ import java.util.Enumeration;
  *
  * @author zqq90
  */
-public final class EnumerationIter extends BaseIter {
+public final class EnumerationIter<T> extends BaseIter<T> {
 
-    private final Enumeration enumeration;
+    private final Enumeration<T> enumeration;
 
-    public EnumerationIter(Enumeration enumeration) {
+    public EnumerationIter(Enumeration<T> enumeration) {
         this.enumeration = enumeration;
     }
 
     @Override
-    public Object next() {
+    public T next() {
         return enumeration.nextElement();
     }
 

@@ -492,6 +492,27 @@ public class StringUtil {
      * @param src
      * @return 如果是null 返回空数组而不是null
      */
+    private static boolean isArrayValueEnd(char c) {
+        return c == ','
+                || c == '\n'
+                || c == '\r'
+                || c == '，';
+    }
+
+    private static boolean isArrayValueEndOrEmpty(char c) {
+        switch (c) {
+            case ',':
+            case '\n':
+            case '\r':
+            case ' ':
+            case '\t':
+            case '，':
+                return true;
+            default:
+                return false;
+        }
+    }
+
     public static String[] toArray(String src) {
         if (src == null || src.isEmpty()) {
             return Defaults.EMPTY_STRINGS;
@@ -500,25 +521,12 @@ public class StringUtil {
         final char[] srcc = src.toCharArray();
         final int len = srcc.length;
 
-        // list max size = (size + 1) / 2
-        final List<String> list = new ArrayList<>(
-                len > 1024 ? 128
-                        : len > 64 ? 32
-                                : (len + 1) >> 1);
+        List<String> list = new ArrayList<>(len > 1024 ? 64 : 16);
 
         int i = 0;
         while (i < len) {
             //skip empty & splits
-            while (i < len) {
-                char c = srcc[i];
-                if (c != ','
-                        && c != '\n'
-                        && c != '\r'
-                        && c != '，'
-                        && c != ' '
-                        && c != '\t') {
-                    break;
-                }
+            while (i < len && isArrayValueEndOrEmpty(srcc[i])) {
                 i++;
             }
             //check if end
@@ -528,33 +536,20 @@ public class StringUtil {
             final int start = i;
 
             //find end
-            while (i < len) {
-                char c = srcc[i];
-                if (c == ','
-                        || c == '\n'
-                        || c == '\r'
-                        || c == '，') {
-                    break;
-                }
+            while (i < len
+                    && !isArrayValueEnd(srcc[i])) {
                 i++;
             }
             int end = i;
             //trim back end
-            for (;;) {
-                char c = srcc[end - 1];
-                if (c == ' '
-                        || c == '\t') {
-                    end--;
-                    continue;
-                }
-                break;
+            while (isArrayValueEndOrEmpty(srcc[end - 1])) {
+                end--;
             }
             list.add(new String(srcc, start, end - start));
         }
-        if (list.isEmpty()) {
-            return Defaults.EMPTY_STRINGS;
-        }
-        return list.toArray(new String[list.size()]);
+        return list.isEmpty()
+                ? Defaults.EMPTY_STRINGS
+                : list.toArray(new String[list.size()]);
     }
 
     /**

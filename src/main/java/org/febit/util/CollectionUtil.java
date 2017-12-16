@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.Predicate;
 import jodd.util.collection.IntHashMap;
 import org.febit.lang.Defaults;
 import org.febit.lang.Function1;
@@ -61,8 +62,8 @@ public class CollectionUtil {
         Collections.sort(list, c);
     }
 
-    public static List createList(int expactSize) {
-        return new ArrayList(expactSize);
+    public static <T> List<T> createList(int expactSize) {
+        return new ArrayList<>(expactSize);
     }
 
     public static <T> List<T> read(Iterable<T> iterable) {
@@ -86,11 +87,11 @@ public class CollectionUtil {
     }
 
     public static <K> java.util.HashSet<K> createSet(int expectedSize) {
-        return new java.util.HashSet(expectedSize * 4 / 3 + 1);
+        return new java.util.HashSet<>(expectedSize * 4 / 3 + 1);
     }
 
     public static <K, V> HashMap<K, V> createHashMap(int expectedSize) {
-        return new HashMap(expectedSize * 4 / 3 + 1);
+        return new HashMap<>(expectedSize * 4 / 3 + 1);
     }
 
     public static <K, V> Map<K, V> createMap(int expectedSize) {
@@ -105,6 +106,7 @@ public class CollectionUtil {
         return list.toArray();
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> T[] toArray(List<T> list, Class<T> componentType) {
         return list.toArray((T[]) Array.newInstance(componentType, list.size()));
     }
@@ -151,11 +153,9 @@ public class CollectionUtil {
 
     public static java.util.HashSet<Object> toSet(Object... args) {
         java.util.HashSet<Object> set = new java.util.HashSet<>();
-
         if (args != null) {
             set.addAll(Arrays.asList(args));
         }
-
         return set;
     }
 
@@ -167,27 +167,28 @@ public class CollectionUtil {
         return set;
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> Iter<T> concat(final Iterator<T>... iters) {
         return new IterConcatIter<>(iters);
     }
 
     public static <T> Iter<T> toIter(final Enumeration<T> o1) {
         if (o1 == null) {
-            return Defaults.EMPTY_ITER;
+            return Defaults.emptyIter();
         }
-        return new EnumerationIter(o1);
+        return new EnumerationIter<>(o1);
     }
 
     public static <T> Iter<T> toIter(final T[] o1) {
         if (o1 == null) {
-            return Defaults.EMPTY_ITER;
+            return Defaults.emptyIter();
         }
-        return new ObjectArrayIter(o1);
+        return new ObjectArrayIter<>(o1);
     }
 
     public static <T> Iter<T> toIter(final Iterator<T> iter) {
         if (iter == null) {
-            return Defaults.EMPTY_ITER;
+            return Defaults.emptyIter();
         }
         if (iter instanceof Iter) {
             return (Iter<T>) iter;
@@ -197,19 +198,18 @@ public class CollectionUtil {
 
     public static <T> Iter<T> toIter(final Iterable<T> iterable) {
         if (iterable == null) {
-            return Defaults.EMPTY_ITER;
+            return Defaults.emptyIter();
         }
         return toIter(iterable.iterator());
     }
 
     public static <K, V> Iter<Map.Entry<K, V>> toIter(final Map<K, V> map) {
         if (map == null) {
-            return Defaults.EMPTY_ITER;
+            return Defaults.emptyIter();
         }
         return toIter(map.entrySet());
     }
 
-    @SuppressWarnings("unchecked")
     public static Iter<?> toIter(final Object o1) {
         return toIter(toIterator(o1));
     }
@@ -230,15 +230,10 @@ public class CollectionUtil {
     }
 
     public static <T> Iter<T> excludeNull(final Iterator<T> iter) {
-        return CollectionUtil.filter(iter, new Function1<Boolean, T>() {
-            @Override
-            public Boolean call(T item) {
-                return item != null;
-            }
-        });
+        return CollectionUtil.filter(iter, (T item) -> item != null);
     }
 
-    public static <T> Iter<T> filter(final Iterator<T> iter, final Function1<Boolean, T> valid) {
+    public static <T> Iter<T> filter(final Iterator<T> iter, final Predicate<T> valid) {
         return IterFilter.wrap(iter, valid);
     }
 
@@ -250,7 +245,7 @@ public class CollectionUtil {
     public static Iterator<?> toIterator(final Object o1) {
         final Class clazz;
         if (o1 == null) {
-            return Defaults.EMPTY_ITER;
+            return Defaults.emptyIter();
         }
         if (o1 instanceof Iterator) {
             return (Iterator) o1;
@@ -261,7 +256,8 @@ public class CollectionUtil {
         if (o1 instanceof Enumeration) {
             return toIter((Enumeration) o1);
         }
-        if ((clazz = o1.getClass()).isArray()) {
+        clazz = o1.getClass();
+        if (clazz.isArray()) {
             if (o1 instanceof Object[]) {
                 return toIter((Object[]) o1);
             } else if (clazz == int[].class) {
@@ -310,12 +306,7 @@ public class CollectionUtil {
     }
 
     public static <T, K> Map<K, List<T>> groupToMap(Collection<T> collection, Function1<K, T> keyFunc) {
-        return groupToMap(collection, keyFunc, new Function1<T, T>() {
-            @Override
-            public T call(T arg1) {
-                return arg1;
-            }
-        });
+        return groupToMap(collection, keyFunc, (T arg1) -> arg1);
     }
 
     public static <T, K, V> Map<K, List<V>> groupToMap(Collection<T> collection, Function1<K, T> keyFunc, Function1<V, T> valueFunc) {
@@ -325,12 +316,7 @@ public class CollectionUtil {
     }
 
     public static <T, K> TreeMap<K, List<T>> groupToTreeMap(Collection<T> collection, Function1<K, T> keyFunc) {
-        return groupToTreeMap(collection, keyFunc, new Function1<T, T>() {
-            @Override
-            public T call(T arg1) {
-                return arg1;
-            }
-        });
+        return groupToTreeMap(collection, keyFunc, (T arg1) -> arg1);
     }
 
     public static <T, K, V> TreeMap<K, List<V>> groupToTreeMap(Collection<T> collection, Function1<K, T> keyFunc, Function1<V, T> valueFunc) {

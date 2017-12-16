@@ -16,7 +16,7 @@
 package org.febit.vtor;
 
 import java.util.Arrays;
-import org.febit.lang.Function1;
+import java.util.function.Predicate;
 import org.febit.util.StringUtil;
 
 /**
@@ -48,7 +48,7 @@ public class Vtor {
      * @param filter CheckConfig filter, please return true if accept/allow the Check
      * @return an empty array will returned if all passed.
      */
-    public Vtor[] check(Object bean, Function1<Boolean, VtorChecker.CheckConfig> filter) {
+    public Vtor[] check(Object bean, Predicate<VtorChecker.CheckConfig> filter) {
         return Holder.CHECKER.check(bean, filter);
     }
 

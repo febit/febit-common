@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.function.Predicate;
 import org.febit.lang.iter.BaseIter;
 
 /**
@@ -29,7 +30,7 @@ public interface Iter<E> extends Iterator<E> {
 
     static final Iter EMPTY = new BaseIter() {
         @Override
-        public Iter filter(Function1 valid) {
+        public Iter filter(Predicate valid) {
             return EMPTY;
         }
 
@@ -63,7 +64,7 @@ public interface Iter<E> extends Iterator<E> {
 
     <T> Iter<T> flatMap(final Function1<Iterator<T>, E> func);
 
-    Iter<E> filter(final Function1<Boolean, E> valid);
+    Iter<E> filter(final Predicate<E> valid);
 
     Iter<E> excludeNull();
 

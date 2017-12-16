@@ -20,12 +20,12 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 import org.febit.bean.AccessFactory;
 import org.febit.bean.FieldInfo;
 import org.febit.bean.FieldInfoResolver;
 import org.febit.bean.Getter;
 import org.febit.lang.ConcurrentIdentityMap;
-import org.febit.lang.Function1;
 import org.febit.service.Services;
 import org.febit.util.ClassUtil;
 
@@ -52,8 +52,8 @@ public class VtorChecker {
     public VtorChecker() {
     }
 
-    protected final ConcurrentIdentityMap<Check> CACHING_CHECKS = new ConcurrentIdentityMap<>();
-    protected final ConcurrentIdentityMap<CheckConfig[]> CACHING_CHECK_CONFIGS = new ConcurrentIdentityMap<>();
+    protected final ConcurrentIdentityMap<Class, Check> CACHING_CHECKS = new ConcurrentIdentityMap<>();
+    protected final ConcurrentIdentityMap<Class, CheckConfig[]> CACHING_CHECK_CONFIGS = new ConcurrentIdentityMap<>();
 
     protected Check getCheck(Class<? extends Annotation> annoType) {
         Check check = CACHING_CHECKS.get(annoType);
@@ -112,7 +112,8 @@ public class VtorChecker {
      * @param filter CheckConfig filter, please returns true if accept/allow the Check
      * @return an empty array will returned if all passed.
      */
-    public Vtor[] check(Object bean, Function1<Boolean, CheckConfig> filter) {
+    @SuppressWarnings("unchecked")
+    public Vtor[] check(Object bean, Predicate<CheckConfig> filter) {
         if (bean == null) {
             return EMPTY_VTORS;
         }
@@ -124,7 +125,7 @@ public class VtorChecker {
         int vtorCount = 0;
         for (CheckConfig checkConfig : checkConfigs) {
             if (filter != null
-                    && !filter.call(checkConfig)) {
+                    && !filter.test(checkConfig)) {
                 continue;
             }
             Object value = checkConfig.getter.get(bean);

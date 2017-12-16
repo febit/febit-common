@@ -25,15 +25,15 @@ import java.util.Iterator;
 public abstract class AbstractArrayIter<T> extends BaseIter<T> implements Iterator<T> {
 
     protected final int max;
-    protected int _index;
+    protected int cursor;
 
     protected AbstractArrayIter(int max) {
-        this._index = -1;
+        this.cursor = -1;
         this.max = max;
     }
 
     @Override
     public final boolean hasNext() {
-        return _index < max;
+        return cursor < max;
     }
 }

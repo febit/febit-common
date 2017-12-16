@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import jodd.util.CharUtil;
 import org.febit.util.ClassUtil;
 
 /**
@@ -66,26 +67,23 @@ public class FieldInfoResolver implements Comparator<FieldInfo> {
             if (!filter(method)) {
                 continue;
             }
-            int argsCount = method.getParameterTypes().length;
+            int argsCount = method.getParameterCount();
             String methodName = method.getName();
             int methodNameLength = methodName.length();
-            if (method.getReturnType() == void.class) {
-                if (argsCount == 1
-                        && methodNameLength > 3
-                        && methodName.startsWith("set")) {
-                    registSetterMethod(formatName(cutFieldName(methodName, 3)), method);
-                }
-            } else {
-                if (argsCount != 0) {
-                    continue;
-                }
+            if (argsCount == 0
+                    && method.getReturnType() != void.class) {
                 if (methodNameLength > 3
                         && methodName.startsWith("get")) {
-                    registGetterMethod(formatName(cutFieldName(methodName, 3)), method);
+                    registGetterMethod(cutFieldName(methodName, 3), method);
                 } else if (methodNameLength > 2
                         && methodName.startsWith("is")) {
-                    registGetterMethod(formatName(cutFieldName(methodName, 2)), method);
+                    registGetterMethod(cutFieldName(methodName, 2), method);
                 }
+            } else if (argsCount == 1
+                    && methodNameLength > 3
+                    && method.getReturnType() == void.class
+                    && methodName.startsWith("set")) {
+                registSetterMethod(cutFieldName(methodName, 3), method);
             }
         }
         return fieldInfos.values().toArray(new FieldInfo[fieldInfos.size()]);
@@ -127,17 +125,15 @@ public class FieldInfoResolver implements Comparator<FieldInfo> {
     static String cutFieldName(final String string, final int from) {
         final int nextIndex = from + 1;
         final int len = string.length();
-        char c;
         if (len > nextIndex) {
-            c = string.charAt(nextIndex);
-            if ((c >= 'A') && (c <= 'Z')) {
+            if (CharUtil.isUppercaseAlpha(string.charAt(nextIndex))) {
                 return string.substring(from);
             }
         }
         char[] buffer = new char[len - from];
         string.getChars(from, len, buffer, 0);
-        c = buffer[0];
-        if ((c >= 'A') && (c <= 'Z')) {
+        char c = buffer[0];
+        if (CharUtil.isUppercaseAlpha(c)) {
             buffer[0] = (char) (c + 0x20);
         }
         return new String(buffer);

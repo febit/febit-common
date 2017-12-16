@@ -32,7 +32,7 @@ import org.febit.vtor.Vtor;
  */
 public abstract class BaseFormImpl<E, I> implements AddForm<E>, ModifyForm<E, I> {
 
-    private static final ConcurrentIdentityMap<Class> CACHE = new ConcurrentIdentityMap<>(128);
+    private static final ConcurrentIdentityMap<Class, Class> CACHE = new ConcurrentIdentityMap<>(128);
     protected List<Vtor> __vtors;
 
     @Override
@@ -77,6 +77,7 @@ public abstract class BaseFormImpl<E, I> implements AddForm<E>, ModifyForm<E, I>
         return __vtors;
     }
 
+    @SuppressWarnings("unchecked")
     public Class<E> modelType() {
         Class<E> type = CACHE.unsafeGet(this.getClass());
         if (type != null) {

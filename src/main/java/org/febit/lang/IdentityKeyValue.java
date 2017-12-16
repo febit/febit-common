@@ -21,8 +21,8 @@ package org.febit.lang;
  */
 public class IdentityKeyValue<K, V> {
 
-    private final IdentityMap<V> values;
-    private final IdentityMap<K> keys;
+    private final IdentityMap<K, V> values;
+    private final IdentityMap<V, K> keys;
 
     public IdentityKeyValue() {
         values = new IdentityMap<>();

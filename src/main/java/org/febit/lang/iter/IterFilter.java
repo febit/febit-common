@@ -17,12 +17,13 @@ package org.febit.lang.iter;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import org.febit.lang.Function1;
+import java.util.function.Predicate;
 import org.febit.lang.Iter;
 
 /**
  *
  * @author zqq90
+ * @param <T>
  */
 public abstract class IterFilter<T> extends BaseIter<T> {
 
@@ -31,7 +32,7 @@ public abstract class IterFilter<T> extends BaseIter<T> {
     protected boolean gotNext;
     protected T nextItem;
 
-    protected IterFilter(Iterator iter) {
+    protected IterFilter(Iterator<T> iter) {
         this.iter = iter;
     }
 
@@ -63,12 +64,11 @@ public abstract class IterFilter<T> extends BaseIter<T> {
         return false;
     }
 
-    public static <T> Iter<T> wrap(final Iterator<T> iter, final Function1<Boolean, T> func) {
+    public static <T> Iter<T> wrap(final Iterator<T> iter, final Predicate<T> func) {
         return new IterFilter<T>(iter) {
             @Override
             protected boolean valid(T item) {
-                Boolean valid = func.call(item);
-                return valid != null && valid;
+                return func.test(item);
             }
         };
     }

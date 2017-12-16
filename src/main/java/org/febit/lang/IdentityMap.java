@@ -15,7 +15,7 @@
  */
 package org.febit.lang;
 
-public final class IdentityMap<V> extends AbstractIdentityMap<V> {
+public final class IdentityMap<K, V> extends AbstractIdentityMap<K, V> {
 
     public IdentityMap(int initialCapacity) {
         super(initialCapacity);
@@ -25,23 +25,23 @@ public final class IdentityMap<V> extends AbstractIdentityMap<V> {
         super();
     }
 
-    public V get(Object key) {
+    public V get(K key) {
         return _get(key);
     }
 
-    public boolean containsKey(Object key) {
+    public boolean containsKey(K key) {
         return _containsKey(key);
     }
 
-    public void remove(Object key) {
+    public void remove(K key) {
         _remove(key);
     }
 
-    public void put(Object key, V value) {
+    public void put(K key, V value) {
         _put(key, value);
     }
 
-    public V putIfAbsent(Object key, V value) {
+    public V putIfAbsent(K key, V value) {
         return _putIfAbsent(key, value);
     }
 }

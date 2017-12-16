@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.febit.convert.Convert;
-import org.febit.lang.Function0;
 import org.febit.lang.Singleton;
 import org.febit.util.agent.LazyAgent;
 
@@ -33,12 +32,7 @@ import org.febit.util.agent.LazyAgent;
  */
 public class BaseConfig<T extends BaseConfig> implements Singleton, Serializable {
 
-    protected final transient LazyAgent<Petite> petiteAgent = LazyAgent.create(new Function0<Petite>() {
-        @Override
-        public Petite call() {
-            return buildPetite();
-        }
-    });
+    protected final transient LazyAgent<Petite> petiteAgent = LazyAgent.create(this::buildPetite);
     private final Map<String, String> data = new HashMap<>();
 
     protected BaseConfig() {

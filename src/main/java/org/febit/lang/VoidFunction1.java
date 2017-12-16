@@ -19,6 +19,7 @@ package org.febit.lang;
  *
  * @author zqq90
  */
+@FunctionalInterface
 public interface VoidFunction1<A1> {
 
     void call(A1 arg1);

@@ -131,7 +131,7 @@ public class ServiceResult<T> implements Serializable {
     }
 
     public static <T> ServiceResult<T> success(T val) {
-        return new ServiceResult(val);
+        return new ServiceResult<>(val);
     }
 
     public static ServiceResult successResult() {

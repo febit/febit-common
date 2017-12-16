@@ -46,6 +46,51 @@ public class Defaults {
     public static final Map EMPTY_MAP = Collections.EMPTY_MAP;
     public static final Iter EMPTY_ITER = Iter.EMPTY;
 
+    public static int[] emptyInts() {
+        return EMPTY_INTS;
+    }
+
+    public static long[] emptyLongs() {
+        return EMPTY_LONGS;
+    }
+
+    public static byte[] emptyBytes() {
+        return EMPTY_BYTES;
+    }
+
+    public static String[] emptyStrings() {
+        return EMPTY_STRINGS;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> Class<T>[] emptyClasses() {
+        return EMPTY_CLASSES;
+    }
+
+    public static Object[] emptyObjects() {
+        return EMPTY_OBJECTS;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <K, V> Map<K, V> emptyMap() {
+        return EMPTY_MAP;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> List<T> emptyList() {
+        return EMPTY_LIST;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> Set<T> emptySet() {
+        return EMPTY_SET;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> Iter<T> emptyIter() {
+        return EMPTY_ITER;
+    }
+
     public static final <T> T or(T obj, T defaultValue) {
         return obj != null ? obj : defaultValue;
     }

@@ -91,6 +91,7 @@ public final class IntMap<V> implements Iterable<IntMap.Entry<V>> {
         return keys;
     }
 
+    @SuppressWarnings("unchecked")
     public void clear() {
         this.table = new Entry[this.table.length];
     }
@@ -201,6 +202,7 @@ public final class IntMap<V> implements Iterable<IntMap.Entry<V>> {
         size++;
     }
 
+    @Override
     public Iter<Entry<V>> iterator() {
         return new BaseIter<Entry<V>>() {
             int cursor;

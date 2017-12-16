@@ -24,7 +24,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import jodd.io.StreamUtil;
 
 /**
@@ -40,6 +42,13 @@ public final class Props {
     private static final int STATE_ESCAPE_NEWLINE = 3;
     private static final int STATE_COMMENT = 4;
     private static final int STATE_VALUE = 5;
+
+    private final Map<String, Entry> data;
+    private List<String> modules;
+
+    public Props() {
+        this.data = new HashMap<>();
+    }
 
     public static Loader loader() {
         return new Loader(new Props());
@@ -66,13 +75,6 @@ public final class Props {
      */
     public static ShadowLoader shadowLoader(Props props) {
         return new ShadowLoader(props != null ? props : new Props());
-    }
-
-    private final Map<String, Entry> data;
-    private List<String> modules;
-
-    public Props() {
-        this.data = new HashMap<>();
     }
 
     /**
@@ -123,7 +125,7 @@ public final class Props {
 
     public List<String> getModules() {
         if (this.modules == null) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
         return Collections.unmodifiableList(modules);
     }
@@ -152,10 +154,9 @@ public final class Props {
     }
 
     public void merge(final Props props) {
-        for (Map.Entry<String, Entry> entry : props.data.entrySet()) {
-            Entry propsEntry = entry.getValue();
-            put(entry.getKey(), propsEntry.value, propsEntry.append);
-        }
+        props.data.forEach((k, v) -> {
+            put(k, v.value, v.append);
+        });
         addModules(props.modules);
     }
 
@@ -175,6 +176,13 @@ public final class Props {
         put(name, value, true);
     }
 
+    void forEach(BiConsumer<String, String> action) {
+        Objects.requireNonNull(action);
+        this.data.forEach((k, v) -> {
+            action.accept(k, resolveValue(v));
+        });
+    }
+
     @SuppressWarnings("unchecked")
     public Map<String, String> export() {
         Map<String, String> result = CollectionUtil.createMap(this.data.size());
@@ -184,9 +192,7 @@ public final class Props {
 
     @SuppressWarnings("unchecked")
     public void extractTo(final Map target) {
-        for (Map.Entry<String, Entry> entry : this.data.entrySet()) {
-            target.put(entry.getKey(), resolveValue(entry.getValue()));
-        }
+        forEach(target::put);
     }
 
     public Map<String, String> exportByPrefix(String prefix) {
@@ -196,14 +202,11 @@ public final class Props {
             return map;
         }
         int prefixLength = prefix.length();
-        for (Map.Entry<String, Entry> entry : this.data.entrySet()) {
-            String key = entry.getKey();
-            if (key == null
-                    || !key.startsWith(prefix)) {
-                continue;
+        this.data.forEach((key, val) -> {
+            if (key != null && key.startsWith(prefix)) {
+                map.put(key.substring(prefixLength), resolveValue(val));
             }
-            map.put(key.substring(prefixLength), resolveValue(entry.getValue()));
-        }
+        });
         return map;
     }
 
@@ -576,11 +579,13 @@ public final class Props {
             return props;
         }
 
+        @SuppressWarnings("unchecked")
         public T load(String path) throws IOException {
             resolveModules(path);
             return (T) this;
         }
 
+        @SuppressWarnings("unchecked")
         public T load(Reader reader) throws IOException {
             if (reader == null) {
                 return (T) this;
@@ -592,6 +597,7 @@ public final class Props {
             return load(input, Resources.DEFAULT_ENCODING);
         }
 
+        @SuppressWarnings("unchecked")
         public T load(InputStream input, String encoding) throws IOException {
             if (input == null) {
                 return (T) this;
@@ -599,6 +605,7 @@ public final class Props {
             return loadChars(StreamUtil.readChars(input, encoding));
         }
 
+        @SuppressWarnings("unchecked")
         public T loadString(String source) throws IOException {
             if (source == null) {
                 return (T) this;
@@ -606,6 +613,7 @@ public final class Props {
             return loadChars(source.toCharArray());
         }
 
+        @SuppressWarnings("unchecked")
         public T loadChars(char[] chars) throws IOException {
             if (chars == null) {
                 return (T) this;

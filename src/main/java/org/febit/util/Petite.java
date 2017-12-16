@@ -35,10 +35,8 @@ import org.febit.bean.Setter;
 import org.febit.convert.Convert;
 import org.febit.convert.TypeConverter;
 import org.febit.lang.Defaults;
-import org.febit.lang.Function1;
 import org.febit.lang.IdentityMap;
 import org.febit.service.Services;
-import org.febit.util.agent.LazyAgent;
 
 /**
  * A Simple IoC.
@@ -52,24 +50,24 @@ public class Petite {
     protected static final Method[] EMPTY_METHODS = new Method[0];
     protected static final Setter[] EMPTY_SETTERS = new Setter[0];
 
+    private static final class ProvidersHolder {
+
+        static final PetiteGlobalBeanProvider[] PROVIDERS;
+
+        static {
+            List<PetiteGlobalBeanProvider> providerList
+                    = CollectionUtil.read(ServiceLoader.load(PetiteGlobalBeanProvider.class));
+            PROVIDERS = providerList.toArray(new PetiteGlobalBeanProvider[providerList.size()]);
+            PriorityUtil.desc(PROVIDERS);
+        }
+    }
+
     protected final TypeConverter defaultConverter;
-    protected final IdentityMap<Class> replaceTypes;
+    protected final IdentityMap<Class, Class> replaceTypes;
     protected final Map<String, Object> beans;
     protected final Map<String, String> replaceNames;
     protected final PropsManager propsMgr;
     protected final GlobalBeanManager globalBeanMgr;
-
-    protected final LazyAgent<PetiteGlobalBeanProvider[]> globalBeanProviders = new LazyAgent<PetiteGlobalBeanProvider[]>() {
-        @Override
-        protected PetiteGlobalBeanProvider[] create() {
-            List<PetiteGlobalBeanProvider> providerList
-                    = CollectionUtil.read(ServiceLoader.load(PetiteGlobalBeanProvider.class));
-            PetiteGlobalBeanProvider[] providers
-                    = providerList.toArray(new PetiteGlobalBeanProvider[providerList.size()]);
-            PriorityUtil.desc(providers);
-            return providers;
-        }
-    };
 
     protected boolean inited = false;
 
@@ -123,8 +121,8 @@ public class Petite {
         return bean.getClass().getName();
     }
 
-    protected Class getReplacedType(Class type) {
-        final Class replaceWith = replaceTypes.get(type);
+    protected Class<?> getReplacedType(Class<?> type) {
+        final Class<?> replaceWith = replaceTypes.get(type);
         return replaceWith == null ? type : replaceWith;
     }
 
@@ -133,7 +131,7 @@ public class Petite {
         return replaceWith == null ? name : replaceWith;
     }
 
-    public void replace(Class replace, Class with) {
+    public void replace(Class<?> replace, Class<?> with) {
         this.replaceTypes.put(replace, with);
         this.replace(replace.getName(), with.getName());
     }
@@ -197,7 +195,7 @@ public class Petite {
         }
     }
 
-    protected Object newInstance(Class type) {
+    protected Object newInstance(Class<?> type) {
         type = getReplacedType(type);
         Object bean = getFreshGlobalBeanInstance(type);
         if (bean != null) {
@@ -206,8 +204,8 @@ public class Petite {
         return ClassUtil.newInstance(getReplacedType(type));
     }
 
-    protected Object getFreshGlobalBeanInstance(Class type) {
-        for (PetiteGlobalBeanProvider globalBeanProvider : this.globalBeanProviders.get()) {
+    protected Object getFreshGlobalBeanInstance(Class<?> type) {
+        for (PetiteGlobalBeanProvider globalBeanProvider : ProvidersHolder.PROVIDERS) {
             if (globalBeanProvider.isSupportType(type)) {
                 return globalBeanProvider.newInstance(type, this);
             }
@@ -253,26 +251,21 @@ public class Petite {
         }
 
         //Init
-        List<Method> methods = ClassUtil.getDeclaredMethods(ClassUtil.classes(beanType), new Function1<Boolean, Method>() {
-            @Override
-            public Boolean call(Method method) {
-                return !ClassUtil.isStatic(method)
-                        && ClassUtil.isInheritorAccessable(method, beanType)
-                        && method.getAnnotation(Petite.Init.class) != null;
-            }
-        });
-        for (Method method : methods) {
-            try {
-                method.invoke(bean, resolveMethodArgs(method));
-            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                //shouldn't be
-                throw new RuntimeException(ex);
-            }
-        }
+        ClassUtil.getDeclaredMethods(ClassUtil.classes(beanType), method -> !ClassUtil.isStatic(method)
+                && ClassUtil.isInheritorAccessable(method, beanType)
+                && method.getAnnotation(Petite.Init.class) != null)
+                .forEach(method -> {
+                    try {
+                        method.invoke(bean, resolveMethodArgs(method));
+                    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                        //shouldn't be
+                        throw new RuntimeException(ex);
+                    }
+                });
     }
 
     protected Object[] resolveMethodArgs(Method method) {
-        final Class[] argTypes = method.getParameterTypes();
+        final Class<?>[] argTypes = method.getParameterTypes();
         final Object[] args;
         if (argTypes.length == 0) {
             return Defaults.EMPTY_OBJECTS;
@@ -288,7 +281,7 @@ public class Petite {
         this.beans.put(resolveBeanName(bean), bean);
     }
 
-    public void add(Class type, Object bean) {
+    public void add(Class<?> type, Object bean) {
         this.beans.put(resolveBeanName(type), bean);
     }
 
@@ -305,7 +298,7 @@ public class Petite {
         this.beans.put(name, bean);
     }
 
-    protected Object convert(String string, Class cls) {
+    protected <T> T convert(String string, Class<T> cls) {
         return Convert.convert(string, cls, defaultConverter);
     }
 
@@ -322,7 +315,7 @@ public class Petite {
     }
 
     protected boolean isGlobalType(Class type) {
-        for (PetiteGlobalBeanProvider globalBeanProvider : this.globalBeanProviders.get()) {
+        for (PetiteGlobalBeanProvider globalBeanProvider : ProvidersHolder.PROVIDERS) {
             if (globalBeanProvider.isSupportType(type)) {
                 return true;
             }
@@ -381,7 +374,7 @@ public class Petite {
 
     protected class GlobalBeanManager {
 
-        protected final IdentityMap<Object> container = new IdentityMap<>();
+        protected final IdentityMap<Class, Object> container = new IdentityMap<>();
 
         //Store immature beans.
         protected final IdentityMap internalCache = new IdentityMap(64);
@@ -398,6 +391,7 @@ public class Petite {
             }
         }
 
+        @SuppressWarnings("unchecked")
         public <T> T get(Class<T> type) {
             T bean = (T) this.container.get(type);
             if (bean != null) {
@@ -419,6 +413,7 @@ public class Petite {
          * @param type
          * @return
          */
+        @SuppressWarnings("unchecked")
         protected synchronized <T> T createIfAbsent(final Class<T> type) {
             T target;
             if ((target = (T) container.get(type)) != null) {
@@ -429,10 +424,12 @@ public class Petite {
             }
             Class replacedType = getReplacedType(type);
             if (replacedType != type) {
-                if ((target = (T) container.get(replacedType)) != null) {
+                target = (T) container.get(replacedType);
+                if (target != null) {
                     return (T) container.putIfAbsent(type, target);
                 }
-                if ((target = (T) internalCache.get(replacedType)) != null) {
+                target = (T) internalCache.get(replacedType);
+                if (target != null) {
                     return (T) internalCache.putIfAbsent(type, target);
                 }
             }
@@ -484,9 +481,9 @@ public class Petite {
         public void putProp(String key, Object value) {
             this.datas.put(key, value);
             int index = key.lastIndexOf('.');
-            int index2;
+            int index2 = index + 1;
             if (index > 0
-                    && (index2 = index + 1) < key.length()
+                    && index2 < key.length()
                     && key.charAt(index2) != '@') {
                 String beanName = key.substring(0, index);
                 this.entrys.put(beanName,
@@ -537,18 +534,14 @@ public class Petite {
             if (props == null) {
                 return;
             }
-            for (String key : props.keySet()) {
-                putProp(key, props.get(key));
-            }
+            props.forEach(this::putProp);
         }
 
         public void addProps(Map<String, Object> map) {
             if (map == null) {
                 return;
             }
-            for (Map.Entry<String, Object> entrySet : map.entrySet()) {
-                putProp(entrySet.getKey(), entrySet.getValue());
-            }
+            map.forEach(this::putProp);
         }
 
         public Map<String, Object> resolveParams(String key) {
@@ -589,6 +582,11 @@ public class Petite {
     }
 
     protected class BeanTypeConverter implements TypeConverter {
+
+        @Override
+        public Object convert(String raw) {
+            throw new UnsupportedOperationException("Not supported yet, type is required");
+        }
 
         @Override
         public Object convert(String raw, Class type) {

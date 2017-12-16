@@ -88,6 +88,7 @@ public final class LongMap<V> {
         return false;
     }
 
+    @SuppressWarnings("unchecked")
     public void clear() {
         this.table = new Entry[this.table.length];
     }

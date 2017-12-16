@@ -44,6 +44,7 @@ public abstract class BasePathMacros implements PathMacros {
 	/**
 	 * {@inheritDoc}
 	 */
+    @Override
 	public boolean init(final String actionPath, String[] separators) {
 		String prefix = separators[0];
 		String split = separators[1];
@@ -104,6 +105,7 @@ public abstract class BasePathMacros implements PathMacros {
 	/**
 	 * {@inheritDoc}
 	 */
+    @Override
 	public String[] getNames() {
 		return names;
 	}
@@ -111,6 +113,7 @@ public abstract class BasePathMacros implements PathMacros {
 	/**
 	 * {@inheritDoc}
 	 */
+    @Override
 	public String[] getPatterns() {
 		return patterns;
 	}
@@ -118,6 +121,7 @@ public abstract class BasePathMacros implements PathMacros {
 	/**
 	 * {@inheritDoc}
 	 */
+    @Override
 	public int getMacrosCount() {
 		return macrosCount;
 	}
@@ -125,6 +129,7 @@ public abstract class BasePathMacros implements PathMacros {
 	/**
 	 * {@inheritDoc}
 	 */
+    @Override
 	public int match(String actionPath) {
 		String[] values = process(actionPath, true);
 
@@ -151,10 +156,12 @@ public abstract class BasePathMacros implements PathMacros {
 	/**
 	 * {@inheritDoc}
 	 */
+    @Override
 	public String[] extract(String actionPath) {
 		return process(actionPath, false);
 	}
 
+    @Override
 	public String[] exactExtract(String actionPath) {
 		return process(actionPath, true);
 	}

@@ -19,7 +19,6 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import org.febit.lang.Function1;
 import org.febit.lang.Iter;
 import org.febit.util.CsvUtil;
 import org.febit.util.ip.IpUtil;
@@ -50,12 +49,7 @@ public class GeoLite2Csv {
             //skip title
             String title = reader.readLine();
             return CsvUtil.linesIter(reader)
-                    .map(new Function1<TransferInput, String[]>() {
-                        @Override
-                        public TransferInput call(String[] line) {
-                            return createTransferInput(line, dict);
-                        }
-                    })
+                    .map((String[] line) -> createTransferInput(line, dict))
                     .excludeNull();
         }
     }

@@ -15,12 +15,11 @@
  */
 package org.febit.util;
 
-import org.febit.io.FileUtil;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import jodd.util.UnsafeUtil;
-import org.febit.lang.Function1;
+import org.febit.io.FileUtil;
 import org.febit.lang.Iter;
 
 /**
@@ -32,22 +31,19 @@ public class CsvUtil extends jodd.util.CsvUtil {
     public static Iter<String[]> linesIter(Reader reader) {
 
         return FileUtil.lineReader(reader)
-                .map(new Function1<String[], String>() {
-                    @Override
-                    public String[] call(String line) {
-                        if (line == null) {
-                            return null;
-                        }
-                        line = line.trim();
-                        if (line.isEmpty()) {
-                            return null;
-                        }
-                        if (line.charAt(0) == '#') {
-                            return null;
-                        }
-                        return toStringArray(line);
+                .map((String line) -> {
+                    if (line == null) {
+                        return null;
                     }
-                })
+                    line = line.trim();
+                    if (line.isEmpty()) {
+                        return null;
+                    }
+                    if (line.charAt(0) == '#') {
+                        return null;
+                    }
+                    return toStringArray(line);
+        })
                 .excludeNull();
     }
 

@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.Map;
 import jodd.util.ReflectUtil;
 import jodd.util.collection.IntHashMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.febit.bean.AccessFactory;
 import org.febit.bean.FieldInfo;
 import org.febit.bean.FieldInfoResolver;
@@ -39,6 +37,8 @@ import org.febit.lang.ConcurrentIdentityMap;
 import org.febit.util.ArraysUtil;
 import org.febit.util.ClassUtil;
 import org.febit.util.CollectionUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -47,7 +47,7 @@ import org.febit.util.CollectionUtil;
 public class BaseFormUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(BaseFormUtil.class);
-    private static final ConcurrentIdentityMap<FormEntry> CACHE = new ConcurrentIdentityMap<>(128);
+    private static final ConcurrentIdentityMap<Class, FormEntry> CACHE = new ConcurrentIdentityMap<>(128);
 
     protected static class FormEntry {
 
@@ -87,7 +87,7 @@ public class BaseFormUtil {
             return ret;
         } else {
             LOG.info("transfer nothing: from='{}' profile='{}'", from, profile);
-            return Collections.EMPTY_MAP;
+            return Collections.emptyMap();
         }
     }
 
@@ -125,7 +125,7 @@ public class BaseFormUtil {
         final Map<String, FieldInfo> receiverFieldInfoMap;
         {
             final FieldInfo[] fieldInfos = FieldInfoResolver.resolve(receiverType);
-            receiverFieldInfoMap = new HashMap(fieldInfos.length * 4 / 3 + 1);
+            receiverFieldInfoMap = new HashMap<>(fieldInfos.length * 4 / 3 + 1);
             for (FieldInfo fieldInfo : fieldInfos) {
                 receiverFieldInfoMap.put(fieldInfo.name, fieldInfo);
             }
@@ -173,18 +173,14 @@ public class BaseFormUtil {
             }
         }
         //collect
-        final IntHashMap addProfiles = CollectionUtil.createIntHashMap(adds.size());;
-        for (Map.Entry<Integer, List<Peer>> entry : adds.entrySet()) {
-            Integer integer = entry.getKey();
-            List<Peer> list = entry.getValue();
-            addProfiles.put(integer, list.toArray(new Peer[list.size()]));
-        }
+        final IntHashMap addProfiles = CollectionUtil.createIntHashMap(adds.size());
+        adds.forEach((k, v) -> {
+            addProfiles.put(k, v.toArray(new Peer[v.size()]));
+        });
         final IntHashMap modifyProfiles = CollectionUtil.createIntHashMap(modifys.size());
-        for (Map.Entry<Integer, List<Peer>> entry : modifys.entrySet()) {
-            Integer integer = entry.getKey();
-            List<Peer> list = entry.getValue();
-            modifyProfiles.put(integer, list.toArray(new Peer[list.size()]));
-        }
+        modifys.forEach((k, v) -> {
+            modifyProfiles.put(k, v.toArray(new Peer[v.size()]));
+        });
         return CACHE.putIfAbsent(providerType, new FormEntry(addProfiles, modifyProfiles));
     }
 

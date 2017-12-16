@@ -21,7 +21,7 @@ import java.util.Collection;
  *
  * @author zqq90
  */
-public final class IdentitySet<T> extends AbstractIdentityMap {
+public final class IdentitySet<T> extends AbstractIdentityMap<T, Object> {
 
     public IdentitySet() {
         super();

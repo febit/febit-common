@@ -21,7 +21,7 @@ package org.febit.bean;
  */
 public interface Setter {
 
-    Class getPropertyType();
+    Class<?> getPropertyType();
 
     void set(Object bean, Object value);
 }

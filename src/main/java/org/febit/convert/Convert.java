@@ -19,7 +19,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
-import org.febit.convert.impl.*;
 import org.febit.lang.IdentityMap;
 import org.febit.util.ClassUtil;
 import org.febit.util.PathFormat;
@@ -31,59 +30,53 @@ import org.febit.util.StringUtil;
  */
 public class Convert {
 
-    protected static final IdentityMap<TypeConverter> CONVERTERS = new IdentityMap<>();
+    protected static final IdentityMap<Class, TypeConverter> CONVERTERS = new IdentityMap<>();
 
     static {
-        register(String.class, new StringConverter());
-        register(String[].class, new StringArrayConverter());
-        register(int.class, new IntConverter());
-        register(int[].class, new IntArrayConverter());
-        register(Integer.class, new IntegerConverter());
-        register(Integer[].class, new IntegerArrayConverter());
-        register(long.class, new LongConverter());
-        register(long[].class, new LongArrayConverter());
-        register(Long.class, new LongObjectConverter());
-        register(Long[].class, new LongObjectArrayConverter());
-        register(boolean.class, new BoolConverter());
-        register(boolean[].class, new BoolArrayConverter());
-        register(Boolean.class, new BooleanConverter());
-        register(Boolean[].class, new BooleanArrayConverter());
-        register(char[].class, new CharArrayConverter());
-        register(Class.class, new ClassConverter());
-        register(Class[].class, new ClassArrayConverter());
-        register(Font.class, new FontConverter());
-        register(Font[].class, new FontArrayConverter());
-        register(Color.class, new ColorConverter());
-        register(Color[].class, new ColorArrayConverter());
-        register(TimeZone.class, new TimeZoneConverter());
-        register(Pattern.class, new PatternConverter());
-
-        register(PathFormat.class, (TypeConverter) new TypeConverter() {
-            @Override
-            public Object convert(String raw, Class type) {
-                if (StringUtil.isEmpty(raw)) {
-                    return null;
-                }
-                return new PathFormat(raw);
-            }
-        });
+        register(String.class, raw -> raw);
+        register(String[].class, Convert::toStringArray);
+        register(int.class, Convert::toInt);
+        register(int[].class, Convert::toIntArray);
+        register(Integer.class, Convert::toInteger);
+        register(Integer[].class, Convert::toIntegerArray);
+        register(long.class, Convert::toLong);
+        register(long[].class, Convert::toLongArray);
+        register(Long.class, Convert::toLongObject);
+        register(Long[].class, Convert::toLongObjectArray);
+        register(boolean.class, Convert::toBool);
+        register(boolean[].class, Convert::toBoolArray);
+        register(Boolean.class, Convert::toBoolean);
+        register(Boolean[].class, Convert::toBooleanArray);
+        register(Class.class, Convert::toClass);
+        register(Class[].class, Convert::toClassArray);
+        register(Font.class, Convert::toFont);
+        register(Font[].class, Convert::toFontArray);
+        register(Color.class, Convert::toColor);
+        register(Color[].class, Convert::toColorArray);
+        register(char[].class, raw -> raw != null ? raw.toCharArray() : null);
+        register(TimeZone.class, raw -> raw != null ? TimeZone.getTimeZone(raw) : null);
+        register(Pattern.class, raw -> raw != null ? Pattern.compile(raw) : null);
+        register(PathFormat.class,
+                raw -> StringUtil.isEmpty(raw) ? null : new PathFormat(raw));
     }
 
-    public static void register(Class type, TypeConverter convert) {
+    public static <T> void register(Class<T> type, TypeConverter<T> convert) {
         CONVERTERS.put(type, convert);
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> T convert(String string, Class<T> type) {
-        final TypeConverter convert = CONVERTERS.get(type);
+        final TypeConverter<T> convert = CONVERTERS.get(type);
         if (convert == null) {
             throw new RuntimeException("Convert not support class: " + type);
         }
-        return (T) convert.convert(string, type);
+        return convert.convert(string, type);
     }
 
-    public static Object convert(String string, Class type, TypeConverter defaultConverter) {
-        TypeConverter convert;
-        if ((convert = CONVERTERS.get(type)) == null) {
+    @SuppressWarnings("unchecked")
+    public static <T> T convert(String string, Class<T> type, TypeConverter defaultConverter) {
+        TypeConverter<T> convert = CONVERTERS.get(type);
+        if (convert == null) {
             convert = defaultConverter;
         }
         return convert.convert(string, type);
@@ -220,6 +213,15 @@ public class Convert {
         return StringUtil.toArray(string);
     }
 
+    public static Boolean toBoolean(String string) {
+        if (string == null) {
+            return null;
+        }
+        return string.equalsIgnoreCase("true")
+                || string.equalsIgnoreCase("1")
+                || string.equalsIgnoreCase("on");
+    }
+
     public static Boolean[] toBooleanArray(String string) {
         if (string == null) {
             return null;
@@ -228,7 +230,47 @@ public class Convert {
         final int len = strings.length;
         final Boolean[] entrys = new Boolean[len];
         for (int i = 0; i < len; i++) {
-            entrys[i] = toBool(strings[i]);
+            entrys[i] = toBoolean(strings[i]);
+        }
+        return entrys;
+    }
+
+    public static Color toColor(String raw) {
+        if (raw == null) {
+            return null;
+        }
+        return Color.decode(raw.trim());
+    }
+
+    public static Color[] toColorArray(String raw) {
+        if (raw == null) {
+            return null;
+        }
+        final String[] strings = StringUtil.toArray(raw);
+        final int len = strings.length;
+        final Color[] entrys = new Color[len];
+        for (int i = 0; i < len; i++) {
+            entrys[i] = Color.decode(strings[i]);
+        }
+        return entrys;
+    }
+
+    public static Font toFont(String raw) {
+        if (raw == null) {
+            return null;
+        }
+        return Font.decode(raw.trim());
+    }
+
+    public static Font[] toFontArray(String raw) {
+        if (raw == null) {
+            return null;
+        }
+        final String[] strings = StringUtil.toArray(raw);
+        final int len = strings.length;
+        final Font[] entrys = new Font[len];
+        for (int i = 0; i < len; i++) {
+            entrys[i] = Font.decode(strings[i]);
         }
         return entrys;
     }

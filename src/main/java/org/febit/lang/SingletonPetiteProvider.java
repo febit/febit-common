@@ -28,7 +28,7 @@ import org.febit.util.PriorityUtil;
 public class SingletonPetiteProvider implements PetiteGlobalBeanProvider {
 
     @Override
-    public boolean isSupportType(Class type) {
+    public boolean isSupportType(Class<?> type) {
         if (Singleton.class.isAssignableFrom(type)) {
             return true;
         }
@@ -36,7 +36,7 @@ public class SingletonPetiteProvider implements PetiteGlobalBeanProvider {
     }
 
     @Override
-    public Object newInstance(Class type, Petite petite) {
+    public Object newInstance(Class<?> type, Petite petite) {
         if (!isSupportType(type)) {
             return null;
         }

@@ -23,13 +23,6 @@ import jodd.util.UnsafeUtil;
  */
 public class StringWalker {
 
-    protected static final Checker BLANKS = new Checker() {
-        @Override
-        public boolean isFlag(char c) {
-            return CharUtil.isWhitespace(c);
-        }
-    };
-
     protected final char[] chars;
     protected final int end;
     protected int pos;
@@ -113,7 +106,7 @@ public class StringWalker {
     }
 
     public int skipBlanks() {
-        return skipFlag(BLANKS);
+        return skipFlag(CharUtil::isWhitespace);
     }
 
     public String readToEnd() {
@@ -174,7 +167,7 @@ public class StringWalker {
     }
 
     public String readUntilBlanks() {
-        return readToFlag(BLANKS, true);
+        return readToFlag(CharUtil::isWhitespace, true);
     }
 
     protected StringBuilder buf() {

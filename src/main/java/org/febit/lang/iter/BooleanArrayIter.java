@@ -32,7 +32,7 @@ public final class BooleanArrayIter extends AbstractArrayIter<Boolean> {
 
     @Override
     public Boolean next() {
-        int i = ++_index;
+        int i = ++cursor;
         if (i > this.max) {
             throw new NoSuchElementException(String.valueOf(i));
         }

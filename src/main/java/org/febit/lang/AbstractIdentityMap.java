@@ -19,11 +19,11 @@ package org.febit.lang;
  *
  * @author zqq90
  */
-abstract class AbstractIdentityMap<V> {
+abstract class AbstractIdentityMap<K, V> {
 
     private static final int MAXIMUM_CAPACITY = 1 << 29;
 
-    private volatile Entry<V>[] table;
+    private volatile Entry<K, V>[] table;
     private volatile int threshold;
     private volatile int size;
 
@@ -50,9 +50,9 @@ abstract class AbstractIdentityMap<V> {
         return size;
     }
 
-    protected final V _get(final Object key) {
-        Entry<V> e;
-        final Entry<V>[] tab;
+    protected final V _get(final K key) {
+        Entry<K, V> e;
+        final Entry<K, V>[] tab;
         e = (tab = table)[key.hashCode() & (tab.length - 1)];
         while (e != null) {
             if (key == e.key) {
@@ -63,9 +63,9 @@ abstract class AbstractIdentityMap<V> {
         return null;
     }
 
-    protected final boolean _containsKey(final Object key) {
-        Entry<V> e;
-        final Entry<V>[] tab;
+    protected final boolean _containsKey(final K key) {
+        Entry<K, V> e;
+        final Entry<K, V>[] tab;
         e = (tab = table)[key.hashCode() & (tab.length - 1)];
         while (e != null) {
             if (key == e.key) {
@@ -76,10 +76,10 @@ abstract class AbstractIdentityMap<V> {
         return false;
     }
 
-    protected final void _remove(final Object key) {
-        Entry<V> e;
-        Entry<V> prev = null;
-        final Entry<V>[] tab;
+    protected final void _remove(final K key) {
+        Entry<K, V> e;
+        Entry<K, V> prev = null;
+        final Entry<K, V>[] tab;
         final int index;
         e = (tab = table)[index = (key.hashCode() & (tab.length - 1))];
         while (e != null) {
@@ -102,7 +102,7 @@ abstract class AbstractIdentityMap<V> {
         if (size < threshold) {
             return;
         }
-        final Entry<V>[] oldTable = table;
+        final Entry<K, V>[] oldTable = table;
         final int oldCapacity = oldTable.length;
 
         final int newCapacity = oldCapacity << 1;
@@ -114,11 +114,11 @@ abstract class AbstractIdentityMap<V> {
             return;
         }
         final int newMark = newCapacity - 1;
-        final Entry<V>[] newTable = new Entry[newCapacity];
+        final Entry<K, V>[] newTable = new Entry[newCapacity];
 
         for (int i = oldCapacity; i-- > 0;) {
             int index;
-            for (Entry<V> old = oldTable[i], e; old != null;) {
+            for (Entry<K, V> old = oldTable[i], e; old != null;) {
                 e = old;
                 old = old.next;
 
@@ -134,12 +134,11 @@ abstract class AbstractIdentityMap<V> {
     }
 
     @SuppressWarnings("unchecked")
-    protected final V _putIfAbsent(Object key, V value) {
-        final int id;
-        int index;
-
-        Entry<V>[] tab;
-        Entry<V> e = (tab = table)[index = (id = key.hashCode()) & (tab.length - 1)];
+    protected final V _putIfAbsent(K key, V value) {
+        final int id = key.hashCode();
+        Entry<K, V>[] tab = table;
+        int index = id & (tab.length - 1);
+        Entry<K, V> e = tab[index];
         for (; e != null; e = e.next) {
             if (key == e.key) {
                 return e.value;
@@ -159,38 +158,35 @@ abstract class AbstractIdentityMap<V> {
     }
 
     @SuppressWarnings("unchecked")
-    protected final void _put(Object key, V value) {
-        final int id;
-        int index;
-
-        Entry<V>[] tab;
-        Entry<V> e = (tab = table)[index = (id = key.hashCode()) & (tab.length - 1)];
+    protected final void _put(K key, V value) {
+        final int id = key.hashCode();
+        Entry<K, V>[] tab = table;
+        int index = (id) & (tab.length - 1);
+        Entry<K, V> e = tab[index];
         for (; e != null; e = e.next) {
             if (key == e.key) {
                 e.value = value;
                 return;
             }
         }
-
         if (size >= threshold) {
             resize();
             tab = table;
             index = id & (tab.length - 1);
         }
-
         // creates the new entry.
         tab[index] = new Entry(id, key, value, tab[index]);
         size++;
     }
 
-    private static final class Entry<V> {
+    private static final class Entry<K, V> {
 
         final int id;
-        final Object key;
+        final K key;
         V value;
-        Entry<V> next;
+        Entry<K, V> next;
 
-        Entry(int id, Object key, V value, Entry<V> next) {
+        Entry(int id, K key, V value, Entry<K, V> next) {
             this.value = value;
             this.id = id;
             this.key = key;

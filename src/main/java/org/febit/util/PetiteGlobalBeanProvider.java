@@ -21,7 +21,7 @@ package org.febit.util;
  */
 public interface PetiteGlobalBeanProvider {
 
-    boolean isSupportType(Class type);
+    boolean isSupportType(Class<?> type);
 
-    Object newInstance(Class type, Petite petite);
+    Object newInstance(Class<?> type, Petite petite);
 }

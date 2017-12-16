@@ -27,10 +27,14 @@ public class HttpUtil {
 
     public static final String KEY_URI_PATH = "&&path";
 
+    protected static final StringWalker.Checker CHECKER_URI_PATH_END = c -> c == '?' || c == '&' || c == '#';
+    protected static final StringWalker.Checker CHECKER_QUERY_NAME_END = c -> c == '=' || c == '&' || c == '#';
+    protected static final StringWalker.Checker CHECKER_QUERY_VALUE_END = c -> c == '&' || c == '#';
+
     public static Map<String, String> parseCookies(final String raw) {
         if (raw == null
                 || raw.isEmpty()) {
-            return Collections.EMPTY_MAP;
+            return Collections.emptyMap();
         }
         final Map<String, String> ret = CollectionUtil.createMap(16);
         final StringWalker walker = new StringWalker(raw);
@@ -46,26 +50,6 @@ public class HttpUtil {
         return ret;
     }
 
-    protected static final StringWalker.Checker CHECKER_URI_PATH_END = new StringWalker.Checker() {
-        @Override
-        public boolean isFlag(char c) {
-            return c == '?' || c == '&' || c == '#';
-        }
-    };
-
-    protected static final StringWalker.Checker CHECKER_QUERY_NAME_END = new StringWalker.Checker() {
-        @Override
-        public boolean isFlag(char c) {
-            return c == '=' || c == '&' || c == '#';
-        }
-    };
-    protected static final StringWalker.Checker CHECKER_QUERY_VALUE_END = new StringWalker.Checker() {
-        @Override
-        public boolean isFlag(char c) {
-            return c == '&' || c == '#';
-        }
-    };
-
     public static Map<String, String> parseUriQuerys(final String uriRaw) {
         return parseUriQuerys(uriRaw, false);
     }
@@ -73,7 +57,7 @@ public class HttpUtil {
     public static Map<String, String> parseUriQuerys(final String src, final boolean withPath) {
         if (src == null
                 || src.isEmpty()) {
-            return Collections.EMPTY_MAP;
+            return Collections.emptyMap();
         }
         final Map<String, String> ret = CollectionUtil.createMap(16);
         final StringWalker walker = new StringWalker(src);
@@ -91,7 +75,7 @@ public class HttpUtil {
 
     public static Map<String, String> parseQuerys(String src) {
         if (src == null || src.isEmpty()) {
-            return Collections.EMPTY_MAP;
+            return Collections.emptyMap();
         }
         final Map<String, String> ret = CollectionUtil.createMap(16);
         final StringWalker walker = new StringWalker(src);

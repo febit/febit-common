@@ -60,12 +60,9 @@ public class PathFormat {
     }
 
     public String format(final Map<String, String> meta) {
-        return format(this.format, new StringTemplateParser.MacroResolver() {
-            @Override
-            public String resolve(String macroName) {
-                String key = resolveMacroKey(macroName);
-                return meta.get(key);
-            }
+        return format(this.format, (String macroName) -> {
+            String key = resolveMacroKey(macroName);
+            return meta.get(key);
         });
     }
 
@@ -98,12 +95,7 @@ public class PathFormat {
             return mathString;
         }
 
-        mathString = format(this.format, new StringTemplateParser.MacroResolver() {
-            @Override
-            public String resolve(String macroName) {
-                return "*";
-            }
-        });
+        mathString = format(this.format, (String macroName) -> "*");
 
         this._matchString = mathString;
         return mathString;

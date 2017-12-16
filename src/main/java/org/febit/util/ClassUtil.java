@@ -31,8 +31,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 import jodd.io.StreamUtil;
-import org.febit.lang.Function1;
 
 /**
  *
@@ -40,7 +40,7 @@ import org.febit.lang.Function1;
  */
 public class ClassUtil {
 
-    private static final Class[] EMPTY_CLASS_ARRAY = new Class[0];
+    private static final Class<?>[] EMPTY_CLASS_ARRAY = new Class[0];
 
     public static ClassLoader getDefaultClassLoader() {
         return Thread.currentThread().getContextClassLoader();
@@ -67,77 +67,49 @@ public class ClassUtil {
     }
 
     public static List<Method> getAccessableMemberMethods(final Class type) {
-        return getDeclaredMethods(classes(type), new Function1<Boolean, Method>() {
-            @Override
-            public Boolean call(Method method) {
-                return !isStatic(method)
-                        && isInheritorAccessable(method, type);
-            }
-        });
+        return getDeclaredMethods(classes(type), method -> notStatic(method)
+                && isInheritorAccessable(method, type));
     }
 
     public static List<Method> getPublicStaticMethods(Class type) {
-        return getDeclaredMethods(impls(type), new Function1<Boolean, Method>() {
-            @Override
-            public Boolean call(Method method) {
-                int modifiers = method.getModifiers();
-                return Modifier.isStatic(modifiers)
-                        && Modifier.isPublic(modifiers);
-            }
+        return getDeclaredMethods(impls(type), method -> {
+            int modifiers = method.getModifiers();
+            return Modifier.isStatic(modifiers)
+                    && Modifier.isPublic(modifiers);
         });
     }
 
     public static List<Field> getPublicStaticFields(Class type) {
-        return getFields(type, new Function1<Boolean, Field>() {
-            @Override
-            public Boolean call(Field field) {
-                int modifiers = field.getModifiers();
-                return Modifier.isStatic(modifiers)
-                        && Modifier.isPublic(modifiers);
-            }
-        });
+        return getFields(type, ClassUtil::isPublicStatic);
     }
 
     public static List<Field> getMemberFields(Class type) {
-        return getFields(type, new Function1<Boolean, Field>() {
-            @Override
-            public Boolean call(Field field) {
-                return !isStatic(field);
-            }
-        });
+        return getFields(type, ClassUtil::notStatic);
     }
 
     public static List<Field> getAccessableMemberFields(final Class type) {
-        return getFields(type, new Function1<Boolean, Field>() {
-            @Override
-            public Boolean call(Field field) {
-                return !isStatic(field)
-                        && isInheritorAccessable(field, type);
-            }
-        });
+        return getFields(type, field -> notStatic(field)
+                && isInheritorAccessable(field, type));
     }
 
     public static List<Field> getSettableMemberFields(final Class type) {
-        return getFields(type, new Function1<Boolean, Field>() {
-            @Override
-            public Boolean call(Field field) {
-                int modifiers = field.getModifiers();
-                return !Modifier.isStatic(modifiers)
-                        && !Modifier.isFinal(modifiers)
-                        && isInheritorAccessable(field, type);
-            }
+        return getFields(type, field -> {
+            int modifiers = field.getModifiers();
+            return !Modifier.isStatic(modifiers)
+                    && !Modifier.isFinal(modifiers)
+                    && isInheritorAccessable(field, type);
         });
     }
 
-    public static List<Field> getFields(Class type, Function1<Boolean, Field> filter) {
+    public static List<Field> getFields(Class type, Predicate<Field> filter) {
         return getDeclaredFields(classes(type), filter);
     }
 
-    public static List<Method> getDeclaredMethods(Collection<Class> types, Function1<Boolean, Method> filter) {
+    public static List<Method> getDeclaredMethods(Collection<Class> types, Predicate<Method> filter) {
         final Map<String, Method> founds = new HashMap<>();
         for (Class cls : types) {
             for (Method method : cls.getDeclaredMethods()) {
-                if (!filter.call(method)) {
+                if (!filter.test(method)) {
                     continue;
                 }
                 StringBuilder keyBuf = new StringBuilder();
@@ -159,11 +131,11 @@ public class ClassUtil {
         return methods;
     }
 
-    public static List<Field> getDeclaredFields(Collection<Class> types, Function1<Boolean, Field> filter) {
+    public static List<Field> getDeclaredFields(Collection<Class> types, Predicate<Field> filter) {
         final Map<String, Field> founds = new HashMap<>();
         for (Class cls : types) {
             for (Field field : cls.getDeclaredFields()) {
-                if (!filter.call(field)) {
+                if (!filter.test(field)) {
                     continue;
                 }
                 String key = field.getName();
@@ -182,7 +154,7 @@ public class ClassUtil {
 
     public static List<Class> impls(Object bean) {
         if (bean == null) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
         if (bean instanceof Class) {
             return impls((Class) bean);
@@ -192,7 +164,7 @@ public class ClassUtil {
 
     public static List<Class> impls(Class cls) {
         List<Class> classes = new ArrayList<>();
-        Set<Class> interfaceSet = new HashSet();
+        Set<Class> interfaceSet = new HashSet<>();
         while (cls != null && cls != Object.class) {
             classes.add(cls);
             Class<?>[] interfaces = cls.getInterfaces();
@@ -209,7 +181,7 @@ public class ClassUtil {
 
     public static List<Class> classes(Object bean) {
         if (bean == null) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
         if (bean instanceof Class) {
             return classes((Class) bean);
@@ -273,7 +245,7 @@ public class ClassUtil {
         return getClassByInternalName(new String(chars));
     }
 
-    public static Class getPrimitiveClass(final String name) {
+    public static Class<?> getPrimitiveClass(final String name) {
         if (name == null) {
             return null;
         }
@@ -301,9 +273,9 @@ public class ClassUtil {
         }
     }
 
-    public static Class getClass(final String name) throws ClassNotFoundException {
-        Class cls;
-        return (cls = getPrimitiveClass(name)) != null ? cls : getClassByInternalName(name);
+    public static Class<?> getClass(final String name) throws ClassNotFoundException {
+        Class cls = getPrimitiveClass(name);
+        return cls != null ? cls : getClassByInternalName(name);
     }
 
     private static Class getClassByInternalName(String name) throws ClassNotFoundException {
@@ -342,6 +314,16 @@ public class ClassUtil {
         return Modifier.isStatic(member.getModifiers());
     }
 
+    public static boolean notStatic(Member member) {
+        return !isStatic(member);
+    }
+
+    public static boolean isPublicStatic(Member member) {
+        int mod = member.getModifiers();
+        return Modifier.isStatic(mod)
+                && Modifier.isPublic(mod);
+    }
+
     public static boolean isTransient(Member member) {
         return Modifier.isTransient(member.getModifiers());
     }
@@ -354,15 +336,15 @@ public class ClassUtil {
         return Modifier.isFinal(member.getModifiers());
     }
 
-    public static boolean isFinal(Class cls) {
+    public static boolean isFinal(Class<?> cls) {
         return Modifier.isFinal(cls.getModifiers());
     }
 
-    public static boolean isAbstract(Class cls) {
+    public static boolean isAbstract(Class<?> cls) {
         return Modifier.isAbstract(cls.getModifiers());
     }
 
-    public static boolean isPublic(Class cls) {
+    public static boolean isPublic(Class<?> cls) {
         return Modifier.isPublic(cls.getModifiers());
     }
 
@@ -376,13 +358,14 @@ public class ClassUtil {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static <T extends AccessibleObject> void setAccessible(T... accessibles) {
         for (T accessible : accessibles) {
             setAccessible(accessible);
         }
     }
 
-    public static void setAccessible(AccessibleObject accessible) {
+    public static <T extends AccessibleObject> void setAccessible(T accessible) {
         if (!accessible.isAccessible()) {
             try {
                 accessible.setAccessible(true);
@@ -407,7 +390,7 @@ public class ClassUtil {
         }
     }
 
-    public static Method getPublicSetterMethod(Field field, Class type) {
+    public static Method getPublicSetterMethod(Field field, Class<?> type) {
         try {
             return type.getDeclaredMethod("set" + StringUtil.upperFirst(field.getName()), new Class[]{field.getType()});
         } catch (NoSuchMethodException | SecurityException ignore) {
@@ -415,23 +398,31 @@ public class ClassUtil {
         return null;
     }
 
-    public static Method getPublicGetterMethod(Field field, Class type) {
+    public static boolean isVoidType(Class<?> cls) {
+        return cls == void.class || cls == Void.class;
+    }
+
+    public static boolean notVoidType(Class<?> cls) {
+        return !isVoidType(cls);
+    }
+
+    public static Method getPublicGetterMethod(Field field, Class<?> type) {
         String nameSuffix = StringUtil.upperFirst(field.getName());
+        Method method = null;
         try {
-            Method method;
-            method = type.getDeclaredMethod("get" + nameSuffix, EMPTY_CLASS_ARRAY);
-            if (method == null) {
-                method = type.getDeclaredMethod("is" + nameSuffix, EMPTY_CLASS_ARRAY);
-            }
-            if (method != null) {
-                final Class returnType = method.getReturnType();
-                if (returnType != null
-                        && returnType.equals(Void.TYPE) == false
-                        && returnType.equals(Void.class) == false) {
-                    return method;
-                }
-            }
+            method = type.getMethod("get" + nameSuffix, EMPTY_CLASS_ARRAY);
         } catch (NoSuchMethodException | SecurityException ignore) {
+            // ignore
+        }
+        if (method == null) {
+            try {
+                method = type.getMethod("is" + nameSuffix, EMPTY_CLASS_ARRAY);
+            } catch (NoSuchMethodException | SecurityException ignore) {
+                // ignore
+            }
+        }
+        if (method != null && notVoidType(method.getReturnType())) {
+            return method;
         }
         return null;
     }

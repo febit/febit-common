@@ -16,6 +16,7 @@
 package org.febit.bean;
 
 import java.util.Map;
+import org.febit.bean.AccessFactory.Accessor;
 import org.febit.convert.Convert;
 import org.febit.lang.ClassMap;
 import org.febit.util.StringUtil;
@@ -29,19 +30,19 @@ public class BeanUtil {
     private static final ClassMap<Map<String, Accessor>> CACHE = new ClassMap<>();
 
     public static Object get(final Object bean, final String name) throws BeanUtilException {
-        Getter getter;
-        if ((getter = getAccessor(bean.getClass(), name).getter) != null) {
-            return getter.get(bean);
+        Getter getter = getAccessor(bean.getClass(), name).getter;
+        if (getter == null) {
+            throw new BeanUtilException(StringUtil.format("Unable to get getter for {}#{}", bean.getClass(), name));
         }
-        throw new BeanUtilException(StringUtil.format("Unable to get getter for {}#{}", bean.getClass(), name));
+        return getter.get(bean);
     }
 
     public static Object getIfExist(final Object bean, final String name) throws BeanUtilException {
-        Getter getter;
-        if ((getter = getAccessor(bean.getClass(), name).getter) != null) {
-            return getter.get(bean);
+        Getter getter = getAccessor(bean.getClass(), name).getter;
+        if (getter == null) {
+            return null;
         }
-        return null;
+        return getter.get(bean);
     }
 
     public static void set(final Object bean, final String name, Object value) throws BeanUtilException {
@@ -57,26 +58,23 @@ public class BeanUtil {
     }
 
     public static void set(final Object bean, final String name, Object value, boolean convertIfNeed) throws BeanUtilException {
-        Setter setter;
-        if ((setter = getAccessor(bean.getClass(), name).setter) != null) {
-            if (convertIfNeed && (value == null || value instanceof String)) {
-                value = Convert.convert((String) value, setter.getPropertyType());
-            }
-            setter.set(bean, value);
-            return;
+        Setter setter = getAccessor(bean.getClass(), name).setter;
+        if (setter == null) {
+            throw new BeanUtilException(StringUtil.format("Unable to get setter for {}#{}", bean.getClass(), name));
         }
-        throw new BeanUtilException(StringUtil.format("Unable to get setter for {}#{}", bean.getClass(), name));
+        if (convertIfNeed && (value == null || value instanceof String)) {
+            value = Convert.convert((String) value, setter.getPropertyType());
+        }
+        setter.set(bean, value);
     }
 
     private static Accessor getAccessor(final Class cls, final String name) throws BeanUtilException {
-
-        Map<String, Accessor> descs;
-        if ((descs = CACHE.unsafeGet(cls)) == null) {
+        Map<String, Accessor> descs = CACHE.unsafeGet(cls);
+        if (descs == null) {
             descs = CACHE.putIfAbsent(cls, AccessFactory.resolveAccessors(cls));
         }
-
-        Accessor fieldDescriptor;
-        if ((fieldDescriptor = descs.get(name)) != null) {
+        Accessor fieldDescriptor = descs.get(name);
+        if (fieldDescriptor != null) {
             return fieldDescriptor;
         }
         throw new BeanUtilException(StringUtil.format("Unable to get field: {}#{}", cls.getName(), name));

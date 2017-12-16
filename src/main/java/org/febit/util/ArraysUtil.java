@@ -184,18 +184,21 @@ public class ArraysUtil extends jodd.util.ArraysUtil {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> List<T> asList(T... arr) {
         return Arrays.asList(arr);
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> Set<T> asSet(T... arr) {
         return new ArraySet<>(arr);
     }
 
-    public static Map asMap(Object[] keys, Object[] values) {
-        return new ArrayMap(keys, values);
+    public static <K, V> Map<K, V> asMap(K[] keys, V[] values) {
+        return new ArrayMap<>(keys, values);
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> Iterator<T> iterator(T... arr) {
         return new ArrayIterator<>(arr);
     }
@@ -276,6 +279,7 @@ public class ArraysUtil extends jodd.util.ArraysUtil {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public <T> T[] toArray(T[] to) {
             int size = size();
             if (to.length < size) {
@@ -426,6 +430,7 @@ public class ArraysUtil extends jodd.util.ArraysUtil {
                 }
 
                 @Override
+                @SuppressWarnings("unchecked")
                 public boolean contains(Object o) {
                     return ArrayMap.this.containsKey(((Map.Entry<E, T>) o).getKey());
                 }
