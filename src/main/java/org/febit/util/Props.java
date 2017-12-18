@@ -176,7 +176,7 @@ public final class Props {
         put(name, value, true);
     }
 
-    void forEach(BiConsumer<String, String> action) {
+    public void forEach(BiConsumer<String, String> action) {
         Objects.requireNonNull(action);
         this.data.forEach((k, v) -> {
             action.accept(k, resolveValue(v));
