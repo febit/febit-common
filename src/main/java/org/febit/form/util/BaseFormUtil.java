@@ -66,29 +66,28 @@ public class BaseFormUtil {
             throw new IllegalArgumentException("dest is required");
         }
         Peer[] peers = (Peer[]) (add ? formEntry.addProfiles : formEntry.modifyProfiles).get(profile);
-        if (peers != null) {
-            for (int i = 0, len = peers.length; i < len; i++) {
-                peers[i].transfer(from, dest);
-            }
-        } else {
+        if (peers == null) {
             LOG.info("transfer nothing: from='{}', dest='{}', add='{}', profile='{}'", from, dest, add, profile);
+            return;
+        }
+        for (int i = 0, len = peers.length; i < len; i++) {
+            peers[i].transfer(from, dest);
         }
     }
 
     public static Map<String, Object> modifyMap(BaseFormImpl from, int profile) {
         FormEntry formEntry = getFormEntry(from.getClass());
         Peer[] peers = (Peer[]) formEntry.modifyProfiles.get(profile);
-        if (peers != null) {
-            Map<String, Object> ret = CollectionUtil.createHashMap(profile);
-            for (int i = 0, len = peers.length; i < len; i++) {
-                Peer peer = peers[i];
-                ret.put(peer.name, peer.from.get(from));
-            }
-            return ret;
-        } else {
+        if (peers == null) {
             LOG.info("transfer nothing: from='{}' profile='{}'", from, profile);
             return Collections.emptyMap();
         }
+        Map<String, Object> ret = CollectionUtil.createHashMap(profile);
+        for (int i = 0, len = peers.length; i < len; i++) {
+            Peer peer = peers[i];
+            ret.put(peer.name, peer.from.get(from));
+        }
+        return ret;
     }
 
     protected static class Peer {
