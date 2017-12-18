@@ -18,13 +18,13 @@ package org.febit.lang;
 import org.febit.util.ClassUtil;
 import org.febit.util.Petite;
 import org.febit.util.PetiteGlobalBeanProvider;
-import org.febit.util.PriorityUtil;
+import org.febit.util.Priority;
 
 /**
  *
  * @author zqq90
  */
-@PriorityUtil.Priority(PriorityUtil.PRI_LOWER)
+@Priority.Level(Priority.PRI_LOWER)
 public class SingletonPetiteProvider implements PetiteGlobalBeanProvider {
 
     @Override

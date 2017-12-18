@@ -23,7 +23,7 @@ import jodd.io.FileNameUtil;
 import jodd.util.StringPool;
 import org.febit.lang.Defaults;
 import org.febit.util.ClassUtil;
-import org.febit.util.PriorityUtil;
+import org.febit.util.Priority;
 import org.febit.util.ResourceLoader;
 import org.febit.util.StringUtil;
 
@@ -31,7 +31,7 @@ import org.febit.util.StringUtil;
  *
  * @author zqq90
  */
-@PriorityUtil.Lowest
+@Priority.Lowest
 public class ClasspathResourceLoader implements ResourceLoader {
 
     protected static final String PREFIX_CLASSPATH = "classpath:";

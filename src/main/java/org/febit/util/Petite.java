@@ -58,7 +58,7 @@ public class Petite {
             List<PetiteGlobalBeanProvider> providerList
                     = CollectionUtil.read(ServiceLoader.load(PetiteGlobalBeanProvider.class));
             PROVIDERS = providerList.toArray(new PetiteGlobalBeanProvider[providerList.size()]);
-            PriorityUtil.desc(PROVIDERS);
+            Priority.desc(PROVIDERS);
         }
     }
 

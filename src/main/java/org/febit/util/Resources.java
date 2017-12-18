@@ -37,7 +37,7 @@ public class Resources {
                     = CollectionUtil.read(ServiceLoader.load(ResourceLoader.class));
             ResourceLoader[] providers
                     = providerList.toArray(new ResourceLoader[providerList.size()]);
-            PriorityUtil.desc(providers);
+            Priority.desc(providers);
             return providers;
         }
     };

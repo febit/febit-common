@@ -18,7 +18,7 @@ package org.febit.util.resourceloader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import org.febit.util.PriorityUtil;
+import org.febit.util.Priority;
 import org.febit.util.ResourceLoader;
 import org.febit.util.StringUtil;
 
@@ -26,7 +26,7 @@ import org.febit.util.StringUtil;
  *
  * @author zqq90
  */
-@PriorityUtil.Normal
+@Priority.Normal
 public class StringResourceLoader implements ResourceLoader {
 
     protected static final String PREFIX_STRING = "string:";

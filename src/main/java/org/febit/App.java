@@ -21,7 +21,7 @@ import jodd.util.ClassLoaderUtil;
 import org.febit.lang.Singleton;
 import org.febit.util.ClassUtil;
 import org.febit.util.Petite;
-import org.febit.util.PriorityUtil;
+import org.febit.util.Priority;
 import org.febit.util.Props;
 import org.febit.util.PropsUtil;
 import org.febit.util.Stopwatch;
@@ -101,7 +101,7 @@ public class App implements Singleton {
             return;
         }
         this._listeners = listeners.toArray(new Listener[listeners.size()]);
-        PriorityUtil.desc(this._listeners);
+        Priority.desc(this._listeners);
         for (Listener listener : this._listeners) {
             LOG.info(">> starting listener:" + listener.getClass());
             listener.start();
