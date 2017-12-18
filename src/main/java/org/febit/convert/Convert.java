@@ -86,14 +86,14 @@ public class Convert {
         if (string == null || string.isEmpty() || "NaN".equals(string)) {
             return 0;
         }
-        return Integer.valueOf(string);
+        return Integer.parseInt(string);
     }
 
     public static Integer toInteger(String string) {
         if (string == null || string.isEmpty() || "NaN".equals(string)) {
             return null;
         }
-        return Integer.valueOf(string);
+        return Integer.parseInt(string);
     }
 
     public static int[] toIntArray(String string) {
