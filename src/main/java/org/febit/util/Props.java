@@ -579,6 +579,16 @@ public final class Props {
             return props;
         }
 
+        public T set(String key, String value) {
+            this.props.set(key, value);
+            return (T) this;
+        }
+
+        public T append(String key, String value) {
+            this.props.append(key, value);
+            return (T) this;
+        }
+
         @SuppressWarnings("unchecked")
         public T load(String path) throws IOException {
             resolveModules(path);
