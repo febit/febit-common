@@ -16,6 +16,8 @@
 package org.febit.form;
 
 import java.util.ArrayList;
+import java.util.Objects;
+import java.util.function.BiConsumer;
 import org.febit.util.ArraysUtil;
 
 /**
@@ -62,15 +64,16 @@ public class Order extends ArrayList<Order.Entry> {
         return this;
     }
 
+    public void forEach(BiConsumer<String, Boolean> action) {
+        Objects.requireNonNull(action);
+        forEach(e -> action.accept(e.field, e.asc));
+    }
+
     public Order keep(String... whiteList) {
         if (whiteList == null || whiteList.length == 0) {
             clear();
-            return this;
-        }
-        for (int i = this.size() - 1; i >= 0; i--) {
-            if (!ArraysUtil.contains(whiteList, this.get(i).field)) {
-                remove(i);
-            }
+        } else {
+            removeIf(e -> !ArraysUtil.contains(whiteList, e.field));
         }
         return this;
     }
