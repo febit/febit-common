@@ -26,21 +26,21 @@ import java.security.NoSuchAlgorithmException;
 public class EncryptUtil {
 
     private static String DIGEST(String name, byte[] bytes) throws NoSuchAlgorithmException {
-        if (bytes != null) {
-            final MessageDigest md = MessageDigest.getInstance(name);
-            md.update(bytes);
-            return StringUtil.HEX(md.digest());
+        if (bytes == null) {
+            return null;
         }
-        return null;
+        final MessageDigest md = MessageDigest.getInstance(name);
+        md.update(bytes);
+        return StringUtil.HEX(md.digest());
     }
 
     private static String digest(String name, byte[] bytes) throws NoSuchAlgorithmException {
-        if (bytes != null) {
-            final MessageDigest md = MessageDigest.getInstance(name);
-            md.update(bytes);
-            return StringUtil.hex(md.digest());
+        if (bytes == null) {
+            return null;
         }
-        return null;
+        final MessageDigest md = MessageDigest.getInstance(name);
+        md.update(bytes);
+        return StringUtil.hex(md.digest());
     }
 
     public static String SHA1(byte[] bytes) {

@@ -17,10 +17,8 @@ package org.febit.util;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.List;
 import java.util.ServiceLoader;
 import jodd.io.StreamUtil;
-import org.febit.util.agent.LazyAgent;
 
 /**
  *
@@ -30,27 +28,25 @@ public class Resources {
 
     public static final String DEFAULT_ENCODING = "UTF-8";
 
-    private static final LazyAgent<ResourceLoader[]> LOADERS = new LazyAgent<ResourceLoader[]>() {
-        @Override
-        protected ResourceLoader[] create() {
-            List<ResourceLoader> providerList
-                    = CollectionUtil.read(ServiceLoader.load(ResourceLoader.class));
-            ResourceLoader[] providers
-                    = providerList.toArray(new ResourceLoader[providerList.size()]);
-            Priority.desc(providers);
-            return providers;
+    private static class ResourceLoaderHolder {
+
+        static final ResourceLoader[] LOADERS;
+
+        static {
+            LOADERS = CollectionUtil.read(ServiceLoader.load(ResourceLoader.class))
+                    .stream()
+                    .sorted(Priority.DESC)
+                    .toArray(ResourceLoader[]::new);
         }
-    };
+    }
 
     public static Reader open(String path) throws IOException {
         return open(path, DEFAULT_ENCODING);
     }
 
     public static Reader open(String path, String encoding) throws IOException {
-        ResourceLoader[] loaders = LOADERS.get();
-        Reader reader;
-        for (ResourceLoader loader : loaders) {
-            reader = loader.openReader(path, encoding);
+        for (ResourceLoader loader : ResourceLoaderHolder.LOADERS) {
+            Reader reader = loader.openReader(path, encoding);
             if (reader != null) {
                 return reader;
             }
@@ -95,7 +91,7 @@ public class Resources {
             return null;
         }
         String result;
-        for (ResourceLoader loader : LOADERS.get()) {
+        for (ResourceLoader loader : ResourceLoaderHolder.LOADERS) {
             result = loader.normalize(name);
             if (result != null) {
                 return result;

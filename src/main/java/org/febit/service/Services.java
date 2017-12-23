@@ -23,10 +23,10 @@ import org.febit.util.Petite;
  */
 public class Services {
 
-    private static Petite _PETITE;
+    private static Petite PETITE;
 
     static {
-        _PETITE = Petite.builder().build();
+        PETITE = Petite.builder().build();
     }
 
     /**
@@ -36,7 +36,7 @@ public class Services {
      * @return
      */
     public static <T> T get(final Class<T> type) {
-        return _PETITE.get(type);
+        return PETITE.get(type);
     }
 
     /**
@@ -44,10 +44,10 @@ public class Services {
      * @param bean
      */
     public static void inject(final Object bean) {
-        _PETITE.inject(bean);
+        PETITE.inject(bean);
     }
 
     public static void setPetite(Petite petite) {
-        Services._PETITE = petite;
+        Services.PETITE = petite;
     }
 }

@@ -566,6 +566,7 @@ public final class Props {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static class Loader<T extends Loader> {
 
         protected final Props props;
@@ -589,13 +590,11 @@ public final class Props {
             return (T) this;
         }
 
-        @SuppressWarnings("unchecked")
         public T load(String path) throws IOException {
             resolveModules(path);
             return (T) this;
         }
 
-        @SuppressWarnings("unchecked")
         public T load(Reader reader) throws IOException {
             if (reader == null) {
                 return (T) this;
@@ -607,7 +606,6 @@ public final class Props {
             return load(input, Resources.DEFAULT_ENCODING);
         }
 
-        @SuppressWarnings("unchecked")
         public T load(InputStream input, String encoding) throws IOException {
             if (input == null) {
                 return (T) this;
@@ -615,7 +613,6 @@ public final class Props {
             return loadChars(StreamUtil.readChars(input, encoding));
         }
 
-        @SuppressWarnings("unchecked")
         public T loadString(String source) throws IOException {
             if (source == null) {
                 return (T) this;
@@ -623,7 +620,6 @@ public final class Props {
             return loadChars(source.toCharArray());
         }
 
-        @SuppressWarnings("unchecked")
         public T loadChars(char[] chars) throws IOException {
             if (chars == null) {
                 return (T) this;
@@ -669,6 +665,7 @@ public final class Props {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static class ShadowLoader extends Loader<ShadowLoader> {
 
         public ShadowLoader(Props props) {

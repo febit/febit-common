@@ -29,22 +29,24 @@ import org.febit.lang.Iter;
 public class CsvUtil extends jodd.util.CsvUtil {
 
     public static Iter<String[]> linesIter(Reader reader) {
-
         return FileUtil.lineReader(reader)
-                .map((String line) -> {
-                    if (line == null) {
-                        return null;
-                    }
-                    line = line.trim();
-                    if (line.isEmpty()) {
-                        return null;
-                    }
-                    if (line.charAt(0) == '#') {
-                        return null;
-                    }
-                    return toStringArray(line);
-        })
+                .filter(CsvUtil::validLine)
+                .map(CsvUtil::toStringArray)
                 .excludeNull();
+    }
+
+    private static boolean validLine(String line) {
+        if (line == null) {
+            return false;
+        }
+        line = line.trim();
+        if (line.isEmpty()) {
+            return false;
+        }
+        if (line.charAt(0) == '#') {
+            return false;
+        }
+        return true;
     }
 
     public static void appendRow(Writer writer, String... elements) throws IOException {
@@ -57,9 +59,6 @@ public class CsvUtil extends jodd.util.CsvUtil {
                 continue;
             }
             char[] raw = UnsafeUtil.getChars(field);
-//            if (raw[0] == ' '
-//                    || raw[raw.length - 1] == ' '
-//                    || ArraysUtil.contains(raw, SPECIAL_CHARS)) { //Error contains
             writer.write(FIELD_QUOTE);
             for (char c : raw) {
                 if (c == '\n' || c == '\r') {
@@ -71,9 +70,6 @@ public class CsvUtil extends jodd.util.CsvUtil {
                 writer.write(c);
             }
             writer.write(FIELD_QUOTE);
-//            } else {
-//                writer.write(raw);
-//            }
         }
         writer.write('\r');
         writer.write('\n');

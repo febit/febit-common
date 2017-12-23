@@ -43,6 +43,7 @@ public class SystemPropertyUtil {
         return StringUtil.isNotEmpty(value) ? value : defaultValue;
     }
 
+    @Deprecated
     public static void importFromProps(String propsPath) {
         if (propsPath == null) {
             return;
@@ -64,9 +65,7 @@ public class SystemPropertyUtil {
     }
 
     public static Map<String, String> exportByPrefix(String prefix) {
-
         Map<String, String> ret = new HashMap<>();
-
         Properties properties = System.getProperties();
         final int prefixLen = prefix.length();
         for (String key : properties.stringPropertyNames()) {
@@ -83,7 +82,6 @@ public class SystemPropertyUtil {
     }
 
     public static Map<String, String> exportAllByPrefix(String prefix) {
-
         Map<String, String> ret = exportEnvByPrefix(prefix);
         ret.putAll(exportByPrefix(prefix));
         return ret;

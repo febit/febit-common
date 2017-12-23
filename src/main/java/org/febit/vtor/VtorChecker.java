@@ -48,12 +48,11 @@ public class VtorChecker {
             return null;
         }
     };
+    protected final ConcurrentIdentityMap<Class, Check> CACHING_CHECKS = new ConcurrentIdentityMap<>();
+    protected final ConcurrentIdentityMap<Class, CheckConfig[]> CACHING_CHECK_CONFIGS = new ConcurrentIdentityMap<>();
 
     public VtorChecker() {
     }
-
-    protected final ConcurrentIdentityMap<Class, Check> CACHING_CHECKS = new ConcurrentIdentityMap<>();
-    protected final ConcurrentIdentityMap<Class, CheckConfig[]> CACHING_CHECK_CONFIGS = new ConcurrentIdentityMap<>();
 
     protected Check getCheck(Class<? extends Annotation> annoType) {
         Check check = CACHING_CHECKS.get(annoType);

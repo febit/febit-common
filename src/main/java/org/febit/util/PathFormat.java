@@ -60,10 +60,7 @@ public class PathFormat {
     }
 
     public String format(final Map<String, String> meta) {
-        return format(this.format, (String macroName) -> {
-            String key = resolveMacroKey(macroName);
-            return meta.get(key);
-        });
+        return format(this.format, macro -> meta.get(resolveMacroKey(macro)));
     }
 
     public boolean isMatch(final String path) {
@@ -94,9 +91,7 @@ public class PathFormat {
         if (mathString != null) {
             return mathString;
         }
-
-        mathString = format(this.format, (String macroName) -> "*");
-
+        mathString = format(this.format, macro -> "*");
         this._matchString = mathString;
         return mathString;
     }

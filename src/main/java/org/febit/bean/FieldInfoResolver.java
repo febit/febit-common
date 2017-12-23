@@ -51,19 +51,11 @@ public class FieldInfoResolver implements Comparator<FieldInfo> {
     public FieldInfo[] resolve() {
 
         // member fields
-        for (Field field : ClassUtil.getMemberFields(beanType)) {
-            if (!filter(field)) {
-                continue;
-            }
-            registField(formatName(field.getName()), field);
-        }
+        ClassUtil.getFields(beanType, this::filter)
+                .forEach(this::registField);
 
         // getters and setters
         for (Method method : beanType.getMethods()) {
-            if (ClassUtil.isStatic(method)
-                    || method.getDeclaringClass() == Object.class) {
-                continue;
-            }
             if (!filter(method)) {
                 continue;
             }
@@ -90,11 +82,13 @@ public class FieldInfoResolver implements Comparator<FieldInfo> {
     }
 
     protected boolean filter(Field field) {
-        return ClassUtil.isInheritorAccessable(field, beanType);
+        return ClassUtil.notStatic(field)
+                && ClassUtil.isInheritorAccessable(field, beanType);
     }
 
     protected boolean filter(Method method) {
-        return true;
+        return ClassUtil.notStatic(method)
+                && method.getDeclaringClass() != Object.class;
     }
 
     protected FieldInfo getOrCreateFieldInfo(String name) {
@@ -108,6 +102,10 @@ public class FieldInfoResolver implements Comparator<FieldInfo> {
 
     protected String formatName(String name) {
         return name;
+    }
+
+    protected void registField(Field field) {
+        registField(formatName(field.getName()), field);
     }
 
     protected void registField(String name, Field field) {

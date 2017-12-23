@@ -55,10 +55,10 @@ public class Petite {
         static final PetiteGlobalBeanProvider[] PROVIDERS;
 
         static {
-            List<PetiteGlobalBeanProvider> providerList
-                    = CollectionUtil.read(ServiceLoader.load(PetiteGlobalBeanProvider.class));
-            PROVIDERS = providerList.toArray(new PetiteGlobalBeanProvider[providerList.size()]);
-            Priority.desc(PROVIDERS);
+            PROVIDERS = CollectionUtil.read(ServiceLoader.load(PetiteGlobalBeanProvider.class))
+                    .stream()
+                    .sorted(Priority.DESC)
+                    .toArray(PetiteGlobalBeanProvider[]::new);
         }
     }
 
@@ -164,9 +164,8 @@ public class Petite {
     }
 
     public Object create(final String name) {
-        Object bean;
         Class type = resolveType(name);
-        bean = newInstance(type);
+        Object bean = newInstance(type);
         inject(name, bean);
         return bean;
     }
@@ -251,7 +250,7 @@ public class Petite {
         }
 
         //Init
-        ClassUtil.getDeclaredMethods(ClassUtil.classes(beanType), method -> !ClassUtil.isStatic(method)
+        ClassUtil.getDeclaredMethods(ClassUtil.classes(beanType), method -> ClassUtil.notStatic(method)
                 && ClassUtil.isInheritorAccessable(method, beanType)
                 && method.getAnnotation(Petite.Init.class) != null)
                 .forEach(method -> {
@@ -415,11 +414,12 @@ public class Petite {
          */
         @SuppressWarnings("unchecked")
         protected synchronized <T> T createIfAbsent(final Class<T> type) {
-            T target;
-            if ((target = (T) container.get(type)) != null) {
+            T target = (T) container.get(type);
+            if (target != null) {
                 return target;
             }
-            if ((target = (T) internalCache.get(type)) != null) {
+            target = (T) internalCache.get(type);
+            if (target != null) {
                 return target;
             }
             Class replacedType = getReplacedType(type);

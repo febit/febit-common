@@ -47,9 +47,9 @@ public class GeoLite2Csv {
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(filepath), "UTF-8"))) {
             //skip title
-            String title = reader.readLine();
+            reader.readLine();
             return CsvUtil.linesIter(reader)
-                    .map((String[] line) -> createTransferInput(line, dict))
+                    .map(line -> createTransferInput(line, dict))
                     .excludeNull();
         }
     }
