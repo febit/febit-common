@@ -117,6 +117,18 @@ public class ServiceResult<T> implements Serializable {
         return datas != null ? datas.get(key) : null;
     }
 
+    public int getCode() {
+        return code;
+    }
+
+    public String getMessage() {
+        return msg;
+    }
+
+    public T getValue() {
+        return value;
+    }
+
     public Map<Object, Object> getDatas() {
         return datas;
     }
