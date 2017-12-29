@@ -26,7 +26,6 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
@@ -105,8 +104,10 @@ public class Petite {
         final Object[] instances = new Object[beanNames.length];
         for (int i = 0; i < beanNames.length; i++) {
             String name = beanNames[i];
-            instances[i] = newInstance(resolveType(name));
-            addGlobalBean(instances[i]);
+            Object bean = newInstance(resolveType(name));
+            instances[i] = bean;
+            this.beans.put(name, bean);
+            addGlobalBean(bean);
         }
         //inject
         for (int i = 0; i < instances.length; i++) {
