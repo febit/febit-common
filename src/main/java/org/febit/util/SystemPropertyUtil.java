@@ -43,27 +43,6 @@ public class SystemPropertyUtil {
         return StringUtil.isNotEmpty(value) ? value : defaultValue;
     }
 
-    @Deprecated
-    public static void importFromProps(String propsPath) {
-        if (propsPath == null) {
-            return;
-        }
-
-        Props props = new Props();
-        if (propsPath.indexOf('*') >= 0) {
-            PropsUtil.scanClasspath(props, propsPath);
-        } else {
-            PropsUtil.load(props, propsPath);
-        }
-
-        for (String key : props.keySet()) {
-            if (key.startsWith("@")) {
-                continue;
-            }
-            System.setProperty(key, props.get(key));
-        }
-    }
-
     public static Map<String, String> exportByPrefix(String prefix) {
         Map<String, String> ret = new HashMap<>();
         Properties properties = System.getProperties();

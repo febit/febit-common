@@ -89,7 +89,7 @@ public final class Time {
      * @param minute
      * @param dayofweek
      * @param leap
-     * @Deprecated
+     * @Deprecated only for test
      */
     @Deprecated
     Time(long millisecond, int year, int month, int day, int hour, int minute, int dayofweek, boolean leap) {

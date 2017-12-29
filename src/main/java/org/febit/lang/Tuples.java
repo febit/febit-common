@@ -40,29 +40,4 @@ public class Tuples {
     public static <T1, T2, T3, T4, T5> Tuple5<T1, T2, T3, T4, T5> of(T1 _1, T2 _2, T3 _3, T4 _4, T5 _5) {
         return Tuple5.of(_1, _2, _3, _4, _5);
     }
-
-    @Deprecated
-    public static <T1> Tuple1<T1> create(T1 _1) {
-        return of(_1);
-    }
-
-    @Deprecated
-    public static <T1, T2> Tuple2<T1, T2> create(T1 _1, T2 _2) {
-        return of(_1, _2);
-    }
-
-    @Deprecated
-    public static <T1, T2, T3> Tuple3<T1, T2, T3> create(T1 _1, T2 _2, T3 _3) {
-        return of(_1, _2, _3);
-    }
-
-    @Deprecated
-    public static <T1, T2, T3, T4> Tuple4<T1, T2, T3, T4> create(T1 _1, T2 _2, T3 _3, T4 _4) {
-        return of(_1, _2, _3, _4);
-    }
-
-    @Deprecated
-    public static <T1, T2, T3, T4, T5> Tuple5<T1, T2, T3, T4, T5> create(T1 _1, T2 _2, T3 _3, T4 _4, T5 _5) {
-        return of(_1, _2, _3, _4, _5);
-    }
 }
