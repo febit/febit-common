@@ -22,9 +22,9 @@ import org.testng.annotations.Test;
  *
  * @author zqq
  */
-public class PriorityUtilTest {
+public class PriorityTest {
 
-    @Priority.Level(PriorityUtil.PRI_HIGH)
+    @Priority.Level(Priority.PRI_HIGH)
     private static class TypeHigh {
     }
 
@@ -32,7 +32,7 @@ public class PriorityUtilTest {
     private static class TypeHigh2 {
     }
 
-    @Priority.Level(PriorityUtil.PRI_NORMAL)
+    @Priority.Level(Priority.PRI_NORMAL)
     private static class TypeNormal {
     }
 
