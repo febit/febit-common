@@ -106,11 +106,11 @@ public final class Props {
         if (module == null) {
             return;
         }
-        initModules();
+        resureModules();
         this.modules.add(module);
     }
 
-    protected void initModules() {
+    protected void resureModules() {
         if (this.modules == null) {
             this.modules = new ArrayList<>();
         }
@@ -141,7 +141,7 @@ public final class Props {
         if (module == null) {
             return;
         }
-        initModules();
+        resureModules();
         this.modules.addAll(module);
     }
 
@@ -162,6 +162,13 @@ public final class Props {
 
     public String remove(final String name) {
         return resolveValue(data.remove(name));
+    }
+
+    public void clear() {
+        this.data.clear();
+        if (this.modules != null) {
+            this.modules.clear();
+        }
     }
 
     public String get(final String key) {
