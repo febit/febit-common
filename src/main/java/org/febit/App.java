@@ -36,16 +36,17 @@ public class App implements Singleton {
 
     private static final Logger LOG = LoggerFactory.getLogger(App.class);
 
-    protected Props _props = new Props();
-    protected Listener[] _listeners;
-    protected Petite _petite;
+    private final Props props = new Props();
+    private Listener[] startedListeners;
+    private Petite petite;
 
     //settings
     protected String name = "App";
     protected Object[] beans;
 
-    public void start(String propsFiles) {
+    public synchronized void start(String propsFiles) {
         Stopwatch stopwatch = Stopwatch.startNew();
+        this.props.clear();
         loadProps(propsFiles);
         initPetite();
         try {
@@ -59,7 +60,7 @@ public class App implements Singleton {
         }
     }
 
-    public void stop() {
+    public synchronized void stop() {
         Stopwatch stopwatch = Stopwatch.startNew();
         stopListeners();
         stopwatch.stop();
@@ -71,22 +72,22 @@ public class App implements Singleton {
             return;
         }
         if (propsFiles.indexOf('*') >= 0) {
-            PropsUtil.scanClasspath(_props, propsFiles);
+            PropsUtil.scanClasspath(props, propsFiles);
         } else {
-            PropsUtil.load(_props, propsFiles);
+            PropsUtil.load(props, propsFiles);
         }
     }
 
     protected void initPetite() {
-        LOG.info("Loaded props: {}", _props.getModulesString());
-        this._petite = Petite.builder()
-                .addProps(_props)
+        LOG.info("Loaded props: {}", props.getModulesString());
+        this.petite = Petite.builder()
+                .addProps(props)
                 .addGlobalBean(this)
                 .buildWithServices();
-        this._petite.register("app", this);
+        this.petite.register("app", this);
     }
 
-    protected void startListeners() {
+    protected synchronized void startListeners() {
         stopListeners();
         if (this.beans == null) {
             return;
@@ -100,16 +101,16 @@ public class App implements Singleton {
         if (listeners.isEmpty()) {
             return;
         }
-        this._listeners = listeners.toArray(new Listener[listeners.size()]);
-        Priority.desc(this._listeners);
-        for (Listener listener : this._listeners) {
+        this.startedListeners = listeners.toArray(new Listener[listeners.size()]);
+        Priority.desc(this.startedListeners);
+        for (Listener listener : this.startedListeners) {
             LOG.info(">> starting listener:" + listener.getClass());
             listener.start();
         }
     }
 
-    protected void stopListeners() {
-        Listener[] listeners = this._listeners;
+    protected synchronized void stopListeners() {
+        Listener[] listeners = this.startedListeners;
         if (listeners == null) {
             return;
         }
@@ -118,7 +119,7 @@ public class App implements Singleton {
             LOG.info(">> stoping listener:" + listener.getClass());
             listener.stop();
         }
-        this._listeners = null;
+        this.startedListeners = null;
     }
 
     public Object createBean(String type) throws ClassNotFoundException {
@@ -127,27 +128,31 @@ public class App implements Singleton {
 
     public <T> T createBean(Class<T> type) {
         final T bean = ClassUtil.newInstance(type);
-        this._petite.inject(bean);
+        this.petite.inject(bean);
         return bean;
     }
 
+    public Props getProps() {
+        return props;
+    }
+
     public Petite getPetite() {
-        return this._petite;
+        return this.petite;
     }
 
     public void injectBean(final Object bean) {
-        this._petite.inject(bean);
+        this.petite.inject(bean);
     }
 
     public void addBean(final Object bean) {
-        this._petite.register(bean);
+        this.petite.register(bean);
     }
 
     public Object getBean(String name) {
-        return this._petite.get(name);
+        return this.petite.get(name);
     }
 
     public <T> T getBean(Class<T> type) {
-        return (T) this._petite.get(type);
+        return (T) this.petite.get(type);
     }
 }
