@@ -32,8 +32,9 @@ import org.febit.bean.Setter;
 import org.febit.form.BaseFormImpl;
 import org.febit.form.meta.AM;
 import org.febit.form.meta.Add;
+import org.febit.form.meta.FormProfile;
 import org.febit.form.meta.Modify;
-import org.febit.lang.ConcurrentIdentityMap;
+import org.febit.lang.ClassMap;
 import org.febit.util.ArraysUtil;
 import org.febit.util.ClassUtil;
 import org.febit.util.CollectionUtil;
@@ -48,8 +49,19 @@ public class BaseFormUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(BaseFormUtil.class);
 
-    private static final ConcurrentIdentityMap<Class, FormEntry> FORM_ENTRY_CACHING = new ConcurrentIdentityMap<>(128);
-    private static final ConcurrentIdentityMap<Class, Class> MODEL_TYPE_CACHING = new ConcurrentIdentityMap<>(128);
+    private static final ClassMap<FormEntry> FORM_ENTRY_CACHING = new ClassMap<>(128);
+    private static final ClassMap<Class> MODEL_TYPE_CACHING = new ClassMap<>(128);
+    private static final ClassMap<Integer> PROFILE_CACHING = new ClassMap<>();
+
+    public static final int getFormProfile(Class<?> actionClass) {
+        final Integer profile = PROFILE_CACHING.unsafeGet(actionClass);
+        if (profile != null) {
+            return profile;
+        }
+        final FormProfile profileAnno = actionClass.getAnnotation(FormProfile.class);
+        return PROFILE_CACHING.putIfAbsent(actionClass, profileAnno != null
+                ? profileAnno.value() : FormProfile.DEFAULT);
+    }
 
     protected static class FormEntry {
 
@@ -131,8 +143,8 @@ public class BaseFormUtil {
         return ReflectUtil.getRawType(BaseFormImpl.class.getTypeParameters()[0], formClass);
     }
 
-    protected static FormEntry resolveFormEntry(final Class formClass) {
-        final Class receiverType = getModelType(formClass);
+    protected static FormEntry resolveFormEntry(final Class<? extends BaseFormImpl> formClass) {
+        final Class<?> receiverType = getModelType(formClass);
         final List<FormItem> formItems = new FormItemResolver(formClass).resolve();
         final Map<Integer, List<Peer>> adds = new HashMap<>(16);
         final Map<Integer, List<Peer>> modifys = new HashMap<>(16);
