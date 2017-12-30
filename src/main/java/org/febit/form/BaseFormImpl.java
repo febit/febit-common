@@ -18,9 +18,7 @@ package org.febit.form;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import jodd.util.ReflectUtil;
 import org.febit.form.util.BaseFormUtil;
-import org.febit.lang.ConcurrentIdentityMap;
 import org.febit.util.ClassUtil;
 import org.febit.vtor.Vtor;
 
@@ -32,7 +30,6 @@ import org.febit.vtor.Vtor;
  */
 public abstract class BaseFormImpl<E, I> implements AddForm<E>, ModifyForm<E, I> {
 
-    private static final ConcurrentIdentityMap<Class, Class> CACHE = new ConcurrentIdentityMap<>(128);
     protected List<Vtor> __vtors;
 
     @Override
@@ -60,16 +57,23 @@ public abstract class BaseFormImpl<E, I> implements AddForm<E>, ModifyForm<E, I>
     public boolean valid(int profile, boolean add) {
         //FIXME: form valid() 
         customValid(profile, add);
-        return true;
+        return !hasVtor();
     }
 
     public abstract void customValid(int profile, boolean add);
 
+    protected boolean hasVtor() {
+        List<Vtor> vtors = this.__vtors;
+        return vtors != null && !vtors.isEmpty();
+    }
+
     protected void addVtor(Vtor vtor) {
-        if (this.__vtors == null) {
-            this.__vtors = new ArrayList<>();
+        List<Vtor> vtors = this.__vtors;
+        if (vtors == null) {
+            vtors = new ArrayList<>();
+            this.__vtors = vtors;
         }
-        this.__vtors.add(vtor);
+        vtors.add(vtor);
     }
 
     @Override
@@ -79,12 +83,6 @@ public abstract class BaseFormImpl<E, I> implements AddForm<E>, ModifyForm<E, I>
 
     @SuppressWarnings("unchecked")
     public Class<E> modelType() {
-        Class<E> type = CACHE.unsafeGet(this.getClass());
-        if (type != null) {
-            return type;
-        }
-        type = (Class<E>) ReflectUtil.getRawType(BaseFormImpl.class.getTypeParameters()[0], this.getClass());
-        CACHE.putIfAbsent(this.getClass(), type);
-        return type;
+        return (Class<E>) BaseFormUtil.getModelType(this.getClass());
     }
 }

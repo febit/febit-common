@@ -15,6 +15,9 @@
  */
 package org.febit.form;
 
+import java.util.List;
+import org.febit.vtor.Vtor;
+
 /**
  *
  * @author zqq90
@@ -23,4 +26,5 @@ public interface BaseForm {
 
     boolean valid(int profile, boolean add);
 
+    List<Vtor> getVtors();
 }

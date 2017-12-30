@@ -15,9 +15,6 @@
  */
 package org.febit.form;
 
-import java.util.List;
-import org.febit.vtor.Vtor;
-
 /**
  *
  * @author zqq90
@@ -25,7 +22,6 @@ import org.febit.vtor.Vtor;
  */
 public interface AddForm<E> extends BaseForm {
 
-    E createAdded(int prefile);
+    E createAdded(int profile);
 
-    List<Vtor> getVtors();
 }

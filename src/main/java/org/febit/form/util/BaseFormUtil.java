@@ -47,7 +47,9 @@ import org.slf4j.LoggerFactory;
 public class BaseFormUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(BaseFormUtil.class);
-    private static final ConcurrentIdentityMap<Class, FormEntry> CACHE = new ConcurrentIdentityMap<>(128);
+
+    private static final ConcurrentIdentityMap<Class, FormEntry> FORM_ENTRY_CACHING = new ConcurrentIdentityMap<>(128);
+    private static final ConcurrentIdentityMap<Class, Class> MODEL_TYPE_CACHING = new ConcurrentIdentityMap<>(128);
 
     protected static class FormEntry {
 
@@ -107,18 +109,31 @@ public class BaseFormUtil {
         }
     }
 
-    protected static FormEntry getFormEntry(final Class providerType) {
-        FormEntry formEntry = CACHE.unsafeGet(providerType);
+    protected static FormEntry getFormEntry(final Class<? extends BaseFormImpl> formClass) {
+        FormEntry formEntry = FORM_ENTRY_CACHING.unsafeGet(formClass);
         if (formEntry != null) {
             return formEntry;
-        } else {
-            return resolveFormEntry(providerType);
         }
+        return resolveFormEntry(formClass);
     }
 
-    protected static FormEntry resolveFormEntry(final Class providerType) {
-        final Class receiverType = ReflectUtil.getRawType(BaseFormImpl.class.getTypeParameters()[0], providerType);
-        final List<FormItem> formItems = new FormItemResolver(providerType).resolve();
+    public static Class<?> getModelType(final Class<? extends BaseFormImpl> formClass) {
+        Class<?> type = MODEL_TYPE_CACHING.unsafeGet(formClass);
+        if (type != null) {
+            return type;
+        }
+        type = BaseFormUtil.resolveModelType(formClass);
+        MODEL_TYPE_CACHING.putIfAbsent(formClass, type);
+        return type;
+    }
+
+    private static Class<?> resolveModelType(final Class<? extends BaseFormImpl> formClass) {
+        return ReflectUtil.getRawType(BaseFormImpl.class.getTypeParameters()[0], formClass);
+    }
+
+    protected static FormEntry resolveFormEntry(final Class formClass) {
+        final Class receiverType = getModelType(formClass);
+        final List<FormItem> formItems = new FormItemResolver(formClass).resolve();
         final Map<Integer, List<Peer>> adds = new HashMap<>(16);
         final Map<Integer, List<Peer>> modifys = new HashMap<>(16);
         final Map<String, FieldInfo> receiverFieldInfoMap;
@@ -138,7 +153,7 @@ public class BaseFormUtil {
             }
             Setter setter = AccessFactory.createSetter(fieldInfo);
             Getter getter;
-            Method getterMethod = ClassUtil.getPublicGetterMethod(field, providerType);
+            Method getterMethod = ClassUtil.getPublicGetterMethod(field, formClass);
             if (getterMethod == null) {
                 //LOG.warn("Used FieldGetter:" + field);
                 getter = AccessFactory.createGetter(field);
@@ -180,7 +195,7 @@ public class BaseFormUtil {
         modifys.forEach((k, v) -> {
             modifyProfiles.put(k, v.toArray(new Peer[v.size()]));
         });
-        return CACHE.putIfAbsent(providerType, new FormEntry(addProfiles, modifyProfiles));
+        return FORM_ENTRY_CACHING.putIfAbsent(formClass, new FormEntry(addProfiles, modifyProfiles));
     }
 
     protected static class FormItem {

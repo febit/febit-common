@@ -15,9 +15,7 @@
  */
 package org.febit.form;
 
-import java.util.List;
 import java.util.Map;
-import org.febit.vtor.Vtor;
 
 /**
  *
@@ -33,5 +31,4 @@ public interface ModifyForm<E, I> extends BaseForm {
 
     I id();
 
-    List<Vtor> getVtors();
 }
