@@ -62,12 +62,4 @@ public class RandomUtil {
     public static long nextLong() {
         return RND.nextLong();
     }
-
-    public static Color nextColor() {
-        return nextColor(false);
-    }
-
-    public static Color nextColor(boolean alpha) {
-        return new Color(RND.nextInt(), alpha);
-    }
 }
