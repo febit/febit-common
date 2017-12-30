@@ -16,13 +16,11 @@
 package org.febit.vtor;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 import org.febit.bean.AccessFactory;
-import org.febit.bean.FieldInfo;
 import org.febit.bean.FieldInfoResolver;
 import org.febit.bean.Getter;
 import org.febit.lang.ConcurrentIdentityMap;
@@ -143,44 +141,28 @@ public class VtorChecker {
 
     protected CheckConfig[] resolveCheckConfigs(Class<?> type) {
         List<CheckConfig> checkConfigs = new ArrayList<>();
-        for (FieldInfo fieldInfo : new CheckConfigFieldInfoResolver(type).resolve()) {
-            Field field = fieldInfo.getField();
-            if (field == null
-                    || !fieldInfo.isGettable()) {
-                continue;
-            }
-            Getter getter = null;
-            Annotation[] annotations = field.getAnnotations();
-            for (Annotation annotation : annotations) {
-                Check check = getCheck(annotation.annotationType());
-                if (check == null) {
-                    continue;
-                }
-                if (getter == null) {
-                    getter = AccessFactory.createGetter(fieldInfo);
-                }
-                checkConfigs.add(new CheckConfig(fieldInfo.name, getter, annotation, check));
-            }
-        }
+        FieldInfoResolver.of(type)
+                .overrideFieldFilter(f -> ClassUtil.notStatic(f) && f.getAnnotations().length != 0)
+                .stream()
+                .filter(f -> f.getField() != null && f.isGettable())
+                .forEach(fieldInfo -> {
+                    Getter getter = null;
+                    for (Annotation annotation : fieldInfo.getField().getAnnotations()) {
+                        Check check = getCheck(annotation.annotationType());
+                        if (check == null) {
+                            continue;
+                        }
+                        if (getter == null) {
+                            getter = AccessFactory.createGetter(fieldInfo);
+                        }
+                        checkConfigs.add(new CheckConfig(fieldInfo.name, getter, annotation, check));
+                    }
+                });
+
         if (checkConfigs.isEmpty()) {
             return EMPTY_CHECK_CONFIGS;
         }
         return checkConfigs.toArray(new CheckConfig[checkConfigs.size()]);
-    }
-
-    protected static class CheckConfigFieldInfoResolver extends FieldInfoResolver {
-
-        public CheckConfigFieldInfoResolver(Class beanType) {
-            super(beanType);
-        }
-
-        @Override
-        protected boolean filter(Field field) {
-            if (field.getAnnotations().length == 0) {
-                return false;
-            }
-            return true;
-        }
     }
 
     public static class CheckConfig {

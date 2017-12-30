@@ -17,10 +17,14 @@ package org.febit.bean;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 import jodd.util.CharUtil;
 import org.febit.util.ClassUtil;
 
@@ -28,37 +32,124 @@ import org.febit.util.ClassUtil;
  *
  * @author zqq90
  */
-public class FieldInfoResolver implements Comparator<FieldInfo> {
+public class FieldInfoResolver {
 
-    protected final Class beanType;
-    protected final Map<String, FieldInfo> fieldInfos;
+    private final Class beanType;
+    private Predicate<Field> fieldFilter = this::filter;
+    private Predicate<Method> methodFilter = this::filter;
+    private Function<String, String> nameFormatter = n -> n;
 
     protected FieldInfoResolver(Class beanType) {
         this.beanType = beanType;
-        this.fieldInfos = new HashMap<>();
+    }
+
+    public static int compareByName(FieldInfo o1, FieldInfo o2) {
+        return o1.name.compareTo(o2.name);
     }
 
     public static FieldInfo[] resolve(Class beanClass) {
-        return new FieldInfoResolver(beanClass).resolve();
+        return of(beanClass).toArray();
     }
 
-    public FieldInfo[] resolveAndSort() {
-        FieldInfo[] ret = resolve();
-        Arrays.sort(ret, this);
-        return ret;
+    public static FieldInfoResolver of(Class beanClass) {
+        return new FieldInfoResolver(beanClass);
     }
 
-    public FieldInfo[] resolve() {
+    public void forEach(Consumer<FieldInfo> action) {
+        Objects.requireNonNull(action);
+        process().fieldInfos.values().forEach(action);
+    }
 
-        // member fields
-        ClassUtil.getFields(beanType, this::filter)
-                .forEach(this::registField);
+    public void forEach(BiConsumer<String, FieldInfo> action) {
+        Objects.requireNonNull(action);
+        process().fieldInfos.forEach(action);
+    }
+
+    public Stream<FieldInfo> stream() {
+        return process().fieldInfos.values().stream();
+    }
+
+    public FieldInfo[] toArray() {
+        Map<String, FieldInfo> fieldInfos = process().fieldInfos;
+        return fieldInfos.values().toArray(new FieldInfo[fieldInfos.size()]);
+    }
+
+    private FieldInfos process() {
+        FieldInfos fieldInfos = new FieldInfos();
+
+        ClassUtil.getFields(beanType, this.fieldFilter)
+                .forEach(fieldInfos::registField);
 
         // getters and setters
         for (Method method : beanType.getMethods()) {
-            if (!filter(method)) {
+            if (!methodFilter.test(method)) {
                 continue;
             }
+            fieldInfos.registMethod(method);
+        }
+
+        return fieldInfos;
+    }
+
+    public FieldInfoResolver overrideFieldFilter(Predicate<Field> action) {
+        Objects.requireNonNull(action);
+        this.fieldFilter = action;
+        return this;
+    }
+
+    public FieldInfoResolver overrideMethodFilter(Predicate<Method> action) {
+        Objects.requireNonNull(action);
+        this.methodFilter = action;
+        return this;
+    }
+
+    public FieldInfoResolver filterField(Predicate<Field> action) {
+        Objects.requireNonNull(action);
+        this.fieldFilter = this.fieldFilter.and(action);
+        return this;
+    }
+
+    public FieldInfoResolver filterMethod(Predicate<Method> action) {
+        Objects.requireNonNull(action);
+        this.methodFilter = this.methodFilter.and(action);
+        return this;
+    }
+
+    public FieldInfoResolver withNameFormatter(Function<String, String> action) {
+        Objects.requireNonNull(action);
+        this.nameFormatter = action;
+        return this;
+    }
+
+    private boolean filter(Field field) {
+        return ClassUtil.notStatic(field)
+                && ClassUtil.isInheritorAccessable(field, beanType);
+    }
+
+    private boolean filter(Method method) {
+        return ClassUtil.notStatic(method)
+                && method.getDeclaringClass() != Object.class;
+    }
+
+    private class FieldInfos {
+
+        private final Map<String, FieldInfo> fieldInfos = new HashMap<>();
+
+        FieldInfo getOrCreateFieldInfo(String name) {
+            name = nameFormatter.apply(name);
+            FieldInfo fieldInfo = fieldInfos.get(name);
+            if (fieldInfo == null) {
+                fieldInfo = new FieldInfo(beanType, name);
+                fieldInfos.put(name, fieldInfo);
+            }
+            return fieldInfo;
+        }
+
+        void registField(Field field) {
+            registField(field.getName(), field);
+        }
+
+        void registMethod(Method method) {
             int argsCount = method.getParameterCount();
             String methodName = method.getName();
             int methodNameLength = methodName.length();
@@ -78,46 +169,18 @@ public class FieldInfoResolver implements Comparator<FieldInfo> {
                 registSetterMethod(cutFieldName(methodName, 3), method);
             }
         }
-        return fieldInfos.values().toArray(new FieldInfo[fieldInfos.size()]);
-    }
 
-    protected boolean filter(Field field) {
-        return ClassUtil.notStatic(field)
-                && ClassUtil.isInheritorAccessable(field, beanType);
-    }
-
-    protected boolean filter(Method method) {
-        return ClassUtil.notStatic(method)
-                && method.getDeclaringClass() != Object.class;
-    }
-
-    protected FieldInfo getOrCreateFieldInfo(String name) {
-        FieldInfo fieldInfo = fieldInfos.get(name);
-        if (fieldInfo == null) {
-            fieldInfo = new FieldInfo(beanType, name);
-            fieldInfos.put(name, fieldInfo);
+        void registField(String name, Field field) {
+            getOrCreateFieldInfo(name).field = field;
         }
-        return fieldInfo;
-    }
 
-    protected String formatName(String name) {
-        return name;
-    }
+        void registGetterMethod(String name, Method method) {
+            getOrCreateFieldInfo(name).getter = method;
+        }
 
-    protected void registField(Field field) {
-        registField(formatName(field.getName()), field);
-    }
-
-    protected void registField(String name, Field field) {
-        getOrCreateFieldInfo(name).field = field;
-    }
-
-    protected void registGetterMethod(String name, Method method) {
-        getOrCreateFieldInfo(name).getter = method;
-    }
-
-    protected void registSetterMethod(String name, Method method) {
-        getOrCreateFieldInfo(name).setter = method;
+        void registSetterMethod(String name, Method method) {
+            getOrCreateFieldInfo(name).setter = method;
+        }
     }
 
     static String cutFieldName(final String string, final int from) {
@@ -137,8 +200,4 @@ public class FieldInfoResolver implements Comparator<FieldInfo> {
         return new String(buffer);
     }
 
-    @Override
-    public int compare(FieldInfo o1, FieldInfo o2) {
-        return o1.name.compareTo(o2.name);
-    }
 }
