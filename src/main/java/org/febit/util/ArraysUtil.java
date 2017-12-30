@@ -189,149 +189,24 @@ public class ArraysUtil extends jodd.util.ArraysUtil {
         return Arrays.asList(arr);
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T> Set<T> asSet(T... arr) {
-        return new ArraySet<>(arr);
-    }
-
     public static <K, V> Map<K, V> asMap(K[] keys, V[] values) {
         return new ArrayMap<>(keys, values);
     }
 
     @SuppressWarnings("unchecked")
     public static <T> Iterator<T> iterator(T... arr) {
-        return new ArrayIterator<>(arr);
+        return CollectionUtil.toIter(arr);
     }
 
-    public static int[] sortAndRemoveRepeat(int[] array) {
-
-        if (array == null || array.length <= 1) {
-            return array;
-        }
-
-        Arrays.sort(array);
-
-        int len = array.length;
-
-        int[] buffer = new int[len];
-        buffer[0] = array[0];
-        int j = 1;
-        for (int i = 1; i < array.length; i++) {
-            if (array[i] != array[i - 1]) {
-                buffer[j++] = array[i];
-            }
-        }
-        if (j == len) {
-            return buffer;
-        }
-        int[] finalArray = new int[j];
-        System.arraycopy(buffer, 0, finalArray, 0, j);
-
-        return finalArray;
-    }
-
-    public static boolean containsOne(String[] array, String[] candis) {
-
-        for (String string : array) {
-            for (String candi : candis) {
+    public static <T> boolean containsOne(T[] array, T[] candis) {
+        for (T string : array) {
+            for (T candi : candis) {
                 if (string.equals(candi)) {
                     return true;
                 }
             }
         }
         return false;
-    }
-
-    private static class ArraySet<T> implements Set<T> {
-
-        final T[] values;
-
-        public ArraySet(T[] values) {
-            if (values == null) {
-                throw new NullPointerException();
-            }
-            this.values = values;
-        }
-
-        @Override
-        public int size() {
-            return values.length;
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return values.length == 0;
-        }
-
-        @Override
-        public boolean contains(Object value) {
-            return jodd.util.ArraysUtil.contains(values, value);
-        }
-
-        @Override
-        public Iterator<T> iterator() {
-            return new ArrayIterator<>(values);
-        }
-
-        @Override
-        public Object[] toArray() {
-            return values;
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public <T> T[] toArray(T[] to) {
-            int size = size();
-            if (to.length < size) {
-                return Arrays.copyOf(this.values, size,
-                        (Class<? extends T[]>) to.getClass());
-            }
-            System.arraycopy(this.values, 0, to, 0, size);
-            if (to.length > size) {
-                to[size] = null;
-            }
-            return to;
-        }
-
-        @Override
-        public boolean add(T e) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public boolean remove(Object o) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public boolean containsAll(Collection<?> c) {
-            for (Object object : c) {
-                if (jodd.util.ArraysUtil.contains(values, object) == false) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        @Override
-        public boolean addAll(Collection<? extends T> c) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public boolean retainAll(Collection<?> c) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public boolean removeAll(Collection<?> c) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void clear() {
-            throw new UnsupportedOperationException();
-        }
     }
 
     private static class ArrayMap<E, T> implements Map<E, T> {
@@ -525,41 +400,4 @@ public class ArraysUtil extends jodd.util.ArraysUtil {
         }
     }
 
-    private static class ArrayIterator<T> implements Iterator<T> {
-
-        private final T array[];
-        private int ndx;
-        private final int endNdx;
-
-        public ArrayIterator(T array[]) {
-            this.array = array;
-            ndx = 0;
-            endNdx = array.length;
-        }
-
-        public ArrayIterator(T array[], int offset, int len) {
-            this.array = array;
-            ndx = offset;
-            endNdx = offset + len;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return ndx < endNdx;
-        }
-
-        @Override
-        public T next() throws NoSuchElementException {
-            if (ndx < endNdx) {
-                ndx++;
-                return array[ndx - 1];
-            }
-            throw new NoSuchElementException();
-        }
-
-        @Override
-        public void remove() throws UnsupportedOperationException {
-            throw new UnsupportedOperationException();
-        }
-    }
 }
