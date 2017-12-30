@@ -40,52 +40,6 @@ public class Resources {
         }
     }
 
-    public static Reader open(String path) throws IOException {
-        return open(path, DEFAULT_ENCODING);
-    }
-
-    public static Reader open(String path, String encoding) throws IOException {
-        for (ResourceLoader loader : ResourceLoaderHolder.LOADERS) {
-            Reader reader = loader.openReader(path, encoding);
-            if (reader != null) {
-                return reader;
-            }
-        }
-        throw new IOException("Resource not found: " + path);
-    }
-
-    public static char[] readChars(String path) throws IOException {
-        Reader reader = open(path);
-        return readChars(reader);
-    }
-
-    public static char[] readChars(String path, String encoding) throws IOException {
-        Reader reader = open(path, encoding);
-        return readChars(reader);
-    }
-
-    public static char[] readChars(Reader reader) throws IOException {
-        try {
-            return StreamUtil.readChars(reader);
-        } finally {
-            reader.close();
-        }
-    }
-
-    public static String readString(String path) throws IOException {
-        Reader reader = open(path);
-        return readString(reader);
-    }
-
-    public static String readString(String path, String encoding) throws IOException {
-        Reader reader = open(path, encoding);
-        return readString(reader);
-    }
-
-    public static String readString(Reader reader) throws IOException {
-        return new String(readChars(reader));
-    }
-
     public static String normalize(String name) {
         if (name == null) {
             return null;
@@ -98,5 +52,37 @@ public class Resources {
             }
         }
         return name;
+    }
+
+    public static Reader open(String path, String encoding) throws IOException {
+        for (ResourceLoader loader : ResourceLoaderHolder.LOADERS) {
+            Reader reader = loader.openReader(path, encoding);
+            if (reader != null) {
+                return reader;
+            }
+        }
+        throw new IOException("Resource not found: " + path);
+    }
+
+    public static Reader open(String path) throws IOException {
+        return open(path, DEFAULT_ENCODING);
+    }
+
+    public static char[] readChars(String path, String encoding) throws IOException {
+        try (Reader reader = open(path, encoding)) {
+            return StreamUtil.readChars(reader);
+        }
+    }
+
+    public static char[] readChars(String path) throws IOException {
+        return readChars(path, DEFAULT_ENCODING);
+    }
+
+    public static String readString(String path) throws IOException {
+        return new String(readChars(path));
+    }
+
+    public static String readString(String path, String encoding) throws IOException {
+        return new String(readChars(path, encoding));
     }
 }
