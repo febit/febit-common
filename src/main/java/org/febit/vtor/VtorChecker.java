@@ -15,73 +15,24 @@
  */
 package org.febit.vtor;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
-import org.febit.bean.AccessFactory;
 import org.febit.bean.FieldInfoResolver;
-import org.febit.bean.Getter;
-import org.febit.lang.ConcurrentIdentityMap;
-import org.febit.service.Services;
+import org.febit.lang.ClassMap;
 import org.febit.util.ClassUtil;
 
 /**
  *
  * @author zqq90
  */
-public class VtorChecker {
+public class VtorChecker extends BaseVtorChecker {
 
-    protected static final CheckConfig[] EMPTY_CHECK_CONFIGS = new CheckConfig[0];
-    protected static final Vtor[] EMPTY_VTORS = new Vtor[0];
-    protected static final Check CHECK_NOOP = new Check() {
-        @Override
-        public Object[] check(Annotation anno, Object value) {
-            return null;
-        }
-
-        @Override
-        public String getDefaultMessage(Object[] result) {
-            return null;
-        }
-    };
-    protected final ConcurrentIdentityMap<Class, Check> CACHING_CHECKS = new ConcurrentIdentityMap<>();
-    protected final ConcurrentIdentityMap<Class, CheckConfig[]> CACHING_CHECK_CONFIGS = new ConcurrentIdentityMap<>();
+    protected final ClassMap<CheckConfig[]> CACHING_CHECK_CONFIGS = new ClassMap<>();
 
     public VtorChecker() {
-    }
-
-    protected Check getCheck(Class<? extends Annotation> annoType) {
-        Check check = CACHING_CHECKS.get(annoType);
-        if (check != null) {
-            return check != CHECK_NOOP ? check : null;
-        }
-        Annotation flag = annoType.getAnnotation(VtorAnnotation.class);
-        if (flag == null) {
-            CACHING_CHECKS.putIfAbsent(annoType, CHECK_NOOP);
-            return null;
-        }
-        try {
-            check = createCheck(annoType);
-            return CACHING_CHECKS.putIfAbsent(annoType, check);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to resolve check for vtor annotation: " + annoType.getName(), e);
-        }
-    }
-
-    protected Check createCheck(Class<? extends Annotation> annoType) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-        Class checkType;
-        String checkTypeName = annoType.getName() + "Check";
-        try {
-            checkType = ClassUtil.getClass(checkTypeName);
-        } catch (ClassNotFoundException e) {
-            // try to use annoType's classloader
-            checkType = annoType.getClassLoader().loadClass(checkTypeName);
-        }
-        Check check = (Check) checkType.newInstance();
-        Services.inject(check);
-        return check;
+        super();
     }
 
     protected CheckConfig[] getCheckConfigs(Class<?> type) {
@@ -92,6 +43,20 @@ public class VtorChecker {
         return configs;
     }
 
+    protected CheckConfig[] resolveCheckConfigs(Class<?> type) {
+        List<CheckConfig> checkConfigs = new ArrayList<>();
+        FieldInfoResolver.of(type)
+                .overrideFieldFilter(f -> ClassUtil.notStatic(f) && f.getAnnotations().length != 0)
+                .stream()
+                .filter(f -> f.getField() != null && f.isGettable())
+                .forEach(f -> collectCheckConfig(f, checkConfigs::add));
+
+        if (checkConfigs.isEmpty()) {
+            return EMPTY_CHECK_CONFIGS;
+        }
+        return checkConfigs.toArray(new CheckConfig[checkConfigs.size()]);
+    }
+
     /**
      * Check bean.
      *
@@ -99,7 +64,7 @@ public class VtorChecker {
      * @return an empty array will returned if all passed.
      */
     public Vtor[] check(Object bean) {
-        return check(bean, null);
+        return check(bean, (Predicate<CheckConfig>) null);
     }
 
     /**
@@ -109,7 +74,6 @@ public class VtorChecker {
      * @param filter CheckConfig filter, please returns true if accept/allow the Check
      * @return an empty array will returned if all passed.
      */
-    @SuppressWarnings("unchecked")
     public Vtor[] check(Object bean, Predicate<CheckConfig> filter) {
         if (bean == null) {
             return EMPTY_VTORS;
@@ -118,65 +82,25 @@ public class VtorChecker {
         if (checkConfigs.length == 0) {
             return EMPTY_VTORS;
         }
-        Vtor[] vtors = new Vtor[checkConfigs.length];
-        int vtorCount = 0;
-        for (CheckConfig checkConfig : checkConfigs) {
-            if (filter != null
-                    && !filter.test(checkConfig)) {
-                continue;
-            }
-            Object value = checkConfig.getter.get(bean);
-            Object[] args = checkConfig.check.check(checkConfig.annotation, value);
-            if (args != null) {
-                vtors[vtorCount++] = Vtor.create(checkConfig.name, checkConfig.check, args);
-            }
-        }
-        if (vtorCount == 0) {
-            return EMPTY_VTORS;
-        }
-        return vtorCount == vtors.length
-                ? vtors
-                : Arrays.copyOf(vtors, vtorCount);
+        List<Vtor> vtors = new ArrayList<>(checkConfigs.length);
+        check(bean, filter, vtors::add);
+        return vtors.isEmpty()
+                ? EMPTY_VTORS
+                : vtors.toArray(new Vtor[vtors.size()]);
     }
 
-    protected CheckConfig[] resolveCheckConfigs(Class<?> type) {
-        List<CheckConfig> checkConfigs = new ArrayList<>();
-        FieldInfoResolver.of(type)
-                .overrideFieldFilter(f -> ClassUtil.notStatic(f) && f.getAnnotations().length != 0)
-                .stream()
-                .filter(f -> f.getField() != null && f.isGettable())
-                .forEach(fieldInfo -> {
-                    Getter getter = null;
-                    for (Annotation annotation : fieldInfo.getField().getAnnotations()) {
-                        Check check = getCheck(annotation.annotationType());
-                        if (check == null) {
-                            continue;
-                        }
-                        if (getter == null) {
-                            getter = AccessFactory.createGetter(fieldInfo);
-                        }
-                        checkConfigs.add(new CheckConfig(fieldInfo.name, getter, annotation, check));
-                    }
-                });
-
-        if (checkConfigs.isEmpty()) {
-            return EMPTY_CHECK_CONFIGS;
-        }
-        return checkConfigs.toArray(new CheckConfig[checkConfigs.size()]);
+    public void check(Object bean, Consumer<Vtor> consumer) {
+        check(bean, (Predicate<CheckConfig>) null, consumer);
     }
 
-    public static class CheckConfig {
-
-        public final String name;
-        public final Getter getter;
-        public final Annotation annotation;
-        public final Check check;
-
-        public CheckConfig(String name, Getter getter, Annotation annotation, Check check) {
-            this.name = name;
-            this.getter = getter;
-            this.annotation = annotation;
-            this.check = check;
+    public void check(Object bean, Predicate<CheckConfig> filter, Consumer<Vtor> consumer) {
+        if (bean == null) {
+            return;
         }
+        CheckConfig[] checkConfigs = getCheckConfigs(bean.getClass());
+        if (checkConfigs.length == 0) {
+            return;
+        }
+        check(bean, checkConfigs, filter, consumer);
     }
 }
