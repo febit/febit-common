@@ -16,12 +16,16 @@
 package org.febit.form.util;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Consumer;
 import jodd.util.ReflectUtil;
 import jodd.util.collection.IntHashMap;
 import org.febit.bean.AccessFactory;
@@ -38,6 +42,8 @@ import org.febit.lang.ClassMap;
 import org.febit.util.ArraysUtil;
 import org.febit.util.ClassUtil;
 import org.febit.util.CollectionUtil;
+import org.febit.vtor.BaseVtorChecker;
+import org.febit.vtor.BaseVtorChecker.CheckConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,19 +55,12 @@ public class BaseFormUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(BaseFormUtil.class);
 
+    private static final Peer[] EMPTY_PEERS = new Peer[0];
     private static final ClassMap<FormEntry> FORM_ENTRY_CACHING = new ClassMap<>(128);
     private static final ClassMap<Class> MODEL_TYPE_CACHING = new ClassMap<>(128);
     private static final ClassMap<Integer> PROFILE_CACHING = new ClassMap<>();
 
-    public static final int getFormProfile(Class<?> actionClass) {
-        final Integer profile = PROFILE_CACHING.unsafeGet(actionClass);
-        if (profile != null) {
-            return profile;
-        }
-        final FormProfile profileAnno = actionClass.getAnnotation(FormProfile.class);
-        return PROFILE_CACHING.putIfAbsent(actionClass, profileAnno != null
-                ? profileAnno.value() : FormProfile.DEFAULT);
-    }
+    static final BaseVtorChecker VTOR_CHECKER = new BaseVtorChecker();
 
     protected static class FormEntry {
 
@@ -74,46 +73,31 @@ public class BaseFormUtil {
         }
     }
 
-    public static void transfer(BaseFormImpl from, Object dest, boolean add, int profile) {
-        FormEntry formEntry = getFormEntry(from.getClass());
-        if (dest == null) {
-            throw new IllegalArgumentException("dest is required");
-        }
-        Peer[] peers = (Peer[]) (add ? formEntry.addProfiles : formEntry.modifyProfiles).get(profile);
-        if (peers == null) {
-            LOG.info("transfer nothing: from='{}', dest='{}', add='{}', profile='{}'", from, dest, add, profile);
-            return;
-        }
-        for (int i = 0, len = peers.length; i < len; i++) {
-            peers[i].transfer(from, dest);
-        }
-    }
+    protected static class FormField {
 
-    public static Map<String, Object> modifyMap(BaseFormImpl from, int profile) {
-        FormEntry formEntry = getFormEntry(from.getClass());
-        Peer[] peers = (Peer[]) formEntry.modifyProfiles.get(profile);
-        if (peers == null) {
-            LOG.info("transfer nothing: from='{}' profile='{}'", from, profile);
-            return Collections.emptyMap();
+        final int[] addProfiles;
+        final int[] modifyProfiles;
+        final FieldInfo fieldInfo;
+
+        public FormField(int[] addProfiles, int[] modifyProfiles, FieldInfo fieldInfo) {
+            this.addProfiles = addProfiles;
+            this.modifyProfiles = modifyProfiles;
+            this.fieldInfo = fieldInfo;
         }
-        Map<String, Object> ret = CollectionUtil.createHashMap(profile);
-        for (int i = 0, len = peers.length; i < len; i++) {
-            Peer peer = peers[i];
-            ret.put(peer.name, peer.from.get(from));
-        }
-        return ret;
     }
 
     protected static class Peer {
 
-        final Setter to;
-        final Getter from;
         final String name;
+        final Getter from;
+        final Setter to;
+        final CheckConfig[] checkConfigs;
 
-        protected Peer(Setter to, Getter from, String name) {
-            this.to = to;
-            this.from = from;
+        protected Peer(String name, Getter from, Setter to, CheckConfig[] checkConfigs) {
             this.name = name;
+            this.from = from;
+            this.to = to;
+            this.checkConfigs = checkConfigs;
         }
 
         protected void transfer(Object fromBean, Object toBean) {
@@ -121,12 +105,14 @@ public class BaseFormUtil {
         }
     }
 
-    protected static FormEntry getFormEntry(final Class<? extends BaseFormImpl> formClass) {
-        FormEntry formEntry = FORM_ENTRY_CACHING.unsafeGet(formClass);
-        if (formEntry != null) {
-            return formEntry;
+    public static final int getFormProfile(Class<?> actionClass) {
+        final Integer profile = PROFILE_CACHING.unsafeGet(actionClass);
+        if (profile != null) {
+            return profile;
         }
-        return resolveFormEntry(formClass);
+        final FormProfile profileAnno = actionClass.getAnnotation(FormProfile.class);
+        return PROFILE_CACHING.putIfAbsent(actionClass, profileAnno != null
+                ? profileAnno.value() : FormProfile.DEFAULT);
     }
 
     public static Class<?> getModelType(final Class<? extends BaseFormImpl> formClass) {
@@ -143,152 +129,169 @@ public class BaseFormUtil {
         return ReflectUtil.getRawType(BaseFormImpl.class.getTypeParameters()[0], formClass);
     }
 
-    protected static FormEntry resolveFormEntry(final Class<? extends BaseFormImpl> formClass) {
-        final Class<?> receiverType = getModelType(formClass);
-        final List<FormItem> formItems = new FormItemResolver(formClass).resolve();
-        final Map<Integer, List<Peer>> adds = new HashMap<>(16);
-        final Map<Integer, List<Peer>> modifys = new HashMap<>(16);
-        final Map<String, FieldInfo> receiverFieldInfoMap;
-        {
-            final FieldInfo[] fieldInfos = FieldInfoResolver.resolve(receiverType);
-            receiverFieldInfoMap = new HashMap<>(fieldInfos.length * 4 / 3 + 1);
-            for (FieldInfo fieldInfo : fieldInfos) {
-                receiverFieldInfoMap.put(fieldInfo.name, fieldInfo);
-            }
+    static Peer[] getPeers(BaseFormImpl from, boolean add, int profile) {
+        FormEntry formEntry = getFormEntry(from.getClass());
+        Peer[] peers = (Peer[]) (add ? formEntry.addProfiles : formEntry.modifyProfiles).get(profile);
+        if (peers == null) {
+            LOG.debug("Peers not found for: from={}, add={}, profile={}", from, add, profile);
+            return EMPTY_PEERS;
         }
-
-        for (FormItem formItem : formItems) {
-            Field field = formItem.field;
-            FieldInfo fieldInfo = receiverFieldInfoMap.get(field.getName());
-            if (fieldInfo == null) {
-                throw new RuntimeException("Not Found property'" + field.getName() + "' in class '" + receiverType.getName() + "'");
-            }
-            Setter setter = AccessFactory.createSetter(fieldInfo);
-            Getter getter;
-            Method getterMethod = ClassUtil.getPublicGetterMethod(field, formClass);
-            if (getterMethod == null) {
-                //LOG.warn("Used FieldGetter:" + field);
-                getter = AccessFactory.createGetter(field);
-            } else {
-                getter = AccessFactory.createGetter(getterMethod);
-            }
-            final Peer peer = new Peer(setter, getter, fieldInfo.name);
-            //
-            int[] addProfiles = formItem.addProfiles;
-            if (addProfiles != null) {
-                for (int i : addProfiles) {
-                    List<Peer> peers = (List<Peer>) adds.get(i);
-                    if (peers == null) {
-                        peers = new ArrayList<>();
-                        adds.put(i, peers);
-                    }
-                    peers.add(peer);
-                }
-            }
-            //
-            int[] modifyProfiles = formItem.modifyProfiles;
-            if (modifyProfiles != null) {
-                for (int i : modifyProfiles) {
-                    List<Peer> peers = (List<Peer>) modifys.get(i);
-                    if (peers == null) {
-                        peers = new ArrayList<>();
-                        modifys.put(i, peers);
-                    }
-                    peers.add(peer);
-                }
-            }
-        }
-        //collect
-        final IntHashMap addProfiles = CollectionUtil.createIntHashMap(adds.size());
-        adds.forEach((k, v) -> {
-            addProfiles.put(k, v.toArray(new Peer[v.size()]));
-        });
-        final IntHashMap modifyProfiles = CollectionUtil.createIntHashMap(modifys.size());
-        modifys.forEach((k, v) -> {
-            modifyProfiles.put(k, v.toArray(new Peer[v.size()]));
-        });
-        return FORM_ENTRY_CACHING.putIfAbsent(formClass, new FormEntry(addProfiles, modifyProfiles));
+        return peers;
     }
 
-    protected static class FormItem {
-
-        final int[] addProfiles;
-        final int[] modifyProfiles;
-        final Field field;
-
-        public FormItem(int[] addProfiles, int[] modifyProfiles, Field field) {
-            this.addProfiles = addProfiles;
-            this.modifyProfiles = modifyProfiles;
-            this.field = field;
+    public static void valid(BaseFormImpl from, boolean add, int profile) {
+        for (Peer peer : getPeers(from, add, profile)) {
+            VTOR_CHECKER.check(from, peer.checkConfigs, from::addVtor);
         }
+    }
+
+    public static void transfer(BaseFormImpl from, Object dest, boolean add, int profile) {
+        Objects.requireNonNull(add, "dest is required");
+        for (Peer peer : getPeers(from, add, profile)) {
+            peer.transfer(from, dest);
+        }
+    }
+
+    public static Map<String, Object> modifyMap(BaseFormImpl form, int profile) {
+        Peer[] peers = getPeers(form, false, profile);
+        if (peers.length == 0) {
+            return Collections.emptyMap();
+        }
+        Map<String, Object> ret = CollectionUtil.createHashMap(profile);
+        for (int i = 0, len = peers.length; i < len; i++) {
+            Peer peer = peers[i];
+            ret.put(peer.name, peer.from.get(form));
+        }
+        return ret;
+    }
+
+    private static FormEntry getFormEntry(final Class<? extends BaseFormImpl> formClass) {
+        FormEntry formEntry = FORM_ENTRY_CACHING.unsafeGet(formClass);
+        if (formEntry != null) {
+            return formEntry;
+        }
+        return FORM_ENTRY_CACHING.putIfAbsent(formClass, resolveFormEntry(formClass));
+    }
+
+    private static FormEntry resolveFormEntry(final Class<? extends BaseFormImpl> formClass) {
+        return resolveFormEntry(formClass, getModelType(formClass));
+    }
+
+    private static FormEntry resolveFormEntry(final Class<?> formClass, final Class<?> receiverClass) {
+        final Map<String, FieldInfo> receiverFieldInfoMap = new HashMap<>();
+        FieldInfoResolver.of(receiverClass)
+                .forEach(receiverFieldInfoMap::put);
+
+        final Map<Integer, Set<Peer>> adds = new HashMap<>(16);
+        final Map<Integer, Set<Peer>> modifys = new HashMap<>(16);
+        final List<CheckConfig> checkConfigsBuf = new ArrayList<>();
+        scanFormField(formClass, formItem -> {
+            final String name = formItem.fieldInfo.name;
+            final FieldInfo toFieldInfo = receiverFieldInfoMap.get(name);
+            if (toFieldInfo == null) {
+                throw new RuntimeException("Not found property '" + name + "' in class '" + receiverClass.getName() + "'");
+            }
+
+            // resolve check configs:
+            // clear and reuse list
+            checkConfigsBuf.clear();
+            VTOR_CHECKER.collectCheckConfig(formItem.fieldInfo, checkConfigsBuf::add);
+            CheckConfig[] checkConfigs = checkConfigsBuf.isEmpty()
+                    ? BaseVtorChecker.emptyCheckConfigs()
+                    : checkConfigsBuf.toArray(new CheckConfig[checkConfigsBuf.size()]);
+
+            // create peer
+            final Peer peer = new Peer(
+                    name,
+                    AccessFactory.createGetter(formItem.fieldInfo),
+                    AccessFactory.createSetter(toFieldInfo),
+                    checkConfigs
+            );
+
+            if (formItem.addProfiles != null) {
+                for (int i : formItem.addProfiles) {
+                    adds.computeIfAbsent(i, key -> new HashSet<>())
+                            .add(peer);
+                }
+            }
+
+            if (formItem.modifyProfiles != null) {
+                for (int i : formItem.modifyProfiles) {
+                    modifys.computeIfAbsent(i, key -> new HashSet<>())
+                            .add(peer);
+                }
+            }
+        });
+        //collect
+        final IntHashMap addProfiles = CollectionUtil.createIntHashMap(adds.size());
+        adds.forEach((k, peers) -> {
+            addProfiles.put(k, peersToArray(peers));
+        });
+        final IntHashMap modifyProfiles = CollectionUtil.createIntHashMap(modifys.size());
+        modifys.forEach((k, peers) -> {
+            modifyProfiles.put(k, peersToArray(peers));
+        });
+        return new FormEntry(addProfiles, modifyProfiles);
+    }
+
+    private static boolean notEmpty(int[] arr) {
+        return arr != null && arr.length != 0;
+    }
+
+    private static Peer[] peersToArray(Collection<Peer> peers) {
+        if (peers.isEmpty()) {
+            return EMPTY_PEERS;
+        }
+        return peers.toArray(new Peer[peers.size()]);
     }
 
     /**
-     * XXX: 没有剔除子类中覆盖父类的字段
+     *
+     * @param fieldInfo
+     * @return null if not match
      */
-    protected static class FormItemResolver {
-
-        private final Class beanType;
-        private final List<FormItem> result;
-
-        protected FormItemResolver(Class beanType) {
-            this.beanType = beanType;
-            this.result = new ArrayList<>();
+    private static FormField toFormField(FieldInfo fieldInfo) {
+        Field field = fieldInfo.getField();
+        if (field == null) {
+            return null;
         }
-
-        protected List<FormItem> resolve() {
-            resolve(beanType);
-            return result;
+        Add a = field.getAnnotation(Add.class);
+        Modify m = field.getAnnotation(Modify.class);
+        AM am = field.getAnnotation(AM.class);
+        int[] addProfiles = null;
+        int[] modifyProfiles = null;
+        if (a != null) {
+            addProfiles = a.value();
         }
-
-        private void resolve(final Class type) {
-            if (type == null || type.equals(Object.class)) {
-                return;
-            }
-            final Field[] fields = type.getDeclaredFields();
-            for (int i = 0, len = fields.length; i < len; i++) {
-                final Field field = fields[i];
-                int[] addProfiles = null;
-                int[] modifyProfiles = null;
-                Add a = field.getAnnotation(Add.class);
-                Modify m = field.getAnnotation(Modify.class);
-                AM am = field.getAnnotation(AM.class);
-                if (a != null) {
-                    addProfiles = a.value();
-                }
-                if (m != null) {
-                    modifyProfiles = m.value();
-                }
-                if (am != null) {
-                    final int[] amProfiles = am.value();
-                    if (amProfiles != null && amProfiles.length != 0) {
-                        if (addProfiles != null && addProfiles.length != 0) {
-                            addProfiles = ArraysUtil.join(addProfiles, amProfiles);
-                        } else {
-                            addProfiles = amProfiles;
-                        }
-                        if (modifyProfiles != null && modifyProfiles.length != 0) {
-                            modifyProfiles = ArraysUtil.join(modifyProfiles, amProfiles);
-                        } else {
-                            modifyProfiles = amProfiles;
-                        }
-                    }
-                }
-                if (addProfiles != null && addProfiles.length == 0) {
-                    addProfiles = null;
-                }
-                if (modifyProfiles != null && modifyProfiles.length == 0) {
-                    modifyProfiles = null;
-                }
-                if (addProfiles != null
-                        || modifyProfiles != null) {
-                    result.add(new FormItem(addProfiles, modifyProfiles, field));
-                } else {
-                    LOG.debug("Skip field: {}", field);
-                }
-            }
-            resolve(type.getSuperclass());
+        if (m != null) {
+            modifyProfiles = m.value();
         }
+        if (am != null && notEmpty(am.value())) {
+            final int[] amProfiles = am.value();
+            addProfiles = notEmpty(addProfiles)
+                    ? ArraysUtil.join(addProfiles, amProfiles)
+                    : amProfiles;
+
+            modifyProfiles = notEmpty(modifyProfiles)
+                    ? ArraysUtil.join(modifyProfiles, amProfiles)
+                    : amProfiles;
+        }
+        if (!notEmpty(addProfiles)
+                && !notEmpty(modifyProfiles)) {
+            LOG.debug("Skip field: {}", field);
+            return null;
+        }
+        return new FormField(addProfiles, modifyProfiles, fieldInfo);
+    }
+
+    private static void scanFormField(final Class<?> formClass, Consumer<FormField> consumer) {
+        FieldInfoResolver.of(formClass)
+                .overrideFieldFilter(f -> ClassUtil.notStatic(f) && f.getAnnotations().length != 0)
+                .stream()
+                .filter(f -> f.getField() != null && f.isGettable())
+                .map(BaseFormUtil::toFormField)
+                .filter(f -> f != null)
+                .forEach(consumer);
     }
 
 }

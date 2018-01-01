@@ -54,20 +54,20 @@ public abstract class BaseFormImpl<E, I> implements AddForm<E>, ModifyForm<E, I>
     }
 
     @Override
-    public boolean valid(int profile, boolean add) {
-        //FIXME: form valid() 
+    public final boolean valid(int profile, boolean add) {
+        BaseFormUtil.valid(this, add, profile);
         customValid(profile, add);
         return !hasVtor();
     }
 
     public abstract void customValid(int profile, boolean add);
 
-    protected boolean hasVtor() {
+    public boolean hasVtor() {
         List<Vtor> vtors = this.__vtors;
         return vtors != null && !vtors.isEmpty();
     }
 
-    protected void addVtor(Vtor vtor) {
+    public void addVtor(Vtor vtor) {
         List<Vtor> vtors = this.__vtors;
         if (vtors == null) {
             vtors = new ArrayList<>();

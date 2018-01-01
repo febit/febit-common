@@ -406,8 +406,13 @@ public class ClassUtil {
         return !isVoidType(cls);
     }
 
+    @Deprecated
     public static Method getPublicGetterMethod(Field field, Class<?> type) {
-        String nameSuffix = StringUtil.upperFirst(field.getName());
+        return getPublicGetterMethod(field.getName(), type);
+    }
+
+    public static Method getPublicGetterMethod(String name, Class<?> type) {
+        String nameSuffix = StringUtil.upperFirst(name);
         Method method = null;
         try {
             method = type.getMethod("get" + nameSuffix, EMPTY_CLASS_ARRAY);
