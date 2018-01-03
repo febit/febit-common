@@ -15,7 +15,10 @@
  */
 package org.febit.util;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import org.febit.util.ip.IpUtil;
+import org.testng.Assert;
 import static org.testng.Assert.*;
 import org.testng.annotations.Test;
 
@@ -46,4 +49,94 @@ public class IpUtilTest {
         assertEquals(IpUtil.ipv4ToLong("..1.255"), 0x01FFL);
 
     }
+
+    @Test
+    public void test_ipToBytes() throws UnknownHostException {
+        Assert.assertNull(IpUtil.ipToBytes(null));
+        Assert.assertNull(IpUtil.ipToBytes(""));
+        Assert.assertNull(IpUtil.ipToBytes("localhost"));
+        Assert.assertNull(IpUtil.ipToBytes("a.com"));
+
+        Assert.assertEquals(
+                IpUtil.ipToBytes("127.0.0.1"),
+                ipToBytesByInetAddress("127.0.0.1"));
+        Assert.assertEquals(
+                IpUtil.ipToBytes("255.255.255.255"),
+                ipToBytesByInetAddress("255.255.255.255"));
+        Assert.assertEquals(
+                IpUtil.ipToBytes("0.0.0.0"),
+                ipToBytesByInetAddress("0.0.0.0"));
+        Assert.assertEquals(
+                IpUtil.ipToBytes("255.0.0.0"),
+                ipToBytesByInetAddress("255.0.0.0"));
+        Assert.assertEquals(
+                IpUtil.ipToBytes("1.2.3.4"),
+                ipToBytesByInetAddress("1.2.3.4"));
+        Assert.assertEquals(
+                IpUtil.ipToBytes("111.112.113.114"),
+                ipToBytesByInetAddress("111.112.113.114"));
+        Assert.assertEquals(
+                IpUtil.ipToBytes("127.127.127.127"),
+                ipToBytesByInetAddress("127.127.127.127"));
+        Assert.assertEquals(
+                IpUtil.ipToBytes("128.128.128.128"),
+                ipToBytesByInetAddress("128.128.128.128"));
+
+        Assert.assertEquals(
+                IpUtil.ipToBytes("::"),
+                ipToBytesByInetAddress("::"));
+        Assert.assertEquals(
+                IpUtil.ipToBytes("::1"),
+                ipToBytesByInetAddress("::1"));
+        Assert.assertEquals(
+                IpUtil.ipToBytes("::ffff"),
+                ipToBytesByInetAddress("::ffff"));
+        Assert.assertEquals(
+                IpUtil.ipToBytes("::0001"),
+                ipToBytesByInetAddress("::0001"));
+        Assert.assertEquals(
+                IpUtil.ipToBytes("::127.0.0.1"),
+                ipToBytesByInetAddress("::127.0.0.1"));
+        Assert.assertEquals(
+                IpUtil.ipToBytes("::FFFF:127.0.0.1"),
+                ipToBytesByInetAddress("::FFFF:127.0.0.1"));
+        Assert.assertEquals(
+                IpUtil.ipToBytes("0::FFFF:127.0.0.1"),
+                ipToBytesByInetAddress("0::FFFF:127.0.0.1"));
+        Assert.assertEquals(
+                IpUtil.ipToBytes("FF01::1"),
+                ipToBytesByInetAddress("FF01::1"));
+        Assert.assertEquals(
+                IpUtil.ipToBytes("0:0:0:0:0:0:0:0"),
+                ipToBytesByInetAddress("0:0:0:0:0:0:0:0"));
+        Assert.assertEquals(
+                IpUtil.ipToBytes("2000::1:2345:6789:abcd"),
+                ipToBytesByInetAddress("2000::1:2345:6789:abcd"));
+        Assert.assertEquals(
+                IpUtil.ipToBytes("2000:0000:0000:0000:0001:2345:6789:abcd"),
+                ipToBytesByInetAddress("2000:0000:0000:0000:0001:2345:6789:abcd"));
+        Assert.assertEquals(
+                IpUtil.ipToBytes("2000:0:0:0:1:2345:6789:abcd"),
+                ipToBytesByInetAddress("2000:0:0:0:1:2345:6789:abcd"));
+        Assert.assertEquals(
+                IpUtil.ipToBytes("0001:0002::0008"),
+                ipToBytesByInetAddress("0001:0002::0008"));
+        Assert.assertEquals(
+                IpUtil.ipToBytes("0001:0002:0003::0006:0007:0008"),
+                ipToBytesByInetAddress("0001:0002:0003::0006:0007:0008"));
+        Assert.assertEquals(
+                IpUtil.ipToBytes("0001:0002:0003:0004::0006:0007:0008"),
+                ipToBytesByInetAddress("0001:0002:0003:0004::0006:0007:0008"));
+        Assert.assertEquals(
+                IpUtil.ipToBytes("0001:0002:0003:0004:0005:0006:0007:0008"),
+                ipToBytesByInetAddress("0001:0002:0003:0004:0005:0006:0007:0008"));
+        Assert.assertEquals(
+                IpUtil.ipToBytes("0001:0002:0003:0004:0005:ffff:111.112.113.114"),
+                ipToBytesByInetAddress("0001:0002:0003:0004:0005:ffff:111.112.113.114"));
+    }
+
+    private static byte[] ipToBytesByInetAddress(String ip) throws UnknownHostException {
+        return InetAddress.getByName(ip).getAddress();
+    }
+
 }
