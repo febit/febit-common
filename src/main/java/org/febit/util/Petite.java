@@ -525,10 +525,7 @@ public class Petite {
             }
 
             addProps(props);
-
-            if (extras != null) {
-                addProps(extras);
-            }
+            addProps(extras);
         }
 
         public void addProps(Props props) {
