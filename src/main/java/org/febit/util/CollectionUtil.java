@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import jodd.util.collection.IntHashMap;
 import org.febit.lang.Defaults;
@@ -109,6 +110,10 @@ public class CollectionUtil {
     @SuppressWarnings("unchecked")
     public static <T> T[] toArray(List<T> list, Class<T> componentType) {
         return list.toArray((T[]) Array.newInstance(componentType, list.size()));
+    }
+
+    public static <T> T[] toArray(Collection<T> list, IntFunction<T[]> action) {
+        return list.toArray(action.apply(list.size()));
     }
 
     public static Object[] toArray(Object... args) {
