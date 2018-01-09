@@ -15,6 +15,7 @@
  */
 package org.febit.util.ip;
 
+import java.util.Arrays;
 import java.util.regex.Pattern;
 
 /**
@@ -25,14 +26,132 @@ public class IpUtil {
 
     public static final long IP_MAX = 0xFFFFFFFFL;
     public static final int IP_MAX_INT = 0xFFFFFFFF;
-    protected static Pattern REGX_IP = Pattern.compile("^(\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])(\\.(\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])){3}$");
+    protected final static Pattern REGX_IP = Pattern.compile("^(\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])(\\.(\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])){3}$");
 
+    /**
+     * IPv4 and IPv6 String to bytes.
+     *
+     * @param ip
+     * @return null if invalid
+     */
+    public static byte[] ipToBytes(String ip) {
+        byte[] ret = ipv4ToBytes(ip);
+        if (ret != null) {
+            return ret;
+        }
+        return ipv6ToBytes(ip);
+    }
+
+    /**
+     * IPv4 String to bytes.
+     *
+     * @param ipv4
+     * @return null if invalid
+     */
+    public static byte[] ipv4ToBytes(String ipv4) {
+        if (ipv4 == null || ipv4.isEmpty()) {
+            return null;
+        }
+        final String[] segments = ipv4.split("\\.", -1);
+        if (segments.length != 4) {
+            return null;
+        }
+        final byte[] ret = new byte[4];
+        int val;
+        for (int i = 0; i < 4; i++) {
+            try {
+                val = Integer.parseInt(segments[i]);
+            } catch (NumberFormatException e) {
+                return null;
+            }
+            if (val < 0 || val > 0xff) {
+                return null;
+            }
+            ret[i] = (byte) (val & 0xff);
+        }
+        return ret;
+    }
+
+    /**
+     * IPv6 String to bytes.
+     *
+     * @param ipv6
+     * @return null if invalid
+     */
+    public static byte[] ipv6ToBytes(String ipv6) {
+        if (ipv6 == null || ipv6.isEmpty()) {
+            return null;
+        }
+        if (ipv6.charAt(0) == ':') {
+            // 去除开头的第一个 ':' 
+            ipv6 = ipv6.substring(1);
+        }
+        final byte[] ret = new byte[16];
+        final String segments[] = ipv6.split(":", 0);
+        boolean mixedV4Flag = false;
+        int pos = 15;
+        // 倒序解析: 在压缩前，提前发现是否混合 IPv4
+        for (int i = segments.length - 1; i >= 0; i--) {
+            final String segment = segments[i];
+            if (segment.indexOf('.') >= 0) {
+                // 混合 ipv4
+                byte[] temp = ipv4ToBytes(segment);
+                if (temp == null) {
+                    return null;
+                }
+                ret[pos--] = temp[3];
+                ret[pos--] = temp[2];
+                ret[pos--] = temp[1];
+                ret[pos--] = temp[0];
+                mixedV4Flag = true;
+            } else if (segment.isEmpty()) {
+                // 压缩区块 * 2
+                // + 初始压缩个数为 1 个: 此区块占位
+                // + 完整区块应该为 16/2=8 个
+                // + 如果混合 ipv4 多一个: ipv4 相当于 2 个区块 
+                pos -= (1 + 8 - segments.length - (mixedV4Flag ? 1 : 0)) * 2;
+            } else {
+                int val;
+                try {
+                    val = Integer.parseInt(segment, 16);
+                } catch (NumberFormatException e) {
+                    return null;
+                }
+                ret[pos--] = (byte) val;
+                ret[pos--] = (byte) (val >> 8);
+            }
+        }
+        if (isIPv4MappedAddress(ret)) {
+            return Arrays.copyOfRange(ret, 12, 16);
+        }
+        return ret;
+    }
+
+    private static boolean isIPv4MappedAddress(byte[] addr) {
+        if (addr.length != 16) {
+            return false;
+        }
+        if ((addr[0] == 0x00) && (addr[1] == 0x00)
+                && (addr[2] == 0x00) && (addr[3] == 0x00)
+                && (addr[4] == 0x00) && (addr[5] == 0x00)
+                && (addr[6] == 0x00) && (addr[7] == 0x00)
+                && (addr[8] == 0x00) && (addr[9] == 0x00)
+                && (addr[10] == (byte) 0xff)
+                && (addr[11] == (byte) 0xff)) {
+            return true;
+        }
+        return false;
+    }
+
+    // TODO: refactor
     public static long parseLong(final String ip) {
         return ipv4ToLong(ip);
     }
 
     /**
      * IPv4 to Long.
+     *
+     * TODO: refactor
      *
      * @param ipv4
      * @return -lL if not a ip.
@@ -95,6 +214,7 @@ public class IpUtil {
         return REGX_IP.matcher(ipv4).matches();
     }
 
+    // TODO: refactor
     public static int parseInt(final String ipv4) {
 
         final int position1 = ipv4.indexOf('.');
@@ -107,21 +227,6 @@ public class IpUtil {
                 | ((Integer.parseInt(ipv4.substring(position3 + 1)) & 0xFF));
     }
 
-    public static byte[] parseBytes(final String ipv4) {
-
-        final int position1 = ipv4.indexOf('.');
-        final int position2 = ipv4.indexOf('.', position1 + 1);
-        final int position3 = ipv4.indexOf('.', position2 + 1);
-
-        final byte[] ret = new byte[4];
-
-        ret[0] = (byte) Integer.parseInt(ipv4.substring(0, position1));
-        ret[1] = (byte) Integer.parseInt(ipv4.substring(position1 + 1, position2));
-        ret[2] = (byte) Integer.parseInt(ipv4.substring(position2 + 1, position3));
-        ret[3] = (byte) Integer.parseInt(ipv4.substring(position3 + 1));
-        return ret;
-    }
-
     public static String toString(final long ip) {
         return IpUtil.toString((int) ip);
     }
@@ -131,61 +236,6 @@ public class IpUtil {
                 + ((ip >> 16) & 0xFF) + '.'
                 + ((ip >> 8) & 0xFF) + '.'
                 + ((ip & 0xFF));
-    }
-
-    public static long makeLong(final byte b0, final byte b1, final byte b2, final byte b3) {
-        return int2long(makeInt(b0, b1, b2, b3));
-    }
-
-    public static int makeInt(final byte b0, final byte b1, final byte b2, final byte b3) {
-        return ((b0 & 0xFF) << 24)
-                | ((b1 & 0xFF) << 16)
-                | ((b2 & 0xFF) << 8)
-                | ((b3 & 0xFF));
-    }
-
-    public static int long2int(final long i) {
-        return (int) i;
-    }
-
-    public static String getSegmentStart(final String ip, final int mark) {
-        return toString(getSegmentStart(parseLong(ip), mark));
-    }
-
-    public static int getSegmentStart(final int ip, final int mark) {
-        int i = 32 - mark;
-        if (i <= 0) {
-            return ip;
-        }
-        return ip & (IP_MAX_INT << i);
-    }
-
-    public static long getSegmentStart(final long ip, final int mark) {
-        int i = 32 - mark;
-        if (i <= 0) {
-            return ip;
-        }
-        return ip & (IP_MAX << i);
-    }
-
-    public static String getSegmentEnd(final String ip, final int mark) {
-        return toString(getSegmentEnd(parseLong(ip), mark));
-    }
-
-    public static int getSegmentEnd(final int ip, final int mark) {
-        int i = 32 - mark;
-        if (i <= 0) {
-            return ip;
-        }
-        return ip | (1 << (i - 1));
-    }
-
-    public static long getSegmentEnd(final long ip, final int mark) {
-        int i = 32 - mark;
-        if (i <= 0) {
-            return ip;
-        }
-        return ip | ((1L << i) - 1);
     }
 
     public static long int2long(final int i) {
