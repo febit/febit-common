@@ -20,7 +20,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import org.febit.convert.Convert;
 import org.febit.lang.Singleton;
 import org.febit.util.agent.LazyAgent;
@@ -125,20 +127,30 @@ public class BaseConfig<T extends BaseConfig> implements Singleton, Serializable
         target.putAll(this.data);
     }
 
+    public void forEach(BiConsumer<String, String> action) {
+        this.data.forEach(action);
+    }
+
+    public void forEachPrefix(String prefix, BiConsumer<String, String> action) {
+        Objects.requireNonNull(action);
+        if (StringUtil.isEmpty(prefix)) {
+            forEach(action);
+            return;
+        }
+        int prefixLength = prefix.length();
+        this.data.forEach((key, val) -> {
+            if (key != null && key.startsWith(prefix)) {
+                action.accept(key.substring(prefixLength), val);
+            }
+        });
+    }
+
     public Map<String, String> extract(String prefix) {
         Map<String, String> map = new HashMap<>();
         if (StringUtil.isEmpty(prefix)) {
             exportTo(map);
-            return map;
-        }
-        int prefixLength = prefix.length();
-        for (Map.Entry<String, String> entry : this.data.entrySet()) {
-            String key = entry.getKey();
-            if (key == null
-                    || !key.startsWith(prefix)) {
-                continue;
-            }
-            map.put(key.substring(prefixLength), entry.getValue());
+        } else {
+            forEachPrefix(prefix, map::put);
         }
         return map;
     }

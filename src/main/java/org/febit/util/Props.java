@@ -185,8 +185,22 @@ public final class Props {
 
     public void forEach(BiConsumer<String, String> action) {
         Objects.requireNonNull(action);
-        this.data.forEach((k, v) -> {
-            action.accept(k, resolveValue(v));
+        this.data.forEach((key, val) -> {
+            action.accept(key, resolveValue(val));
+        });
+    }
+
+    public void forEachPrefix(String prefix, BiConsumer<String, String> action) {
+        Objects.requireNonNull(action);
+        if (StringUtil.isEmpty(prefix)) {
+            forEach(action);
+            return;
+        }
+        int prefixLength = prefix.length();
+        this.data.forEach((key, val) -> {
+            if (key != null && key.startsWith(prefix)) {
+                action.accept(key.substring(prefixLength), resolveValue(val));
+            }
         });
     }
 
@@ -204,16 +218,7 @@ public final class Props {
 
     public Map<String, String> exportByPrefix(String prefix) {
         Map<String, String> map = new HashMap<>();
-        if (StringUtil.isEmpty(prefix)) {
-            extractTo(map);
-            return map;
-        }
-        int prefixLength = prefix.length();
-        this.data.forEach((key, val) -> {
-            if (key != null && key.startsWith(prefix)) {
-                map.put(key.substring(prefixLength), resolveValue(val));
-            }
-        });
+        forEachPrefix(prefix, map::put);
         return map;
     }
 
