@@ -24,9 +24,8 @@ import org.testng.annotations.Test;
  */
 public class PropsTest {
 
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(PropsTest.class);
-
     private final String source = "\n"
+            // nested
             + "YEAR = 2016\n"
             + "PRODUCT = febit.org\n"
             + "CODE_febit.org = 110001\n"
@@ -46,15 +45,49 @@ public class PropsTest {
             + "[book2.chapter1]\n"
             + "YEAR=1999-01\n"
             + "copyright = copyright ${YEAR} ${PRODUCT} (${CODE_${PRODUCT}})\n"
+            // blanks & utf
+            + "[   ]\n"
+            + "top-key=hi\n"
+            + "[ complex condition  ]\n"
+            + " \\u4e2d\\u6587  =  \\u4e2d \\u6587 \n"
+            + " blanks    inside\tkey   =       中    文 \n"
+            // base
+            + "[]\n"
+            + "NAME= first name \n"
+            + "empty=\n"
+            + "empty2= \t  \n"
+            + "[user]\n"
+            + "name=user ${NAME}\r"
+            + "list=item1,item2,''',item3\n"
+            + "list2='''\nitem4,',item5,'',item6\n'''\n"
+            + "list3='''item4,item5\nitem6'''\r\n"
+            + "[]\n"
+            + "list2=${user.list}12345\n"
+            + "list2 +='''\nitem7,item9''\n'\n\n"
             + "";
 
     @Test
     public void test() {
 
         Props props = new Props();
-
         props.load(source);
 
+        // ===> base
+        assertEquals("first name", props.get("NAME"));
+        assertEquals("", props.get("empty"));
+        assertEquals("", props.get("empty2"));
+        assertEquals("user first name", props.get("user.name"));
+        assertEquals("item1,item2,''',item3", props.get("user.list"));
+        assertEquals("\nitem4,',item5,'',item6\n", props.get("user.list2"));
+        assertEquals("item4,item5\nitem6", props.get("user.list3"));
+        assertEquals("item1,item2,''',item312345,\nitem7,item9''\n'\n\n", props.get("list2"));
+
+        // ===> blanks & utf
+        assertEquals(props.get("top-key"), "hi");
+        assertEquals(props.get("complex condition.中文"), "中 文");
+        assertEquals(props.get("complex condition.blanks    inside\tkey"), "中    文");
+
+        // ===> nested
         assertEquals(props.get("YEAR"), "2016");
         assertEquals(props.get("PRODUCT"), "febit.org");
         assertEquals(props.get("CODE_febit.org"), "110001");
