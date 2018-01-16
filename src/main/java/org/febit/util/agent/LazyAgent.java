@@ -21,6 +21,7 @@ import org.febit.lang.Function0;
 /**
  *
  * @author zqq90
+ * @param <T>
  */
 public abstract class LazyAgent<T> implements Serializable {
 
@@ -36,12 +37,11 @@ public abstract class LazyAgent<T> implements Serializable {
         return _getOrCreate();
     }
 
-    public void reset() {
+    public synchronized void reset() {
         this.instance = null;
     }
 
     protected synchronized T _getOrCreate() {
-
         T result = this.instance;
         if (result != null) {
             return result;
@@ -51,7 +51,12 @@ public abstract class LazyAgent<T> implements Serializable {
         return result;
     }
 
+    @Deprecated
     public static <T> LazyAgent<T> create(final Function0<T> func) {
+        return of(func);
+    }
+
+    public static <T> LazyAgent<T> of(final Function0<T> func) {
         return new LazyAgent<T>() {
             @Override
             protected T create() {
