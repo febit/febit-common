@@ -876,8 +876,8 @@ public class StringUtil {
         if (src == null) {
             return null;
         }
-        final int len;
-        if ((len = src.length()) == 0) {
+        final int len = src.length();
+        if (len == 0) {
             return wrap ? "\"\"" : "";
         }
         final StringBuilder sb = new StringBuilder(len << 1);
@@ -892,8 +892,8 @@ public class StringUtil {
         if (src == null) {
             return;
         }
-        final int len;
-        if ((len = src.length()) == 0) {
+        final int len = src.length();
+        if (len == 0) {
             if (wrap) {
                 buffer.append("\"\"");
             }
