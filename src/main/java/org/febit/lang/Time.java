@@ -26,8 +26,12 @@ public final class Time {
 
     /**
      * millisecond.
+     *
+     * @deprecated user timestamp instead
      */
+    @Deprecated
     public final long millisecond;
+    public final long timestamp;
     /**
      * Year.
      */
@@ -48,6 +52,10 @@ public final class Time {
      * Minute, range [0 - 59].
      */
     public final int minute;
+    /**
+     * second, range [0 - 59].
+     */
+    public final int second;
     /**
      * Day of week, range: [1-7], 1 (Monday),, 6(SATURDAY), 7 (Sunday).
      */
@@ -81,7 +89,7 @@ public final class Time {
     /**
      * For test.
      *
-     * @param millisecond
+     * @param timestamp
      * @param year
      * @param month
      * @param day
@@ -92,8 +100,9 @@ public final class Time {
      * @Deprecated only for test
      */
     @Deprecated
-    Time(long millisecond, int year, int month, int day, int hour, int minute, int dayofweek, boolean leap) {
-        this.millisecond = millisecond;
+    Time(long timestamp, int year, int month, int day, int hour, int minute, int dayofweek, boolean leap) {
+        this.millisecond = timestamp;
+        this.timestamp = timestamp;
         this.year = year;
         this.month = month > 0 && month <= 12 ? month : month % 12 + 1;
         this.day = day;
@@ -102,22 +111,24 @@ public final class Time {
         this.dayOfWeek = dayofweek;
         this.leap = leap;
         this.offset = 0;
+        this.second = 0;
     }
 
     /**
      * Create Time.
      *
-     * @param millisecond
+     * @param timestamp
      * @param offset TimeZone offset
      */
-    public Time(long millisecond, int offset) {
-        this.millisecond = millisecond;
+    public Time(long timestamp, int offset) {
+        this.millisecond = timestamp;
+        this.timestamp = timestamp;
         this.offset = offset;
 
-        millisecond += offset; // plus offset
+        timestamp += offset; // plus offset
 
-        final int integer = (int) (millisecond / (1000L * 60 * 60 * 24)) + 2440587;
-        final double fraction = (double) (millisecond % (1000L * 60 * 60 * 24)) / (1000L * 60 * 60 * 24) + 0.5 + 0.5;
+        final int integer = (int) (timestamp / (1000L * 60 * 60 * 24)) + 2440587;
+        final double fraction = (double) (timestamp % (1000L * 60 * 60 * 24)) / (1000L * 60 * 60 * 24) + 0.5 + 0.5;
 
         //dayofweek
         this.dayOfWeek = ((int) ((double) integer + fraction) % 7) + 1; //  1 (Monday),... 7 (Sunday),
@@ -170,6 +181,8 @@ public final class Time {
         // minute with second included as a fraction
         double d_minute = (d_hour - (double) this.hour) * 60.0;
         this.minute = (int) d_minute;			// integer minute
+
+        this.second = (int) (timestamp / 1000L) % 60;
 
         //leap
         this.leap = TimeUtil.isLeapYear(year);
