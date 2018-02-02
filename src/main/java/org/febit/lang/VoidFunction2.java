@@ -15,12 +15,19 @@
  */
 package org.febit.lang;
 
+import java.util.function.BiConsumer;
+
 /**
  *
  * @author zqq90
  */
 @FunctionalInterface
-public interface VoidFunction2<A1, A2> {
+public interface VoidFunction2<A1, A2> extends BiConsumer<A1, A2> {
 
     void call(A1 arg1, A2 arg2);
+
+    @Override
+    public default void accept(A1 t, A2 u) {
+        call(t, u);
+    }
 }

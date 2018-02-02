@@ -15,12 +15,19 @@
  */
 package org.febit.lang;
 
+import java.util.function.BiFunction;
+
 /**
  *
  * @author zqq90
  */
 @FunctionalInterface
-public interface Function2<R, A1, A2> {
+public interface Function2<R, A1, A2> extends BiFunction<A1, A2, R> {
 
     R call(A1 arg1, A2 arg2);
+
+    @Override
+    default R apply(A1 t, A2 u) {
+        return call(t, u);
+    }
 }

@@ -15,12 +15,19 @@
  */
 package org.febit.lang;
 
+import java.util.function.Function;
+
 /**
  *
  * @author zqq90
  */
 @FunctionalInterface
-public interface Function1<R, A1> {
+public interface Function1<R, A1> extends Function<A1, R> {
 
     R call(A1 arg1);
+
+    @Override
+    default R apply(A1 t) {
+        return call(t);
+    }
 }

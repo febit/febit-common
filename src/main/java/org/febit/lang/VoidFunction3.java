@@ -20,7 +20,12 @@ package org.febit.lang;
  * @author zqq90
  */
 @FunctionalInterface
-public interface VoidFunction3<A1, A2, A3> {
+public interface VoidFunction3<A1, A2, A3> extends TerConsumer<A1, A2, A3> {
 
     void call(A1 arg1, A2 arg2, A3 arg3);
+
+    @Override
+    default void accept(A1 t, A2 u, A3 v) {
+        call(t, u, v);
+    }
 }

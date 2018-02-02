@@ -15,12 +15,19 @@
  */
 package org.febit.lang;
 
+import java.util.function.Supplier;
+
 /**
  *
  * @author zqq90
  */
 @FunctionalInterface
-public interface Function0<R> {
+public interface Function0<R> extends Supplier<R> {
 
     R call();
+
+    @Override
+    default R get() {
+        return call();
+    }
 }

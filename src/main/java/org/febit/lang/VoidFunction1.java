@@ -15,12 +15,19 @@
  */
 package org.febit.lang;
 
+import java.util.function.Consumer;
+
 /**
  *
  * @author zqq90
  */
 @FunctionalInterface
-public interface VoidFunction1<A1> {
+public interface VoidFunction1<A1> extends Consumer<A1> {
 
     void call(A1 arg1);
+
+    @Override
+    default void accept(A1 t) {
+        call(t);
+    }
 }
