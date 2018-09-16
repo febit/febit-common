@@ -17,7 +17,7 @@ package org.febit.util;
 
 import java.util.Collections;
 import java.util.Map;
-import jodd.util.URLDecoder;
+import jodd.net.URLDecoder;
 
 /**
  *

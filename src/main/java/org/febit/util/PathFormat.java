@@ -16,8 +16,9 @@
 package org.febit.util;
 
 import java.util.Map;
+import java.util.function.Function;
 import jodd.io.FileNameUtil;
-import jodd.util.StringTemplateParser;
+import jodd.template.StringTemplateParser;
 import org.febit.shaded.jodd.macro.PathMacros;
 import org.febit.shaded.jodd.macro.RegExpPathMacros;
 
@@ -37,7 +38,7 @@ public class PathFormat {
         FORMATER.setMacroEnd(SEPARS[2]);
     }
 
-    protected static String format(String format, StringTemplateParser.MacroResolver macroResolver) {
+    protected static String format(String format, Function<String, String> macroResolver) {
         return FORMATER.parse(format, macroResolver);
     }
 

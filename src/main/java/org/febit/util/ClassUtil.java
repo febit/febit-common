@@ -38,9 +38,7 @@ import jodd.io.StreamUtil;
  *
  * @author zqq90
  */
-public class ClassUtil {
-
-    private static final Class<?>[] EMPTY_CLASS_ARRAY = new Class[0];
+public class ClassUtil extends jodd.util.ClassUtil {
 
     public static ClassLoader getDefaultClassLoader() {
         return Thread.currentThread().getContextClassLoader();
@@ -342,14 +340,6 @@ public class ClassUtil {
 
     public static boolean isAbstract(Class<?> cls) {
         return Modifier.isAbstract(cls.getModifiers());
-    }
-
-    public static boolean isPublic(Class<?> cls) {
-        return Modifier.isPublic(cls.getModifiers());
-    }
-
-    public static boolean isPublic(Member member) {
-        return Modifier.isPublic(member.getModifiers());
     }
 
     public static void setAccessible(Collection<? extends AccessibleObject> accessibles) {

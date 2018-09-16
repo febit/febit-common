@@ -16,17 +16,15 @@
 package org.febit.util;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import jodd.net.URLDecoder;
+import jodd.net.URLCoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Pattern;
-import jodd.util.URLDecoder;
 import jodd.util.UnsafeUtil;
-import jodd.util.buffer.FastCharBuffer;
 import org.febit.lang.Defaults;
 
 /**
@@ -325,16 +323,12 @@ public class StringUtil {
         return string;
     }
 
-    public static String encodeUri(String src) {
-        try {
-            return URLEncoder.encode(src, "UTF-8");
-        } catch (UnsupportedEncodingException ex) {
-            return src;
-        }
+    public static String encodeUri(String uri) {
+        return URLCoder.encodeUri(uri, "UTF-8");
     }
 
-    public static String decodeUri(String src) {
-        return URLDecoder.decode(src, "UTF-8");
+    public static String decodeUri(String uri) {
+        return URLDecoder.decode(uri, "UTF-8");
     }
 
     public static String textBetween(String src, String start, String end) {
@@ -351,10 +345,6 @@ public class StringUtil {
             return null;
         }
         return src.substring(from, to);
-    }
-
-    public static String toString(final FastCharBuffer buffer) {
-        return UnsafeUtil.createString(buffer.toArray());
     }
 
     public static String concat(final String s1, final String s2) {

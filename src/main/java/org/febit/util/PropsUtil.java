@@ -17,7 +17,6 @@ package org.febit.util;
 
 import java.util.ArrayList;
 import java.util.List;
-import jodd.io.findfile.ClassFinder;
 import jodd.io.findfile.ClassScanner;
 
 /**
@@ -28,17 +27,12 @@ public class PropsUtil {
 
     public static Props scanClasspath(final Props props, final String... pathSets) {
         final List<String> propsPathList = new ArrayList<>();
-        final ClassScanner scanner = new ClassScanner() {
-
-            @Override
-            protected void onEntry(ClassFinder.EntryData ed) throws Exception {
-                propsPathList.add(ed.getName());
-            }
-        };
-        scanner.setExcludeAllEntries(true);
-        scanner.setIncludedEntries(pathSets);
-        scanner.setIncludeResources(true);
-        scanner.scanDefaultClasspath();
+        ClassScanner.create()
+                .excludeAllEntries(true)
+                .includeEntries(pathSets)
+                .includeResources(true)
+                .registerEntryConsumer((t) -> propsPathList.add(t.name()))
+                .scanDefaultClasspath();
         PropsUtil.load(props, propsPathList.toArray(new String[propsPathList.size()]));
         return props;
     }

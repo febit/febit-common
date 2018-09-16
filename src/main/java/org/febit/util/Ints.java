@@ -18,7 +18,7 @@ package org.febit.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import jodd.util.collection.IntArrayList;
+import jodd.buffer.FastIntBuffer;
 import org.febit.lang.Defaults;
 
 /**
@@ -232,7 +232,7 @@ public class Ints {
             final int len = chars.length;
 
             final List<Atom> atoms = new ArrayList<>();
-            final IntArrayList nomadics = new IntArrayList(16); //游离的单个值
+            final FastIntBuffer nomadics = new FastIntBuffer(16); //游离的单个值
 
             int rangeStart = -1;
             int number = 0;
@@ -257,7 +257,7 @@ public class Ints {
                             atoms.add(new RangeAtom(rangeStart, number));
                             rangeStart = -1;
                         } else {
-                            nomadics.add(number);
+                            nomadics.append(number);
                         }
                         number = 0;
                         state = STATE_SPLIT;
@@ -286,7 +286,7 @@ public class Ints {
             if (rangeStart >= 0) {
                 atoms.add(new RangeAtom(rangeStart, number));
             } else {
-                nomadics.add(number);
+                nomadics.append(number);
             }
 
             if (!nomadics.isEmpty()) {

@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
-import jodd.util.ReflectUtil;
 import jodd.util.collection.IntHashMap;
 import org.febit.bean.AccessFactory;
 import org.febit.bean.FieldInfo;
@@ -126,7 +125,7 @@ public class BaseFormUtil {
     }
 
     private static Class<?> resolveModelType(final Class<? extends BaseFormImpl> formClass) {
-        return ReflectUtil.getRawType(BaseFormImpl.class.getTypeParameters()[0], formClass);
+        return jodd.util.ClassUtil.getRawType(BaseFormImpl.class.getTypeParameters()[0], formClass);
     }
 
     static Peer[] getPeers(BaseFormImpl from, boolean add, int profile) {
