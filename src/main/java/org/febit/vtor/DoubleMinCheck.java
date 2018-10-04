@@ -23,7 +23,7 @@ public class DoubleMinCheck extends AbstractNumberCheck<DoubleMin> {
 
     @Override
     protected Object[] check(DoubleMin anno, Number value) {
-        double number = ((Number) value).doubleValue();
+        double number = value.doubleValue();
         if (number < anno.value()) {
             return new Object[]{anno.value(), value};
         }

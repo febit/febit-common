@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,18 +15,14 @@
  */
 package org.febit;
 
-import java.util.ArrayList;
-import java.util.List;
 import jodd.util.ClassLoaderUtil;
 import org.febit.lang.Singleton;
-import org.febit.util.ClassUtil;
-import org.febit.util.Petite;
-import org.febit.util.Priority;
-import org.febit.util.Props;
-import org.febit.util.PropsUtil;
-import org.febit.util.Stopwatch;
+import org.febit.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -153,6 +149,6 @@ public class App implements Singleton {
     }
 
     public <T> T getBean(Class<T> type) {
-        return (T) this.petite.get(type);
+        return this.petite.get(type);
     }
 }

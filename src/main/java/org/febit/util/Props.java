@@ -154,9 +154,7 @@ public final class Props {
     }
 
     public void merge(final Props props) {
-        props.data.forEach((k, v) -> {
-            put(k, v.value, v.append);
-        });
+        props.data.forEach((k, v) -> put(k, v.value, v.append));
         addModules(props.modules);
     }
 

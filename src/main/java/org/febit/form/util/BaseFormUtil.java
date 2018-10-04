@@ -104,7 +104,7 @@ public class BaseFormUtil {
         }
     }
 
-    public static final int getFormProfile(Class<?> actionClass) {
+    public static int getFormProfile(Class<?> actionClass) {
         final Integer profile = PROFILE_CACHING.unsafeGet(actionClass);
         if (profile != null) {
             return profile;
@@ -157,8 +157,7 @@ public class BaseFormUtil {
             return Collections.emptyMap();
         }
         Map<String, Object> ret = CollectionUtil.createHashMap(profile);
-        for (int i = 0, len = peers.length; i < len; i++) {
-            Peer peer = peers[i];
+        for (Peer peer : peers) {
             ret.put(peer.name, peer.from.get(form));
         }
         return ret;
@@ -223,13 +222,9 @@ public class BaseFormUtil {
         });
         //collect
         final IntHashMap addProfiles = CollectionUtil.createIntHashMap(adds.size());
-        adds.forEach((k, peers) -> {
-            addProfiles.put(k, peersToArray(peers));
-        });
+        adds.forEach((k, peers) -> addProfiles.put(k, peersToArray(peers)));
         final IntHashMap modifyProfiles = CollectionUtil.createIntHashMap(modifys.size());
-        modifys.forEach((k, peers) -> {
-            modifyProfiles.put(k, peersToArray(peers));
-        });
+        modifys.forEach((k, peers) -> modifyProfiles.put(k, peersToArray(peers)));
         return new FormEntry(addProfiles, modifyProfiles);
     }
 
@@ -289,7 +284,7 @@ public class BaseFormUtil {
                 .stream()
                 .filter(f -> f.getField() != null && f.isGettable())
                 .map(BaseFormUtil::toFormField)
-                .filter(f -> f != null)
+                .filter(Objects::nonNull)
                 .forEach(consumer);
     }
 

@@ -91,7 +91,7 @@ public class Defaults {
         return EMPTY_ITER;
     }
 
-    public static final <T> T or(T obj, T defaultValue) {
+    public static <T> T or(T obj, T defaultValue) {
         return obj != null ? obj : defaultValue;
     }
 }

@@ -34,7 +34,7 @@ public abstract class BaseFormImpl<E, I> implements AddForm<E>, ModifyForm<E, I>
 
     @Override
     public E createAdded(final int profile) {
-        final E model = (E) ClassUtil.newInstance(modelType());
+        final E model = ClassUtil.newInstance(modelType());
         BaseFormUtil.transfer(this, model, true, profile);
         return model;
     }

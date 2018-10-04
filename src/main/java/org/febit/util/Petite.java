@@ -326,7 +326,7 @@ public class Petite {
     @Documented
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.METHOD})
-    public static @interface Init {
+    public @interface Init {
     }
 
     public static Builder builder() {

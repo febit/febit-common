@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,11 +15,12 @@
  */
 package org.febit.util;
 
+import jodd.buffer.FastIntBuffer;
+import org.febit.lang.Defaults;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import jodd.buffer.FastIntBuffer;
-import org.febit.lang.Defaults;
 
 /**
  *
@@ -27,8 +28,8 @@ import org.febit.lang.Defaults;
  */
 public class Ints {
 
-    public static int compare(int v1, int v2) {
-        return v1 > v2 ? 1 : (v1 == v2 ? 0 : -1);
+    public static int compare(int x, int y) {
+        return Integer.compare(x, y);
     }
 
     /**
@@ -63,8 +64,8 @@ public class Ints {
     public static int toMark(int[] levels) {
         int mark = 0;
         if (levels != null) {
-            for (int i = 0; i < levels.length; i++) {
-                mark |= (1 << (levels[i]));
+            for (int level : levels) {
+                mark |= (1 << (level));
             }
         }
         return mark;
@@ -127,7 +128,7 @@ public class Ints {
             return Integer.toString(array[0]);
         }
         if (len == 2) {
-            return Integer.toString(array[0]) + ',' + Integer.toString(array[1]);
+            return Integer.toString(array[0]) + ',' + array[1];
         }
         return new IntsBuilder().compress(array);
     }
@@ -136,7 +137,7 @@ public class Ints {
         return parseAtom(src).export();
     }
 
-    public static interface Atom {
+    public interface Atom {
 
         /**
          * if contains this value.
@@ -380,9 +381,8 @@ public class Ints {
 
         @Override
         public boolean contains(int val) {
-            final int vals[] = this.values;
-            for (int i = 0, len = vals.length; i < len; i++) {
-                if (vals[i] == val) {
+            for (int val1 : this.values) {
+                if (val1 == val) {
                     return true;
                 }
             }

@@ -34,7 +34,7 @@ import org.febit.util.agent.LazyAgent;
  */
 public class BaseConfig<T extends BaseConfig> implements Singleton, Serializable {
 
-    protected final transient LazyAgent<Petite> petiteAgent = LazyAgent.create(this::buildPetite);
+    protected final transient LazyAgent<Petite> petiteAgent = LazyAgent.of(this::buildPetite);
     private final Map<String, String> data = new HashMap<>();
 
     protected BaseConfig() {

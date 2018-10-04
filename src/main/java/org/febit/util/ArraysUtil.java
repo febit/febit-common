@@ -209,13 +209,13 @@ public class ArraysUtil extends jodd.util.ArraysUtil {
         return false;
     }
 
-    private static class ArrayMap<E, T> implements Map<E, T> {
+    private static class ArrayMap<E, V> implements Map<E, V> {
 
         private final E[] keys;
-        private final T[] values;
+        private final V[] values;
         private final int length;
 
-        ArrayMap(E[] keys, T[] values) {
+        ArrayMap(E[] keys, V[] values) {
             if (keys == null) {
                 throw new NullPointerException();
             }
@@ -248,7 +248,7 @@ public class ArraysUtil extends jodd.util.ArraysUtil {
         }
 
         @Override
-        public T get(Object key) {
+        public V get(Object key) {
 
             int index = jodd.util.ArraysUtil.indexOf(keys, key);
             if (index >= 0) {
@@ -262,17 +262,17 @@ public class ArraysUtil extends jodd.util.ArraysUtil {
         }
 
         @Override
-        public T put(E key, T value) {
+        public V put(E key, V value) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public T remove(Object key) {
+        public V remove(Object key) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public void putAll(Map<? extends E, ? extends T> m) {
+        public void putAll(Map<? extends E, ? extends V> m) {
             throw new UnsupportedOperationException();
         }
 
@@ -287,13 +287,13 @@ public class ArraysUtil extends jodd.util.ArraysUtil {
         }
 
         @Override
-        public Collection<T> values() {
+        public Collection<V> values() {
             return Arrays.asList(values);
         }
 
         @Override
-        public Set<Map.Entry<E, T>> entrySet() {
-            return new Set<Map.Entry<E, T>>() {
+        public Set<Map.Entry<E, V>> entrySet() {
+            return new Set<Map.Entry<E, V>>() {
                 @Override
                 public int size() {
                     return ArrayMap.this.size();
@@ -307,12 +307,12 @@ public class ArraysUtil extends jodd.util.ArraysUtil {
                 @Override
                 @SuppressWarnings("unchecked")
                 public boolean contains(Object o) {
-                    return ArrayMap.this.containsKey(((Map.Entry<E, T>) o).getKey());
+                    return ArrayMap.this.containsKey(((Map.Entry<E, V>) o).getKey());
                 }
 
                 @Override
-                public Iterator<Entry<E, T>> iterator() {
-                    return new Iterator<Entry<E, T>>() {
+                public Iterator<Entry<E, V>> iterator() {
+                    return new Iterator<Entry<E, V>>() {
                         private int ndx = -1;
 
                         @Override
@@ -321,10 +321,10 @@ public class ArraysUtil extends jodd.util.ArraysUtil {
                         }
 
                         @Override
-                        public Entry<E, T> next() {
+                        public Entry<E, V> next() {
                             ndx++;
                             if (ndx < length) {
-                                return new Entry<E, T>() {
+                                return new Entry<E, V>() {
 
                                     @Override
                                     public E getKey() {
@@ -332,12 +332,12 @@ public class ArraysUtil extends jodd.util.ArraysUtil {
                                     }
 
                                     @Override
-                                    public T getValue() {
+                                    public V getValue() {
                                         return ArrayMap.this.values[ndx];
                                     }
 
                                     @Override
-                                    public T setValue(T value) {
+                                    public V setValue(V value) {
                                         throw new UnsupportedOperationException();
                                     }
                                 };
@@ -363,7 +363,7 @@ public class ArraysUtil extends jodd.util.ArraysUtil {
                 }
 
                 @Override
-                public boolean add(Entry<E, T> e) {
+                public boolean add(Entry<E, V> e) {
                     throw new UnsupportedOperationException();
                 }
 
@@ -378,7 +378,7 @@ public class ArraysUtil extends jodd.util.ArraysUtil {
                 }
 
                 @Override
-                public boolean addAll(Collection<? extends Entry<E, T>> c) {
+                public boolean addAll(Collection<? extends Entry<E, V>> c) {
                     throw new UnsupportedOperationException();
                 }
 

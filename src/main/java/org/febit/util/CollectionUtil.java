@@ -16,17 +16,7 @@
 package org.febit.util;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import jodd.util.collection.IntHashMap;
@@ -59,8 +49,9 @@ public class CollectionUtil {
         Collections.sort(list);
     }
 
+    @Deprecated
     public static <T> void sort(List<T> list, Comparator<? super T> c) {
-        Collections.sort(list, c);
+        list.sort(c);
     }
 
     public static <T> List<T> createList(int expactSize) {
@@ -235,7 +226,7 @@ public class CollectionUtil {
     }
 
     public static <T> Iter<T> excludeNull(final Iterator<T> iter) {
-        return CollectionUtil.filter(iter, (T item) -> item != null);
+        return CollectionUtil.filter(iter, Objects::nonNull);
     }
 
     public static <T> Iter<T> filter(final Iterator<T> iter, final Predicate<T> valid) {
@@ -333,11 +324,7 @@ public class CollectionUtil {
     protected static <T, K, V> void groupToMap(Map<K, List<V>> map, Collection<T> collection, Function1<K, T> keyFunc, Function1<V, T> valueFunc) {
         for (T t : collection) {
             K key = keyFunc.call(t);
-            List<V> list = map.get(key);
-            if (list == null) {
-                list = new ArrayList<>();
-                map.put(key, list);
-            }
+            List<V> list = map.computeIfAbsent(key, k -> new ArrayList<>());
             list.add(valueFunc.call(t));
         }
     }

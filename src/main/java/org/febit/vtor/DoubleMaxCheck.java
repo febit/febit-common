@@ -23,7 +23,7 @@ public class DoubleMaxCheck extends AbstractNumberCheck<DoubleMax> {
 
     @Override
     protected Object[] check(DoubleMax anno, Number value) {
-        double number = ((Number) value).doubleValue();
+        double number = value.doubleValue();
         if (number > anno.value()) {
             return new Object[]{anno.value(), value};
         }

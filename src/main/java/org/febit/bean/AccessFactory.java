@@ -160,7 +160,7 @@ public class AccessFactory {
         @Override
         public void set(Object bean, Object value) throws BeanUtilException {
             try {
-                this.method.invoke(bean, new Object[]{value});
+                this.method.invoke(bean, value);
             } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                 throw new BeanUtilException(ex);
             }

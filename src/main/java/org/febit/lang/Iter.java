@@ -28,7 +28,7 @@ import org.febit.lang.iter.BaseIter;
  */
 public interface Iter<E> extends Iterator<E> {
 
-    static final Iter EMPTY = new BaseIter() {
+    Iter EMPTY = new BaseIter() {
         @Override
         public Iter filter(Predicate valid) {
             return EMPTY;

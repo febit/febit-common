@@ -79,8 +79,7 @@ public final class FieldInfo {
         if (this == obj) {
             return true;
         }
-        if (obj == null
-                || !(obj instanceof FieldInfo)) {
+        if (!(obj instanceof FieldInfo)) {
             return false;
         }
         final FieldInfo other = (FieldInfo) obj;

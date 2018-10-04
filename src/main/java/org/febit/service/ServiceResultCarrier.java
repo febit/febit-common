@@ -21,5 +21,5 @@ package org.febit.service;
  */
 public interface ServiceResultCarrier {
 
-    public ServiceResult getServiceResult();
+    ServiceResult getServiceResult();
 }

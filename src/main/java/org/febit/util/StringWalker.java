@@ -181,7 +181,7 @@ public class StringWalker {
         return buf;
     }
 
-    public static interface Checker {
+    public interface Checker {
 
         boolean isFlag(char c);
     }

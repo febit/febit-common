@@ -146,22 +146,16 @@ public class BaseFormUtilTest {
                     );
                     break;
                 case "protectedString":
-                    assertTrue(
-                            vtor.check == getCheck(Numeric.class)
-                    );
+                    assertSame(vtor.check, getCheck(Numeric.class));
                     break;
                 case "privateObject2":
-                    assertTrue(
-                            vtor.check == getCheck(Min.class)
-                    );
+                    assertSame(vtor.check, getCheck(Min.class));
                     break;
                 case "privateObject":
-                    assertTrue(
-                            vtor.check == getCheck(NotNull.class)
-                    );
+                    assertSame(vtor.check, getCheck(NotNull.class));
                     break;
                 default:
-                    assertTrue(false, "unreachable: " + vtor.name);
+                    fail("unreachable: " + vtor.name);
             }
         }
 

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,199 +15,25 @@
  */
 package org.febit.util;
 
-import java.io.IOException;
-import jodd.net.URLDecoder;
 import jodd.net.URLCoder;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
-import java.util.regex.Pattern;
+import jodd.net.URLDecoder;
 import jodd.util.UnsafeUtil;
 import org.febit.lang.Defaults;
 
+import java.io.IOException;
+import java.util.*;
+import java.util.regex.Pattern;
+
 /**
- *
  * @author zqq90
  */
-public class StringUtil {
+public class StringUtil extends jodd.util.StringUtil {
 
     private static final char[] GT = "&gt;".toCharArray();
     private static final char[] LT = "&lt;".toCharArray();
 
-    public static boolean isEmpty(String src) {
-        return src == null || src.isEmpty();
-    }
-
-    public static boolean isAllEmpty(String... strings) {
-        for (String string : strings) {
-            if (!isEmpty(string)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static boolean isBlank(String src) {
-        return (src == null) || jodd.util.StringUtil.containsOnlyWhitespaces(src);
-    }
-
-    public static boolean isNotBlank(String src) {
-        return (src != null) && !jodd.util.StringUtil.containsOnlyWhitespaces(src);
-    }
-
-    public static boolean isAllBlank(String... strings) {
-        return jodd.util.StringUtil.isAllBlank(strings);
-    }
-
-    public static boolean isNotEmpty(String src) {
-        return src != null && !src.isEmpty();
-    }
-
-    public static String remove(String s, String sub) {
-        return jodd.util.StringUtil.remove(s, sub);
-    }
-
-    public static String removeChars(String src, String chars) {
-        return jodd.util.StringUtil.removeChars(src, chars);
-    }
-
-    public static String removeChars(String src, char... chars) {
-        return jodd.util.StringUtil.removeChars(src, chars);
-    }
-
-    public static String remove(String src, char ch) {
-        return jodd.util.StringUtil.remove(src, ch);
-    }
-
-    public static String[] split(String src, String delimiter) {
-        return jodd.util.StringUtil.split(src, delimiter);
-    }
-
-    public static String[] splitc(String src, String d) {
-        return jodd.util.StringUtil.splitc(src, d);
-    }
-
-    public static String[] splitc(String src, char[] delimiters) {
-        return jodd.util.StringUtil.splitc(src, delimiters);
-    }
-
-    public static String[] splitc(String src, char delimiter) {
-        return jodd.util.StringUtil.splitc(src, delimiter);
-    }
-
-    public static int startsWithOne(String src, String[] dest) {
-        return jodd.util.StringUtil.startsWithOne(src, dest);
-    }
-
-    public static int startsWithOneIgnoreCase(String src, String[] dest) {
-        return jodd.util.StringUtil.startsWithOneIgnoreCase(src, dest);
-    }
-
-    public static String repeat(String src, int count) {
-        return jodd.util.StringUtil.repeat(src, count);
-    }
-
-    public static String repeat(char c, int count) {
-        return jodd.util.StringUtil.repeat(c, count);
-    }
-
-    public static String replace(String s, String sub, String with) {
-        return jodd.util.StringUtil.replace(s, sub, with);
-    }
-
-    public static String replaceChar(String s, char sub, char with) {
-        return jodd.util.StringUtil.replaceChar(s, sub, with);
-    }
-
-    public static String replaceChars(String s, char[] sub, char[] with) {
-        return jodd.util.StringUtil.replaceChars(s, sub, with);
-    }
-
-    public static int count(String src, String sub) {
-        return jodd.util.StringUtil.count(src, sub, 0);
-    }
-
-    public static int count(String src, String sub, int start) {
-        return jodd.util.StringUtil.count(src, sub, start);
-    }
-
-    public static int count(String src, char c) {
-        return jodd.util.StringUtil.count(src, c, 0);
-    }
-
-    public static int count(String src, char c, int start) {
-        return jodd.util.StringUtil.count(src, c, start);
-    }
-
     public static void trim(String[] strings) {
-        for (int i = 0; i < strings.length; i++) {
-            String string = strings[i];
-            if (string != null) {
-                strings[i] = string.trim();
-            }
-        }
-    }
-
-    public static int indexOfChars(String src, String chars) {
-        return jodd.util.StringUtil.indexOfChars(src, chars, 0);
-    }
-
-    public static int indexOfChars(String src, String chars, int startindex) {
-        return jodd.util.StringUtil.indexOfChars(src, chars, startindex);
-    }
-
-    public static int indexOfChars(String src, char[] chars) {
-        return jodd.util.StringUtil.indexOfChars(src, chars, 0);
-    }
-
-    public static int indexOfChars(String src, char[] chars, int startindex) {
-        return jodd.util.StringUtil.indexOfChars(src, chars, startindex);
-    }
-
-    public static int indexOfIgnoreCase(String src, char c, int startIndex, int endIndex) {
-        return jodd.util.StringUtil.indexOfIgnoreCase(src, c, startIndex, endIndex);
-    }
-
-    public static int indexOfIgnoreCase(String src, String sub) {
-        return jodd.util.StringUtil.indexOfIgnoreCase(src, sub, 0, src.length());
-    }
-
-    public static int indexOfIgnoreCase(String src, String sub, int startIndex) {
-        return jodd.util.StringUtil.indexOfIgnoreCase(src, sub, startIndex, src.length());
-    }
-
-    public static int indexOfIgnoreCase(String src, String sub, int startIndex, int endIndex) {
-        return jodd.util.StringUtil.indexOfIgnoreCase(src, sub, startIndex, endIndex);
-    }
-
-    public static int lastIndexOfIgnoreCase(String s, String sub) {
-        return jodd.util.StringUtil.lastIndexOfIgnoreCase(s, sub, s.length(), 0);
-    }
-
-    public static int lastIndexOfIgnoreCase(String src, String sub, int startIndex) {
-        return jodd.util.StringUtil.lastIndexOfIgnoreCase(src, sub, startIndex, 0);
-    }
-
-    public static int lastIndexOfIgnoreCase(String src, String sub, int startIndex, int endIndex) {
-        return jodd.util.StringUtil.lastIndexOfIgnoreCase(src, sub, startIndex, endIndex);
-    }
-
-    public static int lastIndexOfIgnoreCase(String src, char c, int startIndex, int endIndex) {
-        return jodd.util.StringUtil.lastIndexOfIgnoreCase(src, c, startIndex, endIndex);
-    }
-
-    public static int lastIndexOf(String src, String sub, int startIndex, int endIndex) {
-        return jodd.util.StringUtil.lastIndexOf(src, sub, startIndex, endIndex);
-    }
-
-    public static int lastIndexOf(String src, char c, int startIndex, int endIndex) {
-        return jodd.util.StringUtil.lastIndexOf(src, c, startIndex, endIndex);
-    }
-
-    public static int lastIndexOfChars(String src, String chars, int startIndex, int endIndex) {
-        return lastIndexOfChars(src, chars.toCharArray(), startIndex, endIndex);
+        trimAll(strings);
     }
 
     public static int lastIndexOfChars(String src, char[] chars, int startIndex, int endIndex) {
@@ -224,8 +50,8 @@ public class StringUtil {
         int charsLen = chars.length;
         for (int i = startIndex; i >= endIndex; i--) {
             char c = src.charAt(i);
-            for (int j = 0; j < charsLen; j++) {
-                if (c == chars[j]) {
+            for (char aChar : chars) {
+                if (c == aChar) {
                     return i;
                 }
             }
@@ -245,18 +71,6 @@ public class StringUtil {
             return src;
         }
         return src.substring(0, src.length() - suffix.length());
-    }
-
-    public static String cutSurrounding(String src, String fix) {
-        return jodd.util.StringUtil.cutSurrounding(src, fix, fix);
-    }
-
-    public static String cutSurrounding(String src, String prefix, String suffix) {
-        return jodd.util.StringUtil.cutSurrounding(src, prefix, suffix);
-    }
-
-    public static String cutBetween(String src, String left, String right) {
-        return jodd.util.StringUtil.cutBetween(src, left, right);
     }
 
     public static String cutTo(String src, String substring) {
@@ -474,7 +288,7 @@ public class StringUtil {
     /**
      * split with ',' '\n' '\r', and trimed, exclude EMPTY string
      *
-     * @param src
+     * @param c
      * @return 如果是null 返回空数组而不是null
      */
     private static boolean isArrayValueEnd(char c) {
@@ -704,6 +518,7 @@ public class StringUtil {
         }
         return true;
     }
+
     private static final Pattern PATTERN_EMAIL = Pattern.compile("[_a-zA-Z0-9.-]+@[_a-zA-Z0-9.-]+\\.[a-zA-Z0-9]{2,4}");
 
     public static boolean isEmail(String string) {
@@ -726,10 +541,10 @@ public class StringUtil {
     private static final char[] DIGITS_UPPER = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
     private static final char[] ASCII_CHARS = {'0', '0', '0', '1', '0', '2', '0', '3', '0', '4', '0', '5', '0', '6',
-        '0', '7', '0', '8', '0', '9', '0', 'A', '0', 'B', '0', 'C', '0', 'D', '0', 'E', '0', 'F', '1', '0', '1',
-        '1', '1', '2', '1', '3', '1', '4', '1', '5', '1', '6', '1', '7', '1', '8', '1', '9', '1', 'A', '1', 'B',
-        '1', 'C', '1', 'D', '1', 'E', '1', 'F', '2', '0', '2', '1', '2', '2', '2', '3', '2', '4', '2', '5', '2',
-        '6', '2', '7', '2', '8', '2', '9', '2', 'A', '2', 'B', '2', 'C', '2', 'D', '2', 'E', '2', 'F',};
+            '0', '7', '0', '8', '0', '9', '0', 'A', '0', 'B', '0', 'C', '0', 'D', '0', 'E', '0', 'F', '1', '0', '1',
+            '1', '1', '2', '1', '3', '1', '4', '1', '5', '1', '6', '1', '7', '1', '8', '1', '9', '1', 'A', '1', 'B',
+            '1', 'C', '1', 'D', '1', 'E', '1', 'F', '2', '0', '2', '1', '2', '2', '2', '3', '2', '4', '2', '5', '2',
+            '6', '2', '7', '2', '8', '2', '9', '2', 'A', '2', 'B', '2', 'C', '2', 'D', '2', 'E', '2', 'F',};
 
     public static String HEX(final byte[] bs) {
         return toHexString(bs, DIGITS_UPPER);
@@ -976,10 +791,8 @@ public class StringUtil {
     public static String escapeHTMLTag(String str) {
         if (str != null) {
             final char[] src = UnsafeUtil.getChars(str);
-            final int size = src.length;
-            final StringBuilder buffer = new StringBuilder(str.length() + (size > 1000 ? 200 : 100));
-            for (int i = 0; i < size; i++) {
-                char c = src[i];
+            final StringBuilder buffer = new StringBuilder(str.length() + (src.length > 1000 ? 200 : 100));
+            for (char c : src) {
                 switch (c) {
                     case '<':
                         buffer.append(LT);
@@ -1074,41 +887,4 @@ public class StringUtil {
         }
         return sb.toString();
     }
-
-    public static <T> String join(T[] array, char separator) {
-        if (array == null) {
-            return "";
-        }
-        int size = array.length;
-        if (size == 0) {
-            return "";
-        }
-        final StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < size; i++) {
-            if (i != 0) {
-                sb.append(separator);
-            }
-            sb.append(array[i]);
-        }
-        return sb.toString();
-    }
-
-    public static <T> String join(T[] array, String separator) {
-        if (array == null) {
-            return "";
-        }
-        int size = array.length;
-        if (size == 0) {
-            return "";
-        }
-        final StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < size; i++) {
-            if (i != 0) {
-                sb.append(separator);
-            }
-            sb.append(array[i]);
-        }
-        return sb.toString();
-    }
-
 }

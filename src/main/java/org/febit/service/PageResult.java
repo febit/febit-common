@@ -37,7 +37,7 @@ public interface PageResult {
 
     int getTotalPage();
 
-    public Object getLinks();
+    Object getLinks();
 
-    public void setLinks(Object links);
+    void setLinks(Object links);
 }

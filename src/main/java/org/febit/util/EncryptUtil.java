@@ -16,6 +16,7 @@
 package org.febit.util;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -104,10 +105,6 @@ public class EncryptUtil {
     }
 
     protected static byte[] toBytes(String str) {
-        try {
-            return str.getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException(e);
-        }
+        return str.getBytes(StandardCharsets.UTF_8);
     }
 }

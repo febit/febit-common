@@ -382,7 +382,7 @@ public class ClassUtil extends jodd.util.ClassUtil {
 
     public static Method getPublicSetterMethod(Field field, Class<?> type) {
         try {
-            return type.getDeclaredMethod("set" + StringUtil.upperFirst(field.getName()), new Class[]{field.getType()});
+            return type.getDeclaredMethod("set" + StringUtil.upperFirst(field.getName()), field.getType());
         } catch (NoSuchMethodException | SecurityException ignore) {
         }
         return null;

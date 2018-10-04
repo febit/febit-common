@@ -28,7 +28,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface FormProfile {
 
-    public static final int DEFAULT = -1;
+    int DEFAULT = -1;
 
     int value() default DEFAULT;
 
