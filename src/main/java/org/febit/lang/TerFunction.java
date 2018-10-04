@@ -15,19 +15,12 @@
  */
 package org.febit.lang;
 
-import java.util.function.Supplier;
-
 /**
  *
  * @author zqq90
  */
 @FunctionalInterface
-public interface Function0<R> extends Supplier<R> {
+public interface TerFunction<A1, A2, A3, R> {
 
-    R call();
-
-    @Override
-    default R get() {
-        return call();
-    }
+    R call(A1 arg1, A2 arg2, A3 arg3);
 }

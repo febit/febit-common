@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,27 +15,27 @@
  */
 package org.febit.lang.iter;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.function.Predicate;
-import org.febit.lang.Function1;
-import org.febit.lang.Function2;
 import org.febit.lang.Iter;
 import org.febit.util.CollectionUtil;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Predicate;
+
 /**
- *
  * @author zqq90
  */
 public abstract class BaseIter<E> implements Iter<E> {
 
     @Override
-    public <T> Iter<T> map(final Function1<T, E> func) {
+    public <T> Iter<T> map(final Function<E, T> func) {
         return CollectionUtil.map(this, func);
     }
 
     @Override
-    public <T> Iter<T> flatMap(final Function1<Iterator<T>, E> func) {
+    public <T> Iter<T> flatMap(final Function<E, Iterator<T>> func) {
         return CollectionUtil.flatMap(this, func);
     }
 
@@ -45,9 +45,9 @@ public abstract class BaseIter<E> implements Iter<E> {
     }
 
     @Override
-    public <T> T fold(T init, final Function2<T, T, E> func) {
+    public <T> T fold(T init, final BiFunction<T, E, T> func) {
         while (this.hasNext()) {
-            init = func.call(init, this.next());
+            init = func.apply(init, this.next());
         }
         return init;
     }

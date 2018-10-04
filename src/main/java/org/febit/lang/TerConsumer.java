@@ -20,24 +20,24 @@ import java.util.Objects;
 /**
  * Represents an operation that accepts tree input arguments and returns no result.
  *
- * @param <T> the type of the first argument to the operation
- * @param <U> the type of the second argument to the operation
- * @param <V> the type of the third argument to the operation
+ * @param <A1> the type of the first argument to the operation
+ * @param <A2> the type of the second argument to the operation
+ * @param <A3> the type of the third argument to the operation
  *
  * @see java.util.function.Consumer
  * @author zqq90
  */
 @FunctionalInterface
-public interface TerConsumer<T, U, V> {
+public interface TerConsumer<A1, A2, A3> {
 
     /**
      * Performs this operation on the given arguments.
      *
-     * @param t the first input argument
-     * @param u the second input argument
-     * @param v the third input argument
+     * @param arg1 the first input argument
+     * @param arg2 the second input argument
+     * @param arg3 the third input argument
      */
-    void accept(T t, U u, V v);
+    void accept(A1 arg1, A2 arg2, A3 arg3);
 
     /**
      * Returns a composed {@code TerConsumer} that performs, in sequence, this operation followed by the {@code after}
@@ -48,11 +48,11 @@ public interface TerConsumer<T, U, V> {
      * operation
      * @throws NullPointerException if {@code after} is null
      */
-    default TerConsumer<T, U, V> andThen(TerConsumer<? super T, ? super U, ? super V> after) {
+    default TerConsumer<A1, A2, A3> andThen(TerConsumer<? super A1, ? super A2, ? super A3> after) {
         Objects.requireNonNull(after);
-        return (t, u, v) -> {
-            accept(t, u, v);
-            after.accept(t, u, v);
+        return (a1, a2, a3) -> {
+            accept(a1, a2, a3);
+            after.accept(a1, a2, a3);
         };
     }
 }

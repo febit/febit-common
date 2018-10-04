@@ -17,7 +17,6 @@ package org.febit.util.agent;
 
 import java.io.Serializable;
 import java.util.function.Supplier;
-import org.febit.lang.Function0;
 
 /**
  *
@@ -50,11 +49,6 @@ public abstract class LazyAgent<T> implements Serializable {
         result = create();
         this.instance = result;
         return result;
-    }
-
-    @Deprecated
-    public static <T> LazyAgent<T> create(final Function0<T> func) {
-        return of(func);
     }
 
     public static <T> LazyAgent<T> of(final Supplier<T> func) {

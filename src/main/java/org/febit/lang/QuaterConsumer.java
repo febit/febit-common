@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,11 +16,18 @@
 package org.febit.lang;
 
 /**
+ * Represents an operation that accepts four input arguments and returns no result.
  *
+ * @param <A1> the type of the first argument to the operation
+ * @param <A2> the type of the second argument to the operation
+ * @param <A3> the type of the third argument to the operation
+ * @param <A4> the type of the fourth argument to the operation
+ *
+ * @see java.util.function.Consumer
  * @author zqq90
  */
 @FunctionalInterface
-public interface Function3<R, A1, A2, A3> {
+public interface QuaterConsumer<A1, A2, A3, A4> {
 
-    R call(A1 arg1, A2 arg2, A3 arg3);
+    void call(A1 arg1, A2 arg2, A3 arg3, A4 arg4);
 }

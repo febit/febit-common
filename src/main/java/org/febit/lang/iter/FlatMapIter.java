@@ -17,7 +17,7 @@ package org.febit.lang.iter;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import org.febit.lang.Function1;
+import java.util.function.Function;
 
 /**
  *
@@ -26,11 +26,11 @@ import org.febit.lang.Function1;
 public class FlatMapIter<T, F> extends BaseIter<T> {
 
     protected final Iterator<F> iter;
-    protected final Function1<Iterator<T>, F> func;
+    protected final Function<F, Iterator<T>> func;
 
     protected Iterator<T> _currentSubIter;
 
-    public FlatMapIter(Iterator<F> iter, Function1<Iterator<T>, F> func) {
+    public FlatMapIter(Iterator<F> iter, Function<F, Iterator<T>> func) {
         this.iter = iter;
         this.func = func;
     }
@@ -46,7 +46,7 @@ public class FlatMapIter<T, F> extends BaseIter<T> {
         if (!iter.hasNext()) {
             return false;
         }
-        this._currentSubIter = func.call(iter.next());
+        this._currentSubIter = func.apply(iter.next());
         return hasNext();
     }
 

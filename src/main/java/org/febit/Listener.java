@@ -19,6 +19,7 @@ package org.febit;
  * @author zqq90
  */
 public interface Listener {
+
     void start();
 
     void stop();

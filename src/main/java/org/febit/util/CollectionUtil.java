@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,32 +15,18 @@
  */
 package org.febit.util;
 
-import java.lang.reflect.Array;
-import java.util.*;
-import java.util.function.IntFunction;
-import java.util.function.Predicate;
 import jodd.util.collection.IntHashMap;
 import org.febit.lang.Defaults;
-import org.febit.lang.Function1;
 import org.febit.lang.Iter;
-import org.febit.lang.iter.BaseIter;
-import org.febit.lang.iter.BooleanArrayIter;
-import org.febit.lang.iter.ByteArrayIter;
-import org.febit.lang.iter.CharArrayIter;
-import org.febit.lang.iter.DoubleArrayIter;
-import org.febit.lang.iter.EnumerationIter;
-import org.febit.lang.iter.FlatMapIter;
-import org.febit.lang.iter.FloatArrayIter;
-import org.febit.lang.iter.IntArrayIter;
-import org.febit.lang.iter.IterConcatIter;
-import org.febit.lang.iter.IterFilter;
-import org.febit.lang.iter.IteratorIter;
-import org.febit.lang.iter.LongArrayIter;
-import org.febit.lang.iter.ObjectArrayIter;
-import org.febit.lang.iter.ShortArrayIter;
+import org.febit.lang.iter.*;
+
+import java.lang.reflect.Array;
+import java.util.*;
+import java.util.function.Function;
+import java.util.function.IntFunction;
+import java.util.function.Predicate;
 
 /**
- *
  * @author zqq90
  */
 public class CollectionUtil {
@@ -210,7 +196,7 @@ public class CollectionUtil {
         return toIter(toIterator(o1));
     }
 
-    public static <F, T> Iter<T> map(final Iterator<F> iter, final Function1<T, F> func) {
+    public static <F, T> Iter<T> map(final Iterator<F> iter, final Function<F, T> func) {
         return new BaseIter<T>() {
 
             @Override
@@ -220,7 +206,7 @@ public class CollectionUtil {
 
             @Override
             public T next() {
-                return func.call(iter.next());
+                return func.apply(iter.next());
             }
         };
     }
@@ -233,7 +219,7 @@ public class CollectionUtil {
         return IterFilter.wrap(iter, valid);
     }
 
-    public static <F, T> Iter<T> flatMap(final Iterator<F> iter, final Function1<Iterator<T>, F> func) {
+    public static <F, T> Iter<T> flatMap(final Iterator<F> iter, final Function<F, Iterator<T>> func) {
         return new FlatMapIter<>(iter, func);
     }
 
@@ -301,31 +287,31 @@ public class CollectionUtil {
         return to;
     }
 
-    public static <T, K> Map<K, List<T>> groupToMap(Collection<T> collection, Function1<K, T> keyFunc) {
+    public static <T, K> Map<K, List<T>> groupToMap(Collection<T> collection, Function<T, K> keyFunc) {
         return groupToMap(collection, keyFunc, (T arg1) -> arg1);
     }
 
-    public static <T, K, V> Map<K, List<V>> groupToMap(Collection<T> collection, Function1<K, T> keyFunc, Function1<V, T> valueFunc) {
+    public static <T, K, V> Map<K, List<V>> groupToMap(Collection<T> collection, Function<T, K> keyFunc, Function<T, V> valueFunc) {
         Map<K, List<V>> map = new HashMap<>();
         groupToMap(map, collection, keyFunc, valueFunc);
         return map;
     }
 
-    public static <T, K> TreeMap<K, List<T>> groupToTreeMap(Collection<T> collection, Function1<K, T> keyFunc) {
+    public static <T, K> TreeMap<K, List<T>> groupToTreeMap(Collection<T> collection, Function<T, K> keyFunc) {
         return groupToTreeMap(collection, keyFunc, (T arg1) -> arg1);
     }
 
-    public static <T, K, V> TreeMap<K, List<V>> groupToTreeMap(Collection<T> collection, Function1<K, T> keyFunc, Function1<V, T> valueFunc) {
+    public static <T, K, V> TreeMap<K, List<V>> groupToTreeMap(Collection<T> collection, Function<T, K> keyFunc, Function<T, V> valueFunc) {
         TreeMap<K, List<V>> map = new TreeMap<>();
         groupToMap(map, collection, keyFunc, valueFunc);
         return map;
     }
 
-    protected static <T, K, V> void groupToMap(Map<K, List<V>> map, Collection<T> collection, Function1<K, T> keyFunc, Function1<V, T> valueFunc) {
+    protected static <T, K, V> void groupToMap(Map<K, List<V>> map, Collection<T> collection, Function<T, K> keyFunc, Function<T, V> valueFunc) {
         for (T t : collection) {
-            K key = keyFunc.call(t);
+            K key = keyFunc.apply(t);
             List<V> list = map.computeIfAbsent(key, k -> new ArrayList<>());
-            list.add(valueFunc.call(t));
+            list.add(valueFunc.apply(t));
         }
     }
 }

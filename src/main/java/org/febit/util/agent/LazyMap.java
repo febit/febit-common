@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,7 @@
 package org.febit.util.agent;
 
 import java.util.concurrent.ConcurrentHashMap;
-import org.febit.lang.Function1;
+import java.util.function.Function;
 
 /**
  *
@@ -75,15 +75,15 @@ public abstract class LazyMap<K, V> {
 
     protected abstract V create(K key);
 
-    public static <K, V> LazyMap<K, V> create(final Function1<V, K> func) {
+    public static <K, V> LazyMap<K, V> create(final Function<K, V> func) {
         return create(DEFAULT_INIT_CAPACITY, func);
     }
 
-    public static <K, V> LazyMap<K, V> create(int initialCapacity, final Function1<V, K> func) {
+    public static <K, V> LazyMap<K, V> create(int initialCapacity, final Function<K, V> func) {
         return new LazyMap<K, V>(initialCapacity) {
             @Override
             protected V create(K key) {
-                return func.call(key);
+                return func.apply(key);
             }
         };
     }

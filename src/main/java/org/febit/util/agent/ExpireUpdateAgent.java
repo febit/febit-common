@@ -16,7 +16,7 @@
 package org.febit.util.agent;
 
 import java.io.Serializable;
-import org.febit.lang.Function0;
+import java.util.function.Supplier;
 
 /**
  * 缓存代理. 过期时间后获取实例会重新获取, 如果获取失败, 会沿用上个周期的实例,
@@ -182,16 +182,16 @@ public abstract class ExpireUpdateAgent<T> implements Serializable {
         return System.currentTimeMillis();
     }
 
-    public static <T> ExpireUpdateAgent<T> create(long expire, long extraExpire, final Function0<T> func) {
+    public static <T> ExpireUpdateAgent<T> create(long expire, long extraExpire, final Supplier<T> func) {
         return new ExpireUpdateAgent<T>(expire, extraExpire) {
             @Override
             protected T create() {
-                return func.call();
+                return func.get();
             }
         };
     }
 
-    public static <T> ExpireUpdateAgent<T> create(long expire, final Function0<T> func) {
+    public static <T> ExpireUpdateAgent<T> create(long expire, final Supplier<T> func) {
         return create(expire, expire * DEFAULT_EXTRA_TIMES, func);
     }
 }

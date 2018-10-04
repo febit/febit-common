@@ -26,10 +26,13 @@ import java.util.Set;
  */
 public class Defaults {
 
+    @Deprecated
     public static final Integer INT_1 = 1;
+    @Deprecated
     public static final Integer INT_p1 = -1;
+    @Deprecated
     public static final Integer INT_0 = 0;
-
+    @Deprecated
     public static final String BLANK = "";
 
     public static final int[] EMPTY_INTS = new int[0];
