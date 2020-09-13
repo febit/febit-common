@@ -15,13 +15,36 @@
  */
 package org.febit.util;
 
-import jodd.util.collection.IntHashMap;
 import org.febit.lang.Defaults;
 import org.febit.lang.Iter;
-import org.febit.lang.iter.*;
+import org.febit.lang.iter.BaseIter;
+import org.febit.lang.iter.BooleanArrayIter;
+import org.febit.lang.iter.ByteArrayIter;
+import org.febit.lang.iter.CharArrayIter;
+import org.febit.lang.iter.DoubleArrayIter;
+import org.febit.lang.iter.EnumerationIter;
+import org.febit.lang.iter.FlatMapIter;
+import org.febit.lang.iter.FloatArrayIter;
+import org.febit.lang.iter.IntArrayIter;
+import org.febit.lang.iter.IterConcatIter;
+import org.febit.lang.iter.IterFilter;
+import org.febit.lang.iter.IteratorIter;
+import org.febit.lang.iter.LongArrayIter;
+import org.febit.lang.iter.ObjectArrayIter;
+import org.febit.lang.iter.ShortArrayIter;
 
 import java.lang.reflect.Array;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
@@ -33,11 +56,6 @@ public class CollectionUtil {
 
     public static <T extends Comparable<? super T>> void sort(List<T> list) {
         Collections.sort(list);
-    }
-
-    @Deprecated
-    public static <T> void sort(List<T> list, Comparator<? super T> c) {
-        list.sort(c);
     }
 
     public static <T> List<T> createList(int expactSize) {
@@ -74,10 +92,6 @@ public class CollectionUtil {
 
     public static <K, V> Map<K, V> createMap(int expectedSize) {
         return createHashMap(expectedSize);
-    }
-
-    public static IntHashMap createIntHashMap(int expectedSize) {
-        return new IntHashMap(expectedSize * 4 / 3 + 1);
     }
 
     public static Object[] toArray(List list) {

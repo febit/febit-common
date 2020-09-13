@@ -15,8 +15,6 @@
  */
 package org.febit.util;
 
-import jodd.util.UnsafeUtil;
-
 /**
  *
  * @author zqq90
@@ -30,7 +28,7 @@ public class StringWalker {
     private StringBuilder _buf;
 
     public StringWalker(String sources) {
-        this(UnsafeUtil.getChars(sources));
+        this(sources.toCharArray());
     }
 
     public StringWalker(char[] chars) {

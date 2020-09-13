@@ -17,11 +17,14 @@ package org.febit.util;
 
 import jodd.net.URLCoder;
 import jodd.net.URLDecoder;
-import jodd.util.UnsafeUtil;
 import org.febit.lang.Defaults;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 /**
@@ -790,7 +793,7 @@ public class StringUtil extends jodd.util.StringUtil {
 
     public static String escapeHTMLTag(String str) {
         if (str != null) {
-            final char[] src = UnsafeUtil.getChars(str);
+            final char[] src = str.toCharArray();
             final StringBuilder buffer = new StringBuilder(str.length() + (src.length > 1000 ? 200 : 100));
             for (char c : src) {
                 switch (c) {

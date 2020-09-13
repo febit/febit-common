@@ -1,12 +1,12 @@
 /**
  * Copyright 2013-present febit.org (support@febit.org)
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,18 +15,6 @@
  */
 package org.febit.form.util;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.Consumer;
-import jodd.util.collection.IntHashMap;
 import org.febit.bean.AccessFactory;
 import org.febit.bean.FieldInfo;
 import org.febit.bean.FieldInfoResolver;
@@ -46,6 +34,18 @@ import org.febit.vtor.BaseVtorChecker.CheckConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Consumer;
+
 /**
  *
  * @author zqq90
@@ -63,10 +63,10 @@ public class BaseFormUtil {
 
     protected static class FormEntry {
 
-        protected final IntHashMap addProfiles;
-        protected final IntHashMap modifyProfiles;
+        protected final Map<Integer, Peer[]> addProfiles;
+        protected final Map<Integer, Peer[]> modifyProfiles;
 
-        public FormEntry(IntHashMap addProfiles, IntHashMap modifyProfiles) {
+        public FormEntry(Map<Integer, Peer[]> addProfiles, Map<Integer, Peer[]> modifyProfiles) {
             this.addProfiles = addProfiles;
             this.modifyProfiles = modifyProfiles;
         }
@@ -221,9 +221,9 @@ public class BaseFormUtil {
             }
         });
         //collect
-        final IntHashMap addProfiles = CollectionUtil.createIntHashMap(adds.size());
+        final Map<Integer, Peer[]> addProfiles = CollectionUtil.createHashMap(adds.size());
         adds.forEach((k, peers) -> addProfiles.put(k, peersToArray(peers)));
-        final IntHashMap modifyProfiles = CollectionUtil.createIntHashMap(modifys.size());
+        final Map<Integer, Peer[]> modifyProfiles = CollectionUtil.createHashMap(modifys.size());
         modifys.forEach((k, peers) -> modifyProfiles.put(k, peersToArray(peers)));
         return new FormEntry(addProfiles, modifyProfiles);
     }

@@ -15,12 +15,12 @@
  */
 package org.febit.util;
 
+import org.febit.io.FileUtil;
+import org.febit.lang.Iter;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
-import jodd.util.UnsafeUtil;
-import org.febit.io.FileUtil;
-import org.febit.lang.Iter;
 
 /**
  *
@@ -58,7 +58,7 @@ public class CsvUtil extends jodd.util.CsvUtil {
             if (field == null || field.isEmpty()) {
                 continue;
             }
-            char[] raw = UnsafeUtil.getChars(field);
+            char[] raw = field.toCharArray();
             writer.write(FIELD_QUOTE);
             for (char c : raw) {
                 if (c == '\n' || c == '\r') {
