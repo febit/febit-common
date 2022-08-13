@@ -21,6 +21,7 @@ import org.testng.IObjectFactory2;
  *
  * @author zqq90
  */
+@Deprecated
 public class TestsObjectFactory2 implements IObjectFactory2 {
 
     @Override
