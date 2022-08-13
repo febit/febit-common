@@ -15,10 +15,11 @@
  */
 package org.febit.util;
 
+import jodd.io.StreamUtil;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ServiceLoader;
-import jodd.io.StreamUtil;
 
 /**
  *
@@ -33,7 +34,7 @@ public class Resources {
         static final ResourceLoader[] LOADERS;
 
         static {
-            LOADERS = CollectionUtil.read(ServiceLoader.load(ResourceLoader.class))
+            LOADERS = ServiceLoader.load(ResourceLoader.class)
                     .stream()
                     .sorted(Priority.DESC)
                     .toArray(ResourceLoader[]::new);

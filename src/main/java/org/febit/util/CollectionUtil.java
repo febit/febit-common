@@ -17,34 +17,10 @@ package org.febit.util;
 
 import org.febit.lang.Defaults;
 import org.febit.lang.Iter;
-import org.febit.lang.iter.BaseIter;
-import org.febit.lang.iter.BooleanArrayIter;
-import org.febit.lang.iter.ByteArrayIter;
-import org.febit.lang.iter.CharArrayIter;
-import org.febit.lang.iter.DoubleArrayIter;
-import org.febit.lang.iter.EnumerationIter;
-import org.febit.lang.iter.FlatMapIter;
-import org.febit.lang.iter.FloatArrayIter;
-import org.febit.lang.iter.IntArrayIter;
-import org.febit.lang.iter.IterConcatIter;
-import org.febit.lang.iter.IterFilter;
-import org.febit.lang.iter.IteratorIter;
-import org.febit.lang.iter.LongArrayIter;
-import org.febit.lang.iter.ObjectArrayIter;
-import org.febit.lang.iter.ShortArrayIter;
+import org.febit.lang.iter.*;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
@@ -54,18 +30,22 @@ import java.util.function.Predicate;
  */
 public class CollectionUtil {
 
+    @Deprecated
     public static <T extends Comparable<? super T>> void sort(List<T> list) {
         Collections.sort(list);
     }
 
+    @Deprecated
     public static <T> List<T> createList(int expactSize) {
         return new ArrayList<>(expactSize);
     }
 
+    @Deprecated
     public static <T> List<T> read(Iterable<T> iterable) {
         return read(iterable.iterator());
     }
 
+    @Deprecated
     public static <T> List<T> read(Iterator<T> iter) {
         List<T> list = new ArrayList<>();
         while (iter.hasNext()) {
@@ -74,6 +54,7 @@ public class CollectionUtil {
         return list;
     }
 
+    @Deprecated
     public static <T> List<T> read(Enumeration<T> e) {
         List<T> list = new ArrayList<>();
         while (e.hasMoreElements()) {
@@ -82,14 +63,17 @@ public class CollectionUtil {
         return list;
     }
 
+    @Deprecated
     public static <K> java.util.HashSet<K> createSet(int expectedSize) {
         return new java.util.HashSet<>(expectedSize * 4 / 3 + 1);
     }
 
+    @Deprecated
     public static <K, V> HashMap<K, V> createHashMap(int expectedSize) {
         return new HashMap<>(expectedSize * 4 / 3 + 1);
     }
 
+    @Deprecated
     public static <K, V> Map<K, V> createMap(int expectedSize) {
         return createHashMap(expectedSize);
     }
@@ -147,6 +131,7 @@ public class CollectionUtil {
         return args;
     }
 
+    @Deprecated
     public static java.util.HashSet<Object> toSet(Object... args) {
         java.util.HashSet<Object> set = new java.util.HashSet<>();
         if (args != null) {
@@ -155,6 +140,7 @@ public class CollectionUtil {
         return set;
     }
 
+    @Deprecated
     public static java.util.HashSet<String> toSet(String... args) {
         java.util.HashSet<String> set = new java.util.HashSet<>();
         if (args != null) {
@@ -301,26 +287,31 @@ public class CollectionUtil {
         return to;
     }
 
+    @Deprecated
     public static <T, K> Map<K, List<T>> groupToMap(Collection<T> collection, Function<T, K> keyFunc) {
         return groupToMap(collection, keyFunc, (T arg1) -> arg1);
     }
 
+    @Deprecated
     public static <T, K, V> Map<K, List<V>> groupToMap(Collection<T> collection, Function<T, K> keyFunc, Function<T, V> valueFunc) {
         Map<K, List<V>> map = new HashMap<>();
         groupToMap(map, collection, keyFunc, valueFunc);
         return map;
     }
 
+    @Deprecated
     public static <T, K> TreeMap<K, List<T>> groupToTreeMap(Collection<T> collection, Function<T, K> keyFunc) {
         return groupToTreeMap(collection, keyFunc, (T arg1) -> arg1);
     }
 
+    @Deprecated
     public static <T, K, V> TreeMap<K, List<V>> groupToTreeMap(Collection<T> collection, Function<T, K> keyFunc, Function<T, V> valueFunc) {
         TreeMap<K, List<V>> map = new TreeMap<>();
         groupToMap(map, collection, keyFunc, valueFunc);
         return map;
     }
 
+    @Deprecated
     protected static <T, K, V> void groupToMap(Map<K, List<V>> map, Collection<T> collection, Function<T, K> keyFunc, Function<T, V> valueFunc) {
         for (T t : collection) {
             K key = keyFunc.apply(t);

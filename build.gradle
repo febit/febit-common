@@ -63,6 +63,7 @@ repositories {
 }
 
 dependencies {
+
   compileOnly 'com.google.code.findbugs:jsr305'
   compileOnly 'com.github.spotbugs:spotbugs-annotations'
   compileOnly 'org.testng:testng'
@@ -73,7 +74,12 @@ dependencies {
   api 'org.apache.commons:commons-lang3'
   api 'org.apache.commons:commons-collections4'
 
-  testImplementation 'org.slf4j:slf4j-api'
+  api 'org.yaml:snakeyaml'
+  api 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+  api 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8'
+  api 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml'
+  api 'com.fasterxml.jackson.module:jackson-module-parameter-names'
+
   testImplementation 'org.slf4j:slf4j-simple'
   testImplementation 'org.assertj:assertj-core'
   testImplementation 'org.testng:testng'

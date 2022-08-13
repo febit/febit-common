@@ -15,14 +15,16 @@
  */
 package org.febit.util;
 
+import org.febit.lang.Time;
+
 import java.util.Calendar;
 import java.util.TimeZone;
-import org.febit.lang.Time;
 
 /**
  *
  * @author zqq90
  */
+@Deprecated
 public class TimeUtil {
 
     public static final long MILLIS_IN_MINUTE = 1000L * 60;

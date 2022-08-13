@@ -15,14 +15,16 @@
  */
 package org.febit.form;
 
+import org.febit.util.ArraysUtil;
+
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.function.BiConsumer;
-import org.febit.util.ArraysUtil;
 
 /**
  * @author zqq
  */
+@Deprecated
 public class Order extends ArrayList<Order.Entry> {
 
     public static class Entry {

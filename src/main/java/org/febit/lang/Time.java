@@ -15,13 +15,14 @@
  */
 package org.febit.lang;
 
-import java.util.TimeZone;
 import org.febit.util.TimeUtil;
 
+import java.util.TimeZone;
+
 /**
- *
  * @author zqq90
  */
+@Deprecated
 public final class Time {
 
     /**
