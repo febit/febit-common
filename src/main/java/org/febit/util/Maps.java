@@ -16,9 +16,13 @@
 package org.febit.util;
 
 import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @SuppressWarnings({
         "unused",
@@ -31,14 +35,91 @@ public class Maps {
     private static final int MAXIMUM_CAPACITY = 1 << 30;
 
     /**
-     * Creates a {@linkplain HashMap} instance.
+     * Compute a map.
      */
-    public static <K, V> HashMap<K, V> compute(Collection<K> keys, Function<K, V> mapper) {
-        var map = Maps.<K, V>create(keys.size());
-        for (K key : keys) {
-            map.put(key, mapper.apply(key));
-        }
-        return map;
+    public static <K, V> Map<K, V> compute(Collection<K> keys, Function<K, V> valueMapper) {
+        return mapping(keys, Function.identity(), valueMapper);
+    }
+
+    public static <K, V> Map<K, V> mapping(Collection<V> values, Function<V, K> keyMapper) {
+        return mapping(values, keyMapper, Function.identity());
+    }
+
+    @Nonnull
+    public static <K, V, T> Map<K, V> mapping(@Nonnull Collection<T> items,
+                                              Function<T, K> keyMapper,
+                                              Function<T, V> valueMapper
+    ) {
+        @SuppressWarnings("unchecked")
+        Pair<K, V>[] pairs = ArraysUtils.collect(items,
+                Pair[]::new,
+                i -> Pair.of(keyMapper.apply(i), valueMapper.apply(i))
+        );
+        return Map.ofEntries(pairs);
+    }
+
+
+    public static <T, K, V> Map<K, List<V>> grouping(
+            Collection<T> items, Function<T, K> keyMapper, Function<T, V> valueMapper
+    ) {
+        return grouping(items.stream(), keyMapper, valueMapper);
+    }
+
+    public static <T, K, V> Map<K, List<V>> grouping(
+            Stream<T> stream, Function<T, K> keyMapper, Function<T, V> valueMapper
+    ) {
+        return stream.collect(Collectors.groupingBy(
+                keyMapper,
+                Collectors.mapping(
+                        valueMapper,
+                        Collectors.toList()
+                )
+        ));
+    }
+
+    public static <T, K> Map<K, List<T>> grouping(
+            Collection<T> items, Function<T, K> keyMapper
+    ) {
+        return items.stream()
+                .collect(Collectors.groupingBy(
+                        keyMapper,
+                        Collectors.toList()
+                ));
+    }
+
+    public static <T, K, V> Map<K, Set<V>> uniqueGrouping(
+            Collection<T> items, Function<T, K> keyMapper, Function<T, V> valueMapper
+    ) {
+        return items.stream()
+                .collect(Collectors.groupingBy(
+                        keyMapper,
+                        Collectors.mapping(
+                                valueMapper,
+                                Collectors.toSet()
+                        )
+                ));
+    }
+
+    public static <T, K, V> Map<K, Set<V>> uniqueGrouping(
+            Stream<T> stream, Function<T, K> keyMapper, Function<T, V> valueMapper
+    ) {
+        return stream.collect(Collectors.groupingBy(
+                keyMapper,
+                Collectors.mapping(
+                        valueMapper,
+                        Collectors.toSet()
+                )
+        ));
+    }
+
+    public static <T, K> Map<K, Set<T>> uniqueGrouping(
+            Collection<T> items, Function<T, K> keyMapper
+    ) {
+        return items.stream()
+                .collect(Collectors.groupingBy(
+                        keyMapper,
+                        Collectors.toSet()
+                ));
     }
 
     /**
@@ -76,7 +157,7 @@ public class Maps {
     public static <K1, K2, V1, V2> Map<K2, V2> transfer(
             Map<K1, V1> source, Function<K1, K2> keyTransfer, Function<V1, V2> valueTransfer
     ) {
-        return GroupUtils.toMap(source.entrySet(),
+        return mapping(source.entrySet(),
                 entry -> keyTransfer.apply(entry.getKey()),
                 entry -> valueTransfer.apply(entry.getValue()));
     }
@@ -84,7 +165,7 @@ public class Maps {
     public static <K, V1, V2> Map<K, V2> transferValue(
             Map<K, V1> source, Function<V1, V2> transfer
     ) {
-        return GroupUtils.toMap(source.entrySet(), Map.Entry::getKey,
+        return mapping(source.entrySet(), Map.Entry::getKey,
                 entry -> transfer.apply(entry.getValue()));
     }
 

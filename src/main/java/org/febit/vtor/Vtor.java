@@ -15,15 +15,17 @@
  */
 package org.febit.vtor;
 
+import org.febit.util.StringUtil;
+
 import java.util.Arrays;
 import java.util.function.Predicate;
-import org.febit.util.StringUtil;
 
 /**
  * A simple validate util, idea from jodd-vtor.
  *
  * @author zqq90
  */
+@Deprecated
 public class Vtor {
 
     private static class Holder {

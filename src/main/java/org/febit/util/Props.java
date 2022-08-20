@@ -15,19 +15,13 @@
  */
 package org.febit.util;
 
+import jodd.io.StreamUtil;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
-import jodd.io.StreamUtil;
 
 /**
  * A mini version of 'Jodd-props', refer to the
@@ -202,7 +196,7 @@ public final class Props {
 
     @SuppressWarnings("unchecked")
     public Map<String, String> export() {
-        Map<String, String> result = CollectionUtil.createMap(this.data.size());
+        Map<String, String> result = Maps.create(this.data.size());
         extractTo(result);
         return result;
     }

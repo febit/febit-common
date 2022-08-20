@@ -15,20 +15,6 @@
  */
 package org.febit.util;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.reflect.Array;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.ServiceLoader;
-import java.util.Set;
 import org.febit.bean.AccessFactory;
 import org.febit.bean.Setter;
 import org.febit.convert.Convert;
@@ -36,6 +22,12 @@ import org.febit.convert.TypeConverter;
 import org.febit.lang.Defaults;
 import org.febit.lang.IdentityMap;
 import org.febit.service.Services;
+
+import java.lang.annotation.*;
+import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.*;
 
 /**
  * A Simple IoC.
@@ -54,7 +46,7 @@ public class Petite {
         static final PetiteGlobalBeanProvider[] PROVIDERS;
 
         static {
-            PROVIDERS = CollectionUtil.read(ServiceLoader.load(PetiteGlobalBeanProvider.class))
+            PROVIDERS = Lists.collect(ServiceLoader.load(PetiteGlobalBeanProvider.class))
                     .stream()
                     .sorted(Priority.DESC)
                     .toArray(PetiteGlobalBeanProvider[]::new);

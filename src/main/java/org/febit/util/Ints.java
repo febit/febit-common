@@ -113,7 +113,7 @@ public class Ints {
         if (pos == src.length) {
             return src;
         }
-        return ArraysUtil.subarray(src, 0, pos);
+        return ArraysUtils.subarray(src, 0, pos);
     }
 
     public static String compress(int[] array) {

@@ -19,10 +19,8 @@ import org.febit.lang.Defaults;
 import org.febit.lang.Iter;
 import org.febit.lang.iter.*;
 
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.IntFunction;
 import java.util.function.Predicate;
 
 /**
@@ -36,118 +34,7 @@ public class CollectionUtil {
     }
 
     @Deprecated
-    public static <T> List<T> createList(int expactSize) {
-        return new ArrayList<>(expactSize);
-    }
 
-    @Deprecated
-    public static <T> List<T> read(Iterable<T> iterable) {
-        return read(iterable.iterator());
-    }
-
-    @Deprecated
-    public static <T> List<T> read(Iterator<T> iter) {
-        List<T> list = new ArrayList<>();
-        while (iter.hasNext()) {
-            list.add(iter.next());
-        }
-        return list;
-    }
-
-    @Deprecated
-    public static <T> List<T> read(Enumeration<T> e) {
-        List<T> list = new ArrayList<>();
-        while (e.hasMoreElements()) {
-            list.add(e.nextElement());
-        }
-        return list;
-    }
-
-    @Deprecated
-    public static <K> java.util.HashSet<K> createSet(int expectedSize) {
-        return new java.util.HashSet<>(expectedSize * 4 / 3 + 1);
-    }
-
-    @Deprecated
-    public static <K, V> HashMap<K, V> createHashMap(int expectedSize) {
-        return new HashMap<>(expectedSize * 4 / 3 + 1);
-    }
-
-    @Deprecated
-    public static <K, V> Map<K, V> createMap(int expectedSize) {
-        return createHashMap(expectedSize);
-    }
-
-    public static Object[] toArray(List list) {
-        return list.toArray();
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> T[] toArray(List<T> list, Class<T> componentType) {
-        return list.toArray((T[]) Array.newInstance(componentType, list.size()));
-    }
-
-    public static <T> T[] toArray(Collection<T> list, IntFunction<T[]> action) {
-        return list.toArray(action.apply(list.size()));
-    }
-
-    public static Object[] toArray(Object... args) {
-        return args;
-    }
-
-    public static String[] toArray(String... args) {
-        return args;
-    }
-
-    public static int[] toArray(int... args) {
-        return args;
-    }
-
-    public static long[] toArray(long... args) {
-        return args;
-    }
-
-    public static boolean[] toArray(boolean... args) {
-        return args;
-    }
-
-    public static char[] toArray(char... args) {
-        return args;
-    }
-
-    public static byte[] toArray(byte... args) {
-        return args;
-    }
-
-    public static float[] toArray(float... args) {
-        return args;
-    }
-
-    public static short[] toArray(short... args) {
-        return args;
-    }
-
-    public static double[] toArray(double... args) {
-        return args;
-    }
-
-    @Deprecated
-    public static java.util.HashSet<Object> toSet(Object... args) {
-        java.util.HashSet<Object> set = new java.util.HashSet<>();
-        if (args != null) {
-            set.addAll(Arrays.asList(args));
-        }
-        return set;
-    }
-
-    @Deprecated
-    public static java.util.HashSet<String> toSet(String... args) {
-        java.util.HashSet<String> set = new java.util.HashSet<>();
-        if (args != null) {
-            set.addAll(Arrays.asList(args));
-        }
-        return set;
-    }
 
     @SuppressWarnings("unchecked")
     public static <T> Iter<T> concat(final Iterator<T>... iters) {
@@ -285,38 +172,5 @@ public class CollectionUtil {
         Map<String, T> to = new HashMap<>();
         exportByKeyPrefix(src, to, prefix);
         return to;
-    }
-
-    @Deprecated
-    public static <T, K> Map<K, List<T>> groupToMap(Collection<T> collection, Function<T, K> keyFunc) {
-        return groupToMap(collection, keyFunc, (T arg1) -> arg1);
-    }
-
-    @Deprecated
-    public static <T, K, V> Map<K, List<V>> groupToMap(Collection<T> collection, Function<T, K> keyFunc, Function<T, V> valueFunc) {
-        Map<K, List<V>> map = new HashMap<>();
-        groupToMap(map, collection, keyFunc, valueFunc);
-        return map;
-    }
-
-    @Deprecated
-    public static <T, K> TreeMap<K, List<T>> groupToTreeMap(Collection<T> collection, Function<T, K> keyFunc) {
-        return groupToTreeMap(collection, keyFunc, (T arg1) -> arg1);
-    }
-
-    @Deprecated
-    public static <T, K, V> TreeMap<K, List<V>> groupToTreeMap(Collection<T> collection, Function<T, K> keyFunc, Function<T, V> valueFunc) {
-        TreeMap<K, List<V>> map = new TreeMap<>();
-        groupToMap(map, collection, keyFunc, valueFunc);
-        return map;
-    }
-
-    @Deprecated
-    protected static <T, K, V> void groupToMap(Map<K, List<V>> map, Collection<T> collection, Function<T, K> keyFunc, Function<T, V> valueFunc) {
-        for (T t : collection) {
-            K key = keyFunc.apply(t);
-            List<V> list = map.computeIfAbsent(key, k -> new ArrayList<>());
-            list.add(valueFunc.apply(t));
-        }
     }
 }

@@ -38,9 +38,11 @@ public class Lists {
         return result;
     }
 
+
     public static <T> List<T> collect(@Nullable Iterable<T> src) {
         return collect(src != null ? src.iterator() : null);
     }
+
 
     public static <T, S> List<T> collect(@Nullable Iterator<S> src, Function<S, T> action) {
         List<T> result = ofArrayList();
@@ -55,6 +57,28 @@ public class Lists {
 
     public static <S, T> List<T> collect(@Nullable Iterable<S> src, Function<S, T> action) {
         return collect(src != null ? src.iterator() : null, action);
+    }
+
+    public static <T> List<T> collect(@Nullable Enumeration<T> e) {
+        List<T> result = ofArrayList();
+        if (e == null) {
+            return result;
+        }
+        while (e.hasMoreElements()) {
+            result.add(e.nextElement());
+        }
+        return result;
+    }
+
+    public static <T, S> List<T> collect(@Nullable Enumeration<S> e, Function<S, T> action) {
+        List<T> result = ofArrayList();
+        if (e == null) {
+            return result;
+        }
+        while (e.hasMoreElements()) {
+            result.add(action.apply(e.nextElement()));
+        }
+        return result;
     }
 
     public static <T> List<T> collect(@Nullable T[] src) {

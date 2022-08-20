@@ -16,6 +16,7 @@
 package org.febit;
 
 import jodd.util.ClassLoaderUtil;
+import org.apache.commons.lang3.time.StopWatch;
 import org.febit.lang.Singleton;
 import org.febit.util.*;
 import org.slf4j.Logger;
@@ -41,14 +42,13 @@ public class App implements Singleton {
     protected Object[] beans;
 
     public synchronized void start(String propsFiles) {
-        Stopwatch stopwatch = Stopwatch.startNew();
+        var stopwatch = StopWatch.createStarted();
         this.props.clear();
         loadProps(propsFiles);
         initPetite();
         try {
             startListeners();
-            stopwatch.stop();
-            LOG.info("> App [{}] start in {} ms.", name, stopwatch.nowInMillis());
+            LOG.info("> App [{}] start in {} ms.", name, stopwatch.getTime());
         } catch (Exception ex) {
             LOG.error("> Failed start: " + name, ex);
             stop();
@@ -57,10 +57,9 @@ public class App implements Singleton {
     }
 
     public synchronized void stop() {
-        Stopwatch stopwatch = Stopwatch.startNew();
+        var stopwatch = StopWatch.createStarted();
         stopListeners();
-        stopwatch.stop();
-        LOG.info("> App [{}] stopped in {} ms.", name, stopwatch.nowInMillis());
+        LOG.info("> App [{}] stopped in {} ms.", name, stopwatch.getTime());
     }
 
     protected void loadProps(String propsFiles) {

@@ -108,6 +108,7 @@ dependencyManagement {
     }
 
     dependency "org.jodd:jodd-core:${versions.jodd}"
+    dependency "org.yaml:snakeyaml:${versions.snakeyaml}"
     dependency "com.google.code.findbugs:jsr305:${versions.jsr305}"
     dependency "com.github.spotbugs:spotbugs-annotations:${versions.spotbugs}"
     dependency "commons-io:commons-io:${versions.commonsIo}"

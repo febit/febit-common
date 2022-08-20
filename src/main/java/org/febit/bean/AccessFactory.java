@@ -15,13 +15,14 @@
  */
 package org.febit.bean;
 
+import org.febit.lang.Defaults;
+import org.febit.util.ClassUtil;
+import org.febit.util.Maps;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
-import org.febit.lang.Defaults;
-import org.febit.util.ClassUtil;
-import org.febit.util.CollectionUtil;
 
 /**
  *
@@ -46,7 +47,7 @@ public class AccessFactory {
 
     public static Map<String, Setter> resolveSetters(Class cls) {
         final FieldInfo[] fieldInfos = FieldInfoResolver.resolve(cls);
-        final Map<String, Setter> map = CollectionUtil.createMap(fieldInfos.length);
+        final Map<String, Setter> map = Maps.create(fieldInfos.length);
         for (FieldInfo fieldInfo : fieldInfos) {
             Setter setter = createSetterIfAccessable(fieldInfo);
             if (setter != null) {
@@ -58,7 +59,7 @@ public class AccessFactory {
 
     static Map<String, Accessor> resolveAccessors(Class cls) {
         final FieldInfo[] fieldInfos = FieldInfoResolver.resolve(cls);
-        final Map<String, Accessor> map = CollectionUtil.createMap(fieldInfos.length);
+        final Map<String, Accessor> map = Maps.create(fieldInfos.length);
         for (FieldInfo fieldInfo : fieldInfos) {
             map.put(fieldInfo.name, createAccessor(fieldInfo));
         }

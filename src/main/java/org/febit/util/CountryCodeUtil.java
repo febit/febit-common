@@ -34,7 +34,7 @@ public class CountryCodeUtil {
                     .get()
                     .export();
 
-            Map<String, String> reverse = CollectionUtil.createMap(CODE_TO_COUNTRY_MAP.size());
+            Map<String, String> reverse = Maps.create(CODE_TO_COUNTRY_MAP.size());
             CODE_TO_COUNTRY_MAP.forEach((key, value) -> reverse.put(value.trim().toUpperCase(), key));
             COUNTRY_TO_CODE_MAP = reverse;
         }

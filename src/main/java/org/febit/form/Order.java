@@ -15,7 +15,7 @@
  */
 package org.febit.form;
 
-import org.febit.util.ArraysUtil;
+import org.febit.util.ArraysUtils;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -75,7 +75,7 @@ public class Order extends ArrayList<Order.Entry> {
         if (whiteList == null || whiteList.length == 0) {
             clear();
         } else {
-            removeIf(e -> !ArraysUtil.contains(whiteList, e.field));
+            removeIf(e -> !ArraysUtils.contains(whiteList, e.field));
         }
         return this;
     }

@@ -17,6 +17,7 @@ package org.febit.lang.iter;
 
 import org.febit.lang.Iter;
 import org.febit.util.CollectionUtil;
+import org.febit.util.Lists;
 
 import java.util.Iterator;
 import java.util.List;
@@ -59,6 +60,6 @@ public abstract class BaseIter<E> implements Iter<E> {
 
     @Override
     public List<E> readList() {
-        return CollectionUtil.read(this);
+        return Lists.collect(this);
     }
 }

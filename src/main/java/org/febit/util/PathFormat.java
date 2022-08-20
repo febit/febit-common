@@ -15,15 +15,15 @@
  */
 package org.febit.util;
 
-import java.util.Map;
-import java.util.function.Function;
 import jodd.io.FileNameUtil;
 import jodd.template.StringTemplateParser;
 import org.febit.shaded.jodd.macro.PathMacros;
 import org.febit.shaded.jodd.macro.RegExpPathMacros;
 
+import java.util.Map;
+import java.util.function.Function;
+
 /**
- *
  * @author zqq90
  */
 public class PathFormat {
@@ -80,7 +80,7 @@ public class PathFormat {
             return null;
         }
         final String[] keys = macros.getNames();
-        final Map<String, String> extra = CollectionUtil.createHashMap(keys.length);
+        final Map<String, String> extra = Maps.create(keys.length);
         for (int i = 0; i < keys.length; i++) {
             extra.put(keys[i], values[i]);
         }

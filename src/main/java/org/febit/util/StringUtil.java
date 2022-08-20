@@ -20,11 +20,7 @@ import jodd.net.URLDecoder;
 import org.febit.lang.Defaults;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -283,7 +279,7 @@ public class StringUtil extends jodd.util.StringUtil {
             return Defaults.EMPTY_STRINGS;
         }
         if (count != array.length) {
-            return ArraysUtil.subarray(array, 0, count);
+            return ArraysUtils.subarray(array, 0, count);
         }
         return array;
     }

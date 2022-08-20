@@ -15,35 +15,23 @@
  */
 package org.febit.form.util;
 
-import org.febit.bean.AccessFactory;
-import org.febit.bean.FieldInfo;
-import org.febit.bean.FieldInfoResolver;
-import org.febit.bean.Getter;
-import org.febit.bean.Setter;
+import org.febit.bean.*;
 import org.febit.form.BaseFormImpl;
 import org.febit.form.meta.AM;
 import org.febit.form.meta.Add;
 import org.febit.form.meta.FormProfile;
 import org.febit.form.meta.Modify;
 import org.febit.lang.ClassMap;
-import org.febit.util.ArraysUtil;
+import org.febit.util.ArraysUtils;
 import org.febit.util.ClassUtil;
-import org.febit.util.CollectionUtil;
+import org.febit.util.Maps;
 import org.febit.vtor.BaseVtorChecker;
 import org.febit.vtor.BaseVtorChecker.CheckConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -156,7 +144,7 @@ public class BaseFormUtil {
         if (peers.length == 0) {
             return Collections.emptyMap();
         }
-        Map<String, Object> ret = CollectionUtil.createHashMap(profile);
+        Map<String, Object> ret = Maps.create(profile);
         for (Peer peer : peers) {
             ret.put(peer.name, peer.from.get(form));
         }
@@ -221,9 +209,9 @@ public class BaseFormUtil {
             }
         });
         //collect
-        final Map<Integer, Peer[]> addProfiles = CollectionUtil.createHashMap(adds.size());
+        final Map<Integer, Peer[]> addProfiles = Maps.create(adds.size());
         adds.forEach((k, peers) -> addProfiles.put(k, peersToArray(peers)));
-        final Map<Integer, Peer[]> modifyProfiles = CollectionUtil.createHashMap(modifys.size());
+        final Map<Integer, Peer[]> modifyProfiles = Maps.create(modifys.size());
         modifys.forEach((k, peers) -> modifyProfiles.put(k, peersToArray(peers)));
         return new FormEntry(addProfiles, modifyProfiles);
     }
@@ -263,11 +251,11 @@ public class BaseFormUtil {
         if (am != null && notEmpty(am.value())) {
             final int[] amProfiles = am.value();
             addProfiles = notEmpty(addProfiles)
-                    ? ArraysUtil.join(addProfiles, amProfiles)
+                    ? ArraysUtils.join(addProfiles, amProfiles)
                     : amProfiles;
 
             modifyProfiles = notEmpty(modifyProfiles)
-                    ? ArraysUtil.join(modifyProfiles, amProfiles)
+                    ? ArraysUtils.join(modifyProfiles, amProfiles)
                     : amProfiles;
         }
         if (!notEmpty(addProfiles)

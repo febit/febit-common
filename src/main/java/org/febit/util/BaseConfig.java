@@ -15,22 +15,17 @@
  */
 package org.febit.util;
 
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.BiConsumer;
 import org.febit.convert.Convert;
 import org.febit.lang.Singleton;
 import org.febit.util.agent.LazyAgent;
 
+import java.io.Serializable;
+import java.util.*;
+import java.util.function.BiConsumer;
+
 /**
- *
- * @author zqq90
  * @param <T>
+ * @author zqq90
  */
 public class BaseConfig<T extends BaseConfig> implements Singleton, Serializable {
 
@@ -117,7 +112,7 @@ public class BaseConfig<T extends BaseConfig> implements Singleton, Serializable
 
     @SuppressWarnings("unchecked")
     public Map<String, String> export() {
-        Map<String, String> result = CollectionUtil.createMap(this.data.size());
+        Map<String, String> result = Maps.create(this.data.size());
         exportTo(result);
         return result;
     }

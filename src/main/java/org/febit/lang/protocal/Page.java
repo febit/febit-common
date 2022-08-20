@@ -32,22 +32,16 @@ import java.util.function.Function;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Page<T> {
 
-    private Meta pagination;
+    private PaginationMeta pagination;
     private List<T> rows;
 
-    @Nullable
-    public List<T> getRows() {
-        return rows;
+    @Nonnull
+    public static <T> Page<T> of(Pagination pagination, long total, List<T> rows) {
+        return of(PaginationMeta.of(pagination.getPage(), pagination.getSize(), total), rows);
     }
 
     @Nonnull
-    public static <T> Page<T> of(
-            int page, int size, long totalElements, List<T> rows) {
-        return of(new Meta(page, size, totalElements), rows);
-    }
-
-    @Nonnull
-    public static <T> Page<T> of(@Nonnull Meta page, @Nullable List<T> rows) {
+    public static <T> Page<T> of(@Nonnull PaginationMeta page, @Nullable List<T> rows) {
         return new Page<>(page, rows);
     }
 
@@ -56,15 +50,26 @@ public class Page<T> {
         return Page.of(1, 0, 0, List.of());
     }
 
+    @Nonnull
+    public static <T> Page<T> of(
+            int page, int size, long total, List<T> rows) {
+        return of(PaginationMeta.of(page, size, total), rows);
+    }
+
     public <D> Page<D> transfer(@Nonnull Function<T, D> action) {
         return Page.of(getPagination(),
                 Lists.transfer(getRows(), action));
     }
 
+    @Nullable
+    public List<T> getRows() {
+        return rows;
+    }
+
     @Data
     @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Meta {
+    @AllArgsConstructor(staticName = "of")
+    public static class PaginationMeta {
         private int page;
         private int size;
         private long total;

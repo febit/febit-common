@@ -13,10 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.lang.protocal;
+package org.febit.lang;
+
+import org.febit.util.Maps;
+
+import javax.annotation.Nonnull;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 @FunctionalInterface
 public interface Valued<T> {
 
     T getValue();
+
+    @Nonnull
+    static <T, V extends Valued<T>> Map<T, V> mapping(@Nonnull V[] items) {
+        return mapping(Arrays.asList(items));
+    }
+
+    @Nonnull
+    static <K, V extends Valued<K>> Map<K, V> mapping(@Nonnull List<V> items) {
+        return Maps.mapping(items, Valued::getValue);
+    }
 }

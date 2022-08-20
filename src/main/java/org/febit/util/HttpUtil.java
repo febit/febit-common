@@ -15,9 +15,10 @@
  */
 package org.febit.util;
 
+import jodd.net.URLDecoder;
+
 import java.util.Collections;
 import java.util.Map;
-import jodd.net.URLDecoder;
 
 /**
  *
@@ -36,7 +37,7 @@ public class HttpUtil {
                 || raw.isEmpty()) {
             return Collections.emptyMap();
         }
-        final Map<String, String> ret = CollectionUtil.createMap(16);
+        final Map<String, String> ret = Maps.create(16);
         final StringWalker walker = new StringWalker(raw);
         //Step: k-v
         while (!walker.isEnd()) {
@@ -59,7 +60,7 @@ public class HttpUtil {
                 || src.isEmpty()) {
             return Collections.emptyMap();
         }
-        final Map<String, String> ret = CollectionUtil.createMap(16);
+        final Map<String, String> ret = Maps.create(16);
         final StringWalker walker = new StringWalker(src);
 
         //Step: path
@@ -77,7 +78,7 @@ public class HttpUtil {
         if (src == null || src.isEmpty()) {
             return Collections.emptyMap();
         }
-        final Map<String, String> ret = CollectionUtil.createMap(16);
+        final Map<String, String> ret = Maps.create(16);
         final StringWalker walker = new StringWalker(src);
         //Step: k-v
         parseQuerys(walker, ret);
