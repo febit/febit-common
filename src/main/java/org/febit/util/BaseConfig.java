@@ -49,7 +49,7 @@ public class BaseConfig<T extends BaseConfig> implements Singleton, Serializable
         if (keys == null) {
             return null;
         }
-        List<String> unpassList = CollectionUtil.createList(keys.length);
+        List<String> unpassList = Lists.ofArrayList();
         for (String key : keys) {
             if (!checkRequire(key)) {
                 unpassList.add(key);
