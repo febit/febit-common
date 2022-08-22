@@ -1,12 +1,12 @@
 /**
  * Copyright 2013-present febit.org (support@febit.org)
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,8 +15,9 @@
  */
 package org.febit.util;
 
+import java.text.MessageFormat;
+
 /**
- *
  * @author zqq90
  */
 public class StringWalker {
@@ -45,34 +46,22 @@ public class StringWalker {
         return pos;
     }
 
-    public char charAt(int index) {
-        return this.chars[index];
-    }
-
     public char peek(int offset) {
         return charAt(this.pos + offset);
     }
 
-    public char peek() {
-        return this.chars[this.pos];
-    }
-
-    public boolean match(char c, int offset) {
-        int i = this.pos + offset;
-        return i < this.end
-                && this.chars[i] == c;
+    public char charAt(int index) {
+        return this.chars[index];
     }
 
     public boolean match(char c) {
         return match(c, 0);
     }
 
-    public void jump(int step) {
-        this.pos += step;
-    }
-
-    public boolean isEnd() {
-        return pos >= end;
+    public boolean match(char c, int offset) {
+        int i = this.pos + offset;
+        return i < this.end
+                && this.chars[i] == c;
     }
 
     public int skipSpaces() {
@@ -91,6 +80,10 @@ public class StringWalker {
         return pos = i;
     }
 
+    public int skipBlanks() {
+        return skipFlag(CharUtil::isWhitespace);
+    }
+
     public int skipFlag(Checker checker) {
         final int to = this.end;
         int i = pos;
@@ -103,8 +96,27 @@ public class StringWalker {
         return pos = i;
     }
 
-    public int skipBlanks() {
-        return skipFlag(CharUtil::isWhitespace);
+    public void requireAndJumpChar(char c) {
+        if (isEnd()) {
+            throw new IllegalArgumentException("Unexpected EOF");
+        }
+        if (peek() != c) {
+            throw new IllegalArgumentException(MessageFormat.format(
+                    "Unexpected char '{0}' at {1}, but need `{2}` ", peek(), pos(), c));
+        }
+        jump(1);
+    }
+
+    public boolean isEnd() {
+        return pos >= end;
+    }
+
+    public char peek() {
+        return this.chars[this.pos];
+    }
+
+    public void jump(int step) {
+        this.pos += step;
     }
 
     public String readToEnd() {
@@ -116,22 +128,8 @@ public class StringWalker {
         return str;
     }
 
-    public String readTo(final char endFlag, final boolean keepFlag) {
-        final StringBuilder buf = buf();
-        final int to = this.end;
-        int i = pos;
-        while (i < to) {
-            char c = chars[i++];
-            if (c == endFlag) {
-                if (keepFlag) {
-                    i--;
-                }
-                break;
-            }
-            buf.append(c);
-        }
-        pos = i;
-        return buf.toString();
+    public String readUntil(final Checker checker) {
+        return readToFlag(checker, true);
     }
 
     public String readToFlag(final Checker checker, final boolean keepFlag) {
@@ -152,22 +150,6 @@ public class StringWalker {
         return buf.toString();
     }
 
-    public String readUntil(final Checker checker) {
-        return readToFlag(checker, true);
-    }
-
-    public String readUntil(char flag) {
-        return readTo(flag, true);
-    }
-
-    public String readUntilSpace() {
-        return readTo(' ', true);
-    }
-
-    public String readUntilBlanks() {
-        return readToFlag(CharUtil::isWhitespace, true);
-    }
-
     protected StringBuilder buf() {
         StringBuilder buf = this._buf;
         if (buf == null) {
@@ -177,6 +159,36 @@ public class StringWalker {
             buf.setLength(0);
         }
         return buf;
+    }
+
+    public String readUntil(char flag) {
+        return readTo(flag, true);
+    }
+
+    public String readTo(final char endFlag, final boolean keepFlag) {
+        final StringBuilder buf = buf();
+        final int to = this.end;
+        int i = pos;
+        while (i < to) {
+            char c = chars[i++];
+            if (c == endFlag) {
+                if (keepFlag) {
+                    i--;
+                }
+                break;
+            }
+            buf.append(c);
+        }
+        pos = i;
+        return buf.toString();
+    }
+
+    public String readUntilSpace() {
+        return readTo(' ', true);
+    }
+
+    public String readUntilBlanks() {
+        return readToFlag(CharUtil::isWhitespace, true);
     }
 
     public interface Checker {
