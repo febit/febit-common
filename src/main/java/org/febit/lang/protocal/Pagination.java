@@ -36,7 +36,7 @@ public class Pagination {
     private int size;
 
     @Singular
-    private List<Order> orders;
+    private List<Sort> sorts;
 
     public static Builder builder(int page, int size) {
         return new Builder()
@@ -44,8 +44,8 @@ public class Pagination {
                 .size(size);
     }
 
-    public List<Order> getOrders() {
-        return orders != null ? orders : List.of();
+    public List<Sort> getSorts() {
+        return sorts != null ? sorts : List.of();
     }
 
     public long offset() {
@@ -55,11 +55,11 @@ public class Pagination {
     public static class Builder {
 
         public Builder asc(String property) {
-            return order(Order.asc(property));
+            return sort(Sort.asc(property));
         }
 
         public Builder desc(String property) {
-            return order(Order.desc(property));
+            return sort(Sort.desc(property));
         }
     }
 

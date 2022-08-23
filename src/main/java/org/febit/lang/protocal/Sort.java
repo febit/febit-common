@@ -24,16 +24,16 @@ import org.febit.lang.Valued;
 
 @Data
 @AllArgsConstructor(staticName = "of")
-public class Order {
+public class Sort {
 
     private String property;
     private Direction direction;
 
-    public static Order asc(String column) {
+    public static Sort asc(String column) {
         return of(column, Direction.ASC);
     }
 
-    public static Order desc(String column) {
+    public static Sort desc(String column) {
         return of(column, Direction.DESC);
     }
 
