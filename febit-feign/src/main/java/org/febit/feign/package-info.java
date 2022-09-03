@@ -13,12 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.lang.protocal;
+@NonNullApi
+package org.febit.feign;
 
-@SuppressWarnings({
-        "squid:S1609" // @FunctionalInterface annotation should be used to flag Single Abstract Method interfaces
-})
-public interface HttpStatusAware {
-
-    void setHttpStatus(int status);
-}
+import org.febit.lang.annotation.NonNullApi;

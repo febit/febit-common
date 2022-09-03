@@ -1,0 +1,18 @@
+plugins {
+  id 'org.febit.codegen-module'
+}
+
+ext {
+  moduleName = 'Febit Feign'
+  moduleDescription = 'Febit Feign'
+}
+
+codegenModule {
+  moduleClassName 'org.febit.FebitFeign'
+}
+
+dependencies {
+  api project(':febit-lang')
+  api 'io.github.openfeign:feign-core'
+  api 'org.springframework.cloud:spring-cloud-openfeign-core'
+}

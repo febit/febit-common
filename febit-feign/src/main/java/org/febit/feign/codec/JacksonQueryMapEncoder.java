@@ -13,12 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.lang.protocal;
+package org.febit.feign.codec;
 
-@SuppressWarnings({
-        "squid:S1609" // @FunctionalInterface annotation should be used to flag Single Abstract Method interfaces
-})
-public interface HttpStatusAware {
+import feign.QueryMapEncoder;
+import lombok.RequiredArgsConstructor;
+import org.febit.lang.util.JacksonWrapper;
 
-    void setHttpStatus(int status);
+import java.util.Collections;
+import java.util.Map;
+
+@RequiredArgsConstructor
+public class JacksonQueryMapEncoder implements QueryMapEncoder {
+
+    private final JacksonWrapper jackson;
+
+    @Override
+    public Map<String, Object> encode(Object form) {
+        if (form == null) {
+            return Collections.emptyMap();
+        }
+        return jackson.toNamedMap(form);
+    }
 }

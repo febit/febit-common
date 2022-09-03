@@ -10,3 +10,5 @@ rootProject.name = 'febit-commons'
 
 include 'febit-lang'
 include 'febit-common-legacy'
+include 'febit-feign'
+include 'febit-feign-test'

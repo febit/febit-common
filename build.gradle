@@ -24,6 +24,8 @@ ext {
       snakeyaml          : '1.29',
       junit              : '5.9.0',
       mockito            : '4.0.0',
+      springBoot         : '2.7.3',
+      springCloud        : '2021.0.3',
   ]
 
   moduleName = 'Febit Common'
@@ -92,6 +94,8 @@ configure(javaModules()) {
     imports {
       mavenBom "com.fasterxml.jackson:jackson-bom:${versions.jackson}"
       mavenBom "org.junit:junit-bom:${versions.junit}"
+      mavenBom "org.springframework.boot:spring-boot-dependencies:${versions.springBoot}"
+      mavenBom "org.springframework.cloud:spring-cloud-dependencies:${versions.springCloud}"
     }
     dependencies {
       dependencySet(group: 'org.slf4j', version: "${versions.slf4j}") {

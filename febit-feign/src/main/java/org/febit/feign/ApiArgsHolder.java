@@ -13,12 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.lang.protocal;
+package org.febit.feign;
 
-@SuppressWarnings({
-        "squid:S1609" // @FunctionalInterface annotation should be used to flag Single Abstract Method interfaces
-})
-public interface HttpStatusAware {
+import lombok.experimental.UtilityClass;
 
-    void setHttpStatus(int status);
+@UtilityClass
+public class ApiArgsHolder {
+
+    static final ThreadLocal<Object[]> HOLDER = new ThreadLocal<>();
+
+    public static Object[] args() {
+        return HOLDER.get();
+    }
 }
