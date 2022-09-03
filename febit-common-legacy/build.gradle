@@ -1,0 +1,20 @@
+
+plugins {
+  id 'org.febit.codegen-module' version '1.0.0-SNAPSHOT'
+}
+
+ext {
+  moduleName = 'Febit Common'
+  moduleDescription = 'Febit Common Utils'
+}
+
+codegenModule {
+  moduleClassName 'org.febit.FebitCommon'
+}
+
+dependencies {
+  api project(':febit-lang')
+  api 'org.jodd:jodd-core'
+
+  testImplementation 'org.testng:testng'
+}

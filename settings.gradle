@@ -6,4 +6,7 @@ pluginManagement {
   }
 }
 
-rootProject.name = 'febit-common'
+rootProject.name = 'febit-commons'
+
+include 'febit-lang'
+include 'febit-common-legacy'

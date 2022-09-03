@@ -2,20 +2,11 @@ plugins {
   id 'java-library'
   id 'com.github.hierynomus.license' version '0.16.1'
   id 'org.febit.standard-java' version '1.0.0-SNAPSHOT'
-  id 'org.febit.codegen-module' version '1.0.0-SNAPSHOT'
+  id 'org.febit.codegen-module' version '1.0.0-SNAPSHOT' apply false
 }
 
 group 'org.febit'
 version '3.0.0-SNAPSHOT'
-
-apply from: "${rootDir}/gradle/publish-maven.gradle"
-
-sourceCompatibility = JavaVersion.VERSION_11
-targetCompatibility = JavaVersion.VERSION_11
-
-codegenModule {
-  moduleClassName 'org.febit.FebitCommonModule'
-}
 
 ext {
 
@@ -35,88 +26,93 @@ ext {
       mockito            : '4.0.0',
   ]
 
-
   moduleName = 'Febit Common'
   moduleDescription = 'Febit Common Utils'
 }
 
+allprojects {
 
-test {
-  useJUnitPlatform()
-}
+  group rootProject.group
+  version rootProject.version
 
-license {
-  mapping {
-    java = 'SLASHSTAR_STYLE'
+  repositories {
+    mavenLocal()
+    maven { url "https://maven.aliyun.com/repository/central" }
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
   }
-  include '**/*.java'
-  exclude '**/FebitCommonModule.java'
-  exclude '**/shaded/**/*java'
-  strictCheck false
-  skipExistingHeaders false
-  header rootProject.file('etc/licenseheader.txt')
 }
 
-repositories {
-  maven { url "https://maven.aliyun.com/repository/central" }
-  maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
-}
-
-dependencies {
-
-  compileOnly 'com.google.code.findbugs:jsr305'
-  compileOnly 'com.github.spotbugs:spotbugs-annotations'
-  compileOnly 'org.testng:testng'
-
-  api 'org.slf4j:slf4j-api'
-  api 'org.jodd:jodd-core'
-  api 'commons-io:commons-io'
-  api 'org.apache.commons:commons-lang3'
-  api 'org.apache.commons:commons-collections4'
-
-  api 'org.yaml:snakeyaml'
-  api 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
-  api 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8'
-  api 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml'
-  api 'com.fasterxml.jackson.module:jackson-module-parameter-names'
-
-  testImplementation 'org.slf4j:slf4j-simple'
-  testImplementation 'org.assertj:assertj-core'
-  testImplementation 'org.testng:testng'
-  testImplementation 'org.mockito:mockito-junit-jupiter'
-  testImplementation 'org.junit.jupiter:junit-jupiter-api'
-  testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-}
-
-dependencyManagement {
-  resolutionStrategy {
-    cacheChangingModulesFor 0, 'seconds'
+def javaModules() {
+  subprojects.findAll {
+    !it.name.endsWith('-bom')
   }
-  imports {
-    mavenBom "com.fasterxml.jackson:jackson-bom:${versions.jackson}"
-    mavenBom "org.junit:junit-bom:${versions.junit}"
+}
+
+configure(javaModules()) {
+  apply plugin: 'java-library'
+  apply plugin: 'com.github.hierynomus.license'
+
+  apply from: "${rootDir}/gradle/publish-maven.gradle"
+
+  sourceCompatibility = JavaVersion.VERSION_11
+  targetCompatibility = JavaVersion.VERSION_11
+
+  test {
+    useJUnitPlatform()
   }
+
+  license {
+    mapping {
+      java = 'SLASHSTAR_STYLE'
+    }
+    include '**/*.java'
+    exclude '**/org/febit/Febit*.java'
+    exclude '**/shaded/**/*java'
+    strictCheck false
+    skipExistingHeaders false
+    header rootProject.file('etc/licenseheader.txt')
+  }
+
   dependencies {
-    dependencySet(group: 'org.slf4j', version: "${versions.slf4j}") {
-      entry 'slf4j-api'
-      entry 'slf4j-simple'
-    }
-    dependencySet(group: 'org.mockito', version: "${versions.mockito}") {
-      entry 'mockito-core'
-      entry 'mockito-inline'
-      entry 'mockito-junit-jupiter'
-    }
 
-    dependency "org.jodd:jodd-core:${versions.jodd}"
-    dependency "org.yaml:snakeyaml:${versions.snakeyaml}"
-    dependency "com.google.code.findbugs:jsr305:${versions.jsr305}"
-    dependency "com.github.spotbugs:spotbugs-annotations:${versions.spotbugs}"
-    dependency "commons-io:commons-io:${versions.commonsIo}"
-    dependency "org.apache.commons:commons-lang3:${versions.commonsLang3}"
-    dependency "org.apache.commons:commons-collections4:${versions.commonsCollections4}"
-    dependency "org.assertj:assertj-core:${versions.assertj}"
-    dependency "org.testng:testng:${versions.testng}"
+    compileOnly 'com.google.code.findbugs:jsr305'
+    compileOnly 'com.github.spotbugs:spotbugs-annotations'
 
+    testImplementation 'org.slf4j:slf4j-simple'
+    testImplementation 'org.assertj:assertj-core'
+    testImplementation 'org.mockito:mockito-junit-jupiter'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+  }
+
+  dependencyManagement {
+    resolutionStrategy {
+      cacheChangingModulesFor 0, 'seconds'
+    }
+    imports {
+      mavenBom "com.fasterxml.jackson:jackson-bom:${versions.jackson}"
+      mavenBom "org.junit:junit-bom:${versions.junit}"
+    }
+    dependencies {
+      dependencySet(group: 'org.slf4j', version: "${versions.slf4j}") {
+        entry 'slf4j-api'
+        entry 'slf4j-simple'
+      }
+      dependencySet(group: 'org.mockito', version: "${versions.mockito}") {
+        entry 'mockito-core'
+        entry 'mockito-inline'
+        entry 'mockito-junit-jupiter'
+      }
+
+      dependency "org.jodd:jodd-core:${versions.jodd}"
+      dependency "org.yaml:snakeyaml:${versions.snakeyaml}"
+      dependency "com.google.code.findbugs:jsr305:${versions.jsr305}"
+      dependency "com.github.spotbugs:spotbugs-annotations:${versions.spotbugs}"
+      dependency "commons-io:commons-io:${versions.commonsIo}"
+      dependency "org.apache.commons:commons-lang3:${versions.commonsLang3}"
+      dependency "org.apache.commons:commons-collections4:${versions.commonsCollections4}"
+      dependency "org.assertj:assertj-core:${versions.assertj}"
+      dependency "org.testng:testng:${versions.testng}"
+    }
   }
 }
-

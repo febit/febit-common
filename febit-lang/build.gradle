@@ -1,0 +1,27 @@
+
+plugins {
+  id 'org.febit.codegen-module' version '1.0.0-SNAPSHOT'
+}
+
+ext {
+  moduleName = 'Febit Lang'
+  moduleDescription = 'Febit Lang'
+}
+
+codegenModule {
+  moduleClassName 'org.febit.FebitLang'
+}
+
+dependencies {
+
+  api 'org.slf4j:slf4j-api'
+  api 'commons-io:commons-io'
+  api 'org.apache.commons:commons-lang3'
+  api 'org.apache.commons:commons-collections4'
+
+  api 'org.yaml:snakeyaml'
+  api 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+  api 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8'
+  api 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml'
+  api 'com.fasterxml.jackson.module:jackson-module-parameter-names'
+}
