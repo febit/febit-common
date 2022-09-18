@@ -42,6 +42,18 @@ public class Tuple3<T1, T2, T3> {
         this.c = c;
     }
 
+    public T1 a() {
+        return a;
+    }
+
+    public T2 b() {
+        return b;
+    }
+
+    public T3 c() {
+        return c;
+    }
+
     @Override
     public int hashCode() {
         int hash = _hashCode;

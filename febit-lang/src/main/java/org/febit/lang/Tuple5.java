@@ -47,6 +47,26 @@ public class Tuple5<T1, T2, T3, T4, T5> {
         this.e = e;
     }
 
+    public T1 a() {
+        return a;
+    }
+
+    public T2 b() {
+        return b;
+    }
+
+    public T3 c() {
+        return c;
+    }
+
+    public T4 d() {
+        return d;
+    }
+
+    public T5 e() {
+        return e;
+    }
+
     @Override
     public int hashCode() {
         int hash = _hashCode;

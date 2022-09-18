@@ -41,12 +41,33 @@ public class Maps {
         return mapping(keys, Function.identity(), valueMapper);
     }
 
+    public static <K, V> Map<K, V> compute(K[] keys, Function<K, V> valueMapper) {
+        return mapping(keys, Function.identity(), valueMapper);
+    }
+
     public static <K, V> Map<K, V> mapping(Collection<V> values, Function<V, K> keyMapper) {
+        return mapping(values, keyMapper, Function.identity());
+    }
+
+    public static <K, V> Map<K, V> mapping(V[] values, Function<V, K> keyMapper) {
         return mapping(values, keyMapper, Function.identity());
     }
 
     @Nonnull
     public static <K, V, T> Map<K, V> mapping(@Nonnull Collection<T> items,
+                                              Function<T, K> keyMapper,
+                                              Function<T, V> valueMapper
+    ) {
+        @SuppressWarnings("unchecked")
+        Pair<K, V>[] pairs = ArraysUtils.collect(items,
+                Pair[]::new,
+                i -> Pair.of(keyMapper.apply(i), valueMapper.apply(i))
+        );
+        return Map.ofEntries(pairs);
+    }
+
+    @Nonnull
+    public static <K, V, T> Map<K, V> mapping(@Nonnull T[] items,
                                               Function<T, K> keyMapper,
                                               Function<T, V> valueMapper
     ) {

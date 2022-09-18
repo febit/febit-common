@@ -36,6 +36,10 @@ public class Tuple1<T> {
         this.a = a;
     }
 
+    public T a() {
+        return a;
+    }
+
     @Override
     public int hashCode() {
         int hash = _hashCode;
