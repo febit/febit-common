@@ -1,0 +1,26 @@
+apply plugin: 'java-gradle-plugin'
+
+ext {
+  moduleName = 'Febit Feign Codegen Gradle'
+  moduleDescription = 'A gradle plugin to generare feign client'
+}
+
+gradlePlugin {
+  plugins {
+    codegenFeignCient {
+      id = 'org.febit.codegen-feign-client'
+      implementationClass = 'org.febit.feign.codegen.gradle.FeignClientCodegenPlugin'
+    }
+  }
+}
+
+dependencies {
+  api 'org.febit.devkit.gradle:febit-gradle-common'
+  api project(':febit-feign-client-codegen')
+
+  compileOnly localGroovy()
+  compileOnly gradleApi()
+  testImplementation localGroovy()
+  testImplementation gradleApi()
+}
+

@@ -26,6 +26,7 @@ ext {
       mockito            : '4.0.0',
       springBoot         : '2.7.3',
       springCloud        : '2021.0.3',
+      febitGradleCommon  : '1.0.0-SNAPSHOT',
   ]
 
   moduleName = 'Febit Common'
@@ -108,6 +109,7 @@ configure(javaModules()) {
         entry 'mockito-junit-jupiter'
       }
 
+      dependency "org.febit.devkit.gradle:febit-gradle-common:${versions.febitGradleCommon}"
       dependency "org.jodd:jodd-core:${versions.jodd}"
       dependency "org.yaml:snakeyaml:${versions.snakeyaml}"
       dependency "com.google.code.findbugs:jsr305:${versions.jsr305}"
