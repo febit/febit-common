@@ -1,0 +1,22 @@
+plugins {
+  id 'org.febit.codegen-module' version '1.0.0-SNAPSHOT'
+}
+
+ext {
+  moduleName = 'Febit Test Common'
+  moduleDescription = 'Febit Test Common'
+}
+
+codegenModule {
+  moduleClassName 'org.febit.TestCommon'
+}
+
+dependencies {
+  api project(':febit-lang')
+
+  api 'com.jayway.jsonpath:json-path'
+  api 'org.assertj:assertj-core'
+  api 'org.hamcrest:hamcrest'
+  api 'org.mockito:mockito-junit-jupiter'
+  api 'org.junit.jupiter:junit-jupiter-api'
+}

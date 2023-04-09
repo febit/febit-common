@@ -12,6 +12,8 @@ ext {
 
   versions = [
       slf4j              : '1.7.36',
+      jsonpath           : '2.7.0',
+      hamcrest           : '2.2',
       jodd               : '5.1.6',
       jsr305             : '3.0.2',
       spotbugs           : '4.7.1',
@@ -118,7 +120,9 @@ configure(javaModules()) {
       dependency "org.apache.commons:commons-lang3:${versions.commonsLang3}"
       dependency "org.apache.commons:commons-collections4:${versions.commonsCollections4}"
       dependency "org.assertj:assertj-core:${versions.assertj}"
+      dependency "org.hamcrest:hamcrest:${versions.hamcrest}"
       dependency "org.testng:testng:${versions.testng}"
+      dependency "com.jayway.jsonpath:json-path:${versions.jsonpath}"
     }
   }
 }

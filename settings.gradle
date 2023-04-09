@@ -10,6 +10,7 @@ pluginManagement {
 rootProject.name = 'febit-commons'
 
 include 'febit-lang'
+include 'febit-test-common'
 include 'febit-common-legacy'
 include 'febit-feign'
 include 'febit-feign-test'
