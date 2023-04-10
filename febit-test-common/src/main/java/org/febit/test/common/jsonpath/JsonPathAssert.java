@@ -30,9 +30,11 @@ import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.AbstractStringAssert;
 import org.assertj.core.api.AssertFactory;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.api.Condition;
 import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.MapAssert;
 import org.assertj.core.api.ObjectAssert;
+import org.assertj.core.internal.Conditions;
 import org.assertj.core.util.CheckReturnValue;
 import org.febit.lang.util.JacksonUtils;
 
@@ -47,6 +49,7 @@ import static java.util.Objects.requireNonNull;
 public class JsonPathAssert extends AbstractAssert<JsonPathAssert, Object> {
 
     private final DocumentContext context;
+    Conditions conditions = Conditions.instance();
 
     protected JsonPathAssert(DocumentContext context) {
         super(context.json(), JsonPathAssert.class);
@@ -110,15 +113,15 @@ public class JsonPathAssert extends AbstractAssert<JsonPathAssert, Object> {
         return ConfLazyHolder.CONF;
     }
 
-    protected <T> T read(String path) {
+    public <T> T read(String path) {
         return context.read(path);
     }
 
-    protected <T> T read(String path, Class<T> type) {
+    public <T> T read(String path, Class<T> type) {
         return context.read(path, type);
     }
 
-    protected <T> T root() {
+    public <T> T root() {
         return context.json();
     }
 
@@ -175,6 +178,72 @@ public class JsonPathAssert extends AbstractAssert<JsonPathAssert, Object> {
     public JsonPathAssert hasSameClassAs(String path, Object other) {
         objects.assertHasSameClassAs(info, read(path), other);
         return myself;
+    }
+
+    public JsonPathAssert doesNotHaveSameClassAs(String path, Object other) {
+        objects.assertDoesNotHaveSameClassAs(info, read(path), other);
+        return myself;
+    }
+
+    public JsonPathAssert hasToString(String path, String expectedToString) {
+        objects.assertHasToString(info, read(path), expectedToString);
+        return myself;
+    }
+
+    public JsonPathAssert doesNotHaveToString(String path, String otherToString) {
+        objects.assertDoesNotHaveToString(info, read(path), otherToString);
+        return myself;
+    }
+
+    public JsonPathAssert isExactlyInstanceOf(String path, Class<?> type) {
+        objects.assertIsExactlyInstanceOf(info, read(path), type);
+        return myself;
+    }
+
+    public JsonPathAssert isNotExactlyInstanceOf(String path, Class<?> type) {
+        objects.assertIsNotExactlyInstanceOf(info, read(path), type);
+        return myself;
+    }
+
+    public JsonPathAssert hasSameHashCodeAs(String path, Object other) {
+        objects.assertHasSameHashCodeAs(info, read(path), other);
+        return myself;
+    }
+
+    public JsonPathAssert doesNotHaveSameHashCodeAs(String path, Object other) {
+        objects.assertDoesNotHaveSameHashCodeAs(info, read(path), other);
+        return myself;
+    }
+
+    public JsonPathAssert is(String path, Condition<Object> condition) {
+        conditions.assertIs(info, read(path), condition);
+        return myself;
+    }
+
+    public JsonPathAssert isNot(String path, Condition<Object> condition) {
+        conditions.assertIsNot(info, read(path), condition);
+        return myself;
+    }
+
+    public JsonPathAssert has(String path, Condition<Object> condition) {
+        conditions.assertHas(info, read(path), condition);
+        return myself;
+    }
+
+    public JsonPathAssert doesNotHave(String path, Condition<Object> condition) {
+        conditions.assertDoesNotHave(info, read(path), condition);
+        return myself;
+    }
+
+    public JsonPathAssert satisfies(String path, Condition<Object> condition) {
+        conditions.assertSatisfies(info, read(path), condition);
+        return myself;
+    }
+
+    @CheckReturnValue
+    public JsonPathAssert dive(String path) {
+        var value = read(path);
+        return assertJsonPath(value, context.configuration());
     }
 
     @CheckReturnValue
