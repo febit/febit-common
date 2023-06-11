@@ -1,5 +1,4 @@
 plugins {
-  id 'java-library'
   id 'com.github.hierynomus.license' version '0.16.1'
   id 'org.febit.standard-java' version '1.0.0-SNAPSHOT'
   id 'org.febit.codegen-module' version '1.0.0-SNAPSHOT' apply false
@@ -11,23 +10,23 @@ version '3.0.0-SNAPSHOT'
 ext {
 
   versions = [
-      slf4j              : '1.7.36',
+      slf4j              : '2.0.7',
       jsonpath           : '2.7.0',
       hamcrest           : '2.2',
       jodd               : '5.1.6',
       jsr305             : '3.0.2',
       spotbugs           : '4.7.1',
-      commonsIo          : '2.11.0',
+      commonsIo          : '2.13.0',
       commonsLang3       : '3.12.0',
       commonsCollections4: '4.4',
       assertj            : '3.24.2',
       testng             : '7.6.1',
       jackson            : '2.14.2',
       snakeyaml          : '1.33',
-      junit              : '5.9.2',
-      mockito            : '4.0.0',
-      springBoot         : '2.7.10',
-      springCloud        : '2021.0.6',
+      junit              : '5.9.3',
+      mockito            : '5.3.1',
+      springBoot         : '2.7.12',
+      springCloud        : '2021.0.7',
       febitGradleCommon  : '1.0.0-SNAPSHOT',
   ]
 
@@ -36,34 +35,15 @@ ext {
 }
 
 allprojects {
+  apply plugin: 'com.github.hierynomus.license'
 
   group rootProject.group
   version rootProject.version
 
   repositories {
     mavenLocal()
-    maven { url "https://maven.aliyun.com/repository/central" }
+    maven { url "https://repo.huaweicloud.com/repository/maven/" }
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
-  }
-}
-
-def javaModules() {
-  subprojects.findAll {
-    !it.name.endsWith('-bom')
-  }
-}
-
-configure(javaModules()) {
-  apply plugin: 'java-library'
-  apply plugin: 'com.github.hierynomus.license'
-
-  apply from: "${rootDir}/gradle/publish-maven.gradle"
-
-  sourceCompatibility = JavaVersion.VERSION_11
-  targetCompatibility = JavaVersion.VERSION_11
-
-  test {
-    useJUnitPlatform()
   }
 
   license {
@@ -76,6 +56,30 @@ configure(javaModules()) {
     strictCheck false
     skipExistingHeaders false
     header rootProject.file('etc/licenseheader.txt')
+  }
+}
+
+Set<Project> javaLibModules() {
+  subprojects.findAll {
+    !it.name.endsWith('-bom')
+  }
+}
+
+configure(javaLibModules()) {
+  apply plugin: 'java-library'
+
+  sourceCompatibility = JavaVersion.VERSION_11
+  targetCompatibility = JavaVersion.VERSION_11
+
+  apply from: "${rootDir}/gradle/publish-maven.gradle"
+
+  test {
+    useJUnitPlatform()
+  }
+
+  java {
+    // withJavadocJar()
+    withSourcesJar()
   }
 
   dependencies {
@@ -97,6 +101,7 @@ configure(javaModules()) {
     imports {
       mavenBom "com.fasterxml.jackson:jackson-bom:${versions.jackson}"
       mavenBom "org.junit:junit-bom:${versions.junit}"
+      mavenBom "org.mockito:mockito-bom:${versions.mockito}"
       mavenBom "org.springframework.boot:spring-boot-dependencies:${versions.springBoot}"
       mavenBom "org.springframework.cloud:spring-cloud-dependencies:${versions.springCloud}"
     }
@@ -105,12 +110,6 @@ configure(javaModules()) {
         entry 'slf4j-api'
         entry 'slf4j-simple'
       }
-      dependencySet(group: 'org.mockito', version: "${versions.mockito}") {
-        entry 'mockito-core'
-        entry 'mockito-inline'
-        entry 'mockito-junit-jupiter'
-      }
-
       dependency "org.febit.devkit.gradle:febit-gradle-common:${versions.febitGradleCommon}"
       dependency "org.jodd:jodd-core:${versions.jodd}"
       dependency "org.yaml:snakeyaml:${versions.snakeyaml}"

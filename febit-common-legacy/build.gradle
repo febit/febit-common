@@ -1,12 +1,8 @@
-
 plugins {
   id 'org.febit.codegen-module'
 }
 
-ext {
-  moduleName = 'Febit Common'
-  moduleDescription = 'Febit Common Utils'
-}
+description = 'Legacy Febit Common'
 
 codegenModule {
   moduleClassName 'org.febit.FebitCommon'

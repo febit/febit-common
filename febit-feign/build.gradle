@@ -2,10 +2,7 @@ plugins {
   id 'org.febit.codegen-module'
 }
 
-ext {
-  moduleName = 'Febit Feign'
-  moduleDescription = 'Febit Feign'
-}
+description = 'Febit Feign'
 
 codegenModule {
   moduleClassName 'org.febit.FebitFeign'

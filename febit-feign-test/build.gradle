@@ -1,7 +1,4 @@
-ext {
-  moduleName = 'Febit Feign Test'
-  moduleDescription = 'Febit Feign Test'
-}
+description = 'Febit Feign Test'
 
 dependencies {
   api project(':febit-feign')

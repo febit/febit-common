@@ -1,7 +1,4 @@
-ext {
-  moduleName = 'Febit Feign Client Codegen'
-  moduleDescription = 'Febit Feign Client Codegen'
-}
+description = 'Febit Feign Client Codegen'
 
 dependencies {
   api project(':febit-lang')

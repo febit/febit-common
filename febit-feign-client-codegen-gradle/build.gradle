@@ -1,9 +1,6 @@
 apply plugin: 'java-gradle-plugin'
 
-ext {
-  moduleName = 'Febit Feign Codegen Gradle'
-  moduleDescription = 'A gradle plugin to generare feign client'
-}
+description = 'A gradle plugin to generare feign client'
 
 gradlePlugin {
   plugins {
