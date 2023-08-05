@@ -8,6 +8,8 @@ plugins {
 group 'org.febit'
 version '3.0.0-SNAPSHOT'
 
+description = 'Febit Common Utils'
+
 ext {
 
   versions = [
@@ -17,6 +19,7 @@ ext {
       jodd               : '5.1.6',
       jsr305             : '3.0.2',
       spotbugs           : '4.7.1',
+      annotationApi    : '2.1.1',
       commonsIo          : '2.13.0',
       commonsLang3       : '3.12.0',
       commonsCollections4: '4.4',
@@ -31,8 +34,6 @@ ext {
       febitGradleCommon: '1.1.0-SNAPSHOT',
   ]
 
-  moduleName = 'Febit Common'
-  moduleDescription = 'Febit Common Utils'
 }
 
 allprojects {
@@ -87,8 +88,10 @@ configure(subprojects.findAll {
 
   dependencies {
 
-    compileOnly 'com.google.code.findbugs:jsr305'
-    compileOnly 'com.github.spotbugs:spotbugs-annotations'
+    if (project.name != 'febit-annotations-optional') {
+      compileOnly project(':febit-annotations-optional')
+      testCompileOnly project(':febit-annotations-optional')
+    }
 
     testImplementation 'org.slf4j:slf4j-simple'
     testImplementation 'org.assertj:assertj-core'
@@ -118,6 +121,7 @@ configure(subprojects.findAll {
       dependency "org.yaml:snakeyaml:${versions.snakeyaml}"
       dependency "com.google.code.findbugs:jsr305:${versions.jsr305}"
       dependency "com.github.spotbugs:spotbugs-annotations:${versions.spotbugs}"
+      dependency "jakarta.annotation:jakarta.annotation-api:${versions.annotationApi}"
       dependency "commons-io:commons-io:${versions.commonsIo}"
       dependency "org.apache.commons:commons-lang3:${versions.commonsLang3}"
       dependency "org.apache.commons:commons-collections4:${versions.commonsCollections4}"

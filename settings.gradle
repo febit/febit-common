@@ -9,6 +9,7 @@ pluginManagement {
 
 rootProject.name = 'febit-commons'
 
+include 'febit-annotations-optional'
 include 'febit-lang'
 include 'febit-test-common'
 include 'febit-common-legacy'

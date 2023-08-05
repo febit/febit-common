@@ -18,11 +18,16 @@ package org.febit.lang.annotation;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.meta.TypeQualifierDefault;
-import java.lang.annotation.*;
+import javax.annotation.meta.When;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * A common annotation to declare that parameters and return values
- * are to be considered as non-nullable by default for a given package or type.
+ * A common annotation to declare that parameters
+ * are to be considered as non-nullable by default for a given package or type or method.
  *
  * @see Nullable
  * @see Nonnull
@@ -30,7 +35,7 @@ import java.lang.annotation.*;
 @Target({ElementType.PACKAGE, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Nonnull
+@Nonnull(when = When.MAYBE)
 @TypeQualifierDefault({ElementType.METHOD, ElementType.PARAMETER})
-public @interface NonNullApi {
+public @interface NullableApi {
 }

@@ -1,0 +1,7 @@
+description = 'Febit optional annotations'
+
+dependencies {
+  api 'com.google.code.findbugs:jsr305'
+  api 'com.github.spotbugs:spotbugs-annotations'
+  api 'jakarta.annotation:jakarta.annotation-api'
+}
