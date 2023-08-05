@@ -1,7 +1,8 @@
 plugins {
   id 'com.github.hierynomus.license' version '0.16.1'
-  id 'org.febit.standard-java' version '1.0.0-SNAPSHOT'
-  id 'org.febit.codegen-module' version '1.0.0-SNAPSHOT' apply false
+  id 'org.febit.standard-java' version '1.1.0-SNAPSHOT'
+  id 'org.febit.standard-maven-publish' version '1.1.0-SNAPSHOT'
+  id 'org.febit.codegen-module' version '1.1.0-SNAPSHOT'
 }
 
 group 'org.febit'
@@ -25,9 +26,9 @@ ext {
       snakeyaml          : '1.33',
       junit              : '5.9.3',
       mockito            : '5.3.1',
-      springBoot         : '2.7.12',
-      springCloud        : '2021.0.7',
-      febitGradleCommon  : '1.0.0-SNAPSHOT',
+      springBoot       : '2.7.14',
+      springCloud      : '2021.0.8',
+      febitGradleCommon: '1.1.0-SNAPSHOT',
   ]
 
   moduleName = 'Febit Common'
@@ -46,6 +47,12 @@ allprojects {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
   }
 
+  standardMavenPublish {
+    pom {
+      customPom(it)
+    }
+  }
+
   license {
     mapping {
       java = 'SLASHSTAR_STYLE'
@@ -59,19 +66,15 @@ allprojects {
   }
 }
 
-Set<Project> javaLibModules() {
-  subprojects.findAll {
-    !it.name.endsWith('-bom')
-  }
-}
-
-configure(javaLibModules()) {
+configure(subprojects.findAll {
+  !it.name.endsWith('-bom')
+}) {
   apply plugin: 'java-library'
 
-  sourceCompatibility = JavaVersion.VERSION_11
-  targetCompatibility = JavaVersion.VERSION_11
-
-  apply from: "${rootDir}/gradle/publish-maven.gradle"
+  java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+  }
 
   test {
     useJUnitPlatform()
@@ -122,6 +125,42 @@ configure(javaLibModules()) {
       dependency "org.hamcrest:hamcrest:${versions.hamcrest}"
       dependency "org.testng:testng:${versions.testng}"
       dependency "com.jayway.jsonpath:json-path:${versions.jsonpath}"
+    }
+  }
+}
+
+def customPom(MavenPom pom) {
+  pom.with {
+    name.set project.name
+    description.set project.description
+    url.set 'https://github.com/febit/febit-common'
+    organization {
+      name = 'Febit'
+      url = 'https://github.com/febit'
+    }
+    licenses {
+      license {
+        name = 'Apache License, Version 2.0'
+        url = 'https://github.com/febit/febit-common/blob/master/LICENSE.txt'
+        distribution = 'repo'
+      }
+    }
+    scm {
+      url = 'https://github.com/febit/febit-common'
+      connection = 'scm:git:https://github.com/febit/febit-common.git'
+      developerConnection = 'scm:git:https://github.com/febit/febit-common.git'
+    }
+    issueManagement {
+      system = 'GitHub'
+      url = 'https://github.com/febit/febit-common/issues'
+    }
+    developers {
+      developer {
+        id = 'zqq'
+        name = 'Zhu Qingqing'
+        email = 'zqq@febit.org'
+        timezone = '+8'
+      }
     }
   }
 }

@@ -1,1 +1,5 @@
 description = 'Febit Commons Dependencies'
+
+standardMavenPublish {
+  importBom project(":febit-commons-bom")
+}

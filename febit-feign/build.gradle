@@ -1,11 +1,8 @@
-plugins {
-  id 'org.febit.codegen-module'
-}
 
 description = 'Febit Feign'
 
 codegenModule {
-  moduleClassName 'org.febit.FebitFeign'
+  module 'org.febit.FebitFeign', febitTmpl()
 }
 
 dependencies {

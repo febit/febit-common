@@ -1,11 +1,8 @@
-plugins {
-  id 'org.febit.codegen-module'
-}
 
 description = 'Febit Test Common'
 
 codegenModule {
-  moduleClassName 'org.febit.FebitTestCommon'
+  module 'org.febit.FebitTestCommon', febitTmpl()
 }
 
 dependencies {

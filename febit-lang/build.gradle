@@ -1,12 +1,8 @@
 
-plugins {
-  id 'org.febit.codegen-module'
-}
-
 description = 'Febit Lang'
 
 codegenModule {
-  moduleClassName 'org.febit.FebitLang'
+  module 'org.febit.FebitLang', febitTmpl()
 }
 
 dependencies {

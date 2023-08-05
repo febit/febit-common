@@ -1,17 +1,3 @@
-plugins {
-  id 'java-platform'
-}
+apply plugin: 'org.febit.standard-bom'
 
 description = 'Febit Commons BOM'
-
-apply from: "${rootDir}/gradle/publish-maven.gradle"
-
-dependencies {
-  constraints {
-    def projects = rootProject.allprojects.findAll { proj ->
-      proj.plugins.hasPlugin(JavaBasePlugin)
-          && !proj.name.endsWith('-bom')
-    }
-    api projects.sort { name }
-  }
-}
