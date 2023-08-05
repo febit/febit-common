@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2013-present febit.org (support@febit.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,15 +20,23 @@ import org.febit.form.meta.AM;
 import org.febit.form.meta.Add;
 import org.febit.form.meta.Modify;
 import org.febit.form.util.BaseFormUtil.Peer;
-import org.febit.vtor.*;
+import org.febit.vtor.Check;
+import org.febit.vtor.Length;
+import org.febit.vtor.Min;
+import org.febit.vtor.NotEmpty;
+import org.febit.vtor.NotNull;
+import org.febit.vtor.Numeric;
+import org.febit.vtor.Vtor;
 import org.testng.annotations.Test;
 
 import java.lang.annotation.Annotation;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertSame;
+import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 
 /**
- *
  * @author zqq90
  */
 public class BaseFormUtilTest {
@@ -138,7 +146,7 @@ public class BaseFormUtilTest {
                 case "publicString":
                     assertTrue(
                             vtor.check == getCheck(NotEmpty.class)
-                            || vtor.check == getCheck(Length.class)
+                                    || vtor.check == getCheck(Length.class)
                     );
                     break;
                 case "protectedString":

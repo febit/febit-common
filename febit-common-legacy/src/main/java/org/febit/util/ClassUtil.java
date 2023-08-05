@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2013-present febit.org (support@febit.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,12 +19,23 @@ import jodd.io.StreamUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.*;
-import java.util.*;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Field;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 
 /**
- *
  * @author zqq90
  */
 public class ClassUtil extends jodd.util.ClassUtil {
@@ -108,7 +119,7 @@ public class ClassUtil extends jodd.util.ClassUtil {
                 Method old = founds.get(key);
                 if (old == null
                         || old.getDeclaringClass()
-                                .isAssignableFrom(method.getDeclaringClass())) {
+                        .isAssignableFrom(method.getDeclaringClass())) {
                     founds.put(key, method);
                 }
             }
@@ -129,7 +140,7 @@ public class ClassUtil extends jodd.util.ClassUtil {
                 Field old = founds.get(key);
                 if (old == null
                         || old.getDeclaringClass()
-                                .isAssignableFrom(field.getDeclaringClass())) {
+                        .isAssignableFrom(field.getDeclaringClass())) {
                     founds.put(key, field);
                 }
             }
@@ -271,7 +282,7 @@ public class ClassUtil extends jodd.util.ClassUtil {
 
     /**
      * is accessable for inheritor.
-     *
+     * <p>
      * declaring class is inheritor, or is public or protected access.
      *
      * @param member
@@ -285,7 +296,7 @@ public class ClassUtil extends jodd.util.ClassUtil {
 
     /**
      * is accessable for inheritor.
-     *
+     * <p>
      * is public or protected access.
      *
      * @param member

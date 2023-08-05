@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2013-present febit.org (support@febit.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
- *
  * @author zqq90
  */
 public class EncryptUtil {

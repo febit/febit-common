@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2013-present febit.org (support@febit.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,13 +20,13 @@ import java.util.function.Supplier;
 
 /**
  * 缓存代理. 过期时间后获取实例会重新获取, 如果获取失败, 会沿用上个周期的实例,
- *
+ * <p>
  * Notice: 示例生成不能返回null, 否则作为获取失败处理 Notice: 初次构建完可使用 ensure() 方法获取一次实例
- *
+ * <p>
  * TODO 增加重试机制
  *
- * @author zqq90
  * @param <T>
+ * @author zqq90
  */
 public abstract class ExpireUpdateAgent<T> implements Serializable {
 
@@ -48,8 +48,7 @@ public abstract class ExpireUpdateAgent<T> implements Serializable {
     protected abstract T create();
 
     /**
-     *
-     * @param expire 过期毫秒
+     * @param expire      过期毫秒
      * @param extraExpire 最大忍耐的过期毫秒
      */
     protected ExpireUpdateAgent(long expire, long extraExpire) {

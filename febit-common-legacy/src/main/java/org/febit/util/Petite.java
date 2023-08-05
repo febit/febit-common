@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2013-present febit.org (support@febit.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,11 +24,20 @@ import org.febit.lang.IdentityMap;
 import org.febit.lang.util.Lists;
 import org.febit.service.Services;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.ServiceLoader;
+import java.util.Set;
 
 /**
  * A Simple IoC.
@@ -245,8 +254,8 @@ public class Petite {
 
         //Init
         ClassUtil.getDeclaredMethods(ClassUtil.classes(beanType), method -> ClassUtil.notStatic(method)
-                && ClassUtil.isInheritorAccessable(method, beanType)
-                && method.getAnnotation(Petite.Init.class) != null)
+                        && ClassUtil.isInheritorAccessable(method, beanType)
+                        && method.getAnnotation(Petite.Init.class) != null)
                 .forEach(method -> {
                     try {
                         method.invoke(bean, resolveMethodArgs(method));

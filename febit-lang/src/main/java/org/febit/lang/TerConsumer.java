@@ -23,9 +23,8 @@ import java.util.Objects;
  * @param <A1> the type of the first argument to the operation
  * @param <A2> the type of the second argument to the operation
  * @param <A3> the type of the third argument to the operation
- *
- * @see java.util.function.Consumer
  * @author zqq90
+ * @see java.util.function.Consumer
  */
 @FunctionalInterface
 public interface TerConsumer<A1, A2, A3> {

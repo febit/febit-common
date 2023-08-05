@@ -61,7 +61,6 @@ public class ClassWriter {
         return this;
     }
 
-
     public ClassWriter appendDeclare(String type) {
         buf.append("public ")
                 .append(type)

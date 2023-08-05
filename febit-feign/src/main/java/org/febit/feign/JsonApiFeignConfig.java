@@ -16,7 +16,12 @@
 package org.febit.feign;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import feign.*;
+import feign.Contract;
+import feign.Feign;
+import feign.QueryMapEncoder;
+import feign.RequestInterceptor;
+import feign.RequestTemplate;
+import feign.Retryer;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
 import feign.codec.ErrorDecoder;

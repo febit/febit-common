@@ -33,7 +33,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import lombok.experimental.UtilityClass;
-import lombok.val;
+import org.febit.lang.util.jackson.StandardPrettyPrinter;
 
 import javax.annotation.Nullable;
 import javax.annotation.WillNotClose;
@@ -73,7 +73,7 @@ public class JacksonUtils {
     public static <M extends ObjectMapper> M standard(M mapper) {
 
         // Note: Should not share between instances.
-        val timeModule = new JavaTimeModule()
+        var timeModule = new JavaTimeModule()
                 .addDeserializer(LocalTime.class, new LocalTimeDeserializer(TimeUtils.FMT_TIME))
                 .addSerializer(LocalTime.class, new LocalTimeSerializer(TimeUtils.FMT_TIME))
                 .addDeserializer(LocalDate.class, new LocalDateDeserializer(TimeUtils.FMT_DATE))
@@ -87,6 +87,9 @@ public class JacksonUtils {
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
                 .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
                 .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+                .setDefaultPrettyPrinter(
+                        new StandardPrettyPrinter()
+                )
                 .registerModule(new Jdk8Module())
                 .registerModule(new ParameterNamesModule())
                 .registerModule(timeModule);

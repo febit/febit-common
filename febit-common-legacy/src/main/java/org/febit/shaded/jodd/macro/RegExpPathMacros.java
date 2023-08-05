@@ -33,23 +33,23 @@ import java.util.regex.Pattern;
  */
 public class RegExpPathMacros extends BasePathMacros {
 
-	protected Pattern[] regexpPattern;
+    protected Pattern[] regexpPattern;
 
-	@Override
-	public boolean init(String actionPath, String[] separators) {
-		boolean hasMacros = super.init(actionPath, separators);
-		if (hasMacros) {
-			regexpPattern = new Pattern[macrosCount];
-		}
-		return hasMacros;
-	}
+    @Override
+    public boolean init(String actionPath, String[] separators) {
+        boolean hasMacros = super.init(actionPath, separators);
+        if (hasMacros) {
+            regexpPattern = new Pattern[macrosCount];
+        }
+        return hasMacros;
+    }
 
-	@Override
-	protected boolean matchValue(int macroIndex, String value) {
-		if (regexpPattern[macroIndex] == null) {
-			regexpPattern[macroIndex] = Pattern.compile(patterns[macroIndex]);
-		}
+    @Override
+    protected boolean matchValue(int macroIndex, String value) {
+        if (regexpPattern[macroIndex] == null) {
+            regexpPattern[macroIndex] = Pattern.compile(patterns[macroIndex]);
+        }
 
-		return regexpPattern[macroIndex].matcher(value).matches();
-	}
+        return regexpPattern[macroIndex].matcher(value).matches();
+    }
 }

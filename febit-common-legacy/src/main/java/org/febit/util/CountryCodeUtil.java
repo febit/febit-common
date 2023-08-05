@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2013-present febit.org (support@febit.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,6 @@ import org.febit.lang.util.Maps;
 import java.util.Map;
 
 /**
- *
  * @author zqq90
  */
 public class CountryCodeUtil {

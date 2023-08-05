@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2013-present febit.org (support@febit.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,9 +18,8 @@ package org.febit.vtor;
 import java.lang.annotation.Annotation;
 
 /**
- *
- * @author zqq90
  * @param <T>
+ * @author zqq90
  */
 public abstract class AbstractLongCheck<T extends Annotation> extends AbstractNumberCheck<T> {
 

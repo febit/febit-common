@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2013-present febit.org (support@febit.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -46,7 +46,7 @@ public class Vtor {
     /**
      * Check bean.
      *
-     * @param bean bean to check
+     * @param bean   bean to check
      * @param filter CheckConfig filter, please return true if accept/allow the Check
      * @return an empty array will returned if all passed.
      */

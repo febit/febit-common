@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2013-present febit.org (support@febit.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,8 @@
 package org.febit.form;
 
 /**
- *
- * @author zqq90
  * @param <E>
+ * @author zqq90
  */
 public interface AddForm<E> extends BaseForm {
 

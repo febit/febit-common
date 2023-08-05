@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2013-present febit.org (support@febit.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,10 +18,9 @@ package org.febit.form;
 import java.util.Map;
 
 /**
- *
- * @author zqq90
  * @param <E>
  * @param <I>
+ * @author zqq90
  */
 public interface ModifyForm<E, I> extends BaseForm {
 

@@ -15,7 +15,14 @@
  */
 package org.febit.feign.test;
 
-import feign.*;
+import feign.Client;
+import feign.Contract;
+import feign.Feign;
+import feign.Logger;
+import feign.QueryMapEncoder;
+import feign.RequestInterceptor;
+import feign.Retryer;
+import feign.Target;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
 import feign.codec.ErrorDecoder;

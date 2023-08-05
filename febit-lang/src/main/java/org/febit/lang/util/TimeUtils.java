@@ -16,10 +16,16 @@
 package org.febit.lang.util;
 
 import lombok.experimental.UtilityClass;
-import lombok.val;
 
 import javax.annotation.Nullable;
-import java.time.*;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
@@ -65,7 +71,7 @@ public class TimeUtils {
 
     @Nullable
     public static LocalDate parseDate(@Nullable String raw) {
-        val time = parse(raw);
+        var time = parse(raw);
         if (time == null) {
             return null;
         }
@@ -119,14 +125,14 @@ public class TimeUtils {
             return ZonedDateTime.ofInstant(numericToInstant(raw), ZONE_DEFAULT);
         }
 
-        val dateAndTime = resolveAsDateTime(
+        var dateAndTime = resolveAsDateTime(
                 zoneStart < 0 ? raw : raw.substring(0, zoneStart)
         );
-        val zone = zoneStart < 0 ? null
+        var zone = zoneStart < 0 ? null
                 : resolveZone(raw.substring(zoneStart));
 
-        val date = localDate(dateAndTime);
-        val time = localTime(dateAndTime);
+        var date = localDate(dateAndTime);
+        var time = localTime(dateAndTime);
         return ZonedDateTime.of(
                 date, time,
                 zone != null ? zone : ZONE_DEFAULT
@@ -189,7 +195,7 @@ public class TimeUtils {
 
     @Nullable
     public static LocalTime parseTime(@Nullable String raw) {
-        val time = parse(raw);
+        var time = parse(raw);
         if (time == null) {
             return null;
         }
@@ -198,7 +204,7 @@ public class TimeUtils {
 
     @Nullable
     public static Instant parseInstant(@Nullable String raw) {
-        val time = parse(raw);
+        var time = parse(raw);
         if (time == null) {
             return null;
         }
@@ -231,7 +237,7 @@ public class TimeUtils {
 
     @Nullable
     public static LocalDateTime parseDateTime(@Nullable String raw) {
-        val time = parse(raw);
+        var time = parse(raw);
         if (time == null) {
             return null;
         }

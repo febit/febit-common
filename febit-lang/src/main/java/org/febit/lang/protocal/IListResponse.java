@@ -16,7 +16,6 @@
 package org.febit.lang.protocal;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import lombok.val;
 import org.febit.lang.util.Lists;
 
 import javax.annotation.Nonnull;
@@ -28,7 +27,7 @@ public interface IListResponse<T> extends IResponse<List<T>> {
 
     @Nonnull
     default <D> IListResponse<D> transferItems(@Nonnull Function<T, D> action) {
-        val target = new ListResponse<D>();
+        var target = new ListResponse<D>();
         target.copyProperties(this);
         target.setData(Lists.transfer(getData(), action));
         return target;

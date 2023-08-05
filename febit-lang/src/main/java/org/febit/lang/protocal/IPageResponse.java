@@ -16,7 +16,6 @@
 package org.febit.lang.protocal;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import lombok.val;
 
 import javax.annotation.Nonnull;
 import java.util.function.Function;
@@ -26,7 +25,7 @@ public interface IPageResponse<T> extends IResponse<Page<T>> {
 
     @Nonnull
     default <D> PageResponse<D> transferRows(@Nonnull Function<T, D> action) {
-        val target = new PageResponse<D>();
+        var target = new PageResponse<D>();
         target.copyProperties(this);
         if (getData() != null) {
             target.setData(getData().transfer(action));

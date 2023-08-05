@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2013-present febit.org (support@febit.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.Reader;
 
 /**
- *
  * @author zqq90
  */
 public interface ResourceLoader {

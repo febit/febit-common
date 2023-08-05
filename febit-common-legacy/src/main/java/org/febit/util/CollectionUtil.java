@@ -1,11 +1,11 @@
-/**
+/*
  * Copyright 2013-present febit.org (support@febit.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,9 +17,29 @@ package org.febit.util;
 
 import org.febit.lang.Defaults;
 import org.febit.lang.Iter;
-import org.febit.lang.iter.*;
+import org.febit.lang.iter.BaseIter;
+import org.febit.lang.iter.BooleanArrayIter;
+import org.febit.lang.iter.ByteArrayIter;
+import org.febit.lang.iter.CharArrayIter;
+import org.febit.lang.iter.DoubleArrayIter;
+import org.febit.lang.iter.EnumerationIter;
+import org.febit.lang.iter.FlatMapIter;
+import org.febit.lang.iter.FloatArrayIter;
+import org.febit.lang.iter.IntArrayIter;
+import org.febit.lang.iter.IterConcatIter;
+import org.febit.lang.iter.IterFilter;
+import org.febit.lang.iter.IteratorIter;
+import org.febit.lang.iter.LongArrayIter;
+import org.febit.lang.iter.ObjectArrayIter;
+import org.febit.lang.iter.ShortArrayIter;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 

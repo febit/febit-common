@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2013-present febit.org (support@febit.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,12 +20,12 @@ import org.febit.util.ClassUtil;
 import org.febit.util.PathFormat;
 import org.febit.util.StringUtil;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 /**
- *
  * @author zqq90
  */
 public class Convert {

@@ -24,7 +24,6 @@ import com.fasterxml.jackson.databind.jsontype.impl.StdSubtypeResolver;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.Singular;
-import lombok.val;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -41,7 +40,7 @@ public class CustomSubtypeResolver extends StdSubtypeResolver {
 
     @Nullable
     protected Collection<NamedType> copySubtypesIfPresent(Class<?> forType) {
-        val subtypes = this.subtypesMapping.get(forType);
+        var subtypes = this.subtypesMapping.get(forType);
         if (subtypes != null) {
             return new ArrayList<>(subtypes);
         }
@@ -54,7 +53,7 @@ public class CustomSubtypeResolver extends StdSubtypeResolver {
         Class<?> rawBase = baseType == null
                 ? property.getRawType()
                 : baseType.getRawClass();
-        val subtypes = copySubtypesIfPresent(rawBase);
+        var subtypes = copySubtypesIfPresent(rawBase);
         if (subtypes != null) {
             return subtypes;
         }
@@ -65,7 +64,7 @@ public class CustomSubtypeResolver extends StdSubtypeResolver {
     public Collection<NamedType> collectAndResolveSubtypesByClass(
             MapperConfig<?> config, AnnotatedClass type) {
         Class<?> rawBase = type.getRawType();
-        val subtypes = copySubtypesIfPresent(rawBase);
+        var subtypes = copySubtypesIfPresent(rawBase);
         if (subtypes != null) {
             return subtypes;
         }
@@ -76,7 +75,7 @@ public class CustomSubtypeResolver extends StdSubtypeResolver {
     public Collection<NamedType> collectAndResolveSubtypesByTypeId(
             MapperConfig<?> config, AnnotatedMember property, JavaType baseType) {
         Class<?> rawBase = baseType.getRawClass();
-        val subtypes = copySubtypesIfPresent(rawBase);
+        var subtypes = copySubtypesIfPresent(rawBase);
         if (subtypes != null) {
             return subtypes;
         }
@@ -87,7 +86,7 @@ public class CustomSubtypeResolver extends StdSubtypeResolver {
     public Collection<NamedType> collectAndResolveSubtypesByTypeId(
             MapperConfig<?> config, AnnotatedClass baseType) {
         final Class<?> rawBase = baseType.getRawType();
-        val subtypes = copySubtypesIfPresent(rawBase);
+        var subtypes = copySubtypesIfPresent(rawBase);
         if (subtypes != null) {
             return subtypes;
         }

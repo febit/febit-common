@@ -16,7 +16,10 @@
 package org.febit.lang.protocal;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.febit.lang.annotation.NullableArgs;
 import org.febit.lang.util.jackson.LooseInstantDeserializer;
@@ -65,7 +68,7 @@ public class Response<T> implements IMutableResponse<T>, HttpStatusAware {
 
     @Nonnull
     public <D> Response<D> transferData(@Nonnull Function<T, D> action) {
-        val target = new Response<D>();
+        var target = new Response<D>();
         target.copyProperties(this);
         target.setData(action.apply(getData()));
         return target;

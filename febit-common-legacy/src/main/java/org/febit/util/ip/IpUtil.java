@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2013-present febit.org (support@febit.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,6 @@ import java.util.Arrays;
 import java.util.regex.Pattern;
 
 /**
- *
  * @author zqq90
  */
 public class IpUtil {
@@ -83,7 +82,7 @@ public class IpUtil {
             return null;
         }
         if (ipv6.charAt(0) == ':') {
-            // 去除开头的第一个 ':' 
+            // 去除开头的第一个 ':'
             ipv6 = ipv6.substring(1);
         }
         final byte[] ret = new byte[16];
@@ -108,7 +107,7 @@ public class IpUtil {
                 // 压缩区块 * 2
                 // + 初始压缩个数为 1 个: 此区块占位
                 // + 完整区块应该为 16/2=8 个
-                // + 如果混合 ipv4 多一个: ipv4 相当于 2 个区块 
+                // + 如果混合 ipv4 多一个: ipv4 相当于 2 个区块
                 pos -= (1 + 8 - segments.length - (mixedV4Flag ? 1 : 0)) * 2;
             } else {
                 int val;
@@ -150,7 +149,7 @@ public class IpUtil {
 
     /**
      * IPv4 to Long.
-     *
+     * <p>
      * TODO: refactor
      *
      * @param ipv4

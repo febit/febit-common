@@ -44,11 +44,9 @@ public class Lists {
         return result;
     }
 
-
     public static <T> List<T> collect(@Nullable Iterable<T> src) {
         return collect(src != null ? src.iterator() : null);
     }
-
 
     public static <T, S> List<T> collect(@Nullable Iterator<S> src, Function<S, T> action) {
         List<T> result = ofArrayList();

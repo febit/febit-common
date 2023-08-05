@@ -19,7 +19,7 @@ ext {
       jodd               : '5.1.6',
       jsr305             : '3.0.2',
       spotbugs           : '4.7.1',
-      annotationApi    : '2.1.1',
+      annotationApi      : '2.1.1',
       commonsIo          : '2.13.0',
       commonsLang3       : '3.12.0',
       commonsCollections4: '4.4',
@@ -29,9 +29,9 @@ ext {
       snakeyaml          : '1.33',
       junit              : '5.9.3',
       mockito            : '5.3.1',
-      springBoot       : '2.7.14',
-      springCloud      : '2021.0.8',
-      febitGradleCommon: '1.1.0-SNAPSHOT',
+      springBoot         : '2.7.14',
+      springCloud        : '2021.0.8',
+      febitGradleCommon  : '1.1.0-SNAPSHOT',
   ]
 
 }

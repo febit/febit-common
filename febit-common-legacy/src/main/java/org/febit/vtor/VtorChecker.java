@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2013-present febit.org (support@febit.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,7 +25,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
- *
  * @author zqq90
  */
 public class VtorChecker extends BaseVtorChecker {
@@ -71,7 +70,7 @@ public class VtorChecker extends BaseVtorChecker {
     /**
      * Check bean.
      *
-     * @param bean bean to check
+     * @param bean   bean to check
      * @param filter CheckConfig filter, please returns true if accept/allow the Check
      * @return an empty array will returned if all passed.
      */

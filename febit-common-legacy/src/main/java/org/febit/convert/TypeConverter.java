@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2013-present febit.org (support@febit.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,8 @@
 package org.febit.convert;
 
 /**
- *
- * @author zqq90
  * @param <T>
+ * @author zqq90
  */
 @FunctionalInterface
 public interface TypeConverter<T> {

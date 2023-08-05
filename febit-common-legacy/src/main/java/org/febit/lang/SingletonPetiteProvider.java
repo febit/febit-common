@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2013-present febit.org (support@febit.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,6 @@ import org.febit.util.PetiteGlobalBeanProvider;
 import org.febit.util.Priority;
 
 /**
- *
  * @author zqq90
  */
 @Priority.Level(Priority.PRI_LOWER)

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2013-present febit.org (support@febit.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,12 +18,11 @@ package org.febit.lang;
 import java.util.Objects;
 
 /**
- *
- * @author zqq90
  * @param <T1>
  * @param <T2>
  * @param <T3>
  * @param <T4>
+ * @author zqq90
  */
 public class Tuple4<T1, T2, T3, T4> {
 

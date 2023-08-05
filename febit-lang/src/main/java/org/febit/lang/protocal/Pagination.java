@@ -22,7 +22,6 @@ import lombok.Singular;
 
 import java.util.List;
 
-
 /**
  * Used for api clients, to match the Pagination API Spec, instead of {@code Pageable}.
  */

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2013-present febit.org (support@febit.org)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 package org.febit.lang;
 
 /**
- *
  * @author zqq90
  */
 abstract class AbstractIdentityMap<K, V> {
@@ -116,9 +115,9 @@ abstract class AbstractIdentityMap<K, V> {
         final int newMark = newCapacity - 1;
         final Entry<K, V>[] newTable = new Entry[newCapacity];
 
-        for (int i = oldCapacity; i-- > 0;) {
+        for (int i = oldCapacity; i-- > 0; ) {
             int index;
-            for (Entry<K, V> old = oldTable[i], e; old != null;) {
+            for (Entry<K, V> old = oldTable[i], e; old != null; ) {
                 e = old;
                 old = old.next;
 
