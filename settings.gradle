@@ -1,6 +1,5 @@
 pluginManagement {
   repositories {
-    mavenLocal()
     maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
     maven { url "https://repo.huaweicloud.com/repository/maven" }
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
@@ -10,12 +9,7 @@ pluginManagement {
 rootProject.name = 'febit-commons'
 
 include 'febit-annotations-optional'
-include 'febit-lang'
-include 'febit-test-common'
-include 'febit-common-legacy'
 include 'febit-commons-bom'
 include 'febit-commons-dependencies'
-include 'febit-feign'
-include 'febit-feign-test'
-include 'febit-feign-client-codegen'
-include 'febit-feign-client-codegen-gradle'
+include 'febit-lang'
+include 'febit-test-common'

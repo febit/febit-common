@@ -16,7 +16,6 @@ ext {
       slf4j              : '2.0.7',
       jsonpath           : '2.7.0',
       hamcrest           : '2.2',
-      jodd               : '5.1.6',
       jsr305             : '3.0.2',
       spotbugs           : '4.7.1',
       annotationApi      : '2.1.1',
@@ -24,13 +23,10 @@ ext {
       commonsLang3       : '3.12.0',
       commonsCollections4: '4.4',
       assertj            : '3.24.2',
-      testng             : '7.6.1',
       jackson            : '2.14.2',
       snakeyaml          : '1.33',
       junit              : '5.9.3',
       mockito            : '5.3.1',
-      springBoot         : '2.7.14',
-      springCloud        : '2021.0.8',
       febitGradleCommon  : '1.1.0-SNAPSHOT',
   ]
 
@@ -43,7 +39,6 @@ allprojects {
   version rootProject.version
 
   repositories {
-    mavenLocal()
     maven { url "https://repo.huaweicloud.com/repository/maven/" }
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
   }
@@ -60,10 +55,9 @@ allprojects {
     }
     include '**/*.java'
     exclude '**/org/febit/Febit*.java'
-    exclude '**/shaded/**/*java'
     strictCheck false
     skipExistingHeaders false
-    header rootProject.file('etc/licenseheader.txt')
+    header rootProject.file('etc/license-header.txt')
   }
 }
 
@@ -98,6 +92,7 @@ configure(subprojects.findAll {
     testImplementation 'org.mockito:mockito-junit-jupiter'
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
   }
 
   dependencyManagement {
@@ -107,28 +102,24 @@ configure(subprojects.findAll {
     imports {
       mavenBom "com.fasterxml.jackson:jackson-bom:${versions.jackson}"
       mavenBom "org.junit:junit-bom:${versions.junit}"
+      mavenBom "org.assertj:assertj-bom:${versions.assertj}"
       mavenBom "org.mockito:mockito-bom:${versions.mockito}"
-      mavenBom "org.springframework.boot:spring-boot-dependencies:${versions.springBoot}"
-      mavenBom "org.springframework.cloud:spring-cloud-dependencies:${versions.springCloud}"
     }
     dependencies {
       dependencySet(group: 'org.slf4j', version: "${versions.slf4j}") {
         entry 'slf4j-api'
         entry 'slf4j-simple'
       }
-      dependency "org.febit.devkit.gradle:febit-gradle-common:${versions.febitGradleCommon}"
-      dependency "org.jodd:jodd-core:${versions.jodd}"
       dependency "org.yaml:snakeyaml:${versions.snakeyaml}"
+      dependency "com.jayway.jsonpath:json-path:${versions.jsonpath}"
       dependency "com.google.code.findbugs:jsr305:${versions.jsr305}"
       dependency "com.github.spotbugs:spotbugs-annotations:${versions.spotbugs}"
       dependency "jakarta.annotation:jakarta.annotation-api:${versions.annotationApi}"
       dependency "commons-io:commons-io:${versions.commonsIo}"
       dependency "org.apache.commons:commons-lang3:${versions.commonsLang3}"
       dependency "org.apache.commons:commons-collections4:${versions.commonsCollections4}"
-      dependency "org.assertj:assertj-core:${versions.assertj}"
       dependency "org.hamcrest:hamcrest:${versions.hamcrest}"
-      dependency "org.testng:testng:${versions.testng}"
-      dependency "com.jayway.jsonpath:json-path:${versions.jsonpath}"
+      dependency "org.febit.devkit.gradle:febit-gradle-common:${versions.febitGradleCommon}"
     }
   }
 }
