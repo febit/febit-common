@@ -19,15 +19,7 @@ import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -85,6 +77,15 @@ public class Maps {
                 i -> Pair.of(keyMapper.apply(i), valueMapper.apply(i))
         );
         return Map.ofEntries(pairs);
+    }
+
+    @SafeVarargs
+    public static <K, E> Map<K, E> mappingMultiKeys(E[] values, Function<E, K>... mappers) {
+        var map = Maps.<K, E>create(values.length * mappers.length);
+        for (var mapper : mappers) {
+            map.putAll(mapping(values, mapper));
+        }
+        return Map.copyOf(map);
     }
 
     public static <T, K, V> Map<K, List<V>> grouping(
@@ -150,6 +151,21 @@ public class Maps {
                 ));
     }
 
+    public static <K1, K2, V1, V2> Map<K2, V2> transfer(
+            Map<K1, V1> source, Function<K1, K2> keyTransfer, Function<V1, V2> valueTransfer
+    ) {
+        return mapping(source.entrySet(),
+                entry -> keyTransfer.apply(entry.getKey()),
+                entry -> valueTransfer.apply(entry.getValue()));
+    }
+
+    public static <K, V1, V2> Map<K, V2> transferValue(
+            Map<K, V1> source, Function<V1, V2> transfer
+    ) {
+        return mapping(source.entrySet(), Map.Entry::getKey,
+                entry -> transfer.apply(entry.getValue()));
+    }
+
     /**
      * Creates an empty {@linkplain HashMap} instance.
      *
@@ -180,84 +196,5 @@ public class Maps {
         }
         return Math.min((int) ((float) expectedSize / 0.75F + 1.0F), MAXIMUM_CAPACITY);
     }
-
-    public static <K1, K2, V1, V2> Map<K2, V2> transfer(
-            Map<K1, V1> source, Function<K1, K2> keyTransfer, Function<V1, V2> valueTransfer
-    ) {
-        return mapping(source.entrySet(),
-                entry -> keyTransfer.apply(entry.getKey()),
-                entry -> valueTransfer.apply(entry.getValue()));
-    }
-
-    public static <K, V1, V2> Map<K, V2> transferValue(
-            Map<K, V1> source, Function<V1, V2> transfer
-    ) {
-        return mapping(source.entrySet(), Map.Entry::getKey,
-                entry -> transfer.apply(entry.getValue()));
-    }
-
-    /**
-     * Creates an empty {@linkplain HashMap} instance.
-     */
-    public static <K, V> HashMap<K, V> create() {
-        return newHashMap();
-    }
-
-    /**
-     * Creates an empty {@linkplain HashMap} instance.
-     */
-    public static <K, V> HashMap<K, V> newHashMap() {
-        return new HashMap<>();
-    }
-
-    /**
-     * Creates a {@linkplain HashMap} instance with the same mappings as the specified map.
-     */
-    public static <K, V> HashMap<K, V> create(Map<? extends K, ? extends V> map) {
-        return newHashMap(map);
-    }
-
-    /**
-     * Creates a {@linkplain HashMap} instance with the same mappings as the specified map.
-     */
-    public static <K, V> HashMap<K, V> newHashMap(Map<? extends K, ? extends V> map) {
-        return new HashMap<>(map);
-    }
-
-    /**
-     * Creates an empty {@linkplain LinkedHashMap} instance.
-     */
-    public static <K, V> LinkedHashMap<K, V> newLinkedHashMap() {
-        return new LinkedHashMap<>();
-    }
-
-    /**
-     * Creates an empty {@linkplain LinkedHashMap} instance.
-     *
-     * @param expectedSize the number of entries expected to add
-     */
-    public static <K, V> LinkedHashMap<K, V> newLinkedHashMap(int expectedSize) {
-        return new LinkedHashMap<>(calCapacityForHashMap(expectedSize));
-    }
-
-    public static <K, V> LinkedHashMap<K, V> newLinkedHashMap(Map<? extends K, ? extends V> map) {
-        return new LinkedHashMap<>(map);
-    }
-
-    public static <K, V> IdentityHashMap<K, V> newIdentityHashMap() {
-        return new IdentityHashMap<>();
-    }
-
-    public static <K, V> IdentityHashMap<K, V> newIdentityHashMap(int expectedSize) {
-        return new IdentityHashMap<>(expectedSize);
-    }
-
-    public static <K extends Comparable, V> TreeMap<K, V> newTreeMap() {
-        return new TreeMap<>();
-    }
-
-    public static <K, V> TreeMap<K, V> newTreeMap(SortedMap<K, ? extends V> map) {
-        return new TreeMap<>(map);
-    }
-
 }
+

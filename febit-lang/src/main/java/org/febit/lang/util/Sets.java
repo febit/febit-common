@@ -19,8 +19,10 @@ import lombok.experimental.UtilityClass;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 
@@ -29,6 +31,10 @@ import java.util.function.IntFunction;
 })
 @UtilityClass
 public class Sets {
+
+    public static <T> Set<T> concurrent() {
+        return Collections.newSetFromMap(new ConcurrentHashMap<>());
+    }
 
     @Nullable
     public static <T> Set<T> transfer(@Nullable Collection<T> src) {

@@ -28,7 +28,10 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@lombok.Builder(builderClassName = "Builder")
+@lombok.Builder(
+        builderClassName = "Builder",
+        toBuilder = true
+)
 public class Pagination {
 
     private int page;
@@ -36,6 +39,30 @@ public class Pagination {
 
     @Singular
     private List<Sort> sorts;
+
+    public Pagination to(int number) {
+        return new Pagination(number, size,
+                sorts == null ? null : List.copyOf(sorts)
+        );
+    }
+
+    public boolean hasPrevious() {
+        return page > 1;
+    }
+
+    public Pagination previous() {
+        return hasPrevious()
+                ? to(page - 1)
+                : this;
+    }
+
+    public Pagination next() {
+        return to(page + 1);
+    }
+
+    public Pagination first() {
+        return to(1);
+    }
 
     public static Builder builder(int page, int size) {
         return new Builder()
