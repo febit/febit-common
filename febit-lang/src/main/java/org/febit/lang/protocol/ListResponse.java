@@ -13,23 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.lang.protocal;
+package org.febit.lang.protocol;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import java.util.List;
 
-import javax.annotation.Nonnull;
-import java.util.function.Function;
+public class ListResponse<T> extends Response<List<T>> implements IListResponse<T> {
 
-@JsonDeserialize(as = PageResponse.class)
-public interface IPageResponse<T> extends IResponse<Page<T>> {
-
-    @Nonnull
-    default <D> PageResponse<D> transferRows(@Nonnull Function<T, D> action) {
-        var target = new PageResponse<D>();
-        target.copyProperties(this);
-        if (getData() != null) {
-            target.setData(getData().transfer(action));
-        }
-        return target;
-    }
 }

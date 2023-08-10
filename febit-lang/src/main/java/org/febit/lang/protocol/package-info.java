@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.lang.protocal;
+@NonNullApi
+package org.febit.lang.protocol;
 
-public class PageResponse<T> extends Response<Page<T>> implements IPageResponse<T> {
-
-}
+import org.febit.lang.annotation.NonNullApi;

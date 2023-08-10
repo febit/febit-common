@@ -13,12 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.lang.protocal;
+package org.febit.lang.protocol;
 
-@SuppressWarnings({
-        "squid:S1609" // @FunctionalInterface annotation should be used to flag Single Abstract Method interfaces
-})
-public interface HttpStatusAware {
+public class PageResponse<T> extends Response<Page<T>> implements IPageResponse<T> {
 
-    void setHttpStatus(int status);
 }

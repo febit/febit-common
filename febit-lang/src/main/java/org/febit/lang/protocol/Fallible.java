@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.lang.protocal;
+package org.febit.lang.protocol;
 
-import java.util.List;
+public interface Fallible {
 
-public class ListResponse<T> extends Response<List<T>> implements IListResponse<T> {
-
+    boolean isFailed();
 }

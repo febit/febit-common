@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.lang.protocal;
+package org.febit.lang.protocol;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -25,7 +25,7 @@ import java.time.Instant;
 import java.util.function.Function;
 
 @JsonDeserialize(as = Response.class)
-public interface IResponse<T> extends Failable {
+public interface IResponse<T> extends Fallible {
 
     static <T> IResponse<T> success() {
         return success(200, null);
@@ -76,7 +76,7 @@ public interface IResponse<T> extends Failable {
         return Response.failed(httpStatus, code, message, data);
     }
 
-    int getHttpStatus();
+    int getStatus();
 
     boolean isSuccess();
 
@@ -97,12 +97,12 @@ public interface IResponse<T> extends Failable {
 
     @JsonIgnore
     default boolean isSuccessWithStatus(int status) {
-        return isSuccess() && this.getHttpStatus() == status;
+        return isSuccess() && this.getStatus() == status;
     }
 
     @JsonIgnore
     default boolean isFailedWithStatus(int status) {
-        return isFailed() && this.getHttpStatus() == status;
+        return isFailed() && this.getStatus() == status;
     }
 
     @Nonnull
@@ -112,7 +112,7 @@ public interface IResponse<T> extends Failable {
 
     @Nonnull
     default <D> IResponse<D> transferData(@Nonnull Function<T, D> action) {
-        return Response.of(getHttpStatus(), isSuccess(), getCode(), getMessage(),
+        return Response.of(getStatus(), isSuccess(), getCode(), getMessage(),
                 action.apply(getData()), getTimestamp());
     }
 

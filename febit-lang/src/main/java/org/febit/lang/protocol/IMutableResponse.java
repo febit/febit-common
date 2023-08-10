@@ -13,7 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@NonNullApi
-package org.febit.lang.protocal;
+package org.febit.lang.protocol;
 
-import org.febit.lang.annotation.NonNullApi;
+import java.time.Instant;
+
+public interface IMutableResponse<T> extends IResponse<T> {
+
+    void setStatus(int status);
+
+    void setSuccess(boolean success);
+
+    void setCode(String code);
+
+    void setData(T data);
+
+    void setMessage(String message);
+
+    void setTimestamp(Instant timestamp);
+}

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.lang.protocal;
+package org.febit.lang.protocol;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AccessLevel;
@@ -40,7 +40,7 @@ import java.util.function.Function;
 )
 public class Response<T> implements IMutableResponse<T>, HttpStatusAware {
 
-    private int httpStatus;
+    private int status;
 
     private boolean success;
     private String code;
@@ -75,7 +75,7 @@ public class Response<T> implements IMutableResponse<T>, HttpStatusAware {
     }
 
     protected void copyProperties(@Nonnull IResponse<?> from) {
-        setHttpStatus(from.getHttpStatus());
+        this.setStatus(from.getStatus());
         setSuccess(from.isSuccess());
         setCode(from.getCode());
         setMessage(from.getMessage());
