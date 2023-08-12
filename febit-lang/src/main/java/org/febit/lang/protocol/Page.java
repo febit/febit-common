@@ -32,18 +32,8 @@ import java.util.function.Function;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Page<T> {
 
-    private PaginationMeta pagination;
+    private Meta meta;
     private List<T> rows;
-
-    @Nonnull
-    public static <T> Page<T> of(Pagination pagination, long total, List<T> rows) {
-        return of(PaginationMeta.of(pagination.getPage(), pagination.getSize(), total), rows);
-    }
-
-    @Nonnull
-    public static <T> Page<T> of(@Nonnull PaginationMeta page, @Nullable List<T> rows) {
-        return new Page<>(page, rows);
-    }
 
     @Nonnull
     public static <T> Page<T> empty() {
@@ -51,14 +41,25 @@ public class Page<T> {
     }
 
     @Nonnull
-    public static <T> Page<T> of(
-            int page, int size, long total, List<T> rows) {
-        return of(PaginationMeta.of(page, size, total), rows);
+    public static <T> Page<T> of(Pagination pagination, long total, @Nullable List<T> rows) {
+        return of(Meta.of(pagination.getPage(), pagination.getSize(), total), rows);
+    }
+
+    @Nonnull
+    public static <T> Page<T> of(@Nonnull Meta meta, @Nullable List<T> rows) {
+        return new Page<>(meta, rows);
+    }
+
+    @Nonnull
+    public static <T> Page<T> of(int page, int size, long total, @Nullable List<T> rows) {
+        return of(Meta.of(page, size, total), rows);
     }
 
     public <D> Page<D> transfer(@Nonnull Function<T, D> action) {
-        return Page.of(getPagination(),
-                Lists.transfer(getRows(), action));
+        return Page.of(
+                getMeta(),
+                Lists.transfer(getRows(), action)
+        );
     }
 
     @Nullable
@@ -66,17 +67,20 @@ public class Page<T> {
         return rows;
     }
 
+    @JsonIgnore
+    public boolean isLastPage() {
+        if (meta != null && meta.total > 0) {
+            return meta.total <= (long) meta.page * meta.size;
+        }
+        return rows == null || rows.isEmpty();
+    }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor(staticName = "of")
-    public static class PaginationMeta {
+    public static class Meta {
         private int page;
         private int size;
         private long total;
-
-        @JsonIgnore
-        public boolean isLastPage() {
-            return this.total <= (long) this.page * this.size;
-        }
     }
 }

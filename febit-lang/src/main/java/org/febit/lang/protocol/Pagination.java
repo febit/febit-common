@@ -64,6 +64,10 @@ public class Pagination {
         return to(1);
     }
 
+    public static Pagination of(int page, int size) {
+        return new Pagination(page, size, List.of());
+    }
+
     public static Builder builder(int page, int size) {
         return new Builder()
                 .page(page)
