@@ -80,10 +80,19 @@ public class Maps {
     }
 
     @SafeVarargs
-    public static <K, E> Map<K, E> mappingMultiKeys(E[] values, Function<E, K>... mappers) {
-        var map = Maps.<K, E>create(values.length * mappers.length);
+    public static <K, T> Map<K, T> mappingMultiKeys(T[] items, Function<T, K>... mappers) {
+        var map = Maps.<K, T>create(items.length * mappers.length);
         for (var mapper : mappers) {
-            map.putAll(mapping(values, mapper));
+            map.putAll(mapping(items, mapper));
+        }
+        return Map.copyOf(map);
+    }
+
+    @SafeVarargs
+    public static <K, T> Map<K, T> mappingMultiKeys(Collection<T> items, Function<T, K>... mappers) {
+        var map = Maps.<K, T>create(items.size() * mappers.length);
+        for (var mapper : mappers) {
+            map.putAll(mapping(items, mapper));
         }
         return Map.copyOf(map);
     }

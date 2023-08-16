@@ -84,10 +84,10 @@ public interface IResponse<T> extends Fallible {
 
     String getMessage();
 
+    Instant getTimestamp();
+
     @Nullable
     T getData();
-
-    Instant getTimestamp();
 
     @JsonIgnore
     @Override
@@ -112,8 +112,12 @@ public interface IResponse<T> extends Fallible {
 
     @Nonnull
     default <D> IResponse<D> transferData(@Nonnull Function<T, D> action) {
-        return Response.of(getStatus(), isSuccess(), getCode(), getMessage(),
-                action.apply(getData()), getTimestamp());
+        return Response.of(
+                getStatus(), isSuccess(),
+                getCode(), getMessage(),
+                getTimestamp(),
+                action.apply(getData())
+        );
     }
 
     @Nonnull

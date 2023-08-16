@@ -45,10 +45,15 @@ public class Response<T> implements IMutableResponse<T>, HttpStatusAware {
     private boolean success;
     private String code;
     private String message;
-    private T data;
 
     @JsonDeserialize(using = LooseInstantDeserializer.class)
     private Instant timestamp;
+
+    private T data;
+
+    private static Instant now(){
+        return Instant.ofEpochMilli(System.currentTimeMillis());
+    }
 
     @Nonnull
     public static <T> Response<T> success(
@@ -58,12 +63,12 @@ public class Response<T> implements IMutableResponse<T>, HttpStatusAware {
         ) {
             log.info("HTTP status for successful response is neither [2xx] nor [3xx]: {}", httpStatus);
         }
-        return of(httpStatus, true, code, message, data, Instant.now());
+        return of(httpStatus, true, code, message, now(), data);
     }
 
     public static <T> Response<T> failed(int httpStatus,
                                          String code, String message, @Nullable T data) {
-        return of(httpStatus, false, code, message, data, Instant.now());
+        return of(httpStatus, false, code, message, now(), data);
     }
 
     @Nonnull

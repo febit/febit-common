@@ -38,9 +38,7 @@ public class Lists {
         if (src == null) {
             return result;
         }
-        while (src.hasNext()) {
-            result.add(src.next());
-        }
+        src.forEachRemaining(result::add);
         return result;
     }
 

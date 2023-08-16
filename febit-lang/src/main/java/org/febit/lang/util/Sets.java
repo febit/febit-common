@@ -20,8 +20,11 @@ import lombok.experimental.UtilityClass;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.IntFunction;
@@ -34,6 +37,14 @@ public class Sets {
 
     public static <T> Set<T> concurrent() {
         return Collections.newSetFromMap(new ConcurrentHashMap<>());
+    }
+
+    public static <T> Set<T> treeSet(Comparator<? super T> comparator) {
+        return Collections.newSetFromMap(new TreeMap<>(comparator));
+    }
+
+    public static <T extends Comparable<? super T>> Set<T> treeSet() {
+        return Collections.newSetFromMap(new TreeMap<>());
     }
 
     @Nullable
@@ -70,6 +81,34 @@ public class Sets {
             return null;
         }
         return collect(src, action, creator);
+    }
+
+    public static <T> Set<T> collect(@Nullable Iterator<T> src) {
+        var result = new HashSet<T>();
+        if (src == null) {
+            return result;
+        }
+        src.forEachRemaining(result::add);
+        return result;
+    }
+
+    public static <T> Set<T> collect(@Nullable Iterable<T> src) {
+        return collect(src != null ? src.iterator() : null);
+    }
+
+    public static <T, S> Set<T> collect(@Nullable Iterator<S> src, Function<S, T> action) {
+        var result = new HashSet<T>();
+        if (src == null) {
+            return result;
+        }
+        while (src.hasNext()) {
+            result.add(action.apply(src.next()));
+        }
+        return result;
+    }
+
+    public static <S, T> Set<T> collect(@Nullable Iterable<S> src, Function<S, T> action) {
+        return collect(src != null ? src.iterator() : null, action);
     }
 
     public static <T> Set<T> collect(@Nullable Collection<T> src) {

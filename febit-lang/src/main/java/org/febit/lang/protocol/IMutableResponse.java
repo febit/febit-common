@@ -25,9 +25,9 @@ public interface IMutableResponse<T> extends IResponse<T> {
 
     void setCode(String code);
 
-    void setData(T data);
-
     void setMessage(String message);
 
     void setTimestamp(Instant timestamp);
+
+    void setData(T data);
 }
