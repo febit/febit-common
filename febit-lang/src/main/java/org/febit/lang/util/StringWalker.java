@@ -25,8 +25,8 @@ public class StringWalker {
 
     private StringBuilder _buf;
 
-    public StringWalker(String sources) {
-        this(sources.toCharArray());
+    public StringWalker(String text) {
+        this(text.toCharArray());
     }
 
     public StringWalker(char[] chars) {

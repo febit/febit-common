@@ -16,6 +16,7 @@
 package org.febit.lang.util;
 
 import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import lombok.experimental.UtilityClass;
 import lombok.val;
 import org.apache.commons.collections4.IteratorUtils;
@@ -27,7 +28,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 @UtilityClass
 public class Paging {
@@ -45,7 +45,9 @@ public class Paging {
     }
 
     public static <T> Stream<T> stream(int pageSize, Function<Pagination, Page<T>> api) {
-        return StreamSupport.stream(iterable(pageSize, api).spliterator(), false);
+        return Streams.of(
+                iterable(pageSize, api)
+        );
     }
 
     private static class IteratorImpl<T> implements Iterator<T> {
@@ -53,7 +55,10 @@ public class Paging {
         @Nonnull
         private Iterator<T> current = IteratorUtils.emptyIterator();
 
+        @Nonnull
         private final Function<Pagination, Page<T>> api;
+
+        @Nullable
         private Pagination pagination;
 
         private IteratorImpl(Pagination start, Function<Pagination, Page<T>> api) {

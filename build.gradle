@@ -69,15 +69,13 @@ configure(subprojects.findAll {
   java {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
+
+    // withJavadocJar()
+    withSourcesJar()
   }
 
   test {
     useJUnitPlatform()
-  }
-
-  java {
-    // withJavadocJar()
-    withSourcesJar()
   }
 
   dependencies {

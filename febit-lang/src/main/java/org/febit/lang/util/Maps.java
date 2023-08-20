@@ -18,7 +18,6 @@ package org.febit.lang.util;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.tuple.Pair;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -53,30 +52,26 @@ public class Maps {
         return mapping(values, keyMapper, Function.identity());
     }
 
-    @Nonnull
-    public static <K, V, T> Map<K, V> mapping(@Nonnull Collection<T> items,
-                                              Function<T, K> keyMapper,
-                                              Function<T, V> valueMapper
+    public static <K, V, T> Map<K, V> mapping(
+            Collection<T> items,
+            Function<T, K> keyMapper,
+            Function<T, V> valueMapper
     ) {
-        @SuppressWarnings("unchecked")
-        Pair<K, V>[] pairs = ArraysUtils.collect(items,
-                Pair[]::new,
+        return Map.ofEntries(ArraysUtils.collect(items,
+                Pairs::newArray,
                 i -> Pair.of(keyMapper.apply(i), valueMapper.apply(i))
-        );
-        return Map.ofEntries(pairs);
+        ));
     }
 
-    @Nonnull
-    public static <K, V, T> Map<K, V> mapping(@Nonnull T[] items,
-                                              Function<T, K> keyMapper,
-                                              Function<T, V> valueMapper
+    public static <K, V, T> Map<K, V> mapping(
+            T[] items,
+            Function<T, K> keyMapper,
+            Function<T, V> valueMapper
     ) {
-        @SuppressWarnings("unchecked")
-        Pair<K, V>[] pairs = ArraysUtils.collect(items,
-                Pair[]::new,
+        return Map.ofEntries(ArraysUtils.collect(items,
+                Pairs::newArray,
                 i -> Pair.of(keyMapper.apply(i), valueMapper.apply(i))
-        );
-        return Map.ofEntries(pairs);
+        ));
     }
 
     @SafeVarargs

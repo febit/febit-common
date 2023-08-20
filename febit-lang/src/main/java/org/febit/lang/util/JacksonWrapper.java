@@ -38,17 +38,20 @@ import static org.febit.lang.util.JacksonUtils.TYPE_FACTORY;
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public class JacksonWrapper {
 
-    private static final JavaType TYPE_STRING = TYPE_FACTORY.constructType(String.class);
-    private static final JavaType TYPE_ARRAY = TYPE_FACTORY.constructArrayType(Object.class);
-    private static final JavaType TYPE_ARRAY_STRING = TYPE_FACTORY.constructArrayType(String.class);
-    private static final JavaType TYPE_LIST = TYPE_FACTORY.constructCollectionLikeType(ArrayList.class, Object.class);
+    static final JavaType TYPE_STRING = TYPE_FACTORY.constructType(String.class);
+    static final JavaType TYPE_ARRAY = TYPE_FACTORY.constructArrayType(Object.class);
+    static final JavaType TYPE_ARRAY_STRING = TYPE_FACTORY.constructArrayType(String.class);
+    static final JavaType TYPE_LIST = TYPE_FACTORY.constructCollectionLikeType(ArrayList.class, Object.class);
 
-    private static final JavaType TYPE_LIST_STRING = TYPE_FACTORY.constructCollectionLikeType(
-            ArrayList.class, String.class);
-    private static final JavaType TYPE_MAP = TYPE_FACTORY.constructMapType(
-            LinkedHashMap.class, Object.class, Object.class);
-    private static final JavaType TYPE_MAP_NAMED = TYPE_FACTORY.constructMapType(
-            LinkedHashMap.class, String.class, Object.class);
+    static final JavaType TYPE_LIST_STRING = TYPE_FACTORY.constructCollectionLikeType(
+            ArrayList.class, String.class
+    );
+    static final JavaType TYPE_MAP = TYPE_FACTORY.constructMapType(
+            LinkedHashMap.class, Object.class, Object.class
+    );
+    static final JavaType TYPE_MAP_NAMED = TYPE_FACTORY.constructMapType(
+            LinkedHashMap.class, String.class, Object.class
+    );
 
     private final ObjectMapper mapper;
 
