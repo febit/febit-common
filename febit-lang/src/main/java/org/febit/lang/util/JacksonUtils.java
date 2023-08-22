@@ -47,6 +47,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
+import java.util.function.UnaryOperator;
 
 /**
  * Jackson Utils.
@@ -59,15 +60,38 @@ public class JacksonUtils {
 
     public static final TypeFactory TYPE_FACTORY = TypeFactory.defaultInstance();
 
-    public static final JacksonWrapper JSON = standardAndWrap(new ObjectMapper());
-    public static final JacksonWrapper YAML = standardAndWrap(new YAMLMapper());
+    private static final class JsonLazyHolder {
+        static final JacksonWrapper JSON = standardAndWrap(new ObjectMapper());
+    }
+
+    private static final class YamlLazyHolder {
+        public static final JacksonWrapper YAML = standardAndWrap(new YAMLMapper());
+    }
+
+    public static JacksonWrapper json() {
+        return JsonLazyHolder.JSON;
+    }
+
+    public static JacksonWrapper yaml() {
+        return YamlLazyHolder.YAML;
+    }
 
     public static JacksonWrapper wrap(ObjectMapper mapper) {
         return new JacksonWrapper(mapper);
     }
 
     public static JacksonWrapper standardAndWrap(ObjectMapper mapper) {
-        return wrap(standard(mapper));
+        return standardAndWrap(mapper, UnaryOperator.identity());
+    }
+
+    public static <M extends ObjectMapper> JacksonWrapper standardAndWrap(
+            ObjectMapper mapper, UnaryOperator<ObjectMapper> transform
+    ) {
+        return wrap(
+                transform.apply(
+                        standard(mapper)
+                )
+        );
     }
 
     public static <M extends ObjectMapper> M standard(M mapper) {
@@ -97,187 +121,187 @@ public class JacksonUtils {
     }
 
     public static String toJsonString(@Nullable Object data) {
-        return JSON.toString(data);
+        return JsonLazyHolder.JSON.toString(data);
     }
 
     @WillNotClose
     public static void writeTo(Writer writer, @Nullable Object data) throws IOException {
-        JSON.writeTo(writer, data);
+        JsonLazyHolder.JSON.writeTo(writer, data);
     }
 
     @WillNotClose
     public static void writeTo(OutputStream out, @Nullable Object data) throws IOException {
-        JSON.writeTo(out, data);
+        JsonLazyHolder.JSON.writeTo(out, data);
     }
 
     @Nullable
     public static <T> T parse(@Nullable String json, JavaType type) {
-        return JSON.parse(json, type);
+        return JsonLazyHolder.JSON.parse(json, type);
     }
 
     @Nullable
     public static <T> T parse(@Nullable String json, Type type) {
-        return JSON.parse(json, type);
+        return JsonLazyHolder.JSON.parse(json, type);
     }
 
     @Nullable
     public static <T> T parse(@Nullable String json, Class<T> type) {
-        return JSON.parse(json, type);
+        return JsonLazyHolder.JSON.parse(json, type);
     }
 
     @Nullable
     public static Map<Object, Object> parseToMap(@Nullable String json) {
-        return JSON.parseToMap(json);
+        return JsonLazyHolder.JSON.parseToMap(json);
     }
 
     @Nullable
     public static <K, V> Map<K, V> parseToMap(@Nullable String json, Class<K> keyType, Class<V> valueType) {
-        return JSON.parseToMap(json, keyType, valueType);
+        return JsonLazyHolder.JSON.parseToMap(json, keyType, valueType);
     }
 
     @Nullable
     public static <K, V> Map<K, V> parseToMap(@Nullable String json, JavaType keyType, JavaType valueType) {
-        return JSON.parseToMap(json, keyType, valueType);
+        return JsonLazyHolder.JSON.parseToMap(json, keyType, valueType);
     }
 
     @Nullable
     public static Map<String, Object> parseToNamedMap(@Nullable String json) {
-        return JSON.parseToNamedMap(json);
+        return JsonLazyHolder.JSON.parseToNamedMap(json);
     }
 
     @Nullable
     public static <V> Map<String, V> parseToNamedMap(@Nullable String json, Class<V> valueType) {
-        return JSON.parseToNamedMap(json, valueType);
+        return JsonLazyHolder.JSON.parseToNamedMap(json, valueType);
     }
 
     @Nullable
     public static <V> Map<String, V> parseToNamedMap(@Nullable String json, JavaType valueType) {
-        return JSON.parseToNamedMap(json, valueType);
+        return JsonLazyHolder.JSON.parseToNamedMap(json, valueType);
     }
 
     @Nullable
     public static List<Object> parseToList(@Nullable String json) {
-        return JSON.parseToList(json);
+        return JsonLazyHolder.JSON.parseToList(json);
     }
 
     @Nullable
     public static <V> List<V> parseToList(@Nullable String json, Class<V> itemType) {
-        return JSON.parseToList(json, itemType);
+        return JsonLazyHolder.JSON.parseToList(json, itemType);
     }
 
     @Nullable
     public static <V> List<V> parseToList(@Nullable String json, JavaType itemType) {
-        return JSON.parseToList(json, itemType);
+        return JsonLazyHolder.JSON.parseToList(json, itemType);
     }
 
     @Nullable
     public static List<String> parseToStringList(@Nullable String json) {
-        return JSON.parseToStringList(json);
+        return JsonLazyHolder.JSON.parseToStringList(json);
     }
 
     @Nullable
     public static Object[] parseToArray(@Nullable String json) {
-        return JSON.parseToArray(json);
+        return JsonLazyHolder.JSON.parseToArray(json);
     }
 
     @Nullable
     public static <V> V[] parseToArray(@Nullable String json, Class<V> itemType) {
-        return JSON.parseToArray(json, itemType);
+        return JsonLazyHolder.JSON.parseToArray(json, itemType);
     }
 
     @Nullable
     public static <V> V[] parseToArray(@Nullable String json, JavaType itemType) {
-        return JSON.parseToArray(json, itemType);
+        return JsonLazyHolder.JSON.parseToArray(json, itemType);
     }
 
     @Nullable
     public static String[] parseToStringArray(@Nullable String json) {
-        return JSON.parseToStringArray(json);
+        return JsonLazyHolder.JSON.parseToStringArray(json);
     }
 
     @Nullable
     public static <T> T to(@Nullable Object source, JavaType type) {
-        return JSON.to(source, type);
+        return JsonLazyHolder.JSON.to(source, type);
     }
 
     @Nullable
     public static <T> T to(@Nullable Object source, Type type) {
-        return JSON.to(source, type);
+        return JsonLazyHolder.JSON.to(source, type);
     }
 
     @Nullable
     public static <T> T to(@Nullable Object source, Class<T> type) {
-        return JSON.to(source, type);
+        return JsonLazyHolder.JSON.to(source, type);
     }
 
     @Nullable
     public static Map<Object, Object> toMap(@Nullable Object source) {
-        return JSON.toMap(source);
+        return JsonLazyHolder.JSON.toMap(source);
     }
 
     @Nullable
     public static <K, V> Map<K, V> toMap(@Nullable Object source, Class<K> keyType, Class<V> valueType) {
-        return JSON.toMap(source, keyType, valueType);
+        return JsonLazyHolder.JSON.toMap(source, keyType, valueType);
     }
 
     @Nullable
     public static <K, V> Map<K, V> toMap(@Nullable Object source, JavaType keyType, JavaType valueType) {
-        return JSON.toMap(source, keyType, valueType);
+        return JsonLazyHolder.JSON.toMap(source, keyType, valueType);
     }
 
     @Nullable
     public static Map<String, Object> toNamedMap(@Nullable Object source) {
-        return JSON.toNamedMap(source);
+        return JsonLazyHolder.JSON.toNamedMap(source);
     }
 
     @Nullable
     public static <V> Map<String, V> toNamedMap(@Nullable Object source, Class<V> valueType) {
-        return JSON.toNamedMap(source, valueType);
+        return JsonLazyHolder.JSON.toNamedMap(source, valueType);
     }
 
     @Nullable
     public static <V> Map<String, V> toNamedMap(@Nullable Object source, JavaType valueType) {
-        return JSON.toNamedMap(source, valueType);
+        return JsonLazyHolder.JSON.toNamedMap(source, valueType);
     }
 
     @Nullable
     public static List<Object> toList(@Nullable Object source) {
-        return JSON.toList(source);
+        return JsonLazyHolder.JSON.toList(source);
     }
 
     @Nullable
     public static <V> List<V> toList(@Nullable Object source, Class<V> itemType) {
-        return JSON.toList(source, itemType);
+        return JsonLazyHolder.JSON.toList(source, itemType);
     }
 
     @Nullable
     public static <V> List<V> toList(@Nullable Object source, JavaType itemType) {
-        return JSON.toList(source, itemType);
+        return JsonLazyHolder.JSON.toList(source, itemType);
     }
 
     @Nullable
     public static List<String> toStringList(@Nullable Object source) {
-        return JSON.toStringList(source);
+        return JsonLazyHolder.JSON.toStringList(source);
     }
 
     @Nullable
     public static Object[] toArray(@Nullable Object source) {
-        return JSON.toArray(source);
+        return JsonLazyHolder.JSON.toArray(source);
     }
 
     @Nullable
     public static <V> V[] toArray(@Nullable Object source, Class<V> itemType) {
-        return JSON.toArray(source, itemType);
+        return JsonLazyHolder.JSON.toArray(source, itemType);
     }
 
     @Nullable
     public static <V> V[] toArray(@Nullable Object source, JavaType itemType) {
-        return JSON.toArray(source, itemType);
+        return JsonLazyHolder.JSON.toArray(source, itemType);
     }
 
     @Nullable
     public static String[] toStringArray(@Nullable Object source) {
-        return JSON.toStringArray(source);
+        return JsonLazyHolder.JSON.toStringArray(source);
     }
 
 }
