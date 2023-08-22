@@ -65,7 +65,17 @@ public class JacksonUtils {
     }
 
     private static final class YamlLazyHolder {
-        public static final JacksonWrapper YAML = standardAndWrap(new YAMLMapper());
+        static final JacksonWrapper YAML = standardAndWrap(new YAMLMapper());
+    }
+
+    private static final class PrettyJsonLazyHolder {
+        static final JacksonWrapper PRETTY_JSON = standardAndWrap(new ObjectMapper()
+                .enable(SerializationFeature.INDENT_OUTPUT)
+        );
+    }
+
+    public static JacksonWrapper prettyJson() {
+        return PrettyJsonLazyHolder.PRETTY_JSON;
     }
 
     public static JacksonWrapper json() {
