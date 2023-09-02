@@ -37,7 +37,7 @@ class LooseInstantDeserializerTest {
 
         var wrapper = JacksonUtils.wrap(mapper);
 
-        assertNull(wrapper.parse(null, Instant.class));
+        assertNull(wrapper.parse((String) null, Instant.class));
         assertNull(wrapper.parse("null", Instant.class));
         assertNull(wrapper.to(null, Instant.class));
 

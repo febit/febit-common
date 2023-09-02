@@ -39,6 +39,7 @@ import javax.annotation.Nullable;
 import javax.annotation.WillNotClose;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.Type;
 import java.time.Instant;
@@ -227,6 +228,91 @@ public class JacksonUtils {
     @Nullable
     public static String[] parseToStringArray(@Nullable String json) {
         return JsonLazyHolder.JSON.parseToStringArray(json);
+    }
+
+    @Nullable
+    public static <T> T parse(Reader reader, JavaType type) {
+        return JsonLazyHolder.JSON.parse(reader, type);
+    }
+
+    @Nullable
+    public static <T> T parse(Reader reader, Type type) {
+        return JsonLazyHolder.JSON.parse(reader, type);
+    }
+
+    @Nullable
+    public static <T> T parse(Reader reader, Class<T> type) {
+        return JsonLazyHolder.JSON.parse(reader, type);
+    }
+
+    @Nullable
+    public static Map<Object, Object> parseToMap(Reader reader) {
+        return JsonLazyHolder.JSON.parseToMap(reader);
+    }
+
+    @Nullable
+    public static <K, V> Map<K, V> parseToMap(Reader reader, Class<K> keyType, Class<V> valueType) {
+        return JsonLazyHolder.JSON.parseToMap(reader, keyType, valueType);
+    }
+
+    @Nullable
+    public static <K, V> Map<K, V> parseToMap(Reader reader, JavaType keyType, JavaType valueType) {
+        return JsonLazyHolder.JSON.parseToMap(reader, keyType, valueType);
+    }
+
+    @Nullable
+    public static Map<String, Object> parseToNamedMap(Reader reader) {
+        return JsonLazyHolder.JSON.parseToNamedMap(reader);
+    }
+
+    @Nullable
+    public static <V> Map<String, V> parseToNamedMap(Reader reader, Class<V> valueType) {
+        return JsonLazyHolder.JSON.parseToNamedMap(reader, valueType);
+    }
+
+    @Nullable
+    public static <V> Map<String, V> parseToNamedMap(Reader reader, JavaType valueType) {
+        return JsonLazyHolder.JSON.parseToNamedMap(reader, valueType);
+    }
+
+    @Nullable
+    public static List<Object> parseToList(Reader reader) {
+        return JsonLazyHolder.JSON.parseToList(reader);
+    }
+
+    @Nullable
+    public static <V> List<V> parseToList(Reader reader, Class<V> itemType) {
+        return JsonLazyHolder.JSON.parseToList(reader, itemType);
+    }
+
+    @Nullable
+    public static <V> List<V> parseToList(Reader reader, JavaType itemType) {
+        return JsonLazyHolder.JSON.parseToList(reader, itemType);
+    }
+
+    @Nullable
+    public static List<String> parseToStringList(Reader reader) {
+        return JsonLazyHolder.JSON.parseToStringList(reader);
+    }
+
+    @Nullable
+    public static Object[] parseToArray(Reader reader) {
+        return JsonLazyHolder.JSON.parseToArray(reader);
+    }
+
+    @Nullable
+    public static <V> V[] parseToArray(Reader reader, Class<V> itemType) {
+        return JsonLazyHolder.JSON.parseToArray(reader, itemType);
+    }
+
+    @Nullable
+    public static <V> V[] parseToArray(Reader reader, JavaType itemType) {
+        return JsonLazyHolder.JSON.parseToArray(reader, itemType);
+    }
+
+    @Nullable
+    public static String[] parseToStringArray(Reader reader) {
+        return JsonLazyHolder.JSON.parseToStringArray(reader);
     }
 
     @Nullable

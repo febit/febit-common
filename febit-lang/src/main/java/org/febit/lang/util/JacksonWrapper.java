@@ -25,6 +25,7 @@ import javax.annotation.Nullable;
 import javax.annotation.WillNotClose;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.lang.reflect.Type;
@@ -38,6 +39,7 @@ import static org.febit.lang.util.JacksonUtils.TYPE_FACTORY;
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public class JacksonWrapper {
 
+    static final JavaType TYPE_INTEGER = TYPE_FACTORY.constructType(Integer.class);
     static final JavaType TYPE_STRING = TYPE_FACTORY.constructType(String.class);
     static final JavaType TYPE_ARRAY = TYPE_FACTORY.constructArrayType(Object.class);
     static final JavaType TYPE_ARRAY_STRING = TYPE_FACTORY.constructArrayType(String.class);
@@ -86,8 +88,22 @@ public class JacksonWrapper {
     }
 
     @Nullable
+    public <T> T parse(Reader reader, JavaType type) {
+        try {
+            return this.mapper.readValue(reader, type);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    @Nullable
     public <T> T parse(@Nullable String text, Type type) {
         return parse(text, TYPE_FACTORY.constructType(type));
+    }
+
+    @Nullable
+    public <T> T parse(Reader reader, Type type) {
+        return parse(reader, TYPE_FACTORY.constructType(type));
     }
 
     @Nullable
@@ -96,14 +112,32 @@ public class JacksonWrapper {
     }
 
     @Nullable
+    public <T> T parse(Reader reader, Class<T> type) {
+        return parse(reader, TYPE_FACTORY.constructType(type));
+    }
+
+    @Nullable
     public Map<Object, Object> parseToMap(@Nullable String text) {
         return parse(text, TYPE_MAP);
     }
 
     @Nullable
+    public Map<Object, Object> parseToMap(Reader reader) {
+        return parse(reader, TYPE_MAP);
+    }
+
+    @Nullable
     public <K, V> Map<K, V> parseToMap(@Nullable String text, Class<K> keyType, Class<V> valueType) {
         return parse(text,
-                TYPE_FACTORY.constructMapType(LinkedHashMap.class, keyType, valueType));
+                TYPE_FACTORY.constructMapType(LinkedHashMap.class, keyType, valueType)
+        );
+    }
+
+    @Nullable
+    public <K, V> Map<K, V> parseToMap(Reader reader, Class<K> keyType, Class<V> valueType) {
+        return parse(reader,
+                TYPE_FACTORY.constructMapType(LinkedHashMap.class, keyType, valueType)
+        );
     }
 
     @Nullable
@@ -114,15 +148,37 @@ public class JacksonWrapper {
     }
 
     @Nullable
+    public <K, V> Map<K, V> parseToMap(Reader reader, JavaType keyType, JavaType valueType) {
+        return parse(reader,
+                TYPE_FACTORY.constructMapType(LinkedHashMap.class, keyType, valueType)
+        );
+    }
+
+    @Nullable
     public Map<String, Object> parseToNamedMap(@Nullable String text) {
         return parse(text, TYPE_MAP_NAMED);
+    }
+
+    @Nullable
+    public Map<String, Object> parseToNamedMap(Reader reader) {
+        return parse(reader, TYPE_MAP_NAMED);
     }
 
     @Nullable
     public <V> Map<String, V> parseToNamedMap(@Nullable String text, Class<V> valueType) {
         return parse(text,
                 TYPE_FACTORY.constructMapType(LinkedHashMap.class, TYPE_STRING,
-                        TYPE_FACTORY.constructType(valueType))
+                        TYPE_FACTORY.constructType(valueType)
+                )
+        );
+    }
+
+    @Nullable
+    public <V> Map<String, V> parseToNamedMap(Reader reader, Class<V> valueType) {
+        return parse(reader,
+                TYPE_FACTORY.constructMapType(LinkedHashMap.class, TYPE_STRING,
+                        TYPE_FACTORY.constructType(valueType)
+                )
         );
     }
 
@@ -134,13 +190,32 @@ public class JacksonWrapper {
     }
 
     @Nullable
+    public <V> Map<String, V> parseToNamedMap(Reader reader, JavaType valueType) {
+        return parse(reader,
+                TYPE_FACTORY.constructMapType(LinkedHashMap.class, TYPE_STRING, valueType)
+        );
+    }
+
+    @Nullable
     public List<Object> parseToList(@Nullable String text) {
         return parse(text, TYPE_LIST);
     }
 
     @Nullable
+    public List<Object> parseToList(Reader reader) {
+        return parse(reader, TYPE_LIST);
+    }
+
+    @Nullable
     public <V> List<V> parseToList(@Nullable String text, Class<V> itemType) {
         return parse(text,
+                TYPE_FACTORY.constructCollectionType(ArrayList.class, itemType)
+        );
+    }
+
+    @Nullable
+    public <V> List<V> parseToList(Reader reader, Class<V> itemType) {
+        return parse(reader,
                 TYPE_FACTORY.constructCollectionType(ArrayList.class, itemType)
         );
     }
@@ -153,8 +228,20 @@ public class JacksonWrapper {
     }
 
     @Nullable
+    public <V> List<V> parseToList(Reader reader, JavaType itemType) {
+        return parse(reader,
+                TYPE_FACTORY.constructCollectionType(ArrayList.class, itemType)
+        );
+    }
+
+    @Nullable
     public List<String> parseToStringList(@Nullable String text) {
         return parse(text, TYPE_LIST_STRING);
+    }
+
+    @Nullable
+    public List<String> parseToStringList(Reader reader) {
+        return parse(reader, TYPE_LIST_STRING);
     }
 
     @Nullable
@@ -163,8 +250,18 @@ public class JacksonWrapper {
     }
 
     @Nullable
+    public Object[] parseToArray(Reader reader) {
+        return parse(reader, TYPE_ARRAY);
+    }
+
+    @Nullable
     public <V> V[] parseToArray(@Nullable String text, Class<V> itemType) {
         return parse(text, TYPE_FACTORY.constructArrayType(itemType));
+    }
+
+    @Nullable
+    public <V> V[] parseToArray(Reader reader, Class<V> itemType) {
+        return parse(reader, TYPE_FACTORY.constructArrayType(itemType));
     }
 
     @Nullable
@@ -173,8 +270,18 @@ public class JacksonWrapper {
     }
 
     @Nullable
+    public <V> V[] parseToArray(Reader reader, JavaType itemType) {
+        return parse(reader, TYPE_FACTORY.constructArrayType(itemType));
+    }
+
+    @Nullable
     public String[] parseToStringArray(@Nullable String text) {
         return parse(text, TYPE_ARRAY_STRING);
+    }
+
+    @Nullable
+    public String[] parseToStringArray(Reader reader) {
+        return parse(reader, TYPE_ARRAY_STRING);
     }
 
     @Nullable
