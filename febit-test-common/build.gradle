@@ -1,7 +1,7 @@
 description = 'Febit Test Common'
 
 codegenModule {
-  module 'org.febit.FebitTestCommon', febitTmpl()
+  module 'org.febit.FebitTestCommon'
 }
 
 dependencies {

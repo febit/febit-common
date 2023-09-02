@@ -49,12 +49,15 @@ allprojects {
     }
   }
 
+  codegenModule {
+    defaultTemplate = fromFile("$rootDir/etc/module.java.tmpl")
+  }
+
   license {
     mapping {
       java = 'SLASHSTAR_STYLE'
     }
     include '**/*.java'
-    exclude '**/org/febit/Febit*.java'
     strictCheck false
     skipExistingHeaders false
     header rootProject.file('etc/license-header.txt')

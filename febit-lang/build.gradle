@@ -1,7 +1,7 @@
 description = 'Febit Lang'
 
 codegenModule {
-  module 'org.febit.FebitLang', febitTmpl()
+  module 'org.febit.FebitLang'
 }
 
 dependencies {
