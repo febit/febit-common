@@ -15,6 +15,16 @@
  */
 package org.febit.lang;
 
-public interface Singleton {
+import org.febit.lang.annotation.NonNullApi;
 
+@NonNullApi
+public interface Lazy<T> {
+
+    T get();
+
+    void reset();
+
+    static <T> Lazy<T> of(final SerializableSupplier<T> supplier) {
+        return new LazyImpl<>(supplier);
+    }
 }

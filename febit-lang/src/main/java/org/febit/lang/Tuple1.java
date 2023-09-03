@@ -15,13 +15,14 @@
  */
 package org.febit.lang;
 
-import java.util.Objects;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 
-/**
- * @param <T>
- * @author zqq90
- */
-public class Tuple1<T> {
+@RequiredArgsConstructor
+@EqualsAndHashCode(
+        cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY
+)
+public final class Tuple1<T> {
 
     public static <T1> Tuple1<T1> of(T1 a) {
         return new Tuple1<>(a);
@@ -29,42 +30,7 @@ public class Tuple1<T> {
 
     public final T a;
 
-    protected int _hashCode = 0;
-
-    public Tuple1(T a) {
-        this.a = a;
-    }
-
     public T a() {
         return a;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = _hashCode;
-        if (hash == 0) {
-            hash = 3;
-            hash = 97 * hash + Objects.hashCode(this.a);
-            _hashCode = hash;
-        }
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Tuple1<?> other = (Tuple1<?>) obj;
-        if (!Objects.equals(this.a, other.a)) {
-            return false;
-        }
-        return true;
     }
 }

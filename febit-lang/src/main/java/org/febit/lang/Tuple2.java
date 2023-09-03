@@ -15,14 +15,16 @@
  */
 package org.febit.lang;
 
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
+
 import java.util.Objects;
 
-/**
- * @param <T1>
- * @param <T2>
- * @author zqq90
- */
-public class Tuple2<T1, T2> {
+@RequiredArgsConstructor
+@EqualsAndHashCode(
+        cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY
+)
+public final class Tuple2<T1, T2> {
 
     public static <T1, T2> Tuple2<T1, T2> of(T1 a, T2 b) {
         return new Tuple2<>(a, b);
@@ -31,13 +33,6 @@ public class Tuple2<T1, T2> {
     public final T1 a;
     public final T2 b;
 
-    protected int _hashCode = 0;
-
-    public Tuple2(T1 a, T2 b) {
-        this.a = a;
-        this.b = b;
-    }
-
     public T1 a() {
         return a;
     }
@@ -45,38 +40,4 @@ public class Tuple2<T1, T2> {
     public T2 b() {
         return b;
     }
-
-    @Override
-    public int hashCode() {
-        int hash = _hashCode;
-        if (hash == 0) {
-            hash = 7;
-            hash = 37 * hash + Objects.hashCode(this.a);
-            hash = 37 * hash + Objects.hashCode(this.b);
-            _hashCode = hash;
-        }
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Tuple2<?, ?> other = (Tuple2<?, ?>) obj;
-        if (!Objects.equals(this.a, other.a)) {
-            return false;
-        }
-        if (!Objects.equals(this.b, other.b)) {
-            return false;
-        }
-        return true;
-    }
-
 }

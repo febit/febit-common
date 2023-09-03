@@ -13,10 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.lang.util;
+package org.febit.lang;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import org.febit.lang.annotation.NonNullApi;
 
 import java.io.Serializable;
-import java.util.function.Supplier;
+import java.util.Objects;
 
 /**
  * Lazy agent.
@@ -24,41 +28,35 @@ import java.util.function.Supplier;
  * @param <T>
  * @author zqq90
  */
-public abstract class Lazy<T> implements Serializable {
+@NonNullApi
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
+final class LazyImpl<T> implements Serializable, Lazy<T> {
 
-    protected transient volatile T value;
+    private final SerializableSupplier<T> supplier;
+    private transient volatile T value;
 
-    protected abstract T create();
-
+    @Override
     public T get() {
-        final T result = this.value;
+        var result = this.value;
         if (result != null) {
             return result;
         }
         return computeIfAbsent();
     }
 
+    @Override
     public synchronized void reset() {
         this.value = null;
     }
 
-    protected synchronized T computeIfAbsent() {
-        T result = this.value;
+    private synchronized T computeIfAbsent() {
+        var result = this.value;
         if (result != null) {
             return result;
         }
-        result = create();
+        result = supplier.get();
+        Objects.requireNonNull(result, "supplier must not return null");
         this.value = result;
         return result;
     }
-
-    public static <T> Lazy<T> of(final Supplier<T> supplier) {
-        return new Lazy<T>() {
-            @Override
-            protected T create() {
-                return supplier.get();
-            }
-        };
-    }
-
 }

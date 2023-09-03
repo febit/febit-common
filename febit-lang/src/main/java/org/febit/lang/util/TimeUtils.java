@@ -140,7 +140,7 @@ public class TimeUtils {
     }
 
     public static LocalDate localDate(TemporalAccessor temporal) {
-        LocalDate date = temporal.query(TemporalQueries.localDate());
+        var date = temporal.query(TemporalQueries.localDate());
         if (date != null) {
             return date;
         }
@@ -176,7 +176,7 @@ public class TimeUtils {
     }
 
     public static LocalTime localTime(TemporalAccessor temporal) {
-        LocalTime time = temporal.query(TemporalQueries.localTime());
+        var time = temporal.query(TemporalQueries.localTime());
         if (time != null) {
             return time;
         }
@@ -225,8 +225,8 @@ public class TimeUtils {
         if (temporal.isSupported(INSTANT_SECONDS)) {
             return ZonedDateTime.ofInstant(Instant.from(temporal), zone);
         }
-        LocalDate date = localDate(temporal);
-        LocalTime time = localTime(temporal);
+        var date = localDate(temporal);
+        var time = localTime(temporal);
         return ZonedDateTime.of(date, time, zone);
     }
 
@@ -251,8 +251,8 @@ public class TimeUtils {
         if (temporal instanceof ZonedDateTime) {
             return ((ZonedDateTime) temporal).toLocalDateTime();
         }
-        LocalDate date = localDate(temporal);
-        LocalTime time = localTime(temporal);
+        var date = localDate(temporal);
+        var time = localTime(temporal);
         return LocalDateTime.of(date, time);
     }
 

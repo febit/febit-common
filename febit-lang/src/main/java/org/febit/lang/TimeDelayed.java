@@ -26,6 +26,16 @@ public interface TimeDelayed extends Delayed {
     long getTimeInMillis();
 
     @Override
+    default long getDelay(TimeUnit unit) {
+        var now = currentTimeMillis();
+        return unit.convert(getTimeInMillis() - now, TimeUnit.MILLISECONDS);
+    }
+
+    default long currentTimeMillis() {
+        return System.currentTimeMillis();
+    }
+
+    @Override
     default int compareTo(Delayed other) {
         if (other == this) {
             return 0;
@@ -37,16 +47,6 @@ public interface TimeDelayed extends Delayed {
                 getDelay(TimeUnit.NANOSECONDS),
                 other.getDelay(TimeUnit.NANOSECONDS)
         );
-    }
-
-    default long now() {
-        return System.currentTimeMillis();
-    }
-
-    @Override
-    default long getDelay(TimeUnit unit) {
-        var now = now();
-        return unit.convert(getTimeInMillis() - now, TimeUnit.MILLISECONDS);
     }
 
 }

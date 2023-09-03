@@ -15,16 +15,14 @@
  */
 package org.febit.lang;
 
-import java.util.Objects;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 
-/**
- * @param <T1>
- * @param <T2>
- * @param <T3>
- * @param <T4>
- * @author zqq90
- */
-public class Tuple4<T1, T2, T3, T4> {
+@RequiredArgsConstructor
+@EqualsAndHashCode(
+        cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY
+)
+public final class Tuple4<T1, T2, T3, T4> {
 
     public static <T1, T2, T3, T4> Tuple4<T1, T2, T3, T4> of(T1 a, T2 b, T3 c, T4 d) {
         return new Tuple4<>(a, b, c, d);
@@ -34,15 +32,6 @@ public class Tuple4<T1, T2, T3, T4> {
     public final T2 b;
     public final T3 c;
     public final T4 d;
-
-    protected int _hashCode = 0;
-
-    public Tuple4(T1 a, T2 b, T3 c, T4 d) {
-        this.a = a;
-        this.b = b;
-        this.c = c;
-        this.d = d;
-    }
 
     public T1 a() {
         return a;
@@ -59,46 +48,4 @@ public class Tuple4<T1, T2, T3, T4> {
     public T4 d() {
         return d;
     }
-
-    @Override
-    public int hashCode() {
-        int hash = _hashCode;
-        if (hash == 0) {
-            hash = 7;
-            hash = 97 * hash + Objects.hashCode(this.a);
-            hash = 97 * hash + Objects.hashCode(this.b);
-            hash = 97 * hash + Objects.hashCode(this.c);
-            hash = 97 * hash + Objects.hashCode(this.d);
-            _hashCode = hash;
-        }
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Tuple4<?, ?, ?, ?> other = (Tuple4<?, ?, ?, ?>) obj;
-        if (!Objects.equals(this.a, other.a)) {
-            return false;
-        }
-        if (!Objects.equals(this.b, other.b)) {
-            return false;
-        }
-        if (!Objects.equals(this.c, other.c)) {
-            return false;
-        }
-        if (!Objects.equals(this.d, other.d)) {
-            return false;
-        }
-        return true;
-    }
-
 }

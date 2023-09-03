@@ -15,6 +15,9 @@
  */
 package org.febit.lang;
 
-public interface Singleton {
+import java.io.Serializable;
+import java.util.function.Supplier;
 
+@FunctionalInterface
+public interface SerializableSupplier<T> extends Supplier<T>, Serializable {
 }

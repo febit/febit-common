@@ -15,9 +15,6 @@
  */
 package org.febit.lang;
 
-/**
- * @author zqq90
- */
 public class Tuples {
 
     public static <T1> Tuple1<T1> of(T1 a) {

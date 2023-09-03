@@ -68,7 +68,7 @@ class TimeDelayedTest {
         final long timeInMillis;
 
         @Override
-        public long now() {
+        public long currentTimeMillis() {
             return 1000;
         }
     }

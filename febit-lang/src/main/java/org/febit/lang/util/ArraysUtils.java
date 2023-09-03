@@ -124,23 +124,14 @@ public class ArraysUtils {
         return collect(src, creator, Function.identity());
     }
 
-    public static Object get(final Object[] array, final int index) {
+    @Nullable
+    public static <T> T get(@Nullable T[] array, final int index) {
         return get(array, index, null);
     }
 
-    public static Object get(final Object[] array, final int index, final Object defaultValue) {
-        if (array != null && index < array.length) {
-            return array[index];
-        }
-        return defaultValue;
-    }
-
-    public static String get(final String[] array, final int index) {
-        return get(array, index, null);
-    }
-
-    public static String get(final String[] array, final int index, final String defaultValue) {
-        if (array != null && index < array.length) {
+    @Nullable
+    public static <T> T get(@Nullable T[] array, final int index, @Nullable T defaultValue) {
+        if (array != null && index >= 0 && index < array.length) {
             return array[index];
         }
         return defaultValue;
@@ -153,8 +144,8 @@ public class ArraysUtils {
      * [x-1] &lt; number &lt;= [x] returns x
      * </pre>
      *
-     * @param intervals
-     * @param number
+     * @param intervals sorted intervals
+     * @param number    number
      * @return from 0 to length
      */
     public static int findInterval(final int[] intervals, final int number) {
@@ -195,8 +186,8 @@ public class ArraysUtils {
      * [length-1] &lt; number returns length
      * </pre>
      *
-     * @param intervals
-     * @param number
+     * @param intervals sorted intervals
+     * @param number    number
      * @return from 0 to length
      */
     public static int findInterval(final long[] intervals, final long number) {

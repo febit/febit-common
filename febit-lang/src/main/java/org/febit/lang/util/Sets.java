@@ -123,7 +123,7 @@ public class Sets {
         if (src == null) {
             return creator.apply(0);
         }
-        Set<T> result = creator.apply(src.size());
+        var result = creator.apply(src.size());
         for (S s : src) {
             result.add(action.apply(s));
         }
@@ -142,7 +142,7 @@ public class Sets {
         if (src == null) {
             return creator.apply(0);
         }
-        Set<T> result = creator.apply(src.length);
+        var result = creator.apply(src.length);
         for (S s : src) {
             result.add(action.apply(s));
         }

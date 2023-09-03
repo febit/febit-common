@@ -15,15 +15,14 @@
  */
 package org.febit.lang;
 
-import java.util.Objects;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 
-/**
- * @param <T1>
- * @param <T2>
- * @param <T3>
- * @author zqq90
- */
-public class Tuple3<T1, T2, T3> {
+@RequiredArgsConstructor
+@EqualsAndHashCode(
+        cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY
+)
+public final class Tuple3<T1, T2, T3> {
 
     public static <T1, T2, T3> Tuple3<T1, T2, T3> of(T1 a, T2 b, T3 c) {
         return new Tuple3<>(a, b, c);
@@ -32,14 +31,6 @@ public class Tuple3<T1, T2, T3> {
     public final T1 a;
     public final T2 b;
     public final T3 c;
-
-    protected int _hashCode = 0;
-
-    public Tuple3(T1 a, T2 b, T3 c) {
-        this.a = a;
-        this.b = b;
-        this.c = c;
-    }
 
     public T1 a() {
         return a;
@@ -51,43 +42,6 @@ public class Tuple3<T1, T2, T3> {
 
     public T3 c() {
         return c;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = _hashCode;
-        if (hash == 0) {
-            hash = 5;
-            hash = 59 * hash + Objects.hashCode(this.a);
-            hash = 59 * hash + Objects.hashCode(this.b);
-            hash = 59 * hash + Objects.hashCode(this.c);
-            _hashCode = hash;
-        }
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Tuple3<?, ?, ?> other = (Tuple3<?, ?, ?>) obj;
-        if (!Objects.equals(this.a, other.a)) {
-            return false;
-        }
-        if (!Objects.equals(this.b, other.b)) {
-            return false;
-        }
-        if (!Objects.equals(this.c, other.c)) {
-            return false;
-        }
-        return true;
     }
 
 }

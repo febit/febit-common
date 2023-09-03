@@ -15,6 +15,25 @@
  */
 package org.febit.lang;
 
-public interface Singleton {
+import lombok.Getter;
 
+import java.util.function.Consumer;
+
+/**
+ * Consumer that only accept single element.
+ *
+ * @param <T> the type of the input to the operation
+ */
+public class SingleElementConsumer<T> implements Consumer<T> {
+
+    @Getter
+    private T value;
+
+    @Override
+    public void accept(T next) {
+        if (value != null) {
+            throw new IllegalArgumentException("Except only one element, but got one more.");
+        }
+        this.value = next;
+    }
 }
