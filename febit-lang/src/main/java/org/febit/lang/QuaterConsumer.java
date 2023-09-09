@@ -18,15 +18,9 @@ package org.febit.lang;
 /**
  * Represents an operation that accepts four input arguments and returns no result.
  *
- * @param <A1> the type of the first argument to the operation
- * @param <A2> the type of the second argument to the operation
- * @param <A3> the type of the third argument to the operation
- * @param <A4> the type of the fourth argument to the operation
- * @author zqq90
- * @see java.util.function.Consumer
+ * @deprecated use {@linkplain Consumer4} instead
  */
+@Deprecated
 @FunctionalInterface
-public interface QuaterConsumer<A1, A2, A3, A4> {
-
-    void call(A1 arg1, A2 arg2, A3 arg3, A4 arg4);
+public interface QuaterConsumer<A1, A2, A3, A4> extends Consumer4<A1, A2, A3, A4> {
 }

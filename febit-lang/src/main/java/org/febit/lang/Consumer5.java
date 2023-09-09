@@ -15,25 +15,26 @@
  */
 package org.febit.lang;
 
-import org.febit.lang.util.Maps;
+import jakarta.annotation.Nonnull;
 
-import javax.annotation.Nonnull;
-import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 
 @FunctionalInterface
-public interface Valued<T> {
+public interface Consumer5<A1, A2, A3, A4, A5> {
 
-    T getValue();
+    void accept(A1 arg1, A2 arg2, A3 arg3, A4 arg4, A5 arg5);
 
-    @SafeVarargs
-    @Nonnull
-    static <T, V extends Valued<T>> Map<T, V> mapping(@Nonnull V... items) {
-        return Maps.mapping(items, Valued::getValue);
+    default void accept(@Nonnull Tuple5<A1, A2, A3, A4, A5> tuple) {
+        accept(tuple.v1(), tuple.v2(), tuple.v3(), tuple.v4(), tuple.v5());
     }
 
     @Nonnull
-    static <K, V extends Valued<K>> Map<K, V> mapping(@Nonnull List<V> items) {
-        return Maps.mapping(items, Valued::getValue);
+    default Consumer5<A1, A2, A3, A4, A5> andThen(
+            @Nonnull Consumer5<? super A1, ? super A2, ? super A3, ? super A4, ? super A5> after) {
+        Objects.requireNonNull(after);
+        return (a1, a2, a3, a4, a5) -> {
+            accept(a1, a2, a3, a4, a5);
+            after.accept(a1, a2, a3, a4, a5);
+        };
     }
 }

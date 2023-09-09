@@ -15,16 +15,9 @@
  */
 package org.febit.lang;
 
-import org.febit.lang.annotation.NonNullApi;
+import java.util.function.Function;
 
-@NonNullApi
-public interface Lazy<T> extends SerializableSupplier<T> {
+@FunctionalInterface
+public interface Function1<A1, R> extends Function<A1, R> {
 
-    T get();
-
-    void reset();
-
-    static <T> Lazy<T> of(final SerializableSupplier<T> supplier) {
-        return new LazyImpl<>(supplier);
-    }
 }

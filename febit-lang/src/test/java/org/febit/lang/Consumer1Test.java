@@ -15,16 +15,28 @@
  */
 package org.febit.lang;
 
-import org.febit.lang.annotation.NonNullApi;
+import org.junit.jupiter.api.Test;
 
-@NonNullApi
-public interface Lazy<T> extends SerializableSupplier<T> {
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
-    T get();
+class Consumer1Test {
 
-    void reset();
+    static class Impl implements Consumer1<String> {
 
-    static <T> Lazy<T> of(final SerializableSupplier<T> supplier) {
-        return new LazyImpl<>(supplier);
+        @Override
+        public void accept(String a) {
+        }
+    }
+
+    @Test
+    void andThen() {
+        var c1 = spy(new Impl());
+        var c2 = spy(new Impl());
+
+        var c3 = c1.andThen(c2);
+        c3.accept("string");
+        verify(c1).accept("string");
+        verify(c2).accept("string");
     }
 }

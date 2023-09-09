@@ -15,25 +15,30 @@
  */
 package org.febit.lang;
 
-import org.febit.lang.util.Maps;
+import jakarta.annotation.Nonnull;
 
-import javax.annotation.Nonnull;
-import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.BiConsumer;
 
 @FunctionalInterface
-public interface Valued<T> {
+public interface Consumer2<A1, A2> extends BiConsumer<A1, A2> {
 
-    T getValue();
+    default void accept(@Nonnull Tuple2<A1, A2> tuple) {
+        accept(tuple.v1(), tuple.v2());
+    }
 
-    @SafeVarargs
-    @Nonnull
-    static <T, V extends Valued<T>> Map<T, V> mapping(@Nonnull V... items) {
-        return Maps.mapping(items, Valued::getValue);
+    default void accept(@Nonnull Map.Entry<A1, A2> entry) {
+        accept(entry.getKey(), entry.getValue());
     }
 
     @Nonnull
-    static <K, V extends Valued<K>> Map<K, V> mapping(@Nonnull List<V> items) {
-        return Maps.mapping(items, Valued::getValue);
+    @Override
+    default Consumer2<A1, A2> andThen(@Nonnull BiConsumer<? super A1, ? super A2> after) {
+        Objects.requireNonNull(after);
+        return (a1, a2) -> {
+            accept(a1, a2);
+            after.accept(a1, a2);
+        };
     }
 }

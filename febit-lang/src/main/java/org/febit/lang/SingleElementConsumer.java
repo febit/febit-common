@@ -15,25 +15,39 @@
  */
 package org.febit.lang;
 
-import lombok.Getter;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 /**
- * Consumer that only accept single element.
+ * Consumer that only accept single non-null element.
  *
  * @param <T> the type of the input to the operation
  */
 public class SingleElementConsumer<T> implements Consumer<T> {
 
-    @Getter
-    private T value;
+    private final AtomicReference<T> holder = new AtomicReference<>();
+
+    @Nullable
+    public T getValue() {
+        return holder.get();
+    }
+
+    @Nonnull
+    public Optional<T> toOptional() {
+        return Optional.ofNullable(holder.get());
+    }
 
     @Override
-    public void accept(T next) {
-        if (value != null) {
-            throw new IllegalArgumentException("Except only one element, but got one more.");
+    public void accept(@Nullable T next) {
+        if (next == null) {
+            return;
         }
-        this.value = next;
+        if (!holder.compareAndSet(null, next)) {
+            throw new IllegalStateException("Except only one non-null element, but got one more.");
+        }
     }
 }

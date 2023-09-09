@@ -15,8 +15,11 @@
  */
 package org.febit.lang;
 
+/**
+ * @deprecated use {@linkplain Function4} instead.
+ */
+@Deprecated
 @FunctionalInterface
-public interface QuaterFunction<A1, A2, A3, A4, R> {
+public interface QuaterFunction<A1, A2, A3, A4, R> extends Function4<A1, A2, A3, A4, R> {
 
-    R call(A1 arg1, A2 arg2, A3 arg3, A4 arg4);
 }

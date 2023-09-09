@@ -15,16 +15,21 @@
  */
 package org.febit.lang;
 
-import org.febit.lang.annotation.NonNullApi;
+import jakarta.annotation.Nonnull;
 
-@NonNullApi
-public interface Lazy<T> extends SerializableSupplier<T> {
+import java.util.Objects;
+import java.util.function.Consumer;
 
-    T get();
+@FunctionalInterface
+public interface Consumer1<A1> extends Consumer<A1> {
 
-    void reset();
-
-    static <T> Lazy<T> of(final SerializableSupplier<T> supplier) {
-        return new LazyImpl<>(supplier);
+    @Nonnull
+    @Override
+    default Consumer1<A1> andThen(@Nonnull Consumer<? super A1> after) {
+        Objects.requireNonNull(after);
+        return (a1) -> {
+            accept(a1);
+            after.accept(a1);
+        };
     }
 }

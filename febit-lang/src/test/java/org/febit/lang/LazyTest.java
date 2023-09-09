@@ -15,16 +15,16 @@
  */
 package org.febit.lang;
 
-import org.febit.lang.annotation.NonNullApi;
+import org.junit.jupiter.api.Test;
 
-@NonNullApi
-public interface Lazy<T> extends SerializableSupplier<T> {
+import static org.junit.jupiter.api.Assertions.*;
 
-    T get();
+class LazyTest {
 
-    void reset();
-
-    static <T> Lazy<T> of(final SerializableSupplier<T> supplier) {
-        return new LazyImpl<>(supplier);
+    @Test
+    void test() {
+        var lazy = Lazy.of(() -> "test");
+        assertEquals("test", lazy.get());
+        assertTrue(lazy instanceof LazyImpl);
     }
 }

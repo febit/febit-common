@@ -15,8 +15,10 @@
  */
 package org.febit.lang;
 
+/**
+ * @deprecated use {@linkplain Function3} instead.
+ */
+@Deprecated
 @FunctionalInterface
-public interface TerFunction<A1, A2, A3, R> {
-
-    R call(A1 arg1, A2 arg2, A3 arg3);
+public interface TerFunction<A1, A2, A3, R> extends Function3<A1, A2, A3, R> {
 }

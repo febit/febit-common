@@ -15,16 +15,20 @@
  */
 package org.febit.lang;
 
-import org.febit.lang.annotation.NonNullApi;
+import org.junit.jupiter.api.Test;
 
-@NonNullApi
-public interface Lazy<T> extends SerializableSupplier<T> {
+import static org.junit.jupiter.api.Assertions.*;
 
-    T get();
+class Function3Test {
 
-    void reset();
+    private String func(String a, Boolean b, Integer c) {
+        return a + b + c;
+    }
 
-    static <T> Lazy<T> of(final SerializableSupplier<T> supplier) {
-        return new LazyImpl<>(supplier);
+    @Test
+    void apply() {
+        var func = (Function3<String, Boolean, Integer, String>) this::func;
+        assertEquals("string-true1", func.apply("string-", true, 1));
+        assertEquals("string-true1", func.apply(Tuples.of("string-", true, 1)));
     }
 }

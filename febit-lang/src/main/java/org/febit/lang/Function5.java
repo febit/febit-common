@@ -15,16 +15,12 @@
  */
 package org.febit.lang;
 
-import org.febit.lang.annotation.NonNullApi;
+@FunctionalInterface
+public interface Function5<A1, A2, A3, A4, A5, R> {
 
-@NonNullApi
-public interface Lazy<T> extends SerializableSupplier<T> {
+    R apply(A1 arg1, A2 arg2, A3 arg3, A4 arg4, A5 arg5);
 
-    T get();
-
-    void reset();
-
-    static <T> Lazy<T> of(final SerializableSupplier<T> supplier) {
-        return new LazyImpl<>(supplier);
+    default R apply(Tuple5<A1, A2, A3, A4, A5> tuple) {
+        return apply(tuple.v1(), tuple.v2(), tuple.v3(), tuple.v4(), tuple.v5());
     }
 }

@@ -15,16 +15,12 @@
  */
 package org.febit.lang;
 
-import org.febit.lang.annotation.NonNullApi;
+import java.util.function.BiFunction;
 
-@NonNullApi
-public interface Lazy<T> extends SerializableSupplier<T> {
+@FunctionalInterface
+public interface Function2<A1, A2, R> extends BiFunction<A1, A2, R> {
 
-    T get();
-
-    void reset();
-
-    static <T> Lazy<T> of(final SerializableSupplier<T> supplier) {
-        return new LazyImpl<>(supplier);
+    default R apply(Tuple2<A1, A2> tuple) {
+        return apply(tuple.v1(), tuple.v2());
     }
 }

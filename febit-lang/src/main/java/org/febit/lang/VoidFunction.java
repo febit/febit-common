@@ -18,5 +18,5 @@ package org.febit.lang;
 @FunctionalInterface
 public interface VoidFunction {
 
-    void call();
+    void apply();
 }

@@ -15,6 +15,8 @@
  */
 package org.febit.lang;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.febit.lang.annotation.NonNullApi;
@@ -26,13 +28,14 @@ import java.util.Objects;
  * Lazy agent.
  *
  * @param <T>
- * @author zqq90
  */
 @NonNullApi
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class LazyImpl<T> implements Serializable, Lazy<T> {
 
+    @Nonnull
     private final SerializableSupplier<T> supplier;
+    @Nullable
     private transient volatile T value;
 
     @Override
