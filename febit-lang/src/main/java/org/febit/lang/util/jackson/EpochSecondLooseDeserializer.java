@@ -19,52 +19,55 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonTokenId;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import org.febit.lang.util.TimeUtils;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.time.Instant;
 
-public class LooseEpochMilliDeserializer extends StdDeserializer<Long> {
+public class EpochSecondLooseDeserializer extends StdDeserializer<Long> {
 
-    public static final LooseEpochMilliDeserializer INSTANCE = new LooseEpochMilliDeserializer();
+    public static final EpochSecondLooseDeserializer INSTANCE = new EpochSecondLooseDeserializer();
 
+    @Nullable
     private final Long defaultValue;
 
-    public LooseEpochMilliDeserializer() {
+    public EpochSecondLooseDeserializer() {
         this(null);
     }
 
-    public LooseEpochMilliDeserializer(Long defaultValue) {
+    public EpochSecondLooseDeserializer(@Nullable Long defaultValue) {
         super(Long.class);
         this.defaultValue = defaultValue;
     }
 
-    @Override
     @Nullable
+    @Override
     public Long deserialize(JsonParser parser, DeserializationContext context) throws IOException {
         switch (parser.currentTokenId()) {
-            case JsonTokenId.ID_NULL:
-                return this.defaultValue;
             case JsonTokenId.ID_NUMBER_INT:
                 return parser.getLongValue();
             case JsonTokenId.ID_STRING:
-                var time = Instant.parse(parser.getText().trim());
+                var time = TimeUtils.parseInstant(parser.getText().trim());
                 return time != null
                         // Note: should box it, ensure type of this expr is a Long,
                         //   avoid NPE caused by unboxing defaultValue.
-                        ? Long.valueOf(time.toEpochMilli())
+                        ? Long.valueOf(time.getEpochSecond())
                         : this.defaultValue;
             default:
                 throw new IllegalStateException("Unexpected long value: " + parser.currentTokenId());
         }
     }
 
+    @Nullable
     @Override
-    public Long getNullValue(DeserializationContext ctxt) {
+    public Long getNullValue(DeserializationContext context) {
         return this.defaultValue;
     }
 
-    public static class ZeroIfAbsent extends LooseEpochMilliDeserializer {
+    public static class ZeroIfAbsent extends EpochSecondLooseDeserializer {
+
+        public static final ZeroIfAbsent INSTANCE = new ZeroIfAbsent();
+
         public ZeroIfAbsent() {
             super(0L);
         }

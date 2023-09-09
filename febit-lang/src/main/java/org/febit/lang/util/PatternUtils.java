@@ -21,7 +21,7 @@ import lombok.experimental.UtilityClass;
 public class PatternUtils {
 
     public static String escape(String raw) {
-        var buf = new StringBuilder(raw.length());
+        var buf = new StringBuilder(raw.length() + 16);
         var chars = raw.toCharArray();
         for (char c : chars) {
             switch (c) {

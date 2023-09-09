@@ -23,28 +23,39 @@ import org.junit.jupiter.api.Test;
 import java.time.Instant;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
-class LooseInstantDeserializerTest {
+class InstantLooseDeserializerTest {
+
+    @Test
+    void ex_type() {
+        var jackson = JacksonUtils.standardAndWrap(new ObjectMapper(),
+                mapper -> mapper.registerModule(new SimpleModule()
+                        .addDeserializer(Instant.class, InstantLooseDeserializer.INSTANCE)
+                )
+        );
+
+        assertThrows(IllegalStateException.class,
+                () -> jackson.to(true, Instant.class));
+    }
 
     @Test
     void deserialize() {
-        var mapper = JacksonUtils.standard(new ObjectMapper());
-        mapper.registerModule(new SimpleModule()
-                .addDeserializer(Instant.class, LooseInstantDeserializer.INSTANCE)
+        var jackson = JacksonUtils.standardAndWrap(new ObjectMapper(),
+                mapper -> mapper.registerModule(new SimpleModule()
+                        .addDeserializer(Instant.class, InstantLooseDeserializer.INSTANCE)
+                )
         );
 
-        var wrapper = JacksonUtils.wrap(mapper);
-
-        assertNull(wrapper.parse((String) null, Instant.class));
-        assertNull(wrapper.parse("null", Instant.class));
-        assertNull(wrapper.to(null, Instant.class));
+        assertNull(jackson.parse((String) null, Instant.class));
+        assertNull(jackson.parse("null", Instant.class));
+        assertNull(jackson.to(null, Instant.class));
+        assertNull(jackson.to("", Instant.class));
 
         var time = Instant.parse("2023-10-12T12:34:56Z");
 
-        assertEquals(time, wrapper.to(time.toEpochMilli(), Instant.class));
-        assertEquals(time, wrapper.parse(Long.toString(time.toEpochMilli()), Instant.class));
+        assertEquals(time, jackson.to(time.toEpochMilli(), Instant.class));
+        assertEquals(time, jackson.parse(Long.toString(time.toEpochMilli()), Instant.class));
 
         Stream.of(
                 "2023-10-12T12:34:56Z",
@@ -55,8 +66,8 @@ class LooseInstantDeserializerTest {
                 "2023-10-12 20:34:56.00000 +0800",
                 "2023-10-12T20:34:56+0800"
         ).forEach(raw -> {
-            assertEquals(time, wrapper.parse("\"" + raw + "\"", Instant.class));
-            assertEquals(time, wrapper.to(raw, Instant.class));
+            assertEquals(time, jackson.parse("\"" + raw + "\"", Instant.class));
+            assertEquals(time, jackson.to(raw, Instant.class));
         });
     }
 }

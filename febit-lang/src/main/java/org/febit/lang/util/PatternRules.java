@@ -112,22 +112,24 @@ public class PatternRules implements Serializable {
         public PatternRules build() {
             pushPendingIfPresent();
 
-            Pair<String, Rule>[] pairs = rules.stream()
+            var pairs = rules.stream()
                     .map(r -> Pair.of("r" + r.seq, r))
-                    .toArray(Pairs::newArray);
+                    .toArray(Pairs::<String, Rule>newArray);
 
-            var regexBuf = new StringBuilder();
+            var regex = new StringBuilder();
             for (var pair : pairs) {
                 var rule = pair.getValue();
                 if (rule.seq != 1) {
-                    regexBuf.append("|");
+                    regex.append("|");
                 }
-                regexBuf.append("(?<").append(pair.getKey()).append(">")
+                regex.append("(?<")
+                        .append(pair.getKey())
+                        .append(">")
                         .append(rule.formatter.getPattern().pattern())
                         .append(")");
             }
             return of(
-                    Pattern.compile(regexBuf.toString()),
+                    Pattern.compile(regex.toString()),
                     Map.ofEntries(pairs)
             );
         }

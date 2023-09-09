@@ -16,39 +16,55 @@
 package org.febit.lang.util.jackson;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonTokenId;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import org.febit.lang.util.TimeUtils;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.time.Instant;
 
-public class LooseInstantDeserializer extends StdDeserializer<Instant> {
+import static com.fasterxml.jackson.core.JsonTokenId.ID_NUMBER_INT;
+import static com.fasterxml.jackson.core.JsonTokenId.ID_STRING;
 
-    public static final LooseInstantDeserializer INSTANCE;
+public abstract class InstantFromNumberDeserializer extends StdDeserializer<Instant> {
 
-    static {
-        INSTANCE = new LooseInstantDeserializer();
-    }
-
-    public LooseInstantDeserializer() {
+    public InstantFromNumberDeserializer() {
         super(Instant.class);
     }
 
+    @Nullable
     @Override
     public Instant deserialize(JsonParser parser, DeserializationContext context) throws IOException {
         switch (parser.currentTokenId()) {
-            case JsonTokenId.ID_NULL:
-                return null;
-            case JsonTokenId.ID_NUMBER_INT:
-                return Instant.ofEpochMilli(parser.getLongValue());
-            case JsonTokenId.ID_STRING:
+            case ID_NUMBER_INT:
+                return fromNumber(parser.getLongValue());
+            case ID_STRING:
                 return TimeUtils.parseInstant(parser.getText().trim());
             default:
-                throw new IllegalStateException("Unexpected token to deserialize instant,"
-                        + " only String and Number is supported: " + parser.currentTokenId());
+                throw new IllegalStateException("Unexpected seconds number: " + parser.currentToken());
         }
     }
 
+    protected abstract Instant fromNumber(long number);
+
+    public static class FromEpochSecond extends InstantFromNumberDeserializer {
+
+        public static final FromEpochSecond INSTANCE = new FromEpochSecond();
+
+        @Override
+        protected Instant fromNumber(long number) {
+            return Instant.ofEpochSecond(number);
+        }
+    }
+
+    public static class FromEpochMilli extends InstantFromNumberDeserializer {
+
+        public static final FromEpochMilli INSTANCE = new FromEpochMilli();
+
+        @Override
+        protected Instant fromNumber(long number) {
+            return Instant.ofEpochMilli(number);
+        }
+    }
 }

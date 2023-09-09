@@ -49,7 +49,7 @@ public class CustomSubtypeResolver extends StdSubtypeResolver {
 
     @Override
     public Collection<NamedType> collectAndResolveSubtypesByClass(
-            MapperConfig<?> config, AnnotatedMember property, JavaType baseType) {
+            MapperConfig<?> config, AnnotatedMember property, @Nullable JavaType baseType) {
         Class<?> rawBase = baseType == null
                 ? property.getRawType()
                 : baseType.getRawClass();
