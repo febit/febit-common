@@ -15,25 +15,34 @@
  */
 package org.febit.lang;
 
+import jakarta.annotation.Nonnull;
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public class Tuples {
 
-    public static <T1> Tuple1<T1> of(T1 a) {
-        return Tuple1.of(a);
+    @Nonnull
+    public static <V1> Tuple1<V1> of(V1 v1) {
+        return Tuple1.of(v1);
     }
 
-    public static <T1, T2> Tuple2<T1, T2> of(T1 a, T2 b) {
-        return Tuple2.of(a, b);
+    @Nonnull
+    public static <V1, V2> Tuple2<V1, V2> of(V1 v1, V2 v2) {
+        return Tuple2.of(v1, v2);
     }
 
-    public static <T1, T2, T3> Tuple3<T1, T2, T3> of(T1 a, T2 b, T3 c) {
-        return Tuple3.of(a, b, c);
+    @Nonnull
+    public static <V1, V2, V3> Tuple3<V1, V2, V3> of(V1 v1, V2 v2, V3 v3) {
+        return Tuple3.of(v1, v2, v3);
     }
 
-    public static <T1, T2, T3, T4> Tuple4<T1, T2, T3, T4> of(T1 a, T2 b, T3 c, T4 d) {
-        return Tuple4.of(a, b, c, d);
+    @Nonnull
+    public static <V1, V2, V3, V4> Tuple4<V1, V2, V3, V4> of(V1 v1, V2 v2, V3 v3, V4 v4) {
+        return Tuple4.of(v1, v2, v3, v4);
     }
 
-    public static <T1, T2, T3, T4, T5> Tuple5<T1, T2, T3, T4, T5> of(T1 a, T2 b, T3 c, T4 d, T5 e) {
-        return Tuple5.of(a, b, c, d, e);
+    @Nonnull
+    public static <V1, V2, V3, V4, V5> Tuple5<V1, V2, V3, V4, V5> of(V1 v1, V2 v2, V3 v3, V4 v4, V5 v5) {
+        return Tuple5.of(v1, v2, v3, v4, v5);
     }
 }

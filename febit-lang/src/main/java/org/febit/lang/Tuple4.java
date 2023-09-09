@@ -15,37 +15,82 @@
  */
 package org.febit.lang;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 
 @RequiredArgsConstructor
 @EqualsAndHashCode(
         cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY
 )
-public final class Tuple4<T1, T2, T3, T4> {
+public final class Tuple4<V1, V2, V3, V4> implements Tuple, Comparable<Tuple4<V1, V2, V3, V4>> {
 
-    public static <T1, T2, T3, T4> Tuple4<T1, T2, T3, T4> of(T1 a, T2 b, T3 c, T4 d) {
-        return new Tuple4<>(a, b, c, d);
+    private static final long serialVersionUID = 1L;
+
+    @Nonnull
+    public static <V1, V2, V3, V4> Tuple4<V1, V2, V3, V4> of(V1 v1, V2 v2, V3 v3, V4 v4) {
+        return new Tuple4<>(v1, v2, v3, v4);
     }
 
-    public final T1 a;
-    public final T2 b;
-    public final T3 c;
-    public final T4 d;
+    public final V1 v1;
+    public final V2 v2;
+    public final V3 v3;
+    public final V4 v4;
 
-    public T1 a() {
-        return a;
+    @Deprecated
+    public V1 a() {
+        return v1;
     }
 
-    public T2 b() {
-        return b;
+    @Deprecated
+    public V2 b() {
+        return v2;
     }
 
-    public T3 c() {
-        return c;
+    @Deprecated
+    public V3 c() {
+        return v3;
     }
 
-    public T4 d() {
-        return d;
+    @Deprecated
+    public V4 d() {
+        return v4;
+    }
+
+    public V1 v1() {
+        return v1;
+    }
+
+    public V2 v2() {
+        return v2;
+    }
+
+    public V3 v3() {
+        return v3;
+    }
+
+    public V4 v4() {
+        return v4;
+    }
+
+    @Nonnull
+    @Override
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    public Tuple4<V1, V2, V3, V4> clone() {
+        return new Tuple4<>(v1, v2, v3, v4);
+    }
+
+    @Override
+    public int compareTo(@Nullable Tuple4<V1, V2, V3, V4> o) {
+        if (this == o) return 0;
+        if (o == null) return 1;
+        return new CompareToBuilder()
+                .append(this.v1, o.v1)
+                .append(this.v2, o.v2)
+                .append(this.v3, o.v3)
+                .append(this.v4, o.v4)
+                .toComparison();
     }
 }

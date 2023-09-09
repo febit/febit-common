@@ -15,29 +15,60 @@
  */
 package org.febit.lang;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
-
-import java.util.Objects;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 
 @RequiredArgsConstructor
 @EqualsAndHashCode(
         cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY
 )
-public final class Tuple2<T1, T2> {
+public final class Tuple2<V1, V2> implements Tuple, Comparable<Tuple2<V1, V2>> {
 
-    public static <T1, T2> Tuple2<T1, T2> of(T1 a, T2 b) {
-        return new Tuple2<>(a, b);
+    private static final long serialVersionUID = 1L;
+
+    @Nonnull
+    public static <V1, V2> Tuple2<V1, V2> of(V1 v1, V2 v2) {
+        return new Tuple2<>(v1, v2);
     }
 
-    public final T1 a;
-    public final T2 b;
+    public final V1 v1;
+    public final V2 v2;
 
-    public T1 a() {
-        return a;
+    @Deprecated
+    public V1 a() {
+        return v1;
     }
 
-    public T2 b() {
-        return b;
+    @Deprecated
+    public V2 b() {
+        return v2;
+    }
+
+    public V1 v1() {
+        return v1;
+    }
+
+    public V2 v2() {
+        return v2;
+    }
+
+    @Nonnull
+    @Override
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    public Tuple2<V1, V2> clone() {
+        return new Tuple2<>(v1, v2);
+    }
+
+    @Override
+    public int compareTo(@Nullable Tuple2<V1, V2> o) {
+        if (this == o) return 0;
+        if (o == null) return 1;
+        return new CompareToBuilder()
+                .append(this.v1, o.v1)
+                .append(this.v2, o.v2)
+                .toComparison();
     }
 }

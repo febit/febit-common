@@ -15,22 +15,49 @@
  */
 package org.febit.lang;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 
 @RequiredArgsConstructor
 @EqualsAndHashCode(
         cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY
 )
-public final class Tuple1<T> {
+public final class Tuple1<V1> implements Tuple, Comparable<Tuple1<V1>> {
 
-    public static <T1> Tuple1<T1> of(T1 a) {
-        return new Tuple1<>(a);
+    private static final long serialVersionUID = 1L;
+
+    @Nonnull
+    public static <V1> Tuple1<V1> of(V1 v1) {
+        return new Tuple1<>(v1);
     }
 
-    public final T a;
+    public final V1 v1;
 
-    public T a() {
-        return a;
+    @Deprecated
+    public V1 a() {
+        return v1;
+    }
+
+    public V1 v1() {
+        return v1;
+    }
+
+    @Nonnull
+    @Override
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    public Tuple1<V1> clone() {
+        return new Tuple1<>(this.v1);
+    }
+
+    @Override
+    public int compareTo(@Nullable Tuple1<V1> o) {
+        if (this == o) return 0;
+        if (o == null) return 1;
+        return new CompareToBuilder()
+                .append(this.v1, o.v1)
+                .toComparison();
     }
 }
