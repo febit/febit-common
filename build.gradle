@@ -28,6 +28,7 @@ ext {
       junit              : '5.9.3',
       mockito            : '5.3.1',
       febitGradleCommon  : '1.1.0-SNAPSHOT',
+      jcommander: '1.82',
   ]
 
 }
@@ -112,6 +113,7 @@ configure(subprojects.findAll {
         entry 'slf4j-simple'
       }
       dependency "org.yaml:snakeyaml:${versions.snakeyaml}"
+      dependency "com.beust:jcommander:${versions.jcommander}"
       dependency "com.jayway.jsonpath:json-path:${versions.jsonpath}"
       dependency "com.google.code.findbugs:jsr305:${versions.jsr305}"
       dependency "com.github.spotbugs:spotbugs-annotations:${versions.spotbugs}"

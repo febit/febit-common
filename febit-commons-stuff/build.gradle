@@ -1,0 +1,12 @@
+description = 'Febit Common Stuff'
+
+codegenModule {
+  module 'org.febit.FebitCommonStuff'
+}
+
+dependencies {
+  api project(':febit-lang')
+
+  compileOnly 'com.beust:jcommander'
+  testImplementation 'com.beust:jcommander'
+}
