@@ -30,38 +30,6 @@ public class ArraysUtils {
         return t;
     }
 
-    public static int[] of(int... args) {
-        return args;
-    }
-
-    public static long[] of(long... args) {
-        return args;
-    }
-
-    public static boolean[] of(boolean... args) {
-        return args;
-    }
-
-    public static char[] of(char... args) {
-        return args;
-    }
-
-    public static byte[] of(byte... args) {
-        return args;
-    }
-
-    public static float[] of(float... args) {
-        return args;
-    }
-
-    public static short[] of(short... args) {
-        return args;
-    }
-
-    public static double[] of(double... args) {
-        return args;
-    }
-
     @Nullable
     @SuppressWarnings({
             "squid:S1168" // Empty arrays and collections should be returned instead of null
@@ -244,30 +212,4 @@ public class ArraysUtils {
         }
         return ret;
     }
-
-    public static String[] strings(Collection<String> collection) {
-        return collection.toArray(new String[0]);
-    }
-
-    public static void invert(Object[] array) {
-        int i, j;
-        Object cell;
-        for (i = 0, j = array.length - 1; i < j; i++, j--) {
-            cell = array[i];
-            array[i] = array[j];
-            array[j] = cell;
-        }
-    }
-
-    public static <T> boolean containsOne(T[] array, T[] candis) {
-        for (T string : array) {
-            for (T candi : candis) {
-                if (string.equals(candi)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
 }

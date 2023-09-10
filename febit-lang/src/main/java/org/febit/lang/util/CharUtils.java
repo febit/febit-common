@@ -15,10 +15,13 @@
  */
 package org.febit.lang.util;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public class CharUtils {
 
     public static char toUpperAscii(final char c) {
-        if (isLowercaseAlpha(c)) {
+        if (isLowerAlpha(c)) {
             return (char) (c - (char) 0x20);
         }
         return c;
@@ -31,11 +34,11 @@ public class CharUtils {
         return c;
     }
 
-    public static boolean isLowercaseAlpha(char c) {
+    public static boolean isLowerAlpha(char c) {
         return (c >= 'a') && (c <= 'z');
     }
 
-    public static boolean isUppercaseAlpha(char c) {
+    public static boolean isUpperAlpha(char c) {
         return (c >= 'A') && (c <= 'Z');
     }
 

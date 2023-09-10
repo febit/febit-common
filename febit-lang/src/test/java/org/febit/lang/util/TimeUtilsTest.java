@@ -28,11 +28,18 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalAccessor;
+import java.time.temporal.TemporalQueries;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.time.temporal.ChronoField.INSTANT_SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
 
 class TimeUtilsTest {
 
@@ -74,6 +81,31 @@ class TimeUtilsTest {
             Tuple.of("2015-02-12T23:13:18.342+07:00", "2015-02-12 23:13:18.342+07:00"),
             Tuple.of("2022-02-12T23:46:18.991Z", "2022-02-12T23:46:18.991Z")
     );
+
+    @Test
+    void instant() {
+        var instant = Instant.parse("2021-11-23T13:47:06.984Z");
+        var zoned = instant.atZone(ZoneId.of("Asia/Shanghai"));
+
+        assertEquals(instant, TimeUtils.instant(instant));
+        assertEquals(instant, TimeUtils.instant(instant.atZone(ZoneOffset.UTC)));
+        assertEquals(instant, TimeUtils.instant(zoned));
+        assertEquals(instant, TimeUtils.instant(zoned.toOffsetDateTime()));
+
+        var mocked = mock(TemporalAccessor.class);
+
+        when(mocked.isSupported(INSTANT_SECONDS)).thenReturn(true);
+        when(mocked.getLong(ChronoField.INSTANT_SECONDS)).thenReturn(instant.getEpochSecond());
+        when(mocked.get(ChronoField.NANO_OF_SECOND)).thenReturn(instant.getNano());
+        assertEquals(instant, TimeUtils.instant(mocked));
+
+        reset(mocked);
+        when(mocked.isSupported(INSTANT_SECONDS)).thenReturn(false);
+        when(mocked.query(TemporalQueries.zone())).thenReturn(zoned.getZone());
+        when(mocked.query(TemporalQueries.localDate())).thenReturn(zoned.toLocalDate());
+        when(mocked.query(TemporalQueries.localTime())).thenReturn(zoned.toLocalTime());
+        assertEquals(instant, TimeUtils.instant(mocked));
+    }
 
     @Test
     void defaults() {
