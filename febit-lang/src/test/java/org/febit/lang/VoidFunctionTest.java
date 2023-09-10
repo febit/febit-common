@@ -15,21 +15,25 @@
  */
 package org.febit.lang;
 
-import java.util.concurrent.Callable;
-import java.util.function.Supplier;
+import org.junit.jupiter.api.Test;
 
-@FunctionalInterface
-public interface Function0<R> extends Supplier<R>, Callable<R> {
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
-    R apply();
+class VoidFunctionTest {
 
-    @Override
-    default R get() {
-        return apply();
+    static class Impl implements VoidFunction {
+
+        @Override
+        public void apply() {
+        }
     }
 
-    @Override
-    default R call() {
-        return apply();
+    @Test
+    void accept() {
+        var c1 = spy(new Impl());
+
+        c1.accept();
+        verify(c1).apply();
     }
 }

@@ -15,21 +15,21 @@
  */
 package org.febit.lang;
 
-import java.util.concurrent.Callable;
-import java.util.function.Supplier;
+import jakarta.annotation.Nonnull;
+
+import java.util.Objects;
 
 @FunctionalInterface
-public interface Function0<R> extends Supplier<R>, Callable<R> {
+public interface Consumer0 {
 
-    R apply();
+    void accept();
 
-    @Override
-    default R get() {
-        return apply();
-    }
-
-    @Override
-    default R call() {
-        return apply();
+    @Nonnull
+    default Consumer0 andThen(@Nonnull Consumer0 after) {
+        Objects.requireNonNull(after);
+        return () -> {
+            accept();
+            after.accept();
+        };
     }
 }

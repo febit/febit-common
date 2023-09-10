@@ -15,21 +15,28 @@
  */
 package org.febit.lang;
 
-import java.util.concurrent.Callable;
-import java.util.function.Supplier;
+import org.junit.jupiter.api.Test;
 
-@FunctionalInterface
-public interface Function0<R> extends Supplier<R>, Callable<R> {
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
-    R apply();
+class Consumer0Test {
 
-    @Override
-    default R get() {
-        return apply();
+    static class Impl implements Consumer0 {
+
+        @Override
+        public void accept() {
+        }
     }
 
-    @Override
-    default R call() {
-        return apply();
+    @Test
+    void andThen() {
+        var c1 = spy(new Impl());
+        var c2 = spy(new Impl());
+
+        var c3 = c1.andThen(c2);
+        c3.accept();
+        verify(c1).accept();
+        verify(c2).accept();
     }
 }

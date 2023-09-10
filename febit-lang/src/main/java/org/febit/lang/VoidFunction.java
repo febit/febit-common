@@ -16,7 +16,12 @@
 package org.febit.lang;
 
 @FunctionalInterface
-public interface VoidFunction {
+public interface VoidFunction extends Consumer0 {
 
     void apply();
+
+    @Override
+    default void accept() {
+        apply();
+    }
 }
