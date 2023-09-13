@@ -58,6 +58,30 @@ public class CharUtils {
         return (c >= '0' && c <= '9') || ((c >= 'a') && (c <= 'f')) || ((c >= 'A') && (c <= 'F'));
     }
 
+    public static boolean isNotLowerAlpha(char c) {
+        return !isLowerAlpha(c);
+    }
+
+    public static boolean isNotUpperAlpha(char c) {
+        return !isUpperAlpha(c);
+    }
+
+    public static boolean isNotWhitespace(char c) {
+        return !isWhitespace(c);
+    }
+
+    public static boolean isNotAlpha(char c) {
+        return !isAlpha(c);
+    }
+
+    public static boolean isNotDigit(char c) {
+        return !isDigit(c);
+    }
+
+    public static boolean isNotHexDigit(char c) {
+        return !isHexDigit(c);
+    }
+
     public static int hexToDigit(char c) {
         switch (c) {
             case '0':

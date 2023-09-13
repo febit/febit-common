@@ -129,4 +129,77 @@ class CharUtilsTest {
 
         assertThrows(IllegalArgumentException.class, () -> CharUtils.hexToDigit('g'));
     }
+
+    @Test
+    void isNotLowerAlpha() {
+        assertFalse(CharUtils.isNotLowerAlpha('a'));
+        assertFalse(CharUtils.isNotLowerAlpha('z'));
+
+        assertTrue(CharUtils.isNotLowerAlpha('A'));
+        assertTrue(CharUtils.isNotLowerAlpha('Z'));
+        assertTrue(CharUtils.isNotLowerAlpha('1'));
+    }
+
+    @Test
+    void isNotUpperAlpha() {
+        assertFalse(CharUtils.isNotUpperAlpha('A'));
+        assertFalse(CharUtils.isNotUpperAlpha('Z'));
+
+        assertTrue(CharUtils.isNotUpperAlpha('a'));
+        assertTrue(CharUtils.isNotUpperAlpha('z'));
+        assertTrue(CharUtils.isNotUpperAlpha('1'));
+    }
+
+    @Test
+    void isNotWhitespace() {
+        assertFalse(CharUtils.isNotWhitespace(' '));
+        assertFalse(CharUtils.isNotWhitespace('\t'));
+        assertFalse(CharUtils.isNotWhitespace('\n'));
+        assertFalse(CharUtils.isNotWhitespace('\r'));
+        assertFalse(CharUtils.isNotWhitespace('\f'));
+        assertFalse(CharUtils.isNotWhitespace('\b'));
+
+        assertTrue(CharUtils.isNotWhitespace('a'));
+        assertTrue(CharUtils.isNotWhitespace('1'));
+        assertTrue(CharUtils.isNotWhitespace('~'));
+    }
+
+    @Test
+    void isNotAlpha() {
+        assertFalse(CharUtils.isNotAlpha('a'));
+        assertFalse(CharUtils.isNotAlpha('z'));
+        assertFalse(CharUtils.isNotAlpha('A'));
+        assertFalse(CharUtils.isNotAlpha('Z'));
+
+        assertTrue(CharUtils.isNotAlpha('1'));
+        assertTrue(CharUtils.isNotAlpha('~'));
+    }
+
+    @Test
+    void isNotDigit() {
+        assertFalse(CharUtils.isNotDigit('0'));
+        assertFalse(CharUtils.isNotDigit('9'));
+
+        assertTrue(CharUtils.isNotDigit('a'));
+        assertTrue(CharUtils.isNotDigit('A'));
+        assertTrue(CharUtils.isNotDigit('z'));
+        assertTrue(CharUtils.isNotDigit('Z'));
+        assertTrue(CharUtils.isNotDigit(' '));
+        assertTrue(CharUtils.isNotDigit('~'));
+    }
+
+    @Test
+    void isNotHexDigit() {
+        assertFalse(CharUtils.isNotHexDigit('0'));
+        assertFalse(CharUtils.isNotHexDigit('9'));
+        assertFalse(CharUtils.isNotHexDigit('a'));
+        assertFalse(CharUtils.isNotHexDigit('f'));
+        assertFalse(CharUtils.isNotHexDigit('A'));
+        assertFalse(CharUtils.isNotHexDigit('F'));
+
+        assertTrue(CharUtils.isNotHexDigit('g'));
+        assertTrue(CharUtils.isNotHexDigit('G'));
+        assertTrue(CharUtils.isNotHexDigit(' '));
+        assertTrue(CharUtils.isNotHexDigit('~'));
+    }
 }

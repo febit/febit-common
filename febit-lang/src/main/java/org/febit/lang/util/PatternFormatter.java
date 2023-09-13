@@ -39,7 +39,6 @@ import static org.febit.lang.util.JacksonWrapper.TYPE_MAP_NAMED;
         access = AccessLevel.PRIVATE,
         staticName = "create"
 )
-@SuppressWarnings("LombokGetterMayBeUsed")
 public class PatternFormatter<T> implements Serializable {
 
     @Getter
