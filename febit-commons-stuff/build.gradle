@@ -8,5 +8,8 @@ dependencies {
   api project(':febit-lang')
 
   compileOnly 'com.beust:jcommander'
+  compileOnly 'org.apache.kafka:kafka-clients'
+
   testImplementation 'com.beust:jcommander'
+  testImplementation 'org.apache.kafka:kafka-clients'
 }

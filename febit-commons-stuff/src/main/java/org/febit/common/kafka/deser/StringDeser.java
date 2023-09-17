@@ -13,22 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.common.jcommander.converter;
+package org.febit.common.kafka.deser;
 
-import com.beust.jcommander.IStringConverter;
-import org.febit.lang.PeriodDuration;
+import org.apache.kafka.common.serialization.Deserializer;
 
 import javax.annotation.Nullable;
-import java.time.Duration;
+import java.nio.charset.StandardCharsets;
 
-public class DurationConverter implements IStringConverter<Duration> {
+public class StringDeser implements Deserializer<String> {
 
     @Nullable
     @Override
-    public Duration convert(@Nullable String s) {
-        if (s == null) {
+    public String deserialize(String topic, @Nullable byte[] data) {
+        if (data == null) {
             return null;
         }
-        return PeriodDuration.parse(s).toDuration();
+        return new String(data, StandardCharsets.UTF_8);
     }
 }

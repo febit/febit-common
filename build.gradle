@@ -29,6 +29,7 @@ ext {
       jackson            : '2.15.2',
       jsonpath           : '2.8.0',
       snakeyaml          : '1.33',
+      kafkaClients: '3.5.1',
 
       junit              : '5.9.3',
       hamcrest           : '2.2',
@@ -126,6 +127,7 @@ configure(subprojects.findAll {
       dependency "org.apache.commons:commons-collections4:${versions.commonsCollections4}"
       dependency "org.apache.commons:commons-compress:${versions.commonsCompress}"
       dependency "org.apache.commons:commons-exec:${versions.commonsExec}"
+      dependency "org.apache.kafka:kafka-clients:${versions.kafkaClients}"
 
       dependency "org.yaml:snakeyaml:${versions.snakeyaml}"
       dependency "com.beust:jcommander:${versions.jcommander}"

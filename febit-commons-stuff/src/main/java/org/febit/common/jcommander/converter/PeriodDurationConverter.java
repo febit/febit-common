@@ -19,16 +19,15 @@ import com.beust.jcommander.IStringConverter;
 import org.febit.lang.PeriodDuration;
 
 import javax.annotation.Nullable;
-import java.time.Duration;
 
-public class DurationConverter implements IStringConverter<Duration> {
+public class PeriodDurationConverter implements IStringConverter<PeriodDuration> {
 
     @Nullable
     @Override
-    public Duration convert(@Nullable String s) {
+    public PeriodDuration convert(@Nullable String s) {
         if (s == null) {
             return null;
         }
-        return PeriodDuration.parse(s).toDuration();
+        return PeriodDuration.parse(s);
     }
 }

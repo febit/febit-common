@@ -13,22 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.common.jcommander.converter;
+package org.febit.common.kafka.deser;
 
-import com.beust.jcommander.IStringConverter;
-import org.febit.lang.PeriodDuration;
+import com.fasterxml.jackson.databind.JavaType;
+import lombok.RequiredArgsConstructor;
+import org.apache.kafka.common.serialization.Deserializer;
+import org.febit.lang.util.JacksonWrapper;
 
 import javax.annotation.Nullable;
-import java.time.Duration;
+import java.nio.charset.StandardCharsets;
 
-public class DurationConverter implements IStringConverter<Duration> {
+@RequiredArgsConstructor
+public abstract class BaseJacksonDeser<T> implements Deserializer<T> {
+
+    private final JacksonWrapper jackson;
+
+    protected abstract JavaType getJavaType();
 
     @Nullable
     @Override
-    public Duration convert(@Nullable String s) {
-        if (s == null) {
+    public T deserialize(String topic, @Nullable byte[] data) {
+        if (data == null || data.length == 0) {
             return null;
         }
-        return PeriodDuration.parse(s).toDuration();
+        var str = new String(data, StandardCharsets.UTF_8);
+        return jackson.parse(str, getJavaType());
     }
 }

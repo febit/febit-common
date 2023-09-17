@@ -13,22 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.common.jcommander.converter;
+@NonNullApi
+package org.febit.common.kafka.deser;
 
-import com.beust.jcommander.IStringConverter;
-import org.febit.lang.PeriodDuration;
-
-import javax.annotation.Nullable;
-import java.time.Duration;
-
-public class DurationConverter implements IStringConverter<Duration> {
-
-    @Nullable
-    @Override
-    public Duration convert(@Nullable String s) {
-        if (s == null) {
-            return null;
-        }
-        return PeriodDuration.parse(s).toDuration();
-    }
-}
+import org.febit.lang.annotation.NonNullApi;
