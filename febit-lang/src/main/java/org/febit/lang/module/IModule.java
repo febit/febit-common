@@ -27,5 +27,10 @@ public interface IModule {
 
     String getCommitId();
 
-    Instant getBuiltAt();
+    @Deprecated
+    default Instant getBuiltAt() {
+        return getBuildTime();
+    }
+
+    Instant getBuildTime();
 }

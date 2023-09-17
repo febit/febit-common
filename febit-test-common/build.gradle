@@ -1,4 +1,4 @@
-description = 'Febit Test Common'
+description = 'Febit Commons Test'
 
 codegenModule {
   module 'org.febit.FebitTestCommon'
