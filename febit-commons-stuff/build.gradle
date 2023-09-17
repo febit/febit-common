@@ -1,7 +1,7 @@
 description = 'Febit Commons Stuff'
 
 codegenModule {
-  module 'org.febit.FebitCommonStuff'
+  module 'org.febit.FebitCommonsStuff'
 }
 
 dependencies {
