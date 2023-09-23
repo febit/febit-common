@@ -70,15 +70,6 @@ public class TimeUtils {
     }
 
     @Nullable
-    public static LocalDate parseDate(@Nullable String raw) {
-        var time = parse(raw);
-        if (time == null) {
-            return null;
-        }
-        return localDate(time);
-    }
-
-    @Nullable
     public static ZonedDateTime parse(@Nullable String raw) {
         if (raw == null || raw.isEmpty()) {
             return null;
@@ -139,58 +130,22 @@ public class TimeUtils {
         );
     }
 
-    public static LocalDate localDate(TemporalAccessor temporal) {
-        var date = temporal.query(TemporalQueries.localDate());
-        if (date != null) {
-            return date;
+    @Nullable
+    public static LocalDate parseDate(@Nullable String raw) {
+        var time = parse(raw);
+        if (time == null) {
+            return null;
         }
-        if (temporal.isSupported(ChronoField.INSTANT_SECONDS)) {
-            long instantSeconds = temporal.getLong(ChronoField.INSTANT_SECONDS);
-            long days = instantSeconds / SECONDS_PER_DAY;
-            if (instantSeconds < 0 && (instantSeconds % SECONDS_PER_DAY) != 0) {
-                days--;
-            }
-            return LocalDate.ofEpochDay(days);
-        }
-        return DATE_DEFAULT;
+        return localDate(time);
     }
 
-    private static Instant numericToInstant(String numeric) {
-        return Instant.ofEpochMilli(Long.parseLong(numeric));
-    }
-
-    private static TemporalAccessor resolveAsDateTime(String raw) {
-        raw = raw.trim();
-        if (raw.isEmpty()) {
-            return DATETIME_DEFAULT;
+    @Nullable
+    public static LocalDateTime parseDateTime(@Nullable String raw) {
+        var time = parse(raw);
+        if (time == null) {
+            return null;
         }
-        return FMT_DT.parse(raw);
-    }
-
-    private static ZoneId resolveZone(String raw) {
-        raw = raw.trim();
-        if (raw.isEmpty()) {
-            return ZONE_DEFAULT;
-        }
-        return ZoneOffset.of(raw);
-    }
-
-    public static LocalTime localTime(TemporalAccessor temporal) {
-        var time = temporal.query(TemporalQueries.localTime());
-        if (time != null) {
-            return time;
-        }
-        if (temporal.isSupported(ChronoField.INSTANT_SECONDS)) {
-            int nano = (temporal.isSupported(ChronoField.NANO_OF_SECOND)
-                    ? temporal.get(ChronoField.NANO_OF_SECOND)
-                    : 0);
-            long seconds = temporal.getLong(ChronoField.INSTANT_SECONDS) % SECONDS_PER_DAY;
-            if (seconds < 0) {
-                seconds = SECONDS_PER_DAY + seconds;
-            }
-            return LocalTime.ofNanoOfDay(seconds * NANO_PER_SECOND + nano);
-        }
-        return TIME_DEFAULT;
+        return localDateTime(time);
     }
 
     @Nullable
@@ -214,6 +169,77 @@ public class TimeUtils {
         return zonedDateTime(time).toInstant();
     }
 
+    @Nullable
+    public static ZonedDateTime parseZonedDateTime(@Nullable String raw) {
+        return parse(raw);
+    }
+
+    private static Instant numericToInstant(String numeric) {
+        return Instant.ofEpochMilli(Long.parseLong(numeric));
+    }
+
+    private static TemporalAccessor resolveAsDateTime(String raw) {
+        raw = raw.trim();
+        if (raw.isEmpty()) {
+            return DATETIME_DEFAULT;
+        }
+        return FMT_DT.parse(raw);
+    }
+
+    private static ZoneId resolveZone(String raw) {
+        raw = raw.trim();
+        if (raw.isEmpty()) {
+            return ZONE_DEFAULT;
+        }
+        return ZoneOffset.of(raw);
+    }
+
+    public static LocalDate localDate(TemporalAccessor temporal) {
+        var date = temporal.query(TemporalQueries.localDate());
+        if (date != null) {
+            return date;
+        }
+        if (temporal.isSupported(ChronoField.INSTANT_SECONDS)) {
+            long instantSeconds = temporal.getLong(ChronoField.INSTANT_SECONDS);
+            long days = instantSeconds / SECONDS_PER_DAY;
+            if (instantSeconds < 0 && (instantSeconds % SECONDS_PER_DAY) != 0) {
+                days--;
+            }
+            return LocalDate.ofEpochDay(days);
+        }
+        return DATE_DEFAULT;
+    }
+
+    public static LocalTime localTime(TemporalAccessor temporal) {
+        var time = temporal.query(TemporalQueries.localTime());
+        if (time != null) {
+            return time;
+        }
+        if (temporal.isSupported(ChronoField.INSTANT_SECONDS)) {
+            int nano = (temporal.isSupported(ChronoField.NANO_OF_SECOND)
+                    ? temporal.get(ChronoField.NANO_OF_SECOND)
+                    : 0);
+            long seconds = temporal.getLong(ChronoField.INSTANT_SECONDS) % SECONDS_PER_DAY;
+            if (seconds < 0) {
+                seconds = SECONDS_PER_DAY + seconds;
+            }
+            return LocalTime.ofNanoOfDay(seconds * NANO_PER_SECOND + nano);
+        }
+        return TIME_DEFAULT;
+    }
+
+    public static LocalDateTime localDateTime(TemporalAccessor temporal) {
+        if (temporal instanceof LocalDateTime) {
+            return ((LocalDateTime) temporal);
+        }
+        if (temporal instanceof ZonedDateTime) {
+            return ((ZonedDateTime) temporal).toLocalDateTime();
+        }
+        var date = localDate(temporal);
+        var time = localTime(temporal);
+        return LocalDateTime.of(date, time);
+    }
+
     public static ZonedDateTime zonedDateTime(TemporalAccessor temporal) {
         if (temporal instanceof ZonedDateTime) {
             return ((ZonedDateTime) temporal);
@@ -233,32 +259,6 @@ public class TimeUtils {
     public static ZoneId zone(TemporalAccessor temporal) {
         ZoneId zone = temporal.query(TemporalQueries.zone());
         return zone != null ? zone : ZONE_DEFAULT;
-    }
-
-    @Nullable
-    public static LocalDateTime parseDateTime(@Nullable String raw) {
-        var time = parse(raw);
-        if (time == null) {
-            return null;
-        }
-        return localDateTime(time);
-    }
-
-    public static LocalDateTime localDateTime(TemporalAccessor temporal) {
-        if (temporal instanceof LocalDateTime) {
-            return ((LocalDateTime) temporal);
-        }
-        if (temporal instanceof ZonedDateTime) {
-            return ((ZonedDateTime) temporal).toLocalDateTime();
-        }
-        var date = localDate(temporal);
-        var time = localTime(temporal);
-        return LocalDateTime.of(date, time);
-    }
-
-    @Nullable
-    public static ZonedDateTime parseZonedDateTime(@Nullable String raw) {
-        return parse(raw);
     }
 
     public static Instant instant(TemporalAccessor temporal) {

@@ -25,6 +25,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -136,6 +137,9 @@ class TimeUtilsTest {
 
     @Test
     void parseDate() {
+        assertNull(TimeUtils.parseDate(null));
+        assertNull(TimeUtils.parseDate(""));
+
         assertThat(parseTuples)
                 .allSatisfy(t -> assertEquals(
                         t.date, TimeUtils.parseDate(t.string)
@@ -144,6 +148,9 @@ class TimeUtilsTest {
 
     @Test
     void parseTime() {
+        assertNull(TimeUtils.parseTime(null));
+        assertNull(TimeUtils.parseTime(""));
+
         assertThat(parseTuples)
                 .allSatisfy(t -> assertEquals(
                         t.time, TimeUtils.parseTime(t.string)
@@ -152,6 +159,12 @@ class TimeUtilsTest {
 
     @Test
     void parseInstant() {
+        assertNull(TimeUtils.parseInstant(null));
+        assertNull(TimeUtils.parseInstant(""));
+
+        assertEquals(Instant.ofEpochSecond(0L), TimeUtils.parseInstant("0"));
+        assertEquals(Instant.ofEpochSecond(123456L), TimeUtils.parseInstant("123456000"));
+
         assertThat(parseTuples)
                 .allSatisfy(t -> assertEquals(
                         t.instant, TimeUtils.parseInstant(t.string)
@@ -160,6 +173,9 @@ class TimeUtilsTest {
 
     @Test
     void parseDateTime() {
+        assertNull(TimeUtils.parseDateTime(null));
+        assertNull(TimeUtils.parseDateTime(""));
+
         assertThat(parseTuples)
                 .allSatisfy(t -> assertEquals(
                         t.dt, TimeUtils.parseDateTime(t.string)
@@ -168,6 +184,9 @@ class TimeUtilsTest {
 
     @Test
     void parseZonedDateTime() {
+        assertNull(TimeUtils.parseZonedDateTime(null));
+        assertNull(TimeUtils.parseZonedDateTime(""));
+
         assertThat(parseTuples)
                 .allSatisfy(t -> assertEquals(
                         t.dtz, TimeUtils.parseZonedDateTime(t.string)
@@ -280,6 +299,12 @@ class TimeUtilsTest {
 
     @Test
     void zonedDateTime() {
+        var local = LocalDateTime.now();
+        assertEquals(
+                ZonedDateTime.of(local, ZoneId.of("+08:00")),
+                TimeUtils.zonedDateTime(OffsetDateTime.of(local, ZoneOffset.ofHours(8)))
+        );
+
         assertThat(ts)
                 .allSatisfy(t -> assertEquals(
                         ZonedDateTime.ofInstant(t.instant, TimeUtils.ZONE_DEFAULT),
