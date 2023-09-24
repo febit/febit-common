@@ -20,30 +20,35 @@ import com.fasterxml.jackson.core.JsonTokenId;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import jakarta.annotation.Nullable;
-import org.febit.lang.util.TimeUtils;
+import org.febit.lang.util.ConvertUtils;
 
 import java.io.IOException;
-import java.time.Instant;
 
-public class InstantLooseDeserializer extends StdDeserializer<Instant> {
+public class BooleanLooseDeserializer extends StdDeserializer<Boolean> {
 
-    public static final InstantLooseDeserializer INSTANCE = new InstantLooseDeserializer();
+    public static final BooleanLooseDeserializer INSTANCE = new BooleanLooseDeserializer();
 
-    public InstantLooseDeserializer() {
-        super(Instant.class);
+    public BooleanLooseDeserializer() {
+        super(Boolean.class);
     }
 
     @Nullable
     @Override
-    public Instant deserialize(JsonParser parser, DeserializationContext context) throws IOException {
+    public Boolean deserialize(JsonParser parser, DeserializationContext context) throws IOException {
         switch (parser.currentTokenId()) {
+            case JsonTokenId.ID_TRUE:
+                return true;
+            case JsonTokenId.ID_FALSE:
+                return false;
+            case JsonTokenId.ID_NUMBER_FLOAT:
+                return ConvertUtils.toBoolean(parser.getDoubleValue());
             case JsonTokenId.ID_NUMBER_INT:
-                return Instant.ofEpochMilli(parser.getLongValue());
+                return ConvertUtils.toBoolean(parser.getLongValue());
             case JsonTokenId.ID_STRING:
-                return TimeUtils.parseInstant(parser.getText().trim());
+                return ConvertUtils.toBoolean(parser.getText().trim());
             default:
-                throw new IllegalStateException("Unexpected token to deserialize instant,"
-                        + " only String and Number are supported: " + parser.currentTokenId());
+                throw new IllegalStateException("Unexpected token to deserialize boolean,"
+                        + " only Boolean, String and Number are supported: " + parser.currentTokenId());
         }
     }
 

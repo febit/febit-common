@@ -32,10 +32,10 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+import jakarta.annotation.Nullable;
 import lombok.experimental.UtilityClass;
 import org.febit.lang.util.jackson.StandardPrettyPrinter;
 
-import javax.annotation.Nullable;
 import javax.annotation.WillNotClose;
 import java.io.IOException;
 import java.io.OutputStream;

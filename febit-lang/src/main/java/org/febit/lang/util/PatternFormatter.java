@@ -16,13 +16,13 @@
 package org.febit.lang.util;
 
 import com.fasterxml.jackson.databind.JavaType;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;

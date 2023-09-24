@@ -19,9 +19,9 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonTokenId;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import jakarta.annotation.Nullable;
 import org.febit.lang.util.TimeUtils;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 
 public class EpochMillisLooseDeserializer extends StdDeserializer<Long> {

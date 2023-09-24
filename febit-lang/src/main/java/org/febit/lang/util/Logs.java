@@ -15,10 +15,10 @@
  */
 package org.febit.lang.util;
 
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
 
-import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 @UtilityClass

@@ -16,6 +16,8 @@
 package org.febit.lang.protocol;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,8 +26,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.febit.lang.annotation.NullableArgs;
 import org.febit.lang.util.jackson.InstantLooseDeserializer;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.Instant;
 import java.util.function.Function;
 

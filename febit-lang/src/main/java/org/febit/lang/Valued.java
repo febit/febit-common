@@ -15,9 +15,9 @@
  */
 package org.febit.lang;
 
+import jakarta.annotation.Nonnull;
 import org.febit.lang.util.Maps;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Map;
 

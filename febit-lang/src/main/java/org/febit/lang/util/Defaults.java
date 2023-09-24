@@ -15,9 +15,8 @@
  */
 package org.febit.lang.util;
 
+import jakarta.annotation.Nullable;
 import lombok.experimental.UtilityClass;
-
-import javax.annotation.Nullable;
 
 @UtilityClass
 public class Defaults {

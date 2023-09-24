@@ -16,11 +16,11 @@
 package org.febit.common.kafka.deser;
 
 import com.fasterxml.jackson.databind.JavaType;
+import jakarta.annotation.Nullable;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.febit.common.parser.AccessLogParser;
 import org.febit.lang.util.JacksonUtils;
 
-import javax.annotation.Nullable;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;

@@ -15,9 +15,9 @@
  */
 package org.febit.lang.util;
 
+import jakarta.annotation.Nullable;
 import lombok.experimental.UtilityClass;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.IntFunction;

@@ -15,9 +15,9 @@
  */
 package org.febit.common.kafka.deser;
 
+import jakarta.annotation.Nullable;
 import org.apache.kafka.common.serialization.Deserializer;
 
-import javax.annotation.Nullable;
 import java.nio.charset.StandardCharsets;
 
 public class StringDeser implements Deserializer<String> {

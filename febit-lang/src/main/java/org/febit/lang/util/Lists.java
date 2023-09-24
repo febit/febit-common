@@ -15,9 +15,9 @@
  */
 package org.febit.lang.util;
 
+import jakarta.annotation.Nullable;
 import lombok.experimental.UtilityClass;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;

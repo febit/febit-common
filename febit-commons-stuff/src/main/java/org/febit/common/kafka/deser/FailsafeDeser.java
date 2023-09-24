@@ -15,9 +15,9 @@
  */
 package org.febit.common.kafka.deser;
 
+import jakarta.annotation.Nullable;
 import org.apache.kafka.common.header.Headers;
 
-import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.function.BiConsumer;
 

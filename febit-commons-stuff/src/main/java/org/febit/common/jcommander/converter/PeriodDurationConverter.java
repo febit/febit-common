@@ -16,9 +16,8 @@
 package org.febit.common.jcommander.converter;
 
 import com.beust.jcommander.IStringConverter;
+import jakarta.annotation.Nullable;
 import org.febit.lang.PeriodDuration;
-
-import javax.annotation.Nullable;
 
 public class PeriodDurationConverter implements IStringConverter<PeriodDuration> {
 

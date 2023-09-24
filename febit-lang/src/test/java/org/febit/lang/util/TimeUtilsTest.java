@@ -15,12 +15,12 @@
  */
 package org.febit.lang.util;
 
+import jakarta.annotation.Nullable;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.junit.jupiter.api.Test;
 
-import javax.annotation.Nullable;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

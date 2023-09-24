@@ -16,8 +16,8 @@
 package org.febit.lang.protocol;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import jakarta.annotation.Nonnull;
 
-import javax.annotation.Nonnull;
 import java.util.function.Function;
 
 @JsonDeserialize(as = PageResponse.class)

@@ -17,10 +17,10 @@ package org.febit.lang.protocol;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.febit.lang.annotation.NonNullArgs;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.Instant;
 import java.util.function.Function;
 

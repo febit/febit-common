@@ -15,6 +15,7 @@
  */
 package org.febit.lang.io.filefilter;
 
+import jakarta.annotation.Nullable;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -22,7 +23,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.IOFileFilter;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.Serializable;
 

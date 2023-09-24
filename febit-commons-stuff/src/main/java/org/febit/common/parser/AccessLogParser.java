@@ -15,6 +15,7 @@
  */
 package org.febit.common.parser;
 
+import jakarta.annotation.Nullable;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -23,7 +24,6 @@ import org.febit.lang.util.Lists;
 import org.febit.lang.util.Pairs;
 import org.febit.lang.util.StringWalker;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
