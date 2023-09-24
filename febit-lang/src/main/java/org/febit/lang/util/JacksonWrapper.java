@@ -18,6 +18,7 @@ package org.febit.lang.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
@@ -56,6 +57,14 @@ public class JacksonWrapper {
     );
 
     private final ObjectMapper mapper;
+
+    public TypeFactory getTypeFactory() {
+        return this.mapper.getTypeFactory();
+    }
+
+    protected JavaType constructType(Type type) {
+        return getTypeFactory().constructType(type);
+    }
 
     public String toString(@Nullable Object data) {
         try {
@@ -98,22 +107,22 @@ public class JacksonWrapper {
 
     @Nullable
     public <T> T parse(@Nullable String text, Type type) {
-        return parse(text, TYPE_FACTORY.constructType(type));
+        return parse(text, constructType(type));
     }
 
     @Nullable
     public <T> T parse(Reader reader, Type type) {
-        return parse(reader, TYPE_FACTORY.constructType(type));
+        return parse(reader, constructType(type));
     }
 
     @Nullable
     public <T> T parse(@Nullable String text, Class<T> type) {
-        return parse(text, TYPE_FACTORY.constructType(type));
+        return parse(text, constructType(type));
     }
 
     @Nullable
     public <T> T parse(Reader reader, Class<T> type) {
-        return parse(reader, TYPE_FACTORY.constructType(type));
+        return parse(reader, constructType(type));
     }
 
     @Nullable
@@ -129,28 +138,28 @@ public class JacksonWrapper {
     @Nullable
     public <K, V> Map<K, V> parseToMap(@Nullable String text, Class<K> keyType, Class<V> valueType) {
         return parse(text,
-                TYPE_FACTORY.constructMapType(LinkedHashMap.class, keyType, valueType)
+                getTypeFactory().constructMapType(LinkedHashMap.class, keyType, valueType)
         );
     }
 
     @Nullable
     public <K, V> Map<K, V> parseToMap(Reader reader, Class<K> keyType, Class<V> valueType) {
         return parse(reader,
-                TYPE_FACTORY.constructMapType(LinkedHashMap.class, keyType, valueType)
+                getTypeFactory().constructMapType(LinkedHashMap.class, keyType, valueType)
         );
     }
 
     @Nullable
     public <K, V> Map<K, V> parseToMap(@Nullable String text, JavaType keyType, JavaType valueType) {
         return parse(text,
-                TYPE_FACTORY.constructMapType(LinkedHashMap.class, keyType, valueType)
+                getTypeFactory().constructMapType(LinkedHashMap.class, keyType, valueType)
         );
     }
 
     @Nullable
     public <K, V> Map<K, V> parseToMap(Reader reader, JavaType keyType, JavaType valueType) {
         return parse(reader,
-                TYPE_FACTORY.constructMapType(LinkedHashMap.class, keyType, valueType)
+                getTypeFactory().constructMapType(LinkedHashMap.class, keyType, valueType)
         );
     }
 
@@ -166,18 +175,20 @@ public class JacksonWrapper {
 
     @Nullable
     public <V> Map<String, V> parseToNamedMap(@Nullable String text, Class<V> valueType) {
+        var tf = getTypeFactory();
         return parse(text,
-                TYPE_FACTORY.constructMapType(LinkedHashMap.class, TYPE_STRING,
-                        TYPE_FACTORY.constructType(valueType)
+                tf.constructMapType(LinkedHashMap.class, TYPE_STRING,
+                        tf.constructType(valueType)
                 )
         );
     }
 
     @Nullable
     public <V> Map<String, V> parseToNamedMap(Reader reader, Class<V> valueType) {
+        var tf = getTypeFactory();
         return parse(reader,
-                TYPE_FACTORY.constructMapType(LinkedHashMap.class, TYPE_STRING,
-                        TYPE_FACTORY.constructType(valueType)
+                tf.constructMapType(LinkedHashMap.class, TYPE_STRING,
+                        tf.constructType(valueType)
                 )
         );
     }
@@ -185,14 +196,14 @@ public class JacksonWrapper {
     @Nullable
     public <V> Map<String, V> parseToNamedMap(@Nullable String text, JavaType valueType) {
         return parse(text,
-                TYPE_FACTORY.constructMapType(LinkedHashMap.class, TYPE_STRING, valueType)
+                getTypeFactory().constructMapType(LinkedHashMap.class, TYPE_STRING, valueType)
         );
     }
 
     @Nullable
     public <V> Map<String, V> parseToNamedMap(Reader reader, JavaType valueType) {
         return parse(reader,
-                TYPE_FACTORY.constructMapType(LinkedHashMap.class, TYPE_STRING, valueType)
+                getTypeFactory().constructMapType(LinkedHashMap.class, TYPE_STRING, valueType)
         );
     }
 
@@ -209,28 +220,28 @@ public class JacksonWrapper {
     @Nullable
     public <V> List<V> parseToList(@Nullable String text, Class<V> itemType) {
         return parse(text,
-                TYPE_FACTORY.constructCollectionType(ArrayList.class, itemType)
+                getTypeFactory().constructCollectionType(ArrayList.class, itemType)
         );
     }
 
     @Nullable
     public <V> List<V> parseToList(Reader reader, Class<V> itemType) {
         return parse(reader,
-                TYPE_FACTORY.constructCollectionType(ArrayList.class, itemType)
+                getTypeFactory().constructCollectionType(ArrayList.class, itemType)
         );
     }
 
     @Nullable
     public <V> List<V> parseToList(@Nullable String text, JavaType itemType) {
         return parse(text,
-                TYPE_FACTORY.constructCollectionType(ArrayList.class, itemType)
+                getTypeFactory().constructCollectionType(ArrayList.class, itemType)
         );
     }
 
     @Nullable
     public <V> List<V> parseToList(Reader reader, JavaType itemType) {
         return parse(reader,
-                TYPE_FACTORY.constructCollectionType(ArrayList.class, itemType)
+                getTypeFactory().constructCollectionType(ArrayList.class, itemType)
         );
     }
 
@@ -256,22 +267,22 @@ public class JacksonWrapper {
 
     @Nullable
     public <V> V[] parseToArray(@Nullable String text, Class<V> itemType) {
-        return parse(text, TYPE_FACTORY.constructArrayType(itemType));
+        return parse(text, getTypeFactory().constructArrayType(itemType));
     }
 
     @Nullable
     public <V> V[] parseToArray(Reader reader, Class<V> itemType) {
-        return parse(reader, TYPE_FACTORY.constructArrayType(itemType));
+        return parse(reader, getTypeFactory().constructArrayType(itemType));
     }
 
     @Nullable
     public <V> V[] parseToArray(@Nullable String text, JavaType itemType) {
-        return parse(text, TYPE_FACTORY.constructArrayType(itemType));
+        return parse(text, getTypeFactory().constructArrayType(itemType));
     }
 
     @Nullable
     public <V> V[] parseToArray(Reader reader, JavaType itemType) {
-        return parse(reader, TYPE_FACTORY.constructArrayType(itemType));
+        return parse(reader, getTypeFactory().constructArrayType(itemType));
     }
 
     @Nullable
@@ -286,17 +297,17 @@ public class JacksonWrapper {
 
     @Nullable
     public <T> T to(@Nullable Object source, JavaType type) {
-        return this.mapper.convertValue(source, TYPE_FACTORY.constructType(type));
+        return this.mapper.convertValue(source, constructType(type));
     }
 
     @Nullable
     public <T> T to(@Nullable Object source, Type type) {
-        return to(source, TYPE_FACTORY.constructType(type));
+        return to(source, constructType(type));
     }
 
     @Nullable
     public <T> T to(@Nullable Object source, Class<T> type) {
-        return to(source, TYPE_FACTORY.constructType(type));
+        return to(source, constructType(type));
     }
 
     @Nullable
@@ -307,14 +318,14 @@ public class JacksonWrapper {
     @Nullable
     public <K, V> Map<K, V> toMap(@Nullable Object source, Class<K> keyType, Class<V> valueType) {
         return to(source,
-                TYPE_FACTORY.constructMapType(LinkedHashMap.class, keyType, valueType)
+                getTypeFactory().constructMapType(LinkedHashMap.class, keyType, valueType)
         );
     }
 
     @Nullable
     public <K, V> Map<K, V> toMap(@Nullable Object source, JavaType keyType, JavaType valueType) {
         return to(source,
-                TYPE_FACTORY.constructMapType(LinkedHashMap.class, keyType, valueType)
+                getTypeFactory().constructMapType(LinkedHashMap.class, keyType, valueType)
         );
     }
 
@@ -325,10 +336,11 @@ public class JacksonWrapper {
 
     @Nullable
     public <V> Map<String, V> toNamedMap(@Nullable Object source, Class<V> valueType) {
+        var tf = getTypeFactory();
         return to(source,
-                TYPE_FACTORY.constructMapType(
+                tf.constructMapType(
                         LinkedHashMap.class, TYPE_STRING,
-                        TYPE_FACTORY.constructType(valueType)
+                        tf.constructType(valueType)
                 )
         );
     }
@@ -336,7 +348,7 @@ public class JacksonWrapper {
     @Nullable
     public <V> Map<String, V> toNamedMap(@Nullable Object source, JavaType valueType) {
         return to(source,
-                TYPE_FACTORY.constructMapType(LinkedHashMap.class, TYPE_STRING, valueType)
+                getTypeFactory().constructMapType(LinkedHashMap.class, TYPE_STRING, valueType)
         );
     }
 
@@ -348,14 +360,14 @@ public class JacksonWrapper {
     @Nullable
     public <V> List<V> toList(@Nullable Object source, Class<V> itemType) {
         return to(source,
-                TYPE_FACTORY.constructCollectionType(ArrayList.class, itemType)
+                getTypeFactory().constructCollectionType(ArrayList.class, itemType)
         );
     }
 
     @Nullable
     public <V> List<V> toList(@Nullable Object source, JavaType itemType) {
         return to(source,
-                TYPE_FACTORY.constructCollectionType(ArrayList.class, itemType)
+                getTypeFactory().constructCollectionType(ArrayList.class, itemType)
         );
     }
 
@@ -371,12 +383,12 @@ public class JacksonWrapper {
 
     @Nullable
     public <V> V[] toArray(@Nullable Object source, Class<V> itemType) {
-        return to(source, TYPE_FACTORY.constructArrayType(itemType));
+        return to(source, getTypeFactory().constructArrayType(itemType));
     }
 
     @Nullable
     public <V> V[] toArray(@Nullable Object source, JavaType itemType) {
-        return to(source, TYPE_FACTORY.constructArrayType(itemType));
+        return to(source, getTypeFactory().constructArrayType(itemType));
     }
 
     @Nullable
