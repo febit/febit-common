@@ -15,7 +15,7 @@
  */
 package org.febit.lang.func;
 
-public interface Checked {
+public interface ThrowableFunc {
 
     @FunctionalInterface
     interface Runnable extends IFunction {

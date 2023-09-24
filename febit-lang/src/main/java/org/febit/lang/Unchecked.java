@@ -16,7 +16,6 @@
 package org.febit.lang;
 
 import lombok.experimental.UtilityClass;
-import org.febit.lang.func.Checked;
 import org.febit.lang.func.Consumer0;
 import org.febit.lang.func.Consumer1;
 import org.febit.lang.func.Consumer2;
@@ -29,6 +28,7 @@ import org.febit.lang.func.Function2;
 import org.febit.lang.func.Function3;
 import org.febit.lang.func.Function4;
 import org.febit.lang.func.Function5;
+import org.febit.lang.func.ThrowableFunc;
 import org.febit.lang.func.VoidFunction;
 
 import java.io.IOException;
@@ -53,7 +53,7 @@ public class Unchecked {
         return new UncheckedException(throwable);
     }
 
-    public static VoidFunction runnable(Checked.Runnable runnable) {
+    public static VoidFunction runnable(ThrowableFunc.Runnable runnable) {
         return () -> {
             try {
                 runnable.run();
@@ -63,7 +63,7 @@ public class Unchecked {
         };
     }
 
-    public static <R> Function0<R> callable(Checked.Callable<R> callable) {
+    public static <R> Function0<R> callable(ThrowableFunc.Callable<R> callable) {
         return () -> {
             try {
                 return callable.call();
@@ -73,7 +73,7 @@ public class Unchecked {
         };
     }
 
-    public static <R> Function0<R> supplier(Checked.Supplier<R> supplier) {
+    public static <R> Function0<R> supplier(ThrowableFunc.Supplier<R> supplier) {
         return () -> {
             try {
                 return supplier.get();
@@ -83,81 +83,81 @@ public class Unchecked {
         };
     }
 
-    public static <R> Function0<R> func0(Checked.Function0<R> function) {
+    public static <R> Function0<R> func0(ThrowableFunc.Function0<R> func) {
         return () -> {
             try {
-                return function.apply();
+                return func.apply();
             } catch (Throwable e) {
                 throw handle(e);
             }
         };
     }
 
-    public static <T, R> Function1<T, R> func1(Checked.Function1<T, R> function) {
+    public static <T, R> Function1<T, R> func1(ThrowableFunc.Function1<T, R> func) {
         return (t) -> {
             try {
-                return function.apply(t);
+                return func.apply(t);
             } catch (Throwable e) {
                 throw handle(e);
             }
         };
     }
 
-    public static <T1, T2, R> Function2<T1, T2, R> func2(Checked.Function2<T1, T2, R> function) {
+    public static <T1, T2, R> Function2<T1, T2, R> func2(ThrowableFunc.Function2<T1, T2, R> func) {
         return (t1, t2) -> {
             try {
-                return function.apply(t1, t2);
+                return func.apply(t1, t2);
             } catch (Throwable e) {
                 throw handle(e);
             }
         };
     }
 
-    public static <T1, T2, T3, R> Function3<T1, T2, T3, R> func3(Checked.Function3<T1, T2, T3, R> function) {
+    public static <T1, T2, T3, R> Function3<T1, T2, T3, R> func3(ThrowableFunc.Function3<T1, T2, T3, R> func) {
         return (t1, t2, t3) -> {
             try {
-                return function.apply(t1, t2, t3);
+                return func.apply(t1, t2, t3);
             } catch (Throwable e) {
                 throw handle(e);
             }
         };
     }
 
-    public static <T1, T2, T3, T4, R> Function4<T1, T2, T3, T4, R> func4(Checked.Function4<T1, T2, T3, T4, R> function) {
+    public static <T1, T2, T3, T4, R> Function4<T1, T2, T3, T4, R> func4(ThrowableFunc.Function4<T1, T2, T3, T4, R> func) {
         return (t1, t2, t3, t4) -> {
             try {
-                return function.apply(t1, t2, t3, t4);
+                return func.apply(t1, t2, t3, t4);
             } catch (Throwable e) {
                 throw handle(e);
             }
         };
     }
 
-    public static <T1, T2, T3, T4, T5, R> Function5<T1, T2, T3, T4, T5, R> func5(Checked.Function5<T1, T2, T3, T4, T5, R> function) {
+    public static <T1, T2, T3, T4, T5, R> Function5<T1, T2, T3, T4, T5, R> func5(ThrowableFunc.Function5<T1, T2, T3, T4, T5, R> func) {
         return (t1, t2, t3, t4, t5) -> {
             try {
-                return function.apply(t1, t2, t3, t4, t5);
+                return func.apply(t1, t2, t3, t4, t5);
             } catch (Throwable e) {
                 throw handle(e);
             }
         };
     }
 
-    public static Consumer0 consumer0(Checked.Consumer0 consumer0) {
+    public static Consumer0 consumer0(ThrowableFunc.Consumer0 consumer) {
         return () -> {
             try {
-                consumer0.accept();
+                consumer.accept();
             } catch (Throwable e) {
                 throw handle(e);
             }
         };
     }
 
-    public static <T> Consumer1<T> consumer(Checked.Consumer1<T> consumer) {
+    public static <T> Consumer1<T> consumer(ThrowableFunc.Consumer1<T> consumer) {
         return consumer1(consumer);
     }
 
-    public static <T> Consumer1<T> consumer1(Checked.Consumer1<T> consumer) {
+    public static <T> Consumer1<T> consumer1(ThrowableFunc.Consumer1<T> consumer) {
         return (t) -> {
             try {
                 consumer.accept(t);
@@ -167,7 +167,7 @@ public class Unchecked {
         };
     }
 
-    public static <T1, T2> Consumer2<T1, T2> consumer2(Checked.Consumer2<T1, T2> consumer) {
+    public static <T1, T2> Consumer2<T1, T2> consumer2(ThrowableFunc.Consumer2<T1, T2> consumer) {
         return (t1, t2) -> {
             try {
                 consumer.accept(t1, t2);
@@ -177,7 +177,7 @@ public class Unchecked {
         };
     }
 
-    public static <T1, T2, T3> Consumer3<T1, T2, T3> consumer3(Checked.Consumer3<T1, T2, T3> consumer) {
+    public static <T1, T2, T3> Consumer3<T1, T2, T3> consumer3(ThrowableFunc.Consumer3<T1, T2, T3> consumer) {
         return (t1, t2, t3) -> {
             try {
                 consumer.accept(t1, t2, t3);
@@ -187,7 +187,7 @@ public class Unchecked {
         };
     }
 
-    public static <T1, T2, T3, T4> Consumer4<T1, T2, T3, T4> consumer4(Checked.Consumer4<T1, T2, T3, T4> consumer) {
+    public static <T1, T2, T3, T4> Consumer4<T1, T2, T3, T4> consumer4(ThrowableFunc.Consumer4<T1, T2, T3, T4> consumer) {
         return (t1, t2, t3, t4) -> {
             try {
                 consumer.accept(t1, t2, t3, t4);
@@ -197,7 +197,7 @@ public class Unchecked {
         };
     }
 
-    public static <T1, T2, T3, T4, T5> Consumer5<T1, T2, T3, T4, T5> consumer5(Checked.Consumer5<T1, T2, T3, T4, T5> consumer) {
+    public static <T1, T2, T3, T4, T5> Consumer5<T1, T2, T3, T4, T5> consumer5(ThrowableFunc.Consumer5<T1, T2, T3, T4, T5> consumer) {
         return (t1, t2, t3, t4, t5) -> {
             try {
                 consumer.accept(t1, t2, t3, t4, t5);
