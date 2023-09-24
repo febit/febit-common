@@ -51,7 +51,7 @@ public class Response<T> implements IMutableResponse<T>, HttpStatusAware {
 
     private T data;
 
-    private static Instant now(){
+    private static Instant now() {
         return Instant.ofEpochMilli(System.currentTimeMillis());
     }
 

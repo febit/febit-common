@@ -15,21 +15,5 @@
  */
 package org.febit.lang;
 
-import jakarta.annotation.Nonnull;
-
-import java.util.Objects;
-
-@FunctionalInterface
-public interface Consumer0 extends IConsumer {
-
-    void accept();
-
-    @Nonnull
-    default Consumer0 andThen(@Nonnull Consumer0 after) {
-        Objects.requireNonNull(after);
-        return () -> {
-            accept();
-            after.accept();
-        };
-    }
+public interface IFunction {
 }

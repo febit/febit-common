@@ -39,7 +39,7 @@ public class Unchecked {
         return new UncheckedException(throwable);
     }
 
-    public static Runnable runnable(Checked.Runnable runnable) {
+    public static VoidFunction runnable(Checked.Runnable runnable) {
         return () -> {
             try {
                 runnable.run();

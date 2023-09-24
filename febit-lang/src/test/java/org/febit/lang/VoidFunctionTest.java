@@ -36,4 +36,12 @@ class VoidFunctionTest {
         c1.accept();
         verify(c1).apply();
     }
+
+    @Test
+    void run() {
+        var c1 = spy(new Impl());
+
+        c1.run();
+        verify(c1).apply();
+    }
 }

@@ -18,77 +18,77 @@ package org.febit.lang;
 public interface Checked {
 
     @FunctionalInterface
-    interface Runnable {
+    interface Runnable extends IFunction {
         void run() throws Throwable;
     }
 
     @FunctionalInterface
-    interface Callable<R> {
+    interface Callable<R> extends IFunction {
         R call() throws Throwable;
     }
 
     @FunctionalInterface
-    interface Supplier<R> {
+    interface Supplier<R> extends IFunction {
         R get() throws Throwable;
     }
 
     @FunctionalInterface
-    interface Function0<R> {
+    interface Function0<R> extends IFunction {
         R apply() throws Throwable;
     }
 
     @FunctionalInterface
-    interface Function1<T, R> {
+    interface Function1<T, R> extends IFunction {
         R apply(T t) throws Throwable;
     }
 
     @FunctionalInterface
-    interface Function2<T1, T2, R> {
+    interface Function2<T1, T2, R> extends IFunction {
         R apply(T1 t1, T2 t2) throws Throwable;
     }
 
     @FunctionalInterface
-    interface Function3<T1, T2, T3, R> {
+    interface Function3<T1, T2, T3, R> extends IFunction {
         R apply(T1 t1, T2 t2, T3 t3) throws Throwable;
     }
 
     @FunctionalInterface
-    interface Function4<T1, T2, T3, T4, R> {
+    interface Function4<T1, T2, T3, T4, R> extends IFunction {
         R apply(T1 t1, T2 t2, T3 t3, T4 t4) throws Throwable;
     }
 
     @FunctionalInterface
-    interface Function5<T1, T2, T3, T4, T5, R> {
+    interface Function5<T1, T2, T3, T4, T5, R> extends IFunction {
         R apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5) throws Throwable;
     }
 
     @FunctionalInterface
-    interface Consumer0 {
+    interface Consumer0 extends IConsumer {
         void accept() throws Throwable;
     }
 
     @FunctionalInterface
-    interface Consumer1<T> {
+    interface Consumer1<T> extends IConsumer {
         void accept(T t) throws Throwable;
     }
 
     @FunctionalInterface
-    interface Consumer2<T1, T2> {
+    interface Consumer2<T1, T2> extends IConsumer {
         void accept(T1 t1, T2 t2) throws Throwable;
     }
 
     @FunctionalInterface
-    interface Consumer3<T1, T2, T3> {
+    interface Consumer3<T1, T2, T3> extends IConsumer {
         void accept(T1 t1, T2 t2, T3 t3) throws Throwable;
     }
 
     @FunctionalInterface
-    interface Consumer4<T1, T2, T3, T4> {
+    interface Consumer4<T1, T2, T3, T4> extends IConsumer {
         void accept(T1 t1, T2 t2, T3 t3, T4 t4) throws Throwable;
     }
 
     @FunctionalInterface
-    interface Consumer5<T1, T2, T3, T4, T5> {
+    interface Consumer5<T1, T2, T3, T4, T5> extends IConsumer {
         void accept(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5) throws Throwable;
     }
 }

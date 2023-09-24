@@ -18,6 +18,6 @@ package org.febit.lang;
 import java.util.function.Function;
 
 @FunctionalInterface
-public interface Function1<A1, R> extends Function<A1, R> {
+public interface Function1<A1, R> extends IFunction, Function<A1, R> {
 
 }

@@ -20,7 +20,7 @@ import jakarta.annotation.Nonnull;
 import java.util.Objects;
 
 @FunctionalInterface
-public interface Consumer3<A1, A2, A3> {
+public interface Consumer3<A1, A2, A3> extends IConsumer {
 
     void accept(A1 arg1, A2 arg2, A3 arg3);
 

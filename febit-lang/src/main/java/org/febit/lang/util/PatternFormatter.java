@@ -194,7 +194,6 @@ public class PatternFormatter<T> implements Serializable {
         }
     }
 
-
     public interface VarResolver {
 
         @Nullable

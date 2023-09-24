@@ -21,7 +21,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 @FunctionalInterface
-public interface Consumer1<A1> extends Consumer<A1> {
+public interface Consumer1<A1> extends IConsumer, Consumer<A1> {
 
     @Nonnull
     @Override

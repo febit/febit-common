@@ -19,7 +19,7 @@ import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
 @FunctionalInterface
-public interface Function0<R> extends Supplier<R>, Callable<R> {
+public interface Function0<R> extends IFunction, Supplier<R>, Callable<R> {
 
     R apply();
 

@@ -22,7 +22,7 @@ import java.util.Objects;
 import java.util.function.BiConsumer;
 
 @FunctionalInterface
-public interface Consumer2<A1, A2> extends BiConsumer<A1, A2> {
+public interface Consumer2<A1, A2> extends IConsumer, BiConsumer<A1, A2> {
 
     default void accept(@Nonnull Tuple2<A1, A2> tuple) {
         accept(tuple.v1(), tuple.v2());

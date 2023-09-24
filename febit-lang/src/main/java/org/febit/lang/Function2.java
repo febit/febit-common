@@ -18,7 +18,7 @@ package org.febit.lang;
 import java.util.function.BiFunction;
 
 @FunctionalInterface
-public interface Function2<A1, A2, R> extends BiFunction<A1, A2, R> {
+public interface Function2<A1, A2, R> extends IFunction, BiFunction<A1, A2, R> {
 
     default R apply(Tuple2<A1, A2> tuple) {
         return apply(tuple.v1(), tuple.v2());

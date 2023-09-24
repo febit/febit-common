@@ -16,7 +16,7 @@
 package org.febit.lang;
 
 @FunctionalInterface
-public interface Function4<A1, A2, A3, A4, R> {
+public interface Function4<A1, A2, A3, A4, R> extends IFunction {
 
     R apply(A1 arg1, A2 arg2, A3 arg3, A4 arg4);
 
