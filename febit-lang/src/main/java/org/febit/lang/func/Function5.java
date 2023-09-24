@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.lang;
+package org.febit.lang.func;
 
-import org.febit.lang.func.Function4;
+import org.febit.lang.Tuple5;
 
-/**
- * @deprecated use {@linkplain Function4} instead.
- */
-@Deprecated
 @FunctionalInterface
-public interface QuaterFunction<A1, A2, A3, A4, R> extends Function4<A1, A2, A3, A4, R> {
+public interface Function5<A1, A2, A3, A4, A5, R> extends IFunction {
 
+    R apply(A1 arg1, A2 arg2, A3 arg3, A4 arg4, A5 arg5);
+
+    default R apply(Tuple5<A1, A2, A3, A4, A5> tuple) {
+        return apply(tuple.v1(), tuple.v2(), tuple.v3(), tuple.v4(), tuple.v5());
+    }
 }

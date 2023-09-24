@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.lang;
+package org.febit.lang.func;
 
-import org.febit.lang.func.Function4;
+import org.febit.lang.Tuple2;
 
-/**
- * @deprecated use {@linkplain Function4} instead.
- */
-@Deprecated
+import java.util.function.BiFunction;
+
 @FunctionalInterface
-public interface QuaterFunction<A1, A2, A3, A4, R> extends Function4<A1, A2, A3, A4, R> {
+public interface Function2<A1, A2, R> extends IFunction, BiFunction<A1, A2, R> {
 
+    default R apply(Tuple2<A1, A2> tuple) {
+        return apply(tuple.v1(), tuple.v2());
+    }
 }

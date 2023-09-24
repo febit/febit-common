@@ -15,6 +15,8 @@
  */
 package org.febit.lang;
 
+import org.febit.lang.func.Function3;
+
 /**
  * @deprecated use {@linkplain Function3} instead.
  */

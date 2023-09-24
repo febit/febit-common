@@ -13,15 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.lang;
+package org.febit.lang.func;
 
-import org.febit.lang.func.Function4;
+import jakarta.annotation.Nonnull;
 
-/**
- * @deprecated use {@linkplain Function4} instead.
- */
-@Deprecated
+import java.util.Objects;
+
 @FunctionalInterface
-public interface QuaterFunction<A1, A2, A3, A4, R> extends Function4<A1, A2, A3, A4, R> {
+public interface Consumer0 extends IConsumer {
 
+    void accept();
+
+    @Nonnull
+    default Consumer0 andThen(@Nonnull Consumer0 after) {
+        Objects.requireNonNull(after);
+        return () -> {
+            accept();
+            after.accept();
+        };
+    }
 }

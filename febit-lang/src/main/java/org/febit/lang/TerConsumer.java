@@ -15,6 +15,8 @@
  */
 package org.febit.lang;
 
+import org.febit.lang.func.Consumer3;
+
 /**
  * @deprecated use {@linkplain Consumer3} instead
  */

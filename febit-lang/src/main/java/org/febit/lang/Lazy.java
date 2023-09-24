@@ -16,6 +16,7 @@
 package org.febit.lang;
 
 import org.febit.lang.annotation.NonNullApi;
+import org.febit.lang.func.SerializableSupplier;
 
 @NonNullApi
 public interface Lazy<T> extends SerializableSupplier<T> {

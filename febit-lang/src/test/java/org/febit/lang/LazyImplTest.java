@@ -15,6 +15,7 @@
  */
 package org.febit.lang;
 
+import org.febit.lang.func.SerializableSupplier;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

@@ -13,15 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.lang;
+package org.febit.lang.func;
 
-import org.febit.lang.func.Function4;
+import org.junit.jupiter.api.Test;
 
-/**
- * @deprecated use {@linkplain Function4} instead.
- */
-@Deprecated
-@FunctionalInterface
-public interface QuaterFunction<A1, A2, A3, A4, R> extends Function4<A1, A2, A3, A4, R> {
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
+class Consumer0Test {
+
+    static class Impl implements Consumer0 {
+
+        @Override
+        public void accept() {
+        }
+    }
+
+    @Test
+    void andThen() {
+        var c1 = spy(new Impl());
+        var c2 = spy(new Impl());
+
+        var c3 = c1.andThen(c2);
+        c3.accept();
+        verify(c1).accept();
+        verify(c2).accept();
+    }
 }

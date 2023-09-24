@@ -15,6 +15,8 @@
  */
 package org.febit.lang;
 
+import org.febit.lang.func.Consumer4;
+
 /**
  * Represents an operation that accepts four input arguments and returns no result.
  *

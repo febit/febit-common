@@ -13,15 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.lang;
+package org.febit.lang.func;
 
-import org.febit.lang.func.Function4;
+import org.febit.lang.Tuples;
+import org.junit.jupiter.api.Test;
 
-/**
- * @deprecated use {@linkplain Function4} instead.
- */
-@Deprecated
-@FunctionalInterface
-public interface QuaterFunction<A1, A2, A3, A4, R> extends Function4<A1, A2, A3, A4, R> {
+import static org.junit.jupiter.api.Assertions.*;
 
+class Function2Test {
+
+    private String func(String a, Boolean b) {
+        return a + b;
+    }
+
+    @Test
+    void apply() {
+        var func = (Function2<String, Boolean, String>) this::func;
+        assertEquals("string-true", func.apply("string-", true));
+        assertEquals("string-true", func.apply(Tuples.of("string-", true)));
+    }
 }

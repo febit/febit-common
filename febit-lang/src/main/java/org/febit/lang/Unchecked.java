@@ -16,6 +16,20 @@
 package org.febit.lang;
 
 import lombok.experimental.UtilityClass;
+import org.febit.lang.func.Checked;
+import org.febit.lang.func.Consumer0;
+import org.febit.lang.func.Consumer1;
+import org.febit.lang.func.Consumer2;
+import org.febit.lang.func.Consumer3;
+import org.febit.lang.func.Consumer4;
+import org.febit.lang.func.Consumer5;
+import org.febit.lang.func.Function0;
+import org.febit.lang.func.Function1;
+import org.febit.lang.func.Function2;
+import org.febit.lang.func.Function3;
+import org.febit.lang.func.Function4;
+import org.febit.lang.func.Function5;
+import org.febit.lang.func.VoidFunction;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;

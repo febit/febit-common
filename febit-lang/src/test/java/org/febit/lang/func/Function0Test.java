@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.lang;
+package org.febit.lang.func;
 
-import org.febit.lang.func.Function4;
+import org.junit.jupiter.api.Test;
 
-/**
- * @deprecated use {@linkplain Function4} instead.
- */
-@Deprecated
-@FunctionalInterface
-public interface QuaterFunction<A1, A2, A3, A4, R> extends Function4<A1, A2, A3, A4, R> {
+import static org.junit.jupiter.api.Assertions.*;
 
+class Function0Test {
+
+    @Test
+    void get() {
+        var func = (Function0<String>) () -> "string";
+        assertEquals("string", func.get());
+    }
 }

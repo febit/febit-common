@@ -20,6 +20,7 @@ import jakarta.annotation.Nullable;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.febit.lang.annotation.NonNullApi;
+import org.febit.lang.func.SerializableSupplier;
 
 import java.io.Serializable;
 import java.util.Objects;
