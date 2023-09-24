@@ -29,7 +29,7 @@ import java.util.function.BiConsumer;
 
 import static org.febit.lang.util.JacksonUtils.TYPE_FACTORY;
 
-public class AccessLogDeser<T> implements Deserializer<T> {
+public class AccessLogDeserializer<T> implements Deserializer<T> {
 
     private static final JavaType DEFAULT_TYPE = TYPE_FACTORY.constructMapType(
             LinkedHashMap.class, Object.class, Object.class
@@ -87,7 +87,7 @@ public class AccessLogDeser<T> implements Deserializer<T> {
         }
         this.keys = JacksonUtils.parseToStringList(keysRaw.toString());
 
-        var type = DeserUtils.resolveJavaType(configs, isKey ? TYPE_OF_KEY : TYPE_OF_VALUE);
+        var type = DeserializerUtils.resolveJavaType(configs, isKey ? TYPE_OF_KEY : TYPE_OF_VALUE);
         if (type != null) {
             this.javaType = TYPE_FACTORY.constructType(type);
         }

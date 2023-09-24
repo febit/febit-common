@@ -24,7 +24,7 @@ import org.febit.lang.util.JacksonWrapper;
 import java.nio.charset.StandardCharsets;
 
 @RequiredArgsConstructor
-public abstract class BaseJacksonDeser<T> implements Deserializer<T> {
+public abstract class BaseJacksonDeserializer<T> implements Deserializer<T> {
 
     private final JacksonWrapper jackson;
 

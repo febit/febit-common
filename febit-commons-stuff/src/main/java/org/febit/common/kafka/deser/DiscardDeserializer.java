@@ -18,7 +18,7 @@ package org.febit.common.kafka.deser;
 import jakarta.annotation.Nullable;
 import org.apache.kafka.common.serialization.Deserializer;
 
-public class DiscardDeser<T> implements Deserializer<T> {
+public class DiscardDeserializer<T> implements Deserializer<T> {
 
     @Nullable
     @Override

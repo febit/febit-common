@@ -24,7 +24,7 @@ import java.util.function.BiConsumer;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG;
 
-public class FailsafeDeser<T> extends BaseDelegatedDeser<T, T> {
+public class FailsafeDeserializer<T> extends BaseDelegatedDeserializer<T, T> {
 
     private static final String PREFIX = "febit.kafka.deser.failsafe.";
 
@@ -33,12 +33,12 @@ public class FailsafeDeser<T> extends BaseDelegatedDeser<T, T> {
 
     public static void configKeyDeser(String deser, BiConsumer<String, Object> configConsumer) {
         configConsumer.accept(DESER_FOR_KEY, deser);
-        configConsumer.accept(KEY_DESERIALIZER_CLASS_CONFIG, FailsafeDeser.class.getName());
+        configConsumer.accept(KEY_DESERIALIZER_CLASS_CONFIG, FailsafeDeserializer.class.getName());
     }
 
     public static void configValueDeser(String deser, BiConsumer<String, Object> configConsumer) {
         configConsumer.accept(DESER_FOR_VALUE, deser);
-        configConsumer.accept(VALUE_DESERIALIZER_CLASS_CONFIG, FailsafeDeser.class.getName());
+        configConsumer.accept(VALUE_DESERIALIZER_CLASS_CONFIG, FailsafeDeserializer.class.getName());
     }
 
     public static void configKeyDeser(Map<String, Object> config, String deser) {

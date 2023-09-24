@@ -20,7 +20,7 @@ import org.apache.kafka.common.serialization.Deserializer;
 
 import java.nio.charset.StandardCharsets;
 
-public class StringDeser implements Deserializer<String> {
+public class StringDeserializer implements Deserializer<String> {
 
     @Nullable
     @Override

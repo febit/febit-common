@@ -25,7 +25,7 @@ import java.util.function.BiConsumer;
 
 import static org.febit.lang.util.JacksonUtils.TYPE_FACTORY;
 
-public class JsonDeser<T> extends BaseJacksonDeser<T> {
+public class JsonDeserializer<T> extends BaseJacksonDeserializer<T> {
 
     private static final JavaType DEFAULT_TYPE = TYPE_FACTORY.constructType(Object.class);
     private static final String PREFIX = "febit.kafka.deser.json.";
@@ -52,19 +52,19 @@ public class JsonDeser<T> extends BaseJacksonDeser<T> {
         configValueType(type, config::put);
     }
 
-    public JsonDeser() {
+    public JsonDeserializer() {
         this(DEFAULT_TYPE);
     }
 
-    protected JsonDeser(Class<T> type) {
+    protected JsonDeserializer(Class<T> type) {
         this(TYPE_FACTORY.constructType(type));
     }
 
-    protected JsonDeser(JavaType type) {
+    protected JsonDeserializer(JavaType type) {
         this(JacksonUtils.json(), type);
     }
 
-    protected JsonDeser(JacksonWrapper jackson, JavaType type) {
+    protected JsonDeserializer(JacksonWrapper jackson, JavaType type) {
         super(jackson);
         this.javaType = type;
     }
@@ -72,7 +72,7 @@ public class JsonDeser<T> extends BaseJacksonDeser<T> {
     @Override
     public void configure(Map<String, ?> configs, boolean isKey) {
         super.configure(configs, isKey);
-        var type = DeserUtils.resolveJavaType(configs, isKey ? TYPE_OF_KEY : TYPE_OF_VALUE);
+        var type = DeserializerUtils.resolveJavaType(configs, isKey ? TYPE_OF_KEY : TYPE_OF_VALUE);
         if (type != null) {
             this.javaType = TYPE_FACTORY.constructType(type);
         }

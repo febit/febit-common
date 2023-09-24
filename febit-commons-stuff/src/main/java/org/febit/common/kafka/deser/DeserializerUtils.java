@@ -28,17 +28,17 @@ import java.util.Map;
 import static org.febit.lang.util.JacksonUtils.TYPE_FACTORY;
 
 @UtilityClass
-public class DeserUtils {
+public class DeserializerUtils {
 
     private static final Map<String, String> BUILD_IN_DESER;
 
     static {
         BUILD_IN_DESER = Map.of(
-                "discard", DiscardDeser.class.getName(),
-                "failsafe", FailsafeDeser.class.getName(),
-                "access-log", AccessLogDeser.class.getName(),
-                "string", StringDeser.class.getName(),
-                "json", JsonDeser.class.getName()
+                "discard", DiscardDeserializer.class.getName(),
+                "failsafe", FailsafeDeserializer.class.getName(),
+                "access-log", AccessLogDeserializer.class.getName(),
+                "string", StringDeserializer.class.getName(),
+                "json", JsonDeserializer.class.getName()
         );
     }
 
@@ -62,7 +62,7 @@ public class DeserUtils {
     public static Class<? extends Deserializer<?>> resolveDeserClass(@Nullable String deser)
             throws ClassNotFoundException {
         if (StringUtils.isEmpty(deser)) {
-            return StringDeser.class;
+            return StringDeserializer.class;
         }
         var name = BUILD_IN_DESER.getOrDefault(deser, deser);
         return (Class<? extends Deserializer<?>>) Utils.loadClass(name, Deserializer.class);

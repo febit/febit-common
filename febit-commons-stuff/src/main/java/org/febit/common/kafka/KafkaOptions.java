@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 import lombok.Singular;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.febit.common.jcommander.IOptions;
-import org.febit.common.kafka.deser.StringDeser;
+import org.febit.common.kafka.deser.StringDeserializer;
 import org.febit.lang.util.JacksonUtils;
 
 import java.util.ArrayList;
@@ -150,10 +150,10 @@ public class KafkaOptions implements IOptions {
     private String saslJaasConfig;
 
     @JsonProperty(KEY_DESERIALIZER_CLASS_CONFIG)
-    private Class<? extends Deserializer<?>> keyDeserializer = StringDeser.class;
+    private Class<? extends Deserializer<?>> keyDeserializer = StringDeserializer.class;
 
     @JsonProperty(VALUE_DESERIALIZER_CLASS_CONFIG)
-    private Class<? extends Deserializer<?>> valueDeserializer = StringDeser.class;
+    private Class<? extends Deserializer<?>> valueDeserializer = StringDeserializer.class;
 
     @JsonProperty(ENABLE_AUTO_COMMIT_CONFIG)
     private Boolean enableAutoCommit = false;

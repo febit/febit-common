@@ -19,7 +19,7 @@ import org.apache.kafka.common.serialization.Deserializer;
 
 import java.util.Map;
 
-public abstract class BaseDelegatedDeser<T, D> implements Deserializer<T> {
+public abstract class BaseDelegatedDeserializer<T, D> implements Deserializer<T> {
 
     private Deserializer<D> delegated;
 
@@ -44,7 +44,7 @@ public abstract class BaseDelegatedDeser<T, D> implements Deserializer<T> {
         if (cls == null) {
             throw new IllegalArgumentException("Delegated deser is required, please given a deser class name by: " + key);
         }
-        return DeserUtils.create(cls.toString(), configs, isKey);
+        return DeserializerUtils.create(cls.toString(), configs, isKey);
     }
 
     @Override
