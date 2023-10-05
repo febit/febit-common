@@ -99,7 +99,7 @@ public class StringWalker {
         }
         if (peek() != c) {
             throw new IllegalArgumentException(MessageFormat.format(
-                    "Unexpected char '{0}' at {1}, but need `{2}` ", peek(), pos(), c));
+                    "Unexpected char ''{0}'' at {1}, but need ''{2}'' ", peek(), pos(), c));
         }
         jump(1);
     }

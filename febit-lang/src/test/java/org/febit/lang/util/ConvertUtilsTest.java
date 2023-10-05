@@ -19,11 +19,25 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ConvertUtilsTest {
+
+    final Instant INSTANT = Instant.parse("2023-10-01T22:02:03.123Z");
+    final ZoneId ZONE_UTC = ZoneOffset.UTC;
+    final ZoneId ZONE_8 = ZoneOffset.ofHours(8);
+
+    final ZonedDateTime DT_ZONED_UTC = ZonedDateTime.ofInstant(INSTANT, ZONE_UTC);
+    final ZonedDateTime DT_ZONED_8 = ZonedDateTime.ofInstant(INSTANT, ZONE_8);
 
     @Test
     void testToString() {
@@ -160,5 +174,327 @@ class ConvertUtilsTest {
         assertEquals(BigDecimal.valueOf(1), ConvertUtils.toBigDecimal("1"));
         assertEquals(BigDecimal.valueOf(1.0D), ConvertUtils.toBigDecimal("1.0"));
         assertEquals(BigDecimal.valueOf(97), ConvertUtils.toBigDecimal('a'));
+    }
+
+    @Test
+    void toInstant() {
+        assertNull(ConvertUtils.toInstant(null));
+        assertEquals(Instant.EPOCH, ConvertUtils.toInstant(0));
+
+        Stream.of(
+                INSTANT,
+                INSTANT.toEpochMilli(),
+                String.valueOf(INSTANT.toEpochMilli()),
+                INSTANT.toString(),
+                DT_ZONED_8,
+                DT_ZONED_UTC,
+                DT_ZONED_8.toString(),
+                DT_ZONED_UTC.toString()
+        ).forEach(
+                raw -> assertEquals(INSTANT, ConvertUtils.toInstant(raw))
+        );
+    }
+
+    @Test
+    void toTemporal() {
+        assertNull(ConvertUtils.toTemporal(null));
+
+        Stream.of(
+                Instant.EPOCH,
+                LocalDate.EPOCH,
+                LocalTime.NOON,
+                INSTANT,
+                DT_ZONED_UTC,
+                DT_ZONED_8
+        ).forEach(
+                raw -> assertEquals(raw, ConvertUtils.toTemporal(raw))
+        );
+
+        Stream.of(
+                INSTANT.toEpochMilli(),
+                INSTANT.toString(),
+                DT_ZONED_UTC.toString()
+        ).forEach(
+                raw -> assertEquals(DT_ZONED_UTC, ConvertUtils.toTemporal(raw))
+        );
+
+        assertEquals(DT_ZONED_8, ConvertUtils.toTemporal(DT_ZONED_8.toString()));
+    }
+
+    @Test
+    void toMillis() {
+        assertNull(ConvertUtils.toMillis(null));
+        assertEquals(123L, ConvertUtils.toMillis(123));
+        assertEquals(0L, ConvertUtils.toMillis(Instant.EPOCH));
+
+        Stream.of(
+                INSTANT,
+                INSTANT.toEpochMilli(),
+                String.valueOf(INSTANT.toEpochMilli()),
+                INSTANT.toString(),
+                DT_ZONED_8,
+                DT_ZONED_UTC,
+                DT_ZONED_8.toString(),
+                DT_ZONED_UTC.toString()
+        ).forEach(
+                raw -> assertEquals(INSTANT.toEpochMilli(), ConvertUtils.toMillis(raw))
+        );
+    }
+
+    @Test
+    void toZone() {
+        assertNull(ConvertUtils.toZone(null));
+
+        Stream.of(
+                ZoneId.of("Z"),
+                ZONE_UTC,
+                ZONE_8
+        ).forEach(raw -> {
+            assertEquals(raw, ConvertUtils.toZone(raw));
+            assertEquals(raw, ConvertUtils.toZone(raw.toString()));
+        });
+
+        assertEquals(ZoneId.of("Z"), ConvertUtils.toZone(ZoneId.of("Z")));
+        assertEquals(ZoneId.of("Z"), ConvertUtils.toZone("Z"));
+
+        assertEquals(ZONE_UTC, ConvertUtils.toZone(ZONE_UTC));
+        assertEquals(ZONE_UTC, ConvertUtils.toZone(ZONE_UTC.toString()));
+        assertEquals(ZONE_8, ConvertUtils.toZone(ZONE_8));
+        assertEquals(ZONE_8, ConvertUtils.toZone(ZONE_8.toString()));
+    }
+
+    @Test
+    void toZonedDateTime() {
+        assertNull(ConvertUtils.toZonedDateTime(null));
+
+        Stream.of(
+                INSTANT.toEpochMilli(),
+                INSTANT.toString(),
+                DT_ZONED_UTC,
+                DT_ZONED_UTC.toString()
+        ).forEach(
+                raw -> assertEquals(DT_ZONED_UTC, ConvertUtils.toZonedDateTime(raw))
+        );
+
+        assertEquals(DT_ZONED_8, ConvertUtils.toZonedDateTime(DT_ZONED_8));
+        assertEquals(DT_ZONED_8, ConvertUtils.toZonedDateTime(DT_ZONED_8.toString()));
+    }
+
+    @Test
+    void toDateTime() {
+        assertNull(ConvertUtils.toDateTime(null));
+        assertEquals(LocalDateTime.ofInstant(Instant.EPOCH, ZONE_UTC),
+                ConvertUtils.toDateTime(0));
+
+        Stream.of(
+                INSTANT.toEpochMilli(),
+                INSTANT.toString(),
+                DT_ZONED_UTC,
+                DT_ZONED_UTC.toString()
+        ).forEach(
+                raw -> assertEquals(DT_ZONED_UTC.toLocalDateTime(), ConvertUtils.toDateTime(raw))
+        );
+
+        assertEquals(DT_ZONED_8.toLocalDateTime(), ConvertUtils.toDateTime(DT_ZONED_8));
+        assertEquals(DT_ZONED_8.toLocalDateTime(), ConvertUtils.toDateTime(DT_ZONED_8.toString()));
+    }
+
+    @Test
+    void toTime() {
+        assertNull(ConvertUtils.toTime(null));
+
+        assertEquals(LocalTime.MIDNIGHT,
+                ConvertUtils.toTime(0));
+
+        assertEquals(LocalTime.NOON,
+                ConvertUtils.toTime(LocalTime.NOON));
+
+        assertEquals(LocalTime.NOON,
+                ConvertUtils.toTime(LocalTime.NOON.toSecondOfDay() * 1000));
+
+        Stream.of(
+                INSTANT.toEpochMilli(),
+                INSTANT.toString(),
+                DT_ZONED_UTC,
+                DT_ZONED_UTC.toLocalDateTime(),
+                DT_ZONED_UTC.toLocalTime(),
+                DT_ZONED_UTC.toString()
+        ).forEach(
+                raw -> assertEquals(DT_ZONED_UTC.toLocalTime(), ConvertUtils.toTime(raw))
+        );
+
+        assertEquals(DT_ZONED_8.toLocalTime(), ConvertUtils.toTime(DT_ZONED_8));
+        assertEquals(DT_ZONED_8.toLocalTime(), ConvertUtils.toTime(DT_ZONED_8.toString()));
+    }
+
+    @Test
+    void toDate() {
+        assertNull(ConvertUtils.toDate(null));
+        assertEquals(LocalDate.EPOCH, ConvertUtils.toDate(0));
+
+        Stream.of(
+                INSTANT.toEpochMilli(),
+                INSTANT.toString(),
+                DT_ZONED_UTC,
+                DT_ZONED_UTC.toLocalDateTime(),
+                DT_ZONED_UTC.toLocalDate(),
+                DT_ZONED_UTC.toString()
+        ).forEach(
+                raw -> assertEquals(DT_ZONED_UTC.toLocalDate(), ConvertUtils.toDate(raw))
+        );
+
+        assertEquals(DT_ZONED_8.toLocalDate(), ConvertUtils.toDate(DT_ZONED_8));
+        assertEquals(DT_ZONED_8.toLocalDate(), ConvertUtils.toDate(DT_ZONED_8.toString()));
+    }
+
+    @Test
+    void toHour() {
+        assertNull(ConvertUtils.toHour(null));
+        assertEquals(0, ConvertUtils.toHour(LocalTime.MIDNIGHT));
+        assertEquals(12, ConvertUtils.toHour(LocalTime.NOON));
+        assertEquals(23, ConvertUtils.toHour(LocalTime.MAX));
+
+        Stream.of(
+                INSTANT.toEpochMilli(),
+                INSTANT.toString(),
+                DT_ZONED_UTC,
+                DT_ZONED_UTC.toLocalDateTime(),
+                DT_ZONED_UTC.toLocalTime(),
+                DT_ZONED_UTC.toString()
+        ).forEach(
+                raw -> assertEquals(DT_ZONED_UTC.toLocalTime().getHour(), ConvertUtils.toHour(raw))
+        );
+
+        assertEquals(DT_ZONED_8.toLocalTime().getHour(), ConvertUtils.toHour(DT_ZONED_8));
+        assertEquals(DT_ZONED_8.toLocalTime().getHour(), ConvertUtils.toHour(DT_ZONED_8.toString()));
+    }
+
+    @Test
+    void toDateNumber() {
+        assertNull(ConvertUtils.toDateNumber(null));
+        assertEquals(19700101, ConvertUtils.toDateNumber(LocalDate.EPOCH));
+
+        Stream.of(
+                INSTANT.toEpochMilli(),
+                INSTANT.toString(),
+                DT_ZONED_UTC,
+                DT_ZONED_UTC.toLocalDateTime(),
+                DT_ZONED_UTC.toLocalDate(),
+                DT_ZONED_UTC.toString()
+        ).forEach(
+                raw -> assertEquals(20231001, ConvertUtils.toDateNumber(raw))
+        );
+
+        Stream.of(
+                DT_ZONED_8,
+                DT_ZONED_8.toString(),
+                DT_ZONED_8.toLocalDateTime(),
+                DT_ZONED_8.toLocalDate()
+        ).forEach(
+                raw -> assertEquals(20231002, ConvertUtils.toDateNumber(raw))
+        );
+    }
+
+    @Test
+    void toUtcZonedDateTime() {
+        assertNull(ConvertUtils.toUtcZonedDateTime(null));
+
+        Stream.of(
+                INSTANT.toEpochMilli(),
+                INSTANT.toString(),
+                DT_ZONED_UTC,
+                DT_ZONED_UTC.toLocalDateTime(),
+                DT_ZONED_UTC.toString(),
+                DT_ZONED_8,
+                DT_ZONED_8.toString()
+        ).forEach(
+                raw -> assertEquals(DT_ZONED_UTC, ConvertUtils.toUtcZonedDateTime(raw))
+        );
+    }
+
+    @Test
+    void toUtcDateTime() {
+        assertNull(ConvertUtils.toUtcDateTime(null));
+
+        Stream.of(
+                INSTANT.toEpochMilli(),
+                INSTANT.toString(),
+                DT_ZONED_UTC,
+                DT_ZONED_UTC.toLocalDateTime(),
+                DT_ZONED_UTC.toString(),
+                DT_ZONED_8,
+                DT_ZONED_8.toString()
+        ).forEach(
+                raw -> assertEquals(DT_ZONED_UTC.toLocalDateTime(), ConvertUtils.toUtcDateTime(raw))
+        );
+    }
+
+    @Test
+    void toUtcDate() {
+        assertNull(ConvertUtils.toUtcDate(null));
+        Stream.of(
+                INSTANT.toEpochMilli(),
+                INSTANT.toString(),
+                DT_ZONED_UTC,
+                DT_ZONED_UTC.toLocalDateTime(),
+                DT_ZONED_UTC.toLocalDate(),
+                DT_ZONED_UTC.toString(),
+                DT_ZONED_8,
+                DT_ZONED_8.toString()
+        ).forEach(
+                raw -> assertEquals(DT_ZONED_UTC.toLocalDate(), ConvertUtils.toUtcDate(raw))
+        );
+    }
+
+    @Test
+    void toUtcTime() {
+        assertNull(ConvertUtils.toUtcTime(null));
+        Stream.of(
+                INSTANT.toEpochMilli(),
+                INSTANT.toString(),
+                DT_ZONED_UTC,
+                DT_ZONED_UTC.toLocalDateTime(),
+                DT_ZONED_UTC.toLocalTime(),
+                DT_ZONED_UTC.toString(),
+                DT_ZONED_8,
+                DT_ZONED_8.toString()
+        ).forEach(
+                raw -> assertEquals(DT_ZONED_UTC.toLocalTime(), ConvertUtils.toUtcTime(raw))
+        );
+    }
+
+    @Test
+    void toUtcHour() {
+        assertNull(ConvertUtils.toUtcHour(null));
+        Stream.of(
+                INSTANT.toEpochMilli(),
+                INSTANT.toString(),
+                DT_ZONED_UTC,
+                DT_ZONED_UTC.toLocalDateTime(),
+                DT_ZONED_UTC.toLocalTime(),
+                DT_ZONED_UTC.toString(),
+                DT_ZONED_8,
+                DT_ZONED_8.toString()
+        ).forEach(
+                raw -> assertEquals(DT_ZONED_UTC.toLocalTime().getHour(), ConvertUtils.toUtcHour(raw))
+        );
+    }
+
+    @Test
+    void toUtcDateNumber() {
+        assertNull(ConvertUtils.toUtcDateNumber(null));
+
+        Stream.of(
+                INSTANT.toEpochMilli(),
+                INSTANT.toString(),
+                DT_ZONED_UTC,
+                DT_ZONED_UTC.toLocalDateTime(),
+                DT_ZONED_UTC.toLocalDate(),
+                DT_ZONED_UTC.toString(),
+                DT_ZONED_8,
+                DT_ZONED_8.toString()
+        ).forEach(
+                raw -> assertEquals(20231001, ConvertUtils.toUtcDateNumber(raw))
+        );
     }
 }

@@ -20,6 +20,14 @@ import lombok.experimental.UtilityClass;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.temporal.Temporal;
+import java.time.temporal.TemporalAccessor;
 import java.util.function.Function;
 
 @UtilityClass
@@ -164,5 +172,160 @@ public class ConvertUtils {
             return new BigDecimal((int) ((Character) obj));
         }
         return new BigDecimal(obj.toString().trim());
+    }
+
+    @Nullable
+    private static <T> T temporal(@Nullable Object obj, Function<TemporalAccessor, T> convert, Function<String, T> parser) {
+        if (obj == null) {
+            return null;
+        }
+        if (obj instanceof TemporalAccessor) {
+            return convert.apply((TemporalAccessor) obj);
+        }
+        var str = obj.toString();
+        return parser.apply(str);
+    }
+
+    @Nullable
+    private static <T> T utc(@Nullable Object obj, Function<ZonedDateTime, T> convert) {
+        var time = toUtcZonedDateTime(obj);
+        if (time == null) {
+            return null;
+        }
+        return convert.apply(time);
+    }
+
+    @Nullable
+    public static Instant toInstant(@Nullable Object obj) {
+        if (obj instanceof Number) {
+            return Instant.ofEpochMilli(((Number) obj).longValue());
+        }
+        return temporal(obj, TimeUtils::instant, TimeUtils::parseInstant);
+    }
+
+    @Nullable
+    public static Temporal toTemporal(@Nullable Object obj) {
+        if (obj instanceof Temporal) {
+            return (Temporal) obj;
+        }
+        return toZonedDateTime(obj);
+    }
+
+    @Nullable
+    public static Long toMillis(@Nullable Object obj) {
+        if (obj instanceof Number) {
+            return ((Number) obj).longValue();
+        }
+        var instant = toInstant(obj);
+        if (instant == null) {
+            return null;
+        }
+        return instant.toEpochMilli();
+    }
+
+    @Nullable
+    public static ZoneOffset toZone(@Nullable Object obj) {
+        if (obj == null) {
+            return null;
+        }
+        if (obj instanceof ZoneOffset) {
+            return (ZoneOffset) obj;
+        }
+        return ZoneOffset.of(obj.toString());
+    }
+
+    @Nullable
+    public static ZonedDateTime toZonedDateTime(@Nullable Object obj) {
+        return temporal(obj, TimeUtils::zonedDateTime, TimeUtils::parseZonedDateTime);
+    }
+
+    @Nullable
+    public static LocalDateTime toDateTime(@Nullable Object obj) {
+        return temporal(obj, TimeUtils::localDateTime, TimeUtils::parseDateTime);
+    }
+
+    @Nullable
+    public static LocalTime toTime(@Nullable Object obj) {
+        return temporal(obj, TimeUtils::localTime, TimeUtils::parseTime);
+    }
+
+    @Nullable
+    public static LocalDate toDate(@Nullable Object obj) {
+        return temporal(obj, TimeUtils::localDate, TimeUtils::parseDate);
+    }
+
+    @Nullable
+    public static Integer toHour(@Nullable Object obj) {
+        return toHour(toTime(obj));
+    }
+
+    @Nullable
+    public static Integer toDateNumber(@Nullable Object obj) {
+        return toDateNumber(toDate(obj));
+    }
+
+    @Nullable
+    public static ZonedDateTime toUtcZonedDateTime(@Nullable Object obj) {
+        var time = toZonedDateTime(obj);
+        if (time == null) {
+            return null;
+        }
+        return time.withZoneSameInstant(ZoneOffset.UTC);
+    }
+
+    @Nullable
+    public static LocalDateTime toUtcDateTime(@Nullable Object obj) {
+        if (obj instanceof LocalDateTime) {
+            return (LocalDateTime) obj;
+        }
+        return utc(obj, ZonedDateTime::toLocalDateTime);
+    }
+
+    @Nullable
+    public static LocalDate toUtcDate(@Nullable Object obj) {
+        if (obj instanceof LocalDate) {
+            return (LocalDate) obj;
+        }
+        return utc(obj, ZonedDateTime::toLocalDate);
+    }
+
+    @Nullable
+    public static LocalTime toUtcTime(@Nullable Object obj) {
+        if (obj instanceof LocalTime) {
+            return (LocalTime) obj;
+        }
+        var time = toZonedDateTime(obj);
+        if (time == null) {
+            return null;
+        }
+        return utc(obj, ZonedDateTime::toLocalTime);
+    }
+
+    @Nullable
+    public static Integer toUtcHour(@Nullable Object obj) {
+        return toHour(toUtcTime(obj));
+    }
+
+    @Nullable
+    public static Integer toUtcDateNumber(@Nullable Object obj) {
+        return toDateNumber(toUtcDate(obj));
+    }
+
+    @Nullable
+    private static Integer toDateNumber(@Nullable LocalDate time) {
+        if (time == null) {
+            return null;
+        }
+        return time.getYear() * 10000
+                + time.getMonth().getValue() * 100
+                + time.getDayOfMonth();
+    }
+
+    @Nullable
+    private static Integer toHour(@Nullable LocalTime time) {
+        if (time == null) {
+            return null;
+        }
+        return time.getHour();
     }
 }
