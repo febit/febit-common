@@ -1,8 +1,9 @@
 plugins {
-  id 'com.github.hierynomus.license' version '0.16.1'
-  id 'org.febit.standard-java' version '1.1.0'
-  id 'org.febit.standard-maven-publish' version '1.1.0'
-  id 'org.febit.codegen-module' version '1.1.0'
+  alias libs.plugins.license
+
+  alias libs.plugins.febit.java
+  alias libs.plugins.febit.maven.publish
+  alias libs.plugins.febit.codegen.module
 }
 
 group 'org.febit'
@@ -11,32 +12,6 @@ version '3.0.0-SNAPSHOT'
 description = 'Febit Commons'
 
 ext {
-
-  versions = [
-      slf4j              : '2.0.9',
-      jsr305             : '3.0.2',
-      spotbugs           : '4.7.1',
-      annotationApi      : '2.1.1',
-
-      commonsLang3       : '3.13.0',
-      commonsCollections4: '4.4',
-      commonsCodec       : '1.16.0',
-      commonsCompress    : '1.24.0',
-      commonsIo          : '2.13.0',
-      commonsExec        : '1.3',
-
-      jcommander         : '1.82',
-      jackson            : '2.15.2',
-      jsonpath           : '2.8.0',
-      snakeyaml          : '1.33',
-      kafkaClients: '3.5.1',
-
-      junit              : '5.9.3',
-      hamcrest           : '2.2',
-      assertj            : '3.24.2',
-      mockito            : '5.5.0',
-  ]
-
 }
 
 allprojects {
@@ -107,32 +82,33 @@ configure(subprojects.findAll {
       cacheChangingModulesFor 0, 'seconds'
     }
     imports {
-      mavenBom "com.fasterxml.jackson:jackson-bom:${versions.jackson}"
-      mavenBom "org.junit:junit-bom:${versions.junit}"
-      mavenBom "org.assertj:assertj-bom:${versions.assertj}"
-      mavenBom "org.mockito:mockito-bom:${versions.mockito}"
+      mavenBom "${libs.jackson.bom.get()}"
+      mavenBom "${libs.junit.bom.get()}"
+      mavenBom "${libs.assertj.bom.get()}"
+      mavenBom "${libs.mockito.bom.get()}"
     }
     dependencies {
-      dependencySet(group: 'org.slf4j', version: "${versions.slf4j}") {
+      dependencySet(group: 'org.slf4j', version: "${libs.versions.slf4j.get()}") {
         entry 'slf4j-api'
         entry 'slf4j-simple'
       }
-      dependency "com.google.code.findbugs:jsr305:${versions.jsr305}"
-      dependency "com.github.spotbugs:spotbugs-annotations:${versions.spotbugs}"
-      dependency "jakarta.annotation:jakarta.annotation-api:${versions.annotationApi}"
 
-      dependency "commons-io:commons-io:${versions.commonsIo}"
-      dependency "commons-codec:commons-codec:${versions.commonsCodec}"
-      dependency "org.apache.commons:commons-lang3:${versions.commonsLang3}"
-      dependency "org.apache.commons:commons-collections4:${versions.commonsCollections4}"
-      dependency "org.apache.commons:commons-compress:${versions.commonsCompress}"
-      dependency "org.apache.commons:commons-exec:${versions.commonsExec}"
-      dependency "org.apache.kafka:kafka-clients:${versions.kafkaClients}"
+      dependency "${libs.jsr305.get()}"
+      dependency "${libs.spotbugs.annotations.get()}"
+      dependency "${libs.annotation.api.get()}"
 
-      dependency "org.yaml:snakeyaml:${versions.snakeyaml}"
-      dependency "com.beust:jcommander:${versions.jcommander}"
-      dependency "com.jayway.jsonpath:json-path:${versions.jsonpath}"
-      dependency "org.hamcrest:hamcrest:${versions.hamcrest}"
+      dependency "${libs.commons.io.get()}"
+      dependency "${libs.commons.codec.get()}"
+      dependency "${libs.commons.lang3.get()}"
+      dependency "${libs.commons.collections4.get()}"
+      dependency "${libs.commons.compress.get()}"
+      dependency "${libs.commons.exec.get()}"
+
+      dependency "${libs.kafka.clients.get()}"
+      dependency "${libs.snakeyaml.get()}"
+      dependency "${libs.jcommander.get()}"
+      dependency "${libs.jsonpath.get()}"
+      dependency "${libs.hamcrest.get()}"
     }
   }
 }
