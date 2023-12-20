@@ -25,6 +25,12 @@ public interface Lazy<T> extends SerializableSupplier<T> {
 
     void reset();
 
+    boolean isPresent();
+
+    default boolean isAbsent() {
+        return !isPresent();
+    }
+
     static <T> Lazy<T> of(final SerializableSupplier<T> supplier) {
         return new LazyImpl<>(supplier);
     }

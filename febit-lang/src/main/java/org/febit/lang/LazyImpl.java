@@ -49,6 +49,16 @@ final class LazyImpl<T> implements Serializable, Lazy<T> {
     }
 
     @Override
+    public synchronized boolean isPresent() {
+        return this.value != null;
+    }
+
+    @Override
+    public synchronized boolean isAbsent() {
+        return this.value == null;
+    }
+
+    @Override
     public synchronized void reset() {
         this.value = null;
     }
