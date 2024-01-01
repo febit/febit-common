@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'org.febit'
-version '3.0.0'
+version '3.1.0-SNAPSHOT'
 
 description = 'Febit Commons'
 
@@ -63,7 +63,6 @@ configure(subprojects.findAll {
   }
 
   dependencies {
-
     if (project.name != 'febit-annotations-optional') {
       compileOnly project(':febit-annotations-optional')
       testCompileOnly project(':febit-annotations-optional')

@@ -7,9 +7,9 @@ codegenModule {
 dependencies {
   api project(':febit-lang')
 
-  compileOnly 'com.beust:jcommander'
-  compileOnly 'org.apache.kafka:kafka-clients'
+  compileOnly libs.jcommander
+  compileOnly libs.kafka.clients
 
-  testImplementation 'com.beust:jcommander'
-  testImplementation 'org.apache.kafka:kafka-clients'
+  testImplementation libs.jcommander
+  testImplementation libs.kafka.clients
 }
