@@ -38,21 +38,6 @@ public final class Tuple3<V1, V2, V3> implements Tuple, Comparable<Tuple3<V1, V2
     public final V2 v2;
     public final V3 v3;
 
-    @Deprecated
-    public V1 a() {
-        return v1;
-    }
-
-    @Deprecated
-    public V2 b() {
-        return v2;
-    }
-
-    @Deprecated
-    public V3 c() {
-        return v3;
-    }
-
     public V1 v1() {
         return v1;
     }

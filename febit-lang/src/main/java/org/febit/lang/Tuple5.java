@@ -40,31 +40,6 @@ public final class Tuple5<V1, V2, V3, V4, V5> implements Tuple, Comparable<Tuple
     public final V4 v4;
     public final V5 v5;
 
-    @Deprecated
-    public V1 a() {
-        return v1;
-    }
-
-    @Deprecated
-    public V2 b() {
-        return v2;
-    }
-
-    @Deprecated
-    public V3 c() {
-        return v3;
-    }
-
-    @Deprecated
-    public V4 d() {
-        return v4;
-    }
-
-    @Deprecated
-    public V5 e() {
-        return v5;
-    }
-
     public V1 v1() {
         return v1;
     }

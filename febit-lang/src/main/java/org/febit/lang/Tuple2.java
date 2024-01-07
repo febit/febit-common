@@ -37,16 +37,6 @@ public final class Tuple2<V1, V2> implements Tuple, Comparable<Tuple2<V1, V2>> {
     public final V1 v1;
     public final V2 v2;
 
-    @Deprecated
-    public V1 a() {
-        return v1;
-    }
-
-    @Deprecated
-    public V2 b() {
-        return v2;
-    }
-
     public V1 v1() {
         return v1;
     }
