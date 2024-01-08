@@ -25,6 +25,6 @@ class LazyTest {
     void test() {
         var lazy = Lazy.of(() -> "test");
         assertEquals("test", lazy.get());
-        assertTrue(lazy instanceof LazyImpl);
+        assertInstanceOf(LazyImpl.class, lazy);
     }
 }

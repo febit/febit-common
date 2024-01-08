@@ -49,7 +49,7 @@ import static java.util.Objects.requireNonNull;
 public class JsonPathAssert extends AbstractAssert<JsonPathAssert, Object> {
 
     private final DocumentContext context;
-    Conditions conditions = Conditions.instance();
+    final Conditions conditions = Conditions.instance();
 
     protected JsonPathAssert(DocumentContext context) {
         super(context.json(), JsonPathAssert.class);

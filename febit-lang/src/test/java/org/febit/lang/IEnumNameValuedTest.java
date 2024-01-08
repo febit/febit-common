@@ -17,15 +17,14 @@ package org.febit.lang;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class IEnumNameValuedTest {
 
     @Test
     @SuppressWarnings("ConstantValue")
     void getValue() {
-        assertTrue(TestEnum.OK instanceof Valued);
+        assertInstanceOf(Valued.class, TestEnum.OK);
 
         for (var e : TestEnum.values()) {
             assertEquals(e.name(), e.getValue());

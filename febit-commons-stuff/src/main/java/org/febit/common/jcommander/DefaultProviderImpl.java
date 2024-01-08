@@ -87,7 +87,7 @@ public class DefaultProviderImpl implements IDefaultProvider {
 
         for (var file : files) {
             try (
-                    var in = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
+                    var in = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)
             ) {
                 log.info("Loading options from file: {}", file.getAbsolutePath());
                 props.load(in);

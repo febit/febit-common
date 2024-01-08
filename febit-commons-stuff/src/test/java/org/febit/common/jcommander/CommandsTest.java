@@ -244,8 +244,7 @@ class CommandsTest {
     public static class FooOptions implements IOptions {
 
         @Parameter(
-                names = {"--foo-user"},
-                description = ""
+                names = {"--foo-user"}
         )
         private String user;
     }

@@ -64,9 +64,9 @@ class PeriodDurationParserTest {
                 "1yrs 2mons 3wks 4days 5hrs 6mins 7secs",
                 "1yr 2mon 3wk 4day 5hr 6min 7sec",
                 "1y 2mos 3w4d5h6m7s"
-        ).forEach(raw -> {
-            assertEquals(DU_1Y2M3W4D5H6M7S, parse(raw));
-        });
+        ).forEach(raw ->
+                assertEquals(DU_1Y2M3W4D5H6M7S, parse(raw))
+        );
     }
 
     @Test
