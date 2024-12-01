@@ -9,6 +9,7 @@ dependencies {
 
   compileOnly libs.jcommander
   compileOnly libs.kafka.clients
+  compileOnly libs.nimbus.jose.jwt
 
   testImplementation libs.jcommander
   testImplementation libs.kafka.clients
