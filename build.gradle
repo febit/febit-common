@@ -84,9 +84,9 @@ configure(subprojects.findAll {
       cacheChangingModulesFor 0, 'seconds'
     }
     imports {
+      mavenBom "${libs.assertj.bom.get()}"
       mavenBom "${libs.jackson.bom.get()}"
       mavenBom "${libs.junit.bom.get()}"
-      mavenBom "${libs.assertj.bom.get()}"
       mavenBom "${libs.mockito.bom.get()}"
     }
     dependencies {
@@ -99,18 +99,20 @@ configure(subprojects.findAll {
       dependency "${libs.spotbugs.annotations.get()}"
       dependency "${libs.annotation.api.get()}"
 
-      dependency "${libs.commons.io.get()}"
       dependency "${libs.commons.codec.get()}"
-      dependency "${libs.commons.lang3.get()}"
       dependency "${libs.commons.collections4.get()}"
       dependency "${libs.commons.compress.get()}"
       dependency "${libs.commons.exec.get()}"
+      dependency "${libs.commons.io.get()}"
+      dependency "${libs.commons.lang3.get()}"
+      dependency "${libs.commons.text.get()}"
 
-      dependency "${libs.kafka.clients.get()}"
-      dependency "${libs.snakeyaml.get()}"
+      dependency "${libs.hamcrest.get()}"
       dependency "${libs.jcommander.get()}"
       dependency "${libs.jsonpath.get()}"
-      dependency "${libs.hamcrest.get()}"
+      dependency "${libs.kafka.clients.get()}"
+      dependency "${libs.nimbus.jose.jwt.get()}"
+      dependency "${libs.snakeyaml.get()}"
     }
   }
 }

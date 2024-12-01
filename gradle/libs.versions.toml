@@ -4,23 +4,25 @@ commons-codec = '1.17.1'
 commons-collections4 = '4.4'
 commons-compress = '1.27.1'
 commons-exec = '1.4.0'
-commons-io = '2.16.1'
-commons-lang3 = '3.16.0'
+commons-io = '2.18.0'
+commons-lang3 = '3.17.0'
+commons-text = '1.2.0'
 febit-devkit = '1.4.0'
 hierynomus-license = '0.16.1'
-jackson = '2.17.2'
+jackson = '2.18.2'
 jcommander = '2.0'
 jsonpath = '2.9.0'
 jsr305 = '3.0.2'
-kafka-clients = '3.8.0'
+kafka-clients = '3.9.0'
 slf4j = '2.0.16'
-snakeyaml = '2.2'
+snakeyaml = '2.3'
 spotbugs = '4.8.6'
+nimbus-jose-jwt = '9.47'
 
 assertj = '3.26.3'
 hamcrest = '3.0'
-junit = '5.11.0'
-mockito = '5.12.0'
+junit = '5.11.3'
+mockito = '5.14.2'
 
 
 [libraries]
@@ -34,18 +36,20 @@ jsr305 = { module = 'com.google.code.findbugs:jsr305', version.ref = 'jsr305' }
 spotbugs-annotations = { module = 'com.github.spotbugs:spotbugs-annotations', version.ref = 'spotbugs' }
 annotation-api = { module = 'jakarta.annotation:jakarta.annotation-api', version.ref = 'annotation-api' }
 
-commons-io = { module = 'commons-io:commons-io', version.ref = 'commons-io' }
 commons-codec = { module = 'commons-codec:commons-codec', version.ref = 'commons-codec' }
-commons-lang3 = { module = 'org.apache.commons:commons-lang3', version.ref = 'commons-lang3' }
 commons-collections4 = { module = 'org.apache.commons:commons-collections4', version.ref = 'commons-collections4' }
 commons-compress = { module = 'org.apache.commons:commons-compress', version.ref = 'commons-compress' }
 commons-exec = { module = 'org.apache.commons:commons-exec', version.ref = 'commons-exec' }
-kafka-clients = { module = 'org.apache.kafka:kafka-clients', version.ref = 'kafka-clients' }
+commons-io = { module = 'commons-io:commons-io', version.ref = 'commons-io' }
+commons-lang3 = { module = 'org.apache.commons:commons-lang3', version.ref = 'commons-lang3' }
+commons-text = { module = 'org.apache.commons:commons-text', version.ref = 'commons-text' }
 
-snakeyaml = { module = 'org.yaml:snakeyaml', version.ref = 'snakeyaml' }
+hamcrest = { module = 'org.hamcrest:hamcrest', version.ref = 'hamcrest' }
 jcommander = { module = 'org.jcommander:jcommander', version.ref = 'jcommander' }
 jsonpath = { module = 'com.jayway.jsonpath:json-path', version.ref = 'jsonpath' }
-hamcrest = { module = 'org.hamcrest:hamcrest', version.ref = 'hamcrest' }
+kafka-clients = { module = 'org.apache.kafka:kafka-clients', version.ref = 'kafka-clients' }
+nimbus-jose-jwt = { module = 'com.nimbusds:nimbus-jose-jwt', version.ref = 'nimbus-jose-jwt' }
+snakeyaml = { module = 'org.yaml:snakeyaml', version.ref = 'snakeyaml' }
 
 
 [plugins]
