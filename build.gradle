@@ -91,17 +91,25 @@ configure(subprojects.findAll {
     }
     dependencies {
       dependencySet(group: 'org.slf4j', version: "${libs.versions.slf4j.get()}") {
+        entry 'jcl-over-slf4j'
+        entry 'jul-to-slf4j'
+        entry 'log4j-over-slf4j'
         entry 'slf4j-api'
+        entry 'slf4j-nop'
         entry 'slf4j-simple'
       }
 
+      dependency "${libs.annotation.api.get()}"
       dependency "${libs.jsr305.get()}"
       dependency "${libs.spotbugs.annotations.get()}"
-      dependency "${libs.annotation.api.get()}"
+      dependency "${libs.swagger.annotations.get()}"
+      dependency "${libs.validation.api.get()}"
 
+      dependency "${libs.commons.cli.get()}"
       dependency "${libs.commons.codec.get()}"
       dependency "${libs.commons.collections4.get()}"
       dependency "${libs.commons.compress.get()}"
+      dependency "${libs.commons.csv.get()}"
       dependency "${libs.commons.exec.get()}"
       dependency "${libs.commons.io.get()}"
       dependency "${libs.commons.lang3.get()}"
@@ -145,7 +153,7 @@ def customPom(MavenPom pom) {
     developers {
       developer {
         id = 'zqq'
-        name = 'Zhu Qingqing'
+        name = 'Kurt Zhu'
         email = 'zqq@febit.org'
         timezone = '+8'
       }

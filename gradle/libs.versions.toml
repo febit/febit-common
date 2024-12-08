@@ -1,23 +1,30 @@
 [versions]
 annotation-api = '3.0.0'
+jsr305 = '3.0.2'
+validation-api = '3.1.0'
+spotbugs = '4.8.6'
+swagger = '2.2.26'
+
+commons-cli = '1.9.0'
 commons-codec = '1.17.1'
 commons-collections4 = '4.4'
 commons-compress = '1.27.1'
+commons-csv = '1.12.0'
 commons-exec = '1.4.0'
 commons-io = '2.18.0'
 commons-lang3 = '3.17.0'
-commons-text = '1.2.0'
+commons-text = '1.12.0'
+
 febit-devkit = '1.4.0'
 hierynomus-license = '0.16.1'
+
 jackson = '2.18.2'
 jcommander = '2.0'
 jsonpath = '2.9.0'
-jsr305 = '3.0.2'
 kafka-clients = '3.9.0'
+nimbus-jose-jwt = '9.47'
 slf4j = '2.0.16'
 snakeyaml = '2.3'
-spotbugs = '4.8.6'
-nimbus-jose-jwt = '9.47'
 
 assertj = '3.26.3'
 hamcrest = '3.0'
@@ -25,20 +32,31 @@ junit = '5.11.3'
 mockito = '5.14.2'
 
 
-[libraries]
+[plugins]
+febit-bom = { id = 'org.febit.standard-bom', version.ref = 'febit-devkit' }
+febit-codegen-module = { id = 'org.febit.codegen-module', version.ref = 'febit-devkit' }
+febit-java = { id = 'org.febit.standard-java', version.ref = 'febit-devkit' }
+febit-maven-publish = { id = 'org.febit.standard-maven-publish', version.ref = 'febit-devkit' }
+license = { id = 'com.github.hierynomus.license', version.ref = 'hierynomus-license' }
 
+
+[libraries]
+assertj-bom = { module = 'org.assertj:assertj-bom', version.ref = 'assertj' }
 jackson-bom = { module = 'com.fasterxml.jackson:jackson-bom', version.ref = 'jackson' }
 junit-bom = { module = 'org.junit:junit-bom', version.ref = 'junit' }
-assertj-bom = { module = 'org.assertj:assertj-bom', version.ref = 'assertj' }
 mockito-bom = { module = 'org.mockito:mockito-bom', version.ref = 'mockito' }
 
+annotation-api = { module = 'jakarta.annotation:jakarta.annotation-api', version.ref = 'annotation-api' }
 jsr305 = { module = 'com.google.code.findbugs:jsr305', version.ref = 'jsr305' }
 spotbugs-annotations = { module = 'com.github.spotbugs:spotbugs-annotations', version.ref = 'spotbugs' }
-annotation-api = { module = 'jakarta.annotation:jakarta.annotation-api', version.ref = 'annotation-api' }
+swagger-annotations = { module = 'io.swagger.core.v3:swagger-annotations', version.ref = 'swagger' }
+validation-api = { module = 'jakarta.validation:jakarta.validation-api', version.ref = 'validation-api' }
 
+commons-cli = { module = 'commons-cli:commons-cli', version.ref = 'commons-cli' }
 commons-codec = { module = 'commons-codec:commons-codec', version.ref = 'commons-codec' }
 commons-collections4 = { module = 'org.apache.commons:commons-collections4', version.ref = 'commons-collections4' }
 commons-compress = { module = 'org.apache.commons:commons-compress', version.ref = 'commons-compress' }
+commons-csv = { module = 'org.apache.commons:commons-csv', version.ref = 'commons-csv' }
 commons-exec = { module = 'org.apache.commons:commons-exec', version.ref = 'commons-exec' }
 commons-io = { module = 'commons-io:commons-io', version.ref = 'commons-io' }
 commons-lang3 = { module = 'org.apache.commons:commons-lang3', version.ref = 'commons-lang3' }
@@ -50,11 +68,3 @@ jsonpath = { module = 'com.jayway.jsonpath:json-path', version.ref = 'jsonpath' 
 kafka-clients = { module = 'org.apache.kafka:kafka-clients', version.ref = 'kafka-clients' }
 nimbus-jose-jwt = { module = 'com.nimbusds:nimbus-jose-jwt', version.ref = 'nimbus-jose-jwt' }
 snakeyaml = { module = 'org.yaml:snakeyaml', version.ref = 'snakeyaml' }
-
-
-[plugins]
-febit-java = { id = 'org.febit.standard-java', version.ref = 'febit-devkit' }
-febit-bom = { id = 'org.febit.standard-bom', version.ref = 'febit-devkit' }
-febit-maven-publish = { id = 'org.febit.standard-maven-publish', version.ref = 'febit-devkit' }
-febit-codegen-module = { id = 'org.febit.codegen-module', version.ref = 'febit-devkit' }
-license = { id = 'com.github.hierynomus.license', version.ref = 'hierynomus-license' }
