@@ -279,4 +279,37 @@ class JwtCodecTest {
         assertTrue(result.isSuccess());
         assertEquals(PL_X, result.getData());
     }
+
+    @Test
+    void rsa() {
+        var codec = new JwtCodec(JwtCodecProps.builder()
+                .signerKeyId(RSA_1.id())
+                .keys(List.of(RSA_1, RSA_2))
+                .build()
+        );
+
+        var token = assertDoesNotThrow(() -> codec.encode(PL_X));
+        var decoded = assertDoesNotThrow(() -> codec.decode(token));
+
+        assertTrue(decoded.isSuccess());
+        assertEquals(PL_X, decoded.getData());
+    }
+
+    @Test
+    void rsa512() {
+        var key = RSA_1.toBuilder()
+                .algorithm(JwkAlgorithm.RS512)
+                .build();
+        var codec = new JwtCodec(JwtCodecProps.builder()
+                .signerKeyId(key.id())
+                .keys(List.of(key))
+                .build()
+        );
+
+        var token = assertDoesNotThrow(() -> codec.encode(PL_X));
+        var decoded = assertDoesNotThrow(() -> codec.decode(token));
+
+        assertTrue(decoded.isSuccess());
+        assertEquals(PL_X, decoded.getData());
+    }
 }
