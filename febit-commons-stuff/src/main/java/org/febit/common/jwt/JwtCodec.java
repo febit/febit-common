@@ -21,8 +21,6 @@ import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import jakarta.annotation.Nullable;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import org.febit.lang.Lazy;
 import org.febit.lang.protocol.IResponse;
 import org.febit.lang.util.Maps;
@@ -32,9 +30,6 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.function.Consumer;
 
-@RequiredArgsConstructor(
-        access = AccessLevel.PROTECTED
-)
 public class JwtCodec {
 
     static final int STATUS_UNAUTHORIZED = 401;
@@ -50,6 +45,10 @@ public class JwtCodec {
     static final String MSG_VERIFY_FAILED = "failed pass signing verifier";
 
     protected final JwtCodecProps props;
+
+    public JwtCodec(JwtCodecProps props) {
+        this.props = props;
+    }
 
     protected final Lazy<Map<String, JwtKey.Resolved>> keys = Lazy.of(this::mappingKeys);
     protected final Lazy<JwtKey.Resolved> signerKey = Lazy.of(this::resolveSingerKey);
