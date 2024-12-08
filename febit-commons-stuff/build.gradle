@@ -13,4 +13,5 @@ dependencies {
 
   testImplementation libs.jcommander
   testImplementation libs.kafka.clients
+  testImplementation libs.nimbus.jose.jwt
 }

@@ -15,10 +15,17 @@
  */
 package org.febit.common.jwt;
 
+import lombok.Singular;
+
 import java.util.List;
 
+@lombok.Builder(
+        builderClassName = "Builder",
+        toBuilder = true
+)
 public record JwtCodecProps(
         String signerKeyId,
+        @Singular
         List<JwtKey> keys
 ) {
 

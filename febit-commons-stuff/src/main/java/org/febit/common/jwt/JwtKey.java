@@ -30,6 +30,10 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Optional;
 
+@lombok.Builder(
+        builderClassName = "Builder",
+        toBuilder = true
+)
 public record JwtKey(
         @Nonnull String id,
         @Nonnull JwkAlgorithm algorithm,

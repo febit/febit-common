@@ -21,23 +21,38 @@ import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import jakarta.annotation.Nullable;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.febit.lang.Lazy;
 import org.febit.lang.protocol.IResponse;
 import org.febit.lang.util.Maps;
 
 import java.text.ParseException;
-import java.util.Date;
+import java.time.Instant;
 import java.util.Map;
 import java.util.function.Consumer;
 
-@RequiredArgsConstructor(staticName = "create")
+@RequiredArgsConstructor(
+        access = AccessLevel.PROTECTED
+)
 public class JwtCodec {
 
-    private final JwtCodecProps props;
+    static final int STATUS_UNAUTHORIZED = 401;
+    static final String CODE_INVALID_TOKEN = "INVALID_TOKEN";
+    static final String CODE_TOKEN_EXPIRED = "TOKEN_EXPIRED";
 
-    private final Lazy<Map<String, JwtKey.Resolved>> keys = Lazy.of(this::mappingKeys);
-    private final Lazy<JwtKey.Resolved> signerKey = Lazy.of(this::resolveSingerKey);
+    static final String MSG_INVALID_FORMAT = "invalid JWT format";
+    static final String MSG_INVALID_FORMAT_PAYLOAD = MSG_INVALID_FORMAT + ", failed to parse payload";
+    static final String MSG_TOKEN_EXPIRED = "token expired";
+    static final String MSG_TOKEN_NOT_EFFECTIVE = "token not effective yet";
+    static final String MSG_NO_VERIFIER_KEY = "cannot found verifier key for token";
+    static final String MSG_NO_SINGER_KEY = "no signer key found";
+    static final String MSG_VERIFY_FAILED = "failed pass signing verifier";
+
+    protected final JwtCodecProps props;
+
+    protected final Lazy<Map<String, JwtKey.Resolved>> keys = Lazy.of(this::mappingKeys);
+    protected final Lazy<JwtKey.Resolved> signerKey = Lazy.of(this::resolveSingerKey);
 
     private Map<String, JwtKey.Resolved> mappingKeys() {
         return Maps.mapping(this.props.keys(), JwtKey::id, JwtKey::resolve);
@@ -46,21 +61,21 @@ public class JwtCodec {
     private JwtKey.Resolved resolveSingerKey() {
         var key = keys.get().get(props.signerKeyId());
         if (key == null) {
-            throw new IllegalStateException("No signer key found for key id: " + props.signerKeyId());
+            throw new IllegalStateException(MSG_NO_SINGER_KEY + ", for id: " + props.signerKeyId());
         }
         return key;
     }
 
     protected <T> IResponse<T> onInvalidToken(String message) {
-        return IResponse.failed(
-                401, "INVALID_TOKEN", message
-        );
+        return IResponse.failed(STATUS_UNAUTHORIZED, CODE_INVALID_TOKEN, message);
     }
 
     protected <T> IResponse<T> onTokenExpired() {
-        return IResponse.failed(
-                401, "TOKEN_EXPIRED", "token expired"
-        );
+        return IResponse.failed(STATUS_UNAUTHORIZED, CODE_TOKEN_EXPIRED, MSG_TOKEN_EXPIRED);
+    }
+
+    protected Instant now() {
+        return Instant.now();
     }
 
     @Nullable
@@ -77,12 +92,12 @@ public class JwtCodec {
         try {
             jwt = SignedJWT.parse(token);
         } catch (ParseException e) {
-            return onInvalidToken("invalid signed JWT format: " + e.getMessage());
+            return onInvalidToken(MSG_INVALID_FORMAT + ": " + e.getMessage());
         }
 
         var key = resolveKey(jwt);
-        if (key == null) {
-            return onInvalidToken("missing key ID");
+        if (key == null || key.verifierKey().isEmpty()) {
+            return onInvalidToken(MSG_NO_VERIFIER_KEY);
         }
 
         JWSVerifier verifier;
@@ -94,29 +109,28 @@ public class JwtCodec {
 
         try {
             if (!jwt.verify(verifier)) {
-                return onInvalidToken("failed pass signing verifier");
+                return onInvalidToken(MSG_VERIFY_FAILED);
             }
         } catch (JOSEException e) {
-            return onInvalidToken("failed pass signing verifier: " + e.getMessage());
+            return onInvalidToken(MSG_VERIFY_FAILED + ": " + e.getMessage());
         }
 
         JWTClaimsSet claims;
         try {
             claims = jwt.getJWTClaimsSet();
         } catch (ParseException e) {
-            return onInvalidToken("cannot get payload from token: " + e.getMessage());
+            return onInvalidToken(MSG_INVALID_FORMAT_PAYLOAD + ": " + e.getMessage());
         }
 
-        var now = new Date();
-
+        var now = now();
         var expireAt = claims.getExpirationTime();
-        if (expireAt == null || expireAt.before(now)) {
+        if (expireAt != null && expireAt.toInstant().compareTo(now) <= 0) {
             return onTokenExpired();
         }
 
         var notBefore = claims.getNotBeforeTime();
-        if (notBefore != null && notBefore.after(now)) {
-            return onInvalidToken("token not effective yet");
+        if (notBefore != null && notBefore.toInstant().isAfter(now)) {
+            return onInvalidToken(MSG_TOKEN_NOT_EFFECTIVE);
         }
         return IResponse.success(claims);
     }
@@ -130,12 +144,12 @@ public class JwtCodec {
         var key = signerKey.get();
 
         var signer = key.signer().orElseThrow(() ->
-                new JOSEException("No signer found for key id: " + key.id())
+                new JOSEException(MSG_NO_SINGER_KEY + ", id: " + key.id())
         );
 
-        var header = new JWSHeader.Builder(key.algorithm().getJws())
-                .keyID(key.id());
+        var header = new JWSHeader.Builder(key.algorithm().getJws());
         headerCustomizer.accept(header);
+        header.keyID(key.id());
 
         var jwt = new SignedJWT(
                 header.build(),
