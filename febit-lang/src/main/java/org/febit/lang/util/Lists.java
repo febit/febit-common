@@ -46,19 +46,19 @@ public class Lists {
         return collect(src != null ? src.iterator() : null);
     }
 
-    public static <T, S> List<T> collect(@Nullable Iterator<S> src, Function<S, T> action) {
+    public static <T, S> List<T> collect(@Nullable Iterator<S> src, Function<S, T> mapping) {
         List<T> result = ofArrayList();
         if (src == null) {
             return result;
         }
         while (src.hasNext()) {
-            result.add(action.apply(src.next()));
+            result.add(mapping.apply(src.next()));
         }
         return result;
     }
 
-    public static <S, T> List<T> collect(@Nullable Iterable<S> src, Function<S, T> action) {
-        return collect(src != null ? src.iterator() : null, action);
+    public static <S, T> List<T> collect(@Nullable Iterable<S> src, Function<S, T> mapping) {
+        return collect(src != null ? src.iterator() : null, mapping);
     }
 
     public static <T> List<T> collect(@Nullable Enumeration<T> e) {
@@ -72,13 +72,13 @@ public class Lists {
         return result;
     }
 
-    public static <T, S> List<T> collect(@Nullable Enumeration<S> e, Function<S, T> action) {
+    public static <T, S> List<T> collect(@Nullable Enumeration<S> e, Function<S, T> mapping) {
         List<T> result = ofArrayList();
         if (e == null) {
             return result;
         }
         while (e.hasMoreElements()) {
-            result.add(action.apply(e.nextElement()));
+            result.add(mapping.apply(e.nextElement()));
         }
         return result;
     }
@@ -90,13 +90,13 @@ public class Lists {
         return new ArrayList<>(Arrays.asList(src));
     }
 
-    public static <S, T> List<T> collect(@Nullable S[] src, Function<S, T> action) {
+    public static <S, T> List<T> collect(@Nullable S[] src, Function<S, T> mapping) {
         if (src == null) {
             return ofArrayList();
         }
         List<T> result = new ArrayList<>(src.length);
         for (S s : src) {
-            result.add(action.apply(s));
+            result.add(mapping.apply(s));
         }
         return result;
     }
@@ -122,13 +122,13 @@ public class Lists {
     }
 
     @Nullable
-    public static <S, T> List<T> transfer(@Nullable Collection<S> src, Function<S, T> action) {
+    public static <S, T> List<T> transfer(@Nullable Collection<S> src, Function<S, T> mapping) {
         if (src == null) {
             return null;
         }
         List<T> result = new ArrayList<>(src.size());
         for (S s : src) {
-            result.add(action.apply(s));
+            result.add(mapping.apply(s));
         }
         return result;
     }
@@ -142,10 +142,10 @@ public class Lists {
     }
 
     @Nullable
-    public static <S, T> List<T> transfer(@Nullable S[] src, Function<S, T> action) {
+    public static <S, T> List<T> transfer(@Nullable S[] src, Function<S, T> mapping) {
         if (src == null) {
             return null;
         }
-        return collect(src, action);
+        return collect(src, mapping);
     }
 }

@@ -22,7 +22,9 @@ import jakarta.annotation.Nullable;
 import org.febit.lang.annotation.NonNullArgs;
 
 import java.time.Instant;
+import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 @JsonDeserialize(as = Response.class)
 public interface IResponse<T> extends Fallible {
@@ -80,10 +82,13 @@ public interface IResponse<T> extends Fallible {
 
     boolean isSuccess();
 
+    @Nullable
     String getCode();
 
+    @Nullable
     String getMessage();
 
+    @Nullable
     Instant getTimestamp();
 
     @Nullable
@@ -107,21 +112,119 @@ public interface IResponse<T> extends Fallible {
 
     @Nonnull
     default <D> IResponse<D> cleanData() {
-        return transferData(d -> null);
+        return map(d -> null);
     }
 
+    /**
+     * If a data is present, returns current response, otherwise returns the response produced by the supplying function.
+     *
+     * @param supplier the supplying function that produces a response to be returned.
+     * @since 3.2.1
+     */
     @Nonnull
-    default <D> IResponse<D> transferData(@Nonnull Function<T, D> action) {
+    default IResponse<T> or(@Nonnull Supplier<? extends T> supplier) {
+        Objects.requireNonNull(supplier);
+        if (isPresent()) {
+            return this;
+        }
+        return map(d -> supplier.get());
+    }
+
+    /**
+     * If a data is present, returns the data, otherwise returns {@code other}.
+     *
+     * @param other the data to be returned, if no data is present.
+     * @return the data, if present, otherwise {@code other}
+     * @since 3.2.1
+     */
+    @Nullable
+    default T orElse(@Nullable T other) {
+        var data = getData();
+        return data != null ? data : other;
+    }
+
+    /**
+     * If a data is present, returns the data, otherwise returns the result produced by the supplying function.
+     *
+     * @param supplier the supplying function that produces a data to be returned
+     * @return the data, if present, otherwise the result produced by the supplying function
+     * @throws NullPointerException if no data is present and the supplying function is {@code null}
+     * @since 3.2.1
+     */
+    @Nullable
+    default T orElseGet(@Nonnull Supplier<? extends T> supplier) {
+        Objects.requireNonNull(supplier);
+        var data = getData();
+        return data != null ? data : supplier.get();
+    }
+
+    /**
+     * Apply a mapping function to the data.
+     *
+     * @since 3.2.1
+     */
+    @Nonnull
+    default <D> IResponse<D> map(@Nonnull Function<T, D> mapping) {
         return Response.of(
                 getStatus(), isSuccess(),
                 getCode(), getMessage(),
                 getTimestamp(),
-                action.apply(getData())
+                mapping.apply(getData())
         );
     }
 
+    /**
+     * Apply a mapping function to the data if the data is present.
+     *
+     * @since 3.2.1
+     */
     @Nonnull
-    default <D> IResponse<D> transferDataIfPresent(@Nonnull Function<T, D> action) {
-        return transferData(d -> d == null ? null : action.apply(d));
+    default <D> IResponse<D> mapIfPresent(@Nonnull Function<T, D> mapping) {
+        return map(d -> d == null ? null : mapping.apply(d));
     }
+
+    /**
+     * @deprecated use {@link #map(Function)} instead
+     */
+    @Nonnull
+    @Deprecated(
+            since = "3.2.1"
+    )
+    default <D> IResponse<D> transferData(@Nonnull Function<T, D> mapping) {
+        return map(mapping);
+    }
+
+    /**
+     * @deprecated use {@link #mapIfPresent(Function)} instead
+     */
+    @Nonnull
+    @Deprecated(
+            since = "3.2.1"
+    )
+    default <D> IResponse<D> transferDataIfPresent(@Nonnull Function<T, D> mapping) {
+        return mapIfPresent(mapping);
+    }
+
+    /**
+     * If a data is present, returns {@code true}, otherwise {@code false}.
+     *
+     * @return {@code true} if a data is present, otherwise {@code false}
+     * @since 3.2.1
+     */
+    @JsonIgnore
+    default boolean isPresent() {
+        return getData() != null;
+    }
+
+    /**
+     * If a data is not present, returns {@code true}, otherwise {@code false}.
+     *
+     * @return {@code true} if a data is not present, otherwise {@code false}
+     * @since 3.2.1
+     */
+    @JsonIgnore
+    default boolean isEmpty() {
+        return getData() == null;
+    }
+
 }

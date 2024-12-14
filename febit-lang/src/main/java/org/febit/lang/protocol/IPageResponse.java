@@ -23,12 +23,28 @@ import java.util.function.Function;
 @JsonDeserialize(as = PageResponse.class)
 public interface IPageResponse<T> extends IResponse<Page<T>> {
 
+    /**
+     * @deprecated use {@link #mapEach(Function)} instead
+     */
+    @Deprecated(since = "3.2.1")
     @Nonnull
-    default <D> PageResponse<D> transferRows(@Nonnull Function<T, D> action) {
+    default <D> PageResponse<D> transferRows(@Nonnull Function<T, D> mapping) {
+        return mapEach(mapping);
+    }
+
+    /**
+     * Map each row to another type.
+     *
+     * @param <D>     the target type
+     * @param mapping the mapping function
+     * @since 3.2.1
+     */
+    @Nonnull
+    default <D> PageResponse<D> mapEach(@Nonnull Function<T, D> mapping) {
         var target = new PageResponse<D>();
         target.copyProperties(this);
         if (getData() != null) {
-            target.setData(getData().transfer(action));
+            target.setData(getData().map(mapping));
         }
         return target;
     }

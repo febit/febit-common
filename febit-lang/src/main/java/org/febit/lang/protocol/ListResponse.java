@@ -15,8 +15,10 @@
  */
 package org.febit.lang.protocol;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import java.util.List;
 
+@JsonDeserialize
 public class ListResponse<T> extends Response<List<T>> implements IListResponse<T> {
-
 }

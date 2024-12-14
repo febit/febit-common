@@ -25,11 +25,29 @@ import java.util.function.Function;
 @JsonDeserialize(as = ListResponse.class)
 public interface IListResponse<T> extends IResponse<List<T>> {
 
+    /**
+     * @deprecated use {@link #mapEach(Function)} instead
+     */
+    @Deprecated(since = "3.2.1")
     @Nonnull
-    default <D> IListResponse<D> transferItems(@Nonnull Function<T, D> action) {
+    default <D> IListResponse<D> transferItems(@Nonnull Function<T, D> mapping) {
+        return mapEach(mapping);
+    }
+
+    /**
+     * Map each item to another type.
+     *
+     * @param <D>     the target type
+     * @param mapping the mapping function
+     * @since 3.2.1
+     */
+    @Nonnull
+    default <D> ListResponse<D> mapEach(@Nonnull Function<T, D> mapping) {
         var target = new ListResponse<D>();
         target.copyProperties(this);
-        target.setData(Lists.transfer(getData(), action));
+        if (getData() != null) {
+            target.setData(Lists.collect(getData(), mapping));
+        }
         return target;
     }
 }

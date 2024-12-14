@@ -38,17 +38,24 @@ import java.util.function.Function;
         staticName = "of",
         access = AccessLevel.PACKAGE
 )
+@JsonDeserialize
 public class Response<T> implements IMutableResponse<T>, HttpStatusAware {
 
     private int status;
 
     private boolean success;
+
+    @Nullable
     private String code;
+
+    @Nullable
     private String message;
 
+    @Nullable
     @JsonDeserialize(using = InstantLooseDeserializer.class)
     private Instant timestamp;
 
+    @Nullable
     private T data;
 
     private static Instant now() {
@@ -61,21 +68,21 @@ public class Response<T> implements IMutableResponse<T>, HttpStatusAware {
         if (httpStatus > 0 // NOPMD
                 && (httpStatus < 200 || httpStatus >= 400) // NOPMD
         ) {
-            log.info("HTTP status for successful response is neither [2xx] nor [3xx]: {}", httpStatus);
+            log.debug("Response is success but status is not 2xx or 3xx: {}", httpStatus);
         }
         return of(httpStatus, true, code, message, now(), data);
     }
 
-    public static <T> Response<T> failed(int httpStatus,
-                                         String code, String message, @Nullable T data) {
+    public static <T> Response<T> failed(
+            int httpStatus, String code, String message, @Nullable T data) {
         return of(httpStatus, false, code, message, now(), data);
     }
 
     @Nonnull
-    public <D> Response<D> transferData(@Nonnull Function<T, D> action) {
+    public <D> Response<D> map(@Nonnull Function<T, D> mapping) {
         var target = new Response<D>();
         target.copyProperties(this);
-        target.setData(action.apply(getData()));
+        target.setData(mapping.apply(getData()));
         return target;
     }
 

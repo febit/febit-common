@@ -15,6 +15,8 @@
  */
 package org.febit.lang.protocol;
 
+import jakarta.annotation.Nullable;
+
 import java.time.Instant;
 
 public interface IMutableResponse<T> extends IResponse<T> {
@@ -23,11 +25,11 @@ public interface IMutableResponse<T> extends IResponse<T> {
 
     void setSuccess(boolean success);
 
-    void setCode(String code);
+    void setCode(@Nullable String code);
 
-    void setMessage(String message);
+    void setMessage(@Nullable String message);
 
-    void setTimestamp(Instant timestamp);
+    void setTimestamp(@Nullable Instant timestamp);
 
-    void setData(T data);
+    void setData(@Nullable T data);
 }

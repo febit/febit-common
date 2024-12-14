@@ -66,7 +66,25 @@ public class JacksonWrapper {
         return getTypeFactory().constructType(type);
     }
 
+    /**
+     * Convert object to JSON string, alias of {@link #stringify(Object)}.
+     *
+     * @see #stringify(Object)
+     */
     public String toString(@Nullable Object data) {
+        return stringify(data);
+    }
+
+    /**
+     * Convert object to JSON string.
+     *
+     * @param data object
+     *             may be null
+     * @return JSON string
+     * @throws UncheckedIOException if an error occurs
+     * @since 3.2.1
+     */
+    public String stringify(@Nullable Object data) {
         try {
             return this.mapper.writeValueAsString(data);
         } catch (JsonProcessingException e) {

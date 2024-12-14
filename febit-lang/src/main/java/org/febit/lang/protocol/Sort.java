@@ -56,13 +56,13 @@ public class Sort {
         return this.property + ',' + this.direction.getValue();
     }
 
+    @Getter
     @RequiredArgsConstructor
     public enum Direction implements Valued<String> {
         ASC("asc"),
         DESC("desc"),
         ;
 
-        @Getter
         private final String value;
     }
 }

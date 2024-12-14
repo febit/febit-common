@@ -42,7 +42,7 @@ public class Pagination {
 
     public Pagination to(int number) {
         return new Pagination(number, size,
-                sorts == null ? null : List.copyOf(sorts)
+                sorts == null ? List.of() : List.copyOf(sorts)
         );
     }
 

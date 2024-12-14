@@ -41,24 +41,40 @@ public class Page<T> {
     }
 
     @Nonnull
-    public static <T> Page<T> of(Pagination pagination, long total, @Nullable List<T> rows) {
+    public static <T> Page<T> of(Pagination pagination, long total, @Nonnull List<T> rows) {
         return of(Meta.of(pagination.getPage(), pagination.getSize(), total), rows);
     }
 
     @Nonnull
-    public static <T> Page<T> of(@Nonnull Meta meta, @Nullable List<T> rows) {
+    public static <T> Page<T> of(@Nonnull Meta meta, @Nonnull List<T> rows) {
         return new Page<>(meta, rows);
     }
 
     @Nonnull
-    public static <T> Page<T> of(int page, int size, long total, @Nullable List<T> rows) {
+    public static <T> Page<T> of(int page, int size, long total, @Nonnull List<T> rows) {
         return of(Meta.of(page, size, total), rows);
     }
 
-    public <D> Page<D> transfer(@Nonnull Function<T, D> action) {
+    /**
+     * @deprecated use {@link #map(Function)} instead.
+     */
+    @Deprecated(since = "3.2.1")
+    public <D> Page<D> transfer(@Nonnull Function<T, D> mapping) {
+        return map(mapping);
+    }
+
+    /**
+     * Map each row to another type.
+     *
+     * @param <D>     the new type
+     * @param mapping the mapping function
+     * @return a new Page with mapped rows
+     * @since 3.2.1
+     */
+    public <D> Page<D> map(@Nonnull Function<T, D> mapping) {
         return Page.of(
                 getMeta(),
-                Lists.transfer(getRows(), action)
+                Lists.collect(getRows(), mapping)
         );
     }
 
