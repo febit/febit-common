@@ -131,7 +131,24 @@ public class JacksonUtils {
         return mapper;
     }
 
+    /**
+     * Alias of {@link #jsonify(Object)}, convert object to json string.
+     *
+     * @param data object
+     * @return json string
+     */
     public static String toJsonString(@Nullable Object data) {
+        return jsonify(data);
+    }
+
+    /**
+     * Convert object to json string.
+     *
+     * @param data object
+     * @return json string
+     * @since 3.3.0
+     */
+    public static String jsonify(@Nullable Object data) {
         return JsonLazyHolder.JSON.toString(data);
     }
 
