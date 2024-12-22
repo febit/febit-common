@@ -4,6 +4,7 @@ jsr305 = '3.0.2'
 validation-api = '3.1.0'
 spotbugs = '4.8.6'
 swagger = '2.2.26'
+spring = '6.2.1'
 
 commons-cli = '1.9.0'
 commons-codec = '1.17.1'
@@ -62,6 +63,7 @@ commons-io = { module = 'commons-io:commons-io', version.ref = 'commons-io' }
 commons-lang3 = { module = 'org.apache.commons:commons-lang3', version.ref = 'commons-lang3' }
 commons-text = { module = 'org.apache.commons:commons-text', version.ref = 'commons-text' }
 
+sping-core = { module = 'org.springframework:spring-core', version.ref = 'spring' }
 hamcrest = { module = 'org.hamcrest:hamcrest', version.ref = 'hamcrest' }
 jcommander = { module = 'org.jcommander:jcommander', version.ref = 'jcommander' }
 jsonpath = { module = 'com.jayway.jsonpath:json-path', version.ref = 'jsonpath' }

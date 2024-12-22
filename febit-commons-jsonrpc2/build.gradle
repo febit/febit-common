@@ -1,0 +1,10 @@
+description = 'Febit Commons Jsonrpc2'
+
+codegenModule {
+  module 'org.febit.FebitCommonsJsonrpc2'
+}
+
+dependencies {
+  api project(':febit-lang')
+  api libs.sping.core
+}
