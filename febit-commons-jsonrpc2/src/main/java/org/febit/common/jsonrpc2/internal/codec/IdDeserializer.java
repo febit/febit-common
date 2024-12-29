@@ -13,28 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.common.jsonrpc2.internal;
+package org.febit.common.jsonrpc2.internal.codec;
 
-import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import org.febit.common.jsonrpc2.protocol.Id;
 
 import java.io.IOException;
 
-public class IdDeserializer extends StdDeserializer<IdImpl> {
+public class IdDeserializer extends StdDeserializer<Id> {
 
     public IdDeserializer() {
-        super(IdImpl.class);
+        super(Id.class);
     }
 
     @Override
-    public IdImpl deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JacksonException {
+    public Id deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
         return switch (p.currentToken()) {
             case VALUE_NULL -> null;
-            case VALUE_STRING -> IdImpl.of(p.getText());
-            case VALUE_NUMBER_INT, VALUE_NUMBER_FLOAT -> IdImpl.of(p.getNumberValue());
-            default -> throw ctxt.weirdStringException(p.getText(), IdImpl.class,
+            case VALUE_STRING -> Id.of(p.getText());
+            case VALUE_NUMBER_INT, VALUE_NUMBER_FLOAT -> Id.of(p.getNumberValue());
+            default -> throw ctxt.weirdStringException(p.getText(), Id.class,
                     "rpc message id must be string or number, but got " + p.currentToken());
         };
     }

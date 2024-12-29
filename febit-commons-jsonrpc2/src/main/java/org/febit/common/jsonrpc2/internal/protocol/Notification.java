@@ -13,10 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.lang.util.proxy;
+package org.febit.common.jsonrpc2.internal.protocol;
 
-@FunctionalInterface
-public interface IMethodHandler {
+import org.febit.common.jsonrpc2.protocol.IRpcNotification;
 
-    Object invoke(Object me, Object[] args) throws Throwable;
+import java.util.List;
+
+public record Notification(
+        String method,
+        List<Object> params
+) implements IRpcNotification {
 }

@@ -15,6 +15,7 @@
  */
 package org.febit.common.jsonrpc2.protocol;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.annotation.Nonnull;
 
 import java.util.List;
@@ -30,4 +31,23 @@ public interface IRpcRequest extends IRpcMessage {
 
     @Nonnull
     List<Object> params();
+
+    @Nonnull
+    @JsonIgnore
+    default IRpcNotification asNotification() {
+        return new IRpcNotification() {
+
+            @Nonnull
+            @Override
+            public String method() {
+                return IRpcRequest.this.method();
+            }
+
+            @Nonnull
+            @Override
+            public List<Object> params() {
+                return IRpcRequest.this.params();
+            }
+        };
+    }
 }

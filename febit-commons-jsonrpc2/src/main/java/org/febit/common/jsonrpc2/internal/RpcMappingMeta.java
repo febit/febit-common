@@ -15,13 +15,26 @@
  */
 package org.febit.common.jsonrpc2.internal;
 
+import com.fasterxml.jackson.databind.JavaType;
 import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
-import org.febit.common.jsonrpc2.protocol.IRpcResponse;
+import lombok.NonNull;
+import org.febit.common.jsonrpc2.RpcMapping;
+import org.febit.lang.annotation.NullableArgs;
 
-public record Response<T>(
-        @Nonnull IdImpl id,
-        @Nullable T result,
-        @Nullable ErrorImpl<?> error
-) implements IRpcResponse<T> {
+import java.lang.reflect.Method;
+import java.time.Duration;
+
+@lombok.Builder(
+        builderClassName = "Builder"
+)
+@NullableArgs
+public record RpcMappingMeta(
+        @NonNull @Nonnull String method,
+        @NonNull @Nonnull RpcMapping.Type type,
+        @NonNull @Nonnull JavaType resultType,
+        Method targetMethod,
+        boolean isFutureResult,
+        boolean annotated,
+        Duration timeout
+) {
 }

@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.lang.util.proxy;
+package org.febit.common.jsonrpc2.protocol;
 
-import lombok.experimental.UtilityClass;
+@FunctionalInterface
+public interface IRpcNotificationHandler {
 
-@UtilityClass
-public class InvocationHandlers {
-
+    void handle(IRpcNotification notification);
 }

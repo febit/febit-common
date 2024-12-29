@@ -16,11 +16,21 @@
 package org.febit.common.jsonrpc2.internal;
 
 import org.febit.common.jsonrpc2.protocol.IRpcNotification;
+import org.febit.common.jsonrpc2.protocol.IRpcNotificationHandler;
 
-import java.util.List;
+public class MethodNotificationHandler extends BaseMethodHandler implements IRpcNotificationHandler {
 
-public record Notification(
-        String method,
-        List<Object> params
-) implements IRpcNotification {
+    private MethodNotificationHandler(RpcMappingMeta meta, Object target) {
+        super(meta, target);
+    }
+
+    @Override
+    public void handle(IRpcNotification notification) {
+        invoke(notification.params());
+    }
+
+    public static MethodNotificationHandler create(Object target, RpcMappingMeta meta) {
+        return new MethodNotificationHandler(meta, target);
+    }
+
 }

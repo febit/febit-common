@@ -15,14 +15,15 @@
  */
 package org.febit.common.jsonrpc2;
 
-import org.febit.common.jsonrpc2.exception.JsonrpcErrorException;
-import org.febit.common.jsonrpc2.internal.ErrorImpl;
-import org.febit.common.jsonrpc2.internal.IdImpl;
-import org.febit.common.jsonrpc2.internal.Notification;
-import org.febit.common.jsonrpc2.internal.Request;
-import org.febit.common.jsonrpc2.internal.Response;
+import org.febit.common.jsonrpc2.exception.RpcErrorException;
+import org.febit.common.jsonrpc2.internal.protocol.ErrorImpl;
+import org.febit.common.jsonrpc2.internal.protocol.Notification;
+import org.febit.common.jsonrpc2.internal.protocol.Request;
+import org.febit.common.jsonrpc2.internal.protocol.Response;
+import org.febit.common.jsonrpc2.protocol.IRpcError;
 import org.febit.common.jsonrpc2.protocol.IRpcMessage;
-import org.febit.common.jsonrpc2.protocol.SpecRpcErrors;
+import org.febit.common.jsonrpc2.protocol.Id;
+import org.febit.common.jsonrpc2.protocol.StdRpcErrors;
 import org.febit.lang.util.JacksonUtils;
 import org.junit.jupiter.api.Test;
 
@@ -59,7 +60,7 @@ class JsonCodecTest {
         ;
 
         // Request
-        assertThat(encodeToMap(new Request(IdImpl.of(1), "test", List.of(1, "test"))))
+        assertThat(encodeToMap(new Request(Id.of(1), "test", List.of(1, "test"))))
                 .hasSize(4)
                 .containsEntry("id", 1)
                 .containsEntry("method", "test")
@@ -72,7 +73,7 @@ class JsonCodecTest {
 
         // Response
         assertThat(encodeToMap(new Response<>(
-                IdImpl.of("100"),
+                Id.of("100"),
                 "test",
                 null
         )))
@@ -87,7 +88,7 @@ class JsonCodecTest {
 
         // Response with error
         assertThat(encodeToMap(new Response<>(
-                IdImpl.of(1.01D),
+                Id.of(1.01D),
                 null,
                 new ErrorImpl<>(-32601, "Method not found", null)
         )))
@@ -128,7 +129,7 @@ class JsonCodecTest {
                     "params": [1, "test"]
                 }
                 """)).asInstanceOf(type(Request.class))
-                .returns(IdImpl.of(1), Request::id)
+                .returns(Id.of(1), Request::id)
                 .returns("test", Request::method)
                 .returns(List.of(1, "test"), Request::params);
 
@@ -140,7 +141,7 @@ class JsonCodecTest {
                     "result": "test"
                 }
                 """)).asInstanceOf(type(Response.class))
-                .returns(IdImpl.of("100"), Response::id)
+                .returns(Id.of("100"), Response::id)
                 .returns("test", Response::result);
 
         // Response with error
@@ -155,13 +156,13 @@ class JsonCodecTest {
                     }
                 }
                 """)).asInstanceOf(type(Response.class))
-                .returns(IdImpl.of(1.01D), Response::id)
+                .returns(Id.of(1.01D), Response::id)
                 .returns(null, Response::result)
                 .extracting(Response::error)
                 .isNotNull()
-                .returns(-32601, ErrorImpl::code)
-                .returns("Method not found", ErrorImpl::message)
-                .returns(null, ErrorImpl::data);
+                .returns(-32601, IRpcError::code)
+                .returns("Method not found", IRpcError::message)
+                .returns(null, IRpcError::data);
     }
 
     @Test
@@ -170,14 +171,14 @@ class JsonCodecTest {
         Stream.of(
                 null, "", "null", "[]", "1", "false", "\"\"", "invalid json"
         ).forEach(json -> {
-            var ex = assertThrows(JsonrpcErrorException.class, () -> {
+            var ex = assertThrows(RpcErrorException.class, () -> {
                 decode(json);
             });
-            assertEquals(SpecRpcErrors.PARSE_ERROR.code(), ex.getError().code());
+            assertEquals(StdRpcErrors.PARSE_ERROR.code(), ex.getError().code());
         });
 
         // invalid version
-        var ex = assertThrows(JsonrpcErrorException.class, () -> {
+        var ex = assertThrows(RpcErrorException.class, () -> {
             decode("""
                     {
                         "jsonrpc": "1.0",
@@ -187,10 +188,10 @@ class JsonCodecTest {
                     }
                     """);
         });
-        assertEquals(SpecRpcErrors.INVALID_REQUEST.code(), ex.getError().code());
+        assertEquals(StdRpcErrors.INVALID_REQUEST.code(), ex.getError().code());
 
         // No id and method
-        ex = assertThrows(JsonrpcErrorException.class, () -> {
+        ex = assertThrows(RpcErrorException.class, () -> {
             decode("""
                     {
                         "jsonrpc": "2.0",
@@ -198,7 +199,7 @@ class JsonCodecTest {
                     }
                     """);
         });
-        assertEquals(SpecRpcErrors.INVALID_REQUEST.code(), ex.getError().code());
+        assertEquals(StdRpcErrors.INVALID_REQUEST.code(), ex.getError().code());
     }
 
 }

@@ -13,26 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.common.jsonrpc2.protocol;
+package org.febit.common.jsonrpc2.exception;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.annotation.Nullable;
-import org.febit.common.jsonrpc2.Jsonrpc2;
+import lombok.Getter;
+import org.febit.common.jsonrpc2.protocol.IRpcError;
 
-public interface IRpcMessage {
+@Getter
+public class RpcErrorException extends RuntimeException {
 
-    @JsonProperty(
-            value = "jsonrpc",
-            access = JsonProperty.Access.READ_ONLY
-    )
-    default String jsonrpc() {
-        return Jsonrpc2.VERSION;
+    private final IRpcError<?> error;
+
+    public RpcErrorException(IRpcError<?> error) {
+        this(error, null);
     }
 
-    /**
-     * Message id, null for notification.
-     */
-    @Nullable
-    Id id();
+    public RpcErrorException(IRpcError<?> error, @Nullable Throwable cause) {
+        super(formatMessage(error), cause);
+        this.error = error;
+    }
 
+    private static String formatMessage(IRpcError<?> error) {
+        return "[" + error.code() + "] " + error.message();
+    }
 }

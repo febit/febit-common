@@ -13,26 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.common.jsonrpc2.protocol;
+package org.febit.common.jsonrpc2;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.annotation.Nullable;
-import org.febit.common.jsonrpc2.Jsonrpc2;
+public interface IClock {
 
-public interface IRpcMessage {
-
-    @JsonProperty(
-            value = "jsonrpc",
-            access = JsonProperty.Access.READ_ONLY
-    )
-    default String jsonrpc() {
-        return Jsonrpc2.VERSION;
-    }
-
-    /**
-     * Message id, null for notification.
-     */
-    @Nullable
-    Id id();
-
+    long now();
 }

@@ -29,6 +29,20 @@ import java.lang.annotation.*;
 @RpcMapping(type = RpcMapping.Type.REQUEST)
 public @interface RpcRequest {
 
+    /**
+     * @see RpcMapping#value()
+     */
     @AliasFor(annotation = RpcMapping.class)
     String value();
+
+    /**
+     * Timeout in milliseconds.
+     * <p>
+     * == 0 means unset, will use default timeout if possible.
+     * <= 0 means without limit.
+     *
+     * @see RpcMapping#timeout()
+     */
+    @AliasFor(annotation = RpcMapping.class)
+    long timeout() default 0;
 }

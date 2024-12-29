@@ -15,24 +15,10 @@
  */
 package org.febit.common.jsonrpc2.protocol;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.annotation.Nullable;
-import org.febit.common.jsonrpc2.Jsonrpc2;
+import java.util.concurrent.CompletableFuture;
 
-public interface IRpcMessage {
+@FunctionalInterface
+public interface IRpcRequestHandler<T> {
 
-    @JsonProperty(
-            value = "jsonrpc",
-            access = JsonProperty.Access.READ_ONLY
-    )
-    default String jsonrpc() {
-        return Jsonrpc2.VERSION;
-    }
-
-    /**
-     * Message id, null for notification.
-     */
-    @Nullable
-    Id id();
-
+    CompletableFuture<T> handle(IRpcRequest request);
 }

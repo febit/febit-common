@@ -13,26 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.common.jsonrpc2.protocol;
+package org.febit.common.jsonrpc2.exception;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.annotation.Nullable;
-import org.febit.common.jsonrpc2.Jsonrpc2;
+import lombok.Getter;
 
-public interface IRpcMessage {
+@Getter
+public class UncheckedRpcException extends RuntimeException {
 
-    @JsonProperty(
-            value = "jsonrpc",
-            access = JsonProperty.Access.READ_ONLY
-    )
-    default String jsonrpc() {
-        return Jsonrpc2.VERSION;
+    private final Throwable targetException;
+
+    public UncheckedRpcException(Throwable targetException) {
+        this.targetException = targetException;
     }
-
-    /**
-     * Message id, null for notification.
-     */
-    @Nullable
-    Id id();
-
 }

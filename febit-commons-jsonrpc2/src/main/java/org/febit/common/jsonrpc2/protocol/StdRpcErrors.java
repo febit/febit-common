@@ -26,7 +26,7 @@ import org.febit.common.jsonrpc2.RpcErrors;
 @Getter
 @Accessors(fluent = true)
 @RequiredArgsConstructor
-public enum SpecRpcErrors implements RpcErrors {
+public enum StdRpcErrors implements RpcErrors {
 
     INVALID_REQUEST(
             -32600, "Invalid Request",

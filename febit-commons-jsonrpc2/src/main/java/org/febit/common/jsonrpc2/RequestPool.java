@@ -13,26 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.common.jsonrpc2.protocol;
+package org.febit.common.jsonrpc2;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.annotation.Nullable;
-import org.febit.common.jsonrpc2.Jsonrpc2;
+import org.febit.common.jsonrpc2.protocol.Id;
 
-public interface IRpcMessage {
+public interface RequestPool {
 
-    @JsonProperty(
-            value = "jsonrpc",
-            access = JsonProperty.Access.READ_ONLY
-    )
-    default String jsonrpc() {
-        return Jsonrpc2.VERSION;
-    }
+    void add(RequestPacket<?> requestPacket);
 
-    /**
-     * Message id, null for notification.
-     */
     @Nullable
-    Id id();
-
+    RequestPacket<?> pop(Id id);
 }

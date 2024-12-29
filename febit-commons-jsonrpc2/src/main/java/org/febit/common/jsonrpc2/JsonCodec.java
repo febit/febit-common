@@ -15,23 +15,57 @@
  */
 package org.febit.common.jsonrpc2;
 
+import com.fasterxml.jackson.databind.JavaType;
 import jakarta.annotation.Nullable;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
-import org.febit.common.jsonrpc2.exception.JsonrpcErrorException;
-import org.febit.common.jsonrpc2.internal.Notification;
-import org.febit.common.jsonrpc2.internal.Request;
-import org.febit.common.jsonrpc2.internal.Response;
+import org.febit.common.jsonrpc2.exception.RpcErrorException;
+import org.febit.common.jsonrpc2.internal.protocol.Notification;
+import org.febit.common.jsonrpc2.internal.protocol.Request;
+import org.febit.common.jsonrpc2.internal.protocol.Response;
 import org.febit.common.jsonrpc2.protocol.IRpcMessage;
-import org.febit.common.jsonrpc2.protocol.SpecRpcErrors;
+import org.febit.common.jsonrpc2.protocol.StdRpcErrors;
 import org.febit.lang.util.JacksonUtils;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 @UtilityClass
 public class JsonCodec {
+
+    public static JavaType resolveType(Type type) {
+        return JacksonUtils.TYPE_FACTORY.constructType(type);
+    }
+
+    public static JavaType[] resolveParameterTypes(Method method) {
+        return Stream.of(method.getGenericParameterTypes())
+                .map(JsonCodec::resolveType)
+                .toArray(JavaType[]::new);
+    }
+
+    @Nullable
+    public static <T> T cast(@Nullable Object result, JavaType resultType) {
+        if (result == null) {
+            return null;
+        }
+        return JacksonUtils.to(result, resultType);
+    }
+
+    public static Object[] castParameters(List<Object> rawParams, JavaType[] paramTypes) {
+        var params = new Object[paramTypes.length];
+        try {
+            for (int i = 0; i < params.length && i < rawParams.size(); i++) {
+                params[i] = JsonCodec.cast(rawParams.get(i), paramTypes[i]);
+            }
+        } catch (Exception e) {
+            throw StdRpcErrors.INVALID_PARAMS.toException("Invalid params: " + e.getCause(), e);
+        }
+        return params;
+    }
 
     public static String encode(IRpcMessage message) {
         return JacksonUtils.jsonify(message);
@@ -42,11 +76,11 @@ public class JsonCodec {
      *
      * @param text json string
      * @return RpcMessage
-     * @throws JsonrpcErrorException when not a valid message
+     * @throws RpcErrorException when not a valid message
      */
     public static IRpcMessage decode(@Nullable String text) {
         if (StringUtils.isEmpty(text)) {
-            throw SpecRpcErrors.PARSE_ERROR
+            throw StdRpcErrors.PARSE_ERROR
                     .toException("message is empty");
         }
 
@@ -54,15 +88,15 @@ public class JsonCodec {
         try {
             json = JacksonUtils.parseToNamedMap(text);
         } catch (Exception e) {
-            throw SpecRpcErrors.PARSE_ERROR
+            throw StdRpcErrors.PARSE_ERROR
                     .toException("invalid json", e);
         }
         if (json == null) {
-            throw SpecRpcErrors.PARSE_ERROR
+            throw StdRpcErrors.PARSE_ERROR
                     .toException("invalid json");
         }
         if (!Jsonrpc2.VERSION.equals(json.get("jsonrpc"))) {
-            throw SpecRpcErrors.INVALID_REQUEST
+            throw StdRpcErrors.INVALID_REQUEST
                     .toException("invalid message version");
         }
 
@@ -70,21 +104,21 @@ public class JsonCodec {
         var method = json.get("method");
 
         if (id == null && method == null) {
-            throw SpecRpcErrors.INVALID_REQUEST
+            throw StdRpcErrors.INVALID_REQUEST
                     .toException("invalid request or notification or response");
         }
         if (method == null) {
-            return to(json, Response.class);
+            return castMessage(json, Response.class);
         }
 
         json.computeIfAbsent("params", k -> List.of());
         if (id == null) {
-            return to(json, Notification.class);
+            return castMessage(json, Notification.class);
         }
-        return to(json, Request.class);
+        return castMessage(json, Request.class);
     }
 
-    private static <T> T to(Map<String, Object> json, Class<T> type) {
+    private static <T> T castMessage(Map<String, Object> json, Class<T> type) {
         var result = JacksonUtils.to(json, type);
         Objects.requireNonNull(result, "Invalid message");
         return result;

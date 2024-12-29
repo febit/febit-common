@@ -13,26 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.common.jsonrpc2.exception;
+package org.febit.common.jsonrpc2.protocol;
 
-import lombok.Getter;
-import org.febit.common.jsonrpc2.protocol.IRpcError;
+import org.febit.common.jsonrpc2.internal.protocol.IdImpl;
 
-@Getter
-public class JsonrpcErrorException extends RuntimeException {
+public interface Id {
 
-    private final IRpcError<?> error;
-
-    public JsonrpcErrorException(IRpcError<?> error) {
-        this(error, null);
+    static Id of(String value) {
+        return IdImpl.of(value);
     }
 
-    public JsonrpcErrorException(IRpcError<?> error, Throwable cause) {
-        super(formatMessage(error), cause);
-        this.error = error;
-    }
-
-    private static String formatMessage(IRpcError<?> error) {
-        return "[" + error.code() + "] " + error.message();
+    static Id of(Number value) {
+        return IdImpl.of(value);
     }
 }

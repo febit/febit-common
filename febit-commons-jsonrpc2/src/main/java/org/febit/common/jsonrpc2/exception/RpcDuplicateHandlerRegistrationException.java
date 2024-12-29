@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.common.jsonrpc2.internal;
+package org.febit.common.jsonrpc2.exception;
 
-import org.febit.common.jsonrpc2.protocol.IRpcError;
+public class RpcDuplicateHandlerRegistrationException extends IllegalStateException {
 
-public record ErrorImpl<E>(
-        int code,
-        String message,
-        E data
-) implements IRpcError<E> {
+    public RpcDuplicateHandlerRegistrationException(String message) {
+        super(message);
+    }
 }

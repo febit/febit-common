@@ -13,35 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.common.jsonrpc2.internal;
+package org.febit.common.jsonrpc2.internal.protocol;
 
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import org.febit.common.jsonrpc2.protocol.IRpcMessage;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
+import org.febit.common.jsonrpc2.protocol.Id;
 import org.febit.lang.annotation.NonNullApi;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 @NonNullApi
-@JsonDeserialize(using = IdDeserializer.class)
-public record IdImpl(
-        @JsonValue
-        Serializable value
-) implements IRpcMessage.Id {
+@EqualsAndHashCode
+public final class IdImpl implements Id {
+
+    @NonNull
+    @JsonValue
+    private final Serializable value;
+
+    private IdImpl(Serializable value) {
+        Objects.requireNonNull(value, "Message id can not be null");
+        this.value = value;
+    }
 
     @Override
     public String toString() {
         return value.toString();
     }
 
-    public static IdImpl of(String value) {
-        Objects.requireNonNull(value, "Message id can not be null");
+    public static Id of(String value) {
         return new IdImpl(value);
     }
 
-    public static IdImpl of(Number value) {
-        Objects.requireNonNull(value, "Message id can not be null");
+    public static Id of(Number value) {
         return new IdImpl(value);
     }
 }

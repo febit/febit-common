@@ -20,30 +20,27 @@ import lombok.experimental.UtilityClass;
 import java.lang.reflect.Method;
 
 @UtilityClass
-public class MethodHandlers {
+public class TargetMethods {
 
-    public static IMethodHandler passthrough(Method method) {
-        return method::invoke;
+    public static boolean isDefault(Method method) {
+        return method.isDefault();
     }
 
-    public static IMethodHandler isSameObject() {
-        return (me, args) -> {
-            if (args == null || args.length != 1) {
-                return false;
-            }
-            return me == args[0];
-        };
+    public static boolean isToString(Method method) {
+        return method.getName().equals("toString")
+                && method.getParameterCount() == 0
+                && method.getReturnType() == String.class;
     }
 
-    public static IMethodHandler identityHashCode() {
-        return (me, args) -> System.identityHashCode(me);
+    public static boolean isHashCode(Method method) {
+        return method.getName().equals("hashCode")
+                && method.getParameterCount() == 0
+                && method.getReturnType() == int.class;
     }
 
-    public static IMethodHandler toIdentityString() {
-        return (me, args) -> me.getClass().getName() + "@" + Integer.toHexString(System.identityHashCode(me));
-    }
-
-    public static IMethodHandler toStaticString(String value) {
-        return (me, args) -> value;
+    public static boolean isEquals(Method method) {
+        return method.getName().equals("equals")
+                && method.getParameterCount() == 1
+                && method.getReturnType() == boolean.class;
     }
 }

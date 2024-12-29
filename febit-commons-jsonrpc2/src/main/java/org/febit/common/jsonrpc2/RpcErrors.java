@@ -16,8 +16,8 @@
 package org.febit.common.jsonrpc2;
 
 import jakarta.annotation.Nullable;
-import org.febit.common.jsonrpc2.exception.JsonrpcErrorException;
-import org.febit.common.jsonrpc2.internal.ErrorImpl;
+import org.febit.common.jsonrpc2.exception.RpcErrorException;
+import org.febit.common.jsonrpc2.internal.protocol.ErrorImpl;
 import org.febit.common.jsonrpc2.protocol.IRpcError;
 
 public interface RpcErrors {
@@ -40,19 +40,19 @@ public interface RpcErrors {
         return new ErrorImpl<>(code(), message, data);
     }
 
-    default JsonrpcErrorException toException() {
-        return new JsonrpcErrorException(toError());
+    default RpcErrorException toException() {
+        return new RpcErrorException(toError());
     }
 
-    default JsonrpcErrorException toException(String message) {
+    default RpcErrorException toException(String message) {
         return toException(message, (Exception) null);
     }
 
-    default JsonrpcErrorException toException(String message, @Nullable Exception cause) {
-        return new JsonrpcErrorException(toError(message), cause);
+    default RpcErrorException toException(String message, @Nullable Exception cause) {
+        return new RpcErrorException(toError(message), cause);
     }
 
-    default JsonrpcErrorException toException(String message, Object data) {
-        return new JsonrpcErrorException(toError(message, data));
+    default RpcErrorException toException(String message, Object data) {
+        return new RpcErrorException(toError(message, data));
     }
 }

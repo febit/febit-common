@@ -13,16 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.common.jsonrpc2.internal;
+package org.febit.common.jsonrpc2.internal.protocol;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.annotation.Nonnull;
+import org.febit.common.jsonrpc2.internal.codec.IdDeserializer;
 import org.febit.common.jsonrpc2.protocol.IRpcRequest;
+import org.febit.common.jsonrpc2.protocol.Id;
 
 import java.util.List;
 
 public record Request(
-        @Nonnull IdImpl id,
-        @Nonnull String method,
-        @Nonnull List<Object> params
+        @Nonnull
+        @JsonDeserialize(using = IdDeserializer.class)
+        Id id,
+
+        @Nonnull
+        String method,
+
+        @Nonnull
+        List<Object> params
 ) implements IRpcRequest {
 }

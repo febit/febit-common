@@ -13,26 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.common.jsonrpc2.protocol;
+package org.febit.common.jsonrpc2;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.annotation.Nullable;
-import org.febit.common.jsonrpc2.Jsonrpc2;
+import lombok.RequiredArgsConstructor;
+import org.febit.common.jsonrpc2.protocol.Id;
 
-public interface IRpcMessage {
+import java.util.concurrent.atomic.AtomicLong;
 
-    @JsonProperty(
-            value = "jsonrpc",
-            access = JsonProperty.Access.READ_ONLY
-    )
-    default String jsonrpc() {
-        return Jsonrpc2.VERSION;
+@RequiredArgsConstructor(staticName = "create")
+public class DefaultIdGenerator implements IdGenerator {
+
+    private final AtomicLong next;
+
+    @Override
+    public Id next() {
+        return Id.of(next.getAndIncrement());
     }
 
-    /**
-     * Message id, null for notification.
-     */
-    @Nullable
-    Id id();
+    public static DefaultIdGenerator create() {
+        return startFrom(1L);
+    }
 
+    public static DefaultIdGenerator startFrom(long initial) {
+        return create(new AtomicLong(initial));
+    }
 }

@@ -30,6 +30,14 @@ public @interface RpcMapping {
 
     Type type() default Type.REQUEST;
 
+    /**
+     * Timeout in milliseconds.
+     * <p>
+     * == 0 means unset, will use default timeout if possible.
+     * <= 0 means without limit.
+     */
+    long timeout() default 0;
+
     enum Type {
         REQUEST,
         NOTIFICATION

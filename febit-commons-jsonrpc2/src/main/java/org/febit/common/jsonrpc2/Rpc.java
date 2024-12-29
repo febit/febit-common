@@ -15,24 +15,39 @@
  */
 package org.febit.common.jsonrpc2;
 
+import jakarta.annotation.Nullable;
+import org.febit.common.jsonrpc2.protocol.IRpcNotificationHandler;
+import org.febit.common.jsonrpc2.protocol.IRpcRequestHandler;
+
+import java.lang.reflect.Type;
+import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public interface Rpc {
 
-    <T> CompletableFuture<T> request(String method, List<Object> params, Class<T> resultType);
-
-    default <T> CompletableFuture<T> request(String method, Object[] params, Class<T> resultType) {
-        return request(method, List.of(params), resultType);
+    default <T> CompletableFuture<T> request(String method, List<Object> params, @Nullable Duration timeout, Class<T> resultType) {
+        return request(method, params, timeout, (Type) resultType);
     }
 
-    void notification(String method, List<Object> params);
+    <T> CompletableFuture<T> request(String method, List<Object> params, @Nullable Duration timeout, Type resultType);
 
-    default void notification(String method, Object[] params) {
-        notification(method, List.of(params));
+    default <T> CompletableFuture<T> request(String method, List<Object> params, Class<T> resultType) {
+        return request(method, params, null, resultType);
     }
 
-    <T> T createApi(Class<T> type);
+    default <T> CompletableFuture<T> request(String method, List<Object> params, Type resultType) {
+        return request(method, params, null, resultType);
+    }
 
-    void registerHandler(Object handler);
+    void notify(String method, List<Object> params);
+
+    <T> T exposeApi(Class<T> type);
+
+    void registerHandler(Object service);
+
+    void registerHandler(String method, IRpcRequestHandler<?> handler);
+
+    void registerHandler(String method, IRpcNotificationHandler handler);
+
 }
