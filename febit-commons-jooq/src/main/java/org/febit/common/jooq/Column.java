@@ -38,6 +38,7 @@ public @interface Column {
 
     Operator operator() default Operator.NONE;
 
+    @Getter
     @RequiredArgsConstructor
     enum Operator {
         NONE("none"),
@@ -52,6 +53,9 @@ public @interface Column {
         IN("In"),
         NOT_IN("Not In"),
 
+        IS_NULL("Is Null"),
+        IS_NOT_NULL("Is Not Null"),
+
         EQ("=="),
         GT(">"),
         GE(">="),
@@ -59,7 +63,6 @@ public @interface Column {
         LE("<="),
         ;
 
-        @Getter
         private final String title;
 
         public boolean multiValues() {

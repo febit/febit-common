@@ -19,6 +19,7 @@ import jakarta.annotation.Nullable;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.febit.lang.UncheckedException;
+import org.febit.lang.util.ConvertUtils;
 import org.febit.lang.util.Lists;
 import org.febit.lang.util.TypeParameters;
 import org.jooq.Condition;
@@ -119,6 +120,12 @@ public class SearchFormUtils {
             case LE -> jooqField.le(value);
             case IN -> jooqField.in(castToCollection(value));
             case NOT_IN -> jooqField.notIn(castToCollection(value));
+            case IS_NULL -> ConvertUtils.toBoolean(value)
+                    ? jooqField.isNull()
+                    : jooqField.isNotNull();
+            case IS_NOT_NULL -> ConvertUtils.toBoolean(value)
+                    ? jooqField.isNotNull()
+                    : jooqField.isNull();
             default -> throw new UnsupportedOperationException("Unsupported action: " + entry.operator());
         };
     }

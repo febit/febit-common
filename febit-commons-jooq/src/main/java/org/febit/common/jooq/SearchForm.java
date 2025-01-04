@@ -160,4 +160,20 @@ public interface SearchForm {
         @AliasFor(annotation = Column.class)
         String value() default "";
     }
+
+    @Column(operator = Column.Operator.IS_NULL)
+    @Target(ElementType.FIELD)
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface IsNull {
+        @AliasFor(annotation = Column.class)
+        String value() default "";
+    }
+
+    @Column(operator = Column.Operator.IS_NOT_NULL)
+    @Target(ElementType.FIELD)
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface IsNotNull {
+        @AliasFor(annotation = Column.class)
+        String value() default "";
+    }
 }

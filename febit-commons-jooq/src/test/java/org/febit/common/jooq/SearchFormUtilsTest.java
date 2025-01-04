@@ -74,6 +74,12 @@ class SearchFormUtilsTest {
         Integer[] in;
         @NotIn
         List<String> notIn;
+
+        @IsNull
+        Boolean isNull;
+
+        @IsNotNull
+        Boolean isNotNull;
     }
 
     @Test
@@ -104,6 +110,47 @@ class SearchFormUtilsTest {
     }
 
     @Test
+    void nulls() {
+        var dsl = mock(DSLContext.class);
+
+        assertThat(StdSearchForm.builder()
+                .isNull(true)
+                .build()
+                .toConditions(dsl))
+                .hasSize(1)
+                .contains(
+                        Fields.integer("is_null").isNull()
+                );
+
+        assertThat(StdSearchForm.builder()
+                .isNull(false)
+                .build()
+                .toConditions(dsl))
+                .hasSize(1)
+                .contains(
+                        Fields.integer("is_null").isNotNull()
+                );
+
+        assertThat(StdSearchForm.builder()
+                .isNotNull(true)
+                .build()
+                .toConditions(dsl))
+                .hasSize(1)
+                .contains(
+                        Fields.integer("is_not_null").isNotNull()
+                );
+
+        assertThat(StdSearchForm.builder()
+                .isNotNull(false)
+                .build()
+                .toConditions(dsl))
+                .hasSize(1)
+                .contains(
+                        Fields.integer("is_not_null").isNull()
+                );
+    }
+
+    @Test
     @SuppressWarnings({"unchecked"})
     void std() {
         var dsl = mock(DSLContext.class);
@@ -120,11 +167,12 @@ class SearchFormUtilsTest {
                 .eq(5)
                 .in(new Integer[]{1, 2, 3})
                 .notIn(List.of("a", "b", "c"))
+                .isNull(true)
                 .build()
                 .toConditions(dsl);
 
         assertThat(conditions)
-                .hasSize(12)
+                .hasSize(13)
                 .contains(
                         Conditions.keywords("key",
                                 Fields.string("key"),
