@@ -1,0 +1,15 @@
+description = 'Febit Boot jOOQ'
+
+configurations {
+  testCompile.exclude module: 'logback-classic'
+}
+
+dependencies {
+  api project(':febit-lang')
+  api 'org.jooq:jooq'
+  api libs.sping.core
+  api libs.jooq
+
+  compileOnly libs.jakarta.xml.bind.api
+}
+

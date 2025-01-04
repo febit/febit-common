@@ -3,7 +3,7 @@ annotation-api = '3.0.0'
 jsr305 = '3.0.2'
 validation-api = '3.1.0'
 spotbugs = '4.8.6'
-swagger = '2.2.26'
+swagger = '2.2.27'
 spring = '6.2.1'
 
 commons-cli = '1.9.0'
@@ -20,7 +20,9 @@ febit-devkit = '1.4.0'
 hierynomus-license = '0.16.1'
 
 jackson = '2.18.2'
+jakarta-xml-bind-api = '4.0.2'
 jcommander = '2.0'
+jooq = '3.19.16'
 jsonpath = '2.9.0'
 kafka-clients = '3.9.0'
 nimbus-jose-jwt = '9.47'
@@ -48,6 +50,7 @@ junit-bom = { module = 'org.junit:junit-bom', version.ref = 'junit' }
 mockito-bom = { module = 'org.mockito:mockito-bom', version.ref = 'mockito' }
 
 annotation-api = { module = 'jakarta.annotation:jakarta.annotation-api', version.ref = 'annotation-api' }
+jakarta-xml-bind-api = { module = 'jakarta.xml.bind:jakarta.xml.bind-api', version.ref = 'jakarta-xml-bind-api' }
 jsr305 = { module = 'com.google.code.findbugs:jsr305', version.ref = 'jsr305' }
 spotbugs-annotations = { module = 'com.github.spotbugs:spotbugs-annotations', version.ref = 'spotbugs' }
 swagger-annotations = { module = 'io.swagger.core.v3:swagger-annotations', version.ref = 'swagger' }
@@ -66,6 +69,7 @@ commons-text = { module = 'org.apache.commons:commons-text', version.ref = 'comm
 sping-core = { module = 'org.springframework:spring-core', version.ref = 'spring' }
 hamcrest = { module = 'org.hamcrest:hamcrest', version.ref = 'hamcrest' }
 jcommander = { module = 'org.jcommander:jcommander', version.ref = 'jcommander' }
+jooq = { module = 'org.jooq:jooq', version.ref = 'jooq' }
 jsonpath = { module = 'com.jayway.jsonpath:json-path', version.ref = 'jsonpath' }
 kafka-clients = { module = 'org.apache.kafka:kafka-clients', version.ref = 'kafka-clients' }
 nimbus-jose-jwt = { module = 'com.nimbusds:nimbus-jose-jwt', version.ref = 'nimbus-jose-jwt' }
