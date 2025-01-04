@@ -15,16 +15,31 @@
  */
 package org.febit.common.jooq;
 
+import jakarta.annotation.Nullable;
 import org.jooq.UpdatableRecord;
 
-/**
- * Standard CURD dao interface.
- */
-@SuppressWarnings({"unused"})
-public interface ICurdDao<TB extends ITable<R, ID>, PO extends IEntity<ID>, ID, R extends UpdatableRecord<R>>
-        extends IQueryDao<TB, PO, ID, R>,
-        IInsertDao<TB, PO, ID, R>,
-        IUpdateDao<TB, PO, ID, R>,
-        IDeleteDao<TB, PO, ID, R> {
+import java.util.Collection;
+import java.util.List;
+
+public interface IQueryDao<TB extends ITable<R, ID>, PO extends IEntity<ID>, ID, R extends UpdatableRecord<R>>
+        extends IBasicQueryDao<TB, PO, R> {
+
+    @Nullable
+    default PO findById(ID id) {
+        return findBy(table().pkField(), id);
+    }
+
+    @SuppressWarnings("unchecked")
+    default List<PO> listByIds(ID... ids) {
+        return listBy(table().pkField().in(ids));
+    }
+
+    default List<PO> listByIds(Collection<ID> ids) {
+        return listBy(table().pkField().in(ids));
+    }
+
+    default boolean existsById(ID id) {
+        return existsBy(table().pkField().eq(id));
+    }
 
 }

@@ -32,11 +32,11 @@ import java.util.Objects;
  * @param <R>  Record Type
  * @param <PO> Pojo Type
  * @param <TB> Table Type
- * @see IBasicDao
+ * @see IDao
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
 public abstract class BaseDao<TB extends Table<R>, PO, R extends TableRecord<R>>
-        implements IBasicDao<TB, PO, R> {
+        implements IDao<TB, PO, R> {
 
     protected final TB T; // NOPMD NOSONAR
 

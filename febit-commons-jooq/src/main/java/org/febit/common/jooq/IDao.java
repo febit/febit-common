@@ -15,16 +15,29 @@
  */
 package org.febit.common.jooq;
 
-import org.jooq.UpdatableRecord;
+import org.jooq.Record;
+import org.jooq.*;
 
-/**
- * Standard CURD dao interface.
- */
-@SuppressWarnings({"unused"})
-public interface ICurdDao<TB extends ITable<R, ID>, PO extends IEntity<ID>, ID, R extends UpdatableRecord<R>>
-        extends IQueryDao<TB, PO, ID, R>,
-        IInsertDao<TB, PO, ID, R>,
-        IUpdateDao<TB, PO, ID, R>,
-        IDeleteDao<TB, PO, ID, R> {
+public interface IDao<TB extends Table<R>, PO, R extends TableRecord<R>> {
+
+    Configuration conf();
+
+    TB table();
+
+    default DSLContext dsl() {
+        return conf().dsl();
+    }
+
+    RecordMapper<R, PO> mapper();
+
+    default <V> RecordMapper<R, V> mapper(Class<V> beanType) {
+        return mapper(table().recordType(), beanType);
+    }
+
+    default <V, R1 extends Record> RecordMapper<R1, V> mapper(RecordType<R1> recordType, Class<V> beanType) {
+        return conf()
+                .recordMapperProvider()
+                .provide(recordType, beanType);
+    }
 
 }

@@ -20,13 +20,10 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.febit.lang.protocol.Page;
 import org.febit.lang.protocol.Pagination;
 import org.jooq.Condition;
-import org.jooq.Configuration;
-import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.OrderField;
 import org.jooq.Record;
 import org.jooq.RecordMapper;
-import org.jooq.RecordType;
 import org.jooq.SelectQuery;
 import org.jooq.Table;
 import org.jooq.TableLike;
@@ -39,24 +36,10 @@ import java.util.List;
 import java.util.function.Function;
 
 /**
- * Basic DAO interface.
+ * Basic Query DAO interface.
  */
 @SuppressWarnings({"unused"})
-public interface IBasicDao<TB extends Table<R>, PO, R extends TableRecord<R>> {
-
-    default <V> RecordMapper<R, V> mapper(Class<V> beanType) {
-        return mapper(table().recordType(), beanType);
-    }
-
-    TB table();
-
-    default <V, R1 extends Record> RecordMapper<R1, V> mapper(RecordType<R1> recordType, Class<V> beanType) {
-        return conf()
-                .recordMapperProvider()
-                .provide(recordType, beanType);
-    }
-
-    Configuration conf();
+public interface IBasicQueryDao<TB extends Table<R>, PO, R extends TableRecord<R>> extends IDao<TB, PO, R> {
 
     @Nullable
     default <Z> PO findBy(Field<Z> field, Z value) {
@@ -68,18 +51,12 @@ public interface IBasicDao<TB extends Table<R>, PO, R extends TableRecord<R>> {
         return findBy(Arrays.asList(conditions), mapper());
     }
 
-    RecordMapper<R, PO> mapper();
-
     @Nullable
     default <V> V findBy(List<Condition> conditions, RecordMapper<R, V> mapper) {
         R record = dsl().selectFrom(table())
                 .where(conditions)
                 .fetchOne();
         return record == null ? null : mapper.map(record);
-    }
-
-    default DSLContext dsl() {
-        return conf().dsl();
     }
 
     @Nullable
@@ -197,28 +174,27 @@ public interface IBasicDao<TB extends Table<R>, PO, R extends TableRecord<R>> {
     ) {
         var conditions = form.toConditions(dsl());
         return page(
-                pagination,
                 dsl().selectFrom(table())
-                        .where(conditions),
+                        .where(conditions), pagination,
                 SortUtils.resolve(pagination.getSorts(), form),
                 mapper
         );
     }
 
     default <V, R1 extends Record> Page<V> page(
-            Pagination pagination,
             TableLike<R1> table,
+            Pagination pagination,
             Collection<? extends OrderField<?>> orders,
             RecordMapper<R1, V> mapper
     ) {
-        return customPage(pagination, table, orders, query -> query.fetch(mapper));
+        return pageWithFetcher(table, pagination, orders, query -> query.fetch(mapper));
     }
 
-    default <V, R1 extends Record> Page<V> customPage(
-            Pagination pagination,
+    default <V, R1 extends Record> Page<V> pageWithFetcher(
             TableLike<R1> table,
+            Pagination pagination,
             Collection<? extends OrderField<?>> orders,
-            Function<SelectQuery<R1>, List<V>> action
+            Function<SelectQuery<R1>, List<V>> fetcher
     ) {
         var total = dsl().selectCount()
                 .from(table)
@@ -237,7 +213,7 @@ public interface IBasicDao<TB extends Table<R>, PO, R extends TableRecord<R>> {
             query.addOrderBy(orders);
         }
 
-        var rows = action.apply(query);
+        var rows = fetcher.apply(query);
         return Page.of(pagination.getPage(), pagination.getSize(), total, rows);
     }
 }
