@@ -34,7 +34,7 @@ public @interface RpcMapping {
      * Timeout in milliseconds.
      * <p>
      * == 0 means unset, will use default timeout if possible.
-     * <= 0 means without limit.
+     * &lt;= 0 means without limit.
      */
     long timeout() default 0;
 
