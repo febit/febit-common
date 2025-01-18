@@ -42,7 +42,12 @@ import java.util.function.Function;
 public interface IBasicQueryDao<TB extends Table<R>, PO, R extends TableRecord<R>> extends IDao<TB, PO, R> {
 
     @Nullable
-    default <Z> PO findBy(Field<Z> field, Z value) {
+    default <Z> PO findBy(Field<Z> field, @Nullable Z value) {
+        if (value == null) {
+            return findBy(
+                    field.isNull()
+            );
+        }
         return findBy(field.equal(value));
     }
 

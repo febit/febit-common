@@ -15,6 +15,7 @@
  */
 package org.febit.common.jooq;
 
+import jakarta.annotation.Nullable;
 import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.UpdatableRecord;
@@ -58,7 +59,7 @@ public interface IUpdateDao<TB extends ITable<R, ID>, PO extends IEntity<ID>, ID
         return changed;
     }
 
-    default <V> int updateFieldBy(Field<V> field, V value, Condition... conditions) {
+    default <V> int updateFieldBy(Field<V> field, @Nullable V value, Condition... conditions) {
         return update()
                 .set(field, value)
                 .where(conditions)
