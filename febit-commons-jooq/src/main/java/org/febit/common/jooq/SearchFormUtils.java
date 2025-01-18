@@ -118,8 +118,8 @@ public class SearchFormUtils {
             case GE -> jooqField.ge(value);
             case LT -> jooqField.lt(value);
             case LE -> jooqField.le(value);
-            case IN -> jooqField.in(castToCollection(value));
-            case NOT_IN -> jooqField.notIn(castToCollection(value));
+            case IN -> jooqField.in(convertToCollection(value));
+            case NOT_IN -> jooqField.notIn(convertToCollection(value));
             case IS_NULL -> ConvertUtils.toBoolean(value)
                     ? jooqField.isNull()
                     : jooqField.isNotNull();
@@ -176,7 +176,7 @@ public class SearchFormUtils {
     }
 
     @SuppressWarnings({"unchecked"})
-    private static Collection<Object> castToCollection(@Nullable Object value) {
+    private static Collection<Object> convertToCollection(@Nullable Object value) {
         if (value instanceof Collection) {
             return (Collection<Object>) value;
         }
@@ -189,7 +189,7 @@ public class SearchFormUtils {
         if (value == null) {
             return List.of();
         }
-        throw new IllegalArgumentException("Value cannot cast to collection: " + value.getClass());
+        throw new IllegalArgumentException("Value cannot convert to collection: " + value.getClass());
     }
 
     private static boolean isSupportedCollection(Field field) {

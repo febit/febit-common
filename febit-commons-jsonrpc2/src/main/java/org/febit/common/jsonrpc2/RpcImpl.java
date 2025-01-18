@@ -272,7 +272,7 @@ public final class RpcImpl implements Rpc {
             packet.future().completeExceptionally(new RpcErrorException(error));
             return;
         }
-        var converted = JsonCodec.cast(response.result(), packet.resultType());
+        var converted = JsonCodec.convert(response.result(), packet.resultType());
         packet.future().complete(converted);
     }
 

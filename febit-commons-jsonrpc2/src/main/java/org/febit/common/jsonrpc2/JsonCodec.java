@@ -48,18 +48,18 @@ public class JsonCodec {
     }
 
     @Nullable
-    public static <T> T cast(@Nullable Object result, JavaType resultType) {
+    public static <T> T convert(@Nullable Object result, JavaType resultType) {
         if (result == null) {
             return null;
         }
         return JacksonUtils.to(result, resultType);
     }
 
-    public static Object[] castParameters(List<Object> rawParams, JavaType[] paramTypes) {
+    public static Object[] convertParameters(List<Object> rawParams, JavaType[] paramTypes) {
         var params = new Object[paramTypes.length];
         try {
             for (int i = 0; i < params.length && i < rawParams.size(); i++) {
-                params[i] = JsonCodec.cast(rawParams.get(i), paramTypes[i]);
+                params[i] = JsonCodec.convert(rawParams.get(i), paramTypes[i]);
             }
         } catch (Exception e) {
             throw StdRpcErrors.INVALID_PARAMS.toException("Invalid params: " + e.getCause(), e);
@@ -108,17 +108,17 @@ public class JsonCodec {
                     .toException("invalid request or notification or response");
         }
         if (method == null) {
-            return castMessage(json, Response.class);
+            return convertToMessage(json, Response.class);
         }
 
         json.computeIfAbsent("params", k -> List.of());
         if (id == null) {
-            return castMessage(json, Notification.class);
+            return convertToMessage(json, Notification.class);
         }
-        return castMessage(json, Request.class);
+        return convertToMessage(json, Request.class);
     }
 
-    private static <T> T castMessage(Map<String, Object> json, Class<T> type) {
+    private static <T> T convertToMessage(Map<String, Object> json, Class<T> type) {
         var result = JacksonUtils.to(json, type);
         Objects.requireNonNull(result, "Invalid message");
         return result;

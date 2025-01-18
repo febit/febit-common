@@ -39,7 +39,7 @@ public abstract class BaseMethodHandler {
 
     @Nullable
     protected Object invoke(List<Object> rawParams) {
-        var params = JsonCodec.castParameters(rawParams, paramTypes);
+        var params = JsonCodec.convertParameters(rawParams, paramTypes);
         try {
             return meta.targetMethod().invoke(target, params);
         } catch (IllegalAccessException e) {
