@@ -26,7 +26,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
-import java.net.URL;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
@@ -62,7 +62,9 @@ public class DefaultProviderImpl implements IDefaultProvider {
         for (var p : paths) {
             p = p.trim();
             try (
-                    var in = new InputStreamReader(new URL(p).openStream(), StandardCharsets.UTF_8)
+                    var in = new InputStreamReader(
+                            URI.create(p).toURL().openStream(),
+                            StandardCharsets.UTF_8)
             ) {
                 log.info("Loading options from path: {}", p);
                 props.load(in);
