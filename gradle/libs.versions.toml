@@ -2,9 +2,9 @@
 annotation-api = '3.0.0'
 jsr305 = '3.0.2'
 validation-api = '3.1.0'
-spotbugs = '4.8.6'
+spotbugs = '4.9.0'
 swagger = '2.2.27'
-spring = '6.2.1'
+spring = '6.2.2'
 
 commons-cli = '1.9.0'
 commons-codec = '1.17.2'
@@ -16,23 +16,23 @@ commons-io = '2.18.0'
 commons-lang3 = '3.17.0'
 commons-text = '1.13.0'
 
-febit-devkit = '1.4.0'
+febit-devkit = '1.4.1'
 hierynomus-license = '0.16.1'
 
 jackson = '2.18.2'
 jakarta-xml-bind-api = '4.0.2'
 jcommander = '2.0'
-jooq = '3.19.17'
+jooq = '3.19.18'
 jsonpath = '2.9.0'
 kafka-clients = '3.9.0'
 nimbus-jose-jwt = '9.47'
 slf4j = '2.0.16'
 snakeyaml = '2.3'
 
-assertj = '3.26.3'
+assertj = '3.27.2'
 hamcrest = '3.0'
-junit = '5.11.3'
-mockito = '5.14.2'
+junit = '5.11.4'
+mockito = '5.15.2'
 
 
 [plugins]

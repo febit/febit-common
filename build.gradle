@@ -9,8 +9,8 @@ plugins {
   alias libs.plugins.febit.codegen.module
 }
 
-group 'org.febit'
-version '3.3.1-SNAPSHOT'
+group = 'org.febit'
+version = '3.3.1-SNAPSHOT'
 
 description = 'Febit Commons'
 
@@ -20,11 +20,11 @@ ext {
 allprojects {
   apply plugin: 'com.github.hierynomus.license'
 
-  group rootProject.group
-  version rootProject.version
+  group = rootProject.group
+  version = rootProject.version
 
   repositories {
-    maven { url "https://maven.aliyun.com/repository/central" }
+    maven { url = "https://maven.aliyun.com/repository/central" }
   }
 
   standardMavenPublish {
@@ -42,9 +42,9 @@ allprojects {
       java = 'SLASHSTAR_STYLE'
     }
     include '**/*.java'
-    strictCheck false
-    skipExistingHeaders false
-    header rootProject.file('etc/license-header.txt')
+    strictCheck = false
+    skipExistingHeaders = false
+    header = rootProject.file('etc/license-header.txt')
   }
 }
 
@@ -63,6 +63,10 @@ configure(subprojects.findAll {
 
   test {
     useJUnitPlatform()
+  }
+
+  licenseMain {
+    mustRunAfter generateModule
   }
 
   dependencies {
