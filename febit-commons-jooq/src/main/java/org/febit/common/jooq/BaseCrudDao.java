@@ -15,25 +15,39 @@
  */
 package org.febit.common.jooq;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.febit.lang.util.TypeParameters;
 import org.jooq.Configuration;
 import org.jooq.UpdatableRecord;
 
+import java.util.Objects;
+
 /**
- * Base CURD DAO impl.
+ * Base CRUD DAO impl.
  *
  * @param <R>  Record Type
  * @param <PO> Persistent Object Type
  * @param <TB> Table Type
  * @param <ID> ID Field Type
  * @see ICrudDao
- * @deprecated use {@link BaseCrudDao} instead.
  */
-@Deprecated(since = "3.3.2")
 @SuppressWarnings({"WeakerAccess", "unused"})
-public abstract class BaseCurdDao<TB extends ITable<R, ID>, PO extends IEntity<ID>, ID, R extends UpdatableRecord<R>>
-        extends BaseCrudDao<TB, PO, ID, R> implements ICurdDao<TB, PO, ID, R> {
+public abstract class BaseCrudDao<TB extends ITable<R, ID>, PO extends IEntity<ID>, ID, R extends UpdatableRecord<R>>
+        extends BaseDao<TB, PO, R> implements ICrudDao<TB, PO, ID, R> {
 
-    protected BaseCurdDao(Configuration conf) {
+    private final Class<ID> pkType;
+
+    @SuppressFBWarnings({
+            "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"
+    })
+    protected BaseCrudDao(Configuration conf) {
         super(conf);
+        this.pkType = TypeParameters.resolve(getClass(), BaseCrudDao.class, 2);
+        Objects.requireNonNull(this.pkType);
     }
+
+    protected Class<ID> pkType() {
+        return pkType;
+    }
+
 }

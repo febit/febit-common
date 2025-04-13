@@ -18,13 +18,13 @@ package org.febit.common.jooq;
 import org.jooq.UpdatableRecord;
 
 /**
- * Standard CURD dao interface.
- *
- * @deprecated Use {@link ICrudDao} instead.
+ * Standard CRUD dao interface.
  */
-@Deprecated(since = "3.3.2")
 @SuppressWarnings({"unused"})
-public interface ICurdDao<TB extends ITable<R, ID>, PO extends IEntity<ID>, ID, R extends UpdatableRecord<R>>
-        extends ICrudDao<TB, PO, ID, R> {
+public interface ICrudDao<TB extends ITable<R, ID>, PO extends IEntity<ID>, ID, R extends UpdatableRecord<R>>
+        extends IQueryDao<TB, PO, ID, R>,
+        IInsertDao<TB, PO, ID, R>,
+        IUpdateDao<TB, PO, ID, R>,
+        IDeleteDao<TB, PO, ID, R> {
 
 }

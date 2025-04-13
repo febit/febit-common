@@ -17,13 +17,13 @@ package org.febit.common.jooq;
 
 import org.febit.lang.util.Lists;
 import org.jooq.Condition;
-import org.jooq.UpdatableRecord;
+import org.jooq.TableRecord;
 
 import java.util.Collection;
 
 import static java.util.Arrays.asList;
 
-public interface IDeleteDao<TB extends ITable<R, ID>, PO extends IEntity<ID>, ID, R extends UpdatableRecord<R>>
+public interface IDeleteDao<TB extends ITable<R, ID>, PO extends IEntity<ID>, ID, R extends TableRecord<R>>
         extends IDao<TB, PO, R> {
 
     default int delete(PO po) {

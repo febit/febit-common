@@ -16,12 +16,12 @@
 package org.febit.common.jooq;
 
 import jakarta.annotation.Nullable;
-import org.jooq.UpdatableRecord;
+import org.jooq.TableRecord;
 
 import java.util.Collection;
 import java.util.List;
 
-public interface IQueryDao<TB extends ITable<R, ID>, PO extends IEntity<ID>, ID, R extends UpdatableRecord<R>>
+public interface IQueryDao<TB extends ITable<R, ID>, PO extends IEntity<ID>, ID, R extends TableRecord<R>>
         extends IBasicQueryDao<TB, PO, R> {
 
     @Nullable
