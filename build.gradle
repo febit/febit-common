@@ -10,7 +10,7 @@ plugins {
 }
 
 group = 'org.febit'
-version = '3.3.2'
+version = '3.3.3-SNAPSHOT'
 
 description = 'Febit Commons'
 
@@ -103,11 +103,14 @@ configure(subprojects.findAll {
         entry 'slf4j-simple'
       }
 
-      dependency "${libs.annotation.api.get()}"
       dependency "${libs.jsr305.get()}"
       dependency "${libs.spotbugs.annotations.get()}"
       dependency "${libs.swagger.annotations.get()}"
-      dependency "${libs.validation.api.get()}"
+
+      dependency "${libs.jakarta.annotation.api.get()}"
+      dependency "${libs.jakarta.persistence.api.get()}"
+      dependency "${libs.jakarta.validation.api.get()}"
+      dependency "${libs.jakarta.xml.bind.api.get()}"
 
       dependency "${libs.commons.cli.get()}"
       dependency "${libs.commons.codec.get()}"
@@ -117,10 +120,13 @@ configure(subprojects.findAll {
       dependency "${libs.commons.exec.get()}"
       dependency "${libs.commons.io.get()}"
       dependency "${libs.commons.lang3.get()}"
+      dependency "${libs.commons.pool2.get()}"
       dependency "${libs.commons.text.get()}"
 
+      dependency "${libs.caffeine.get()}"
       dependency "${libs.hamcrest.get()}"
       dependency "${libs.jcommander.get()}"
+      dependency "${libs.jool.get()}"
       dependency "${libs.jsonpath.get()}"
       dependency "${libs.kafka.clients.get()}"
       dependency "${libs.nimbus.jose.jwt.get()}"
@@ -156,7 +162,7 @@ def customPom(MavenPom pom) {
     }
     developers {
       developer {
-        id = 'zqq'
+        id = 'kurt'
         name = 'Kurt Zhu'
         email = 'zqq@febit.org'
         timezone = '+8'

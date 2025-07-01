@@ -1,11 +1,4 @@
 [versions]
-annotation-api = '3.0.0'
-jsr305 = '3.0.2'
-validation-api = '3.1.1'
-spotbugs = '4.9.3'
-swagger = '2.2.31'
-spring = '6.2.7'
-
 commons-cli = '1.9.0'
 commons-codec = '1.18.0'
 commons-collections4 = '4.5.0'
@@ -14,24 +7,34 @@ commons-csv = '1.14.0'
 commons-exec = '1.5.0'
 commons-io = '2.19.0'
 commons-lang3 = '3.17.0'
+commons-pool2 = '2.12.1'
 commons-text = '1.13.1'
 
+jakarta-annotation-api = '3.0.0'
+jakarta-persistence-api = '3.2.0'
+jakarta-validation-api = '3.1.1'
+jakarta-xml-bind-api = '4.0.2'
+
+caffeine = '3.2.1'
 febit-devkit = '1.4.2'
 hierynomus-license = '0.16.1'
-
-jackson = '2.18.4'
-jakarta-xml-bind-api = '4.0.2'
+jackson = '2.18.4.1'
 jcommander = '2.0'
-jooq = '3.19.23'
+jool = '0.9.15'
+jooq = '3.19.24'
 jsonpath = '2.9.0'
+jsr305 = '3.0.2'
 kafka-clients = '3.9.0'
-nimbus-jose-jwt = '10.0.2'
+nimbus-jose-jwt = '10.3'
 slf4j = '2.0.17'
 snakeyaml = '2.4'
+spotbugs = '4.9.3'
+spring = '6.2.8'
+swagger = '2.2.31'
 
 assertj = '3.27.3'
 hamcrest = '3.0'
-junit = '5.12.2'
+junit = '5.13.2'
 mockito = '5.18.0'
 
 
@@ -49,12 +52,10 @@ jackson-bom = { module = 'com.fasterxml.jackson:jackson-bom', version.ref = 'jac
 junit-bom = { module = 'org.junit:junit-bom', version.ref = 'junit' }
 mockito-bom = { module = 'org.mockito:mockito-bom', version.ref = 'mockito' }
 
-annotation-api = { module = 'jakarta.annotation:jakarta.annotation-api', version.ref = 'annotation-api' }
+jakarta-annotation-api = { module = 'jakarta.annotation:jakarta.annotation-api', version.ref = 'jakarta-annotation-api' }
+jakarta-persistence-api = { module = 'jakarta.persistence:jakarta.persistence-api', version.ref = 'jakarta-persistence-api' }
+jakarta-validation-api = { module = 'jakarta.validation:jakarta.validation-api', version.ref = 'jakarta-validation-api' }
 jakarta-xml-bind-api = { module = 'jakarta.xml.bind:jakarta.xml.bind-api', version.ref = 'jakarta-xml-bind-api' }
-jsr305 = { module = 'com.google.code.findbugs:jsr305', version.ref = 'jsr305' }
-spotbugs-annotations = { module = 'com.github.spotbugs:spotbugs-annotations', version.ref = 'spotbugs' }
-swagger-annotations = { module = 'io.swagger.core.v3:swagger-annotations', version.ref = 'swagger' }
-validation-api = { module = 'jakarta.validation:jakarta.validation-api', version.ref = 'validation-api' }
 
 commons-cli = { module = 'commons-cli:commons-cli', version.ref = 'commons-cli' }
 commons-codec = { module = 'commons-codec:commons-codec', version.ref = 'commons-codec' }
@@ -64,13 +65,19 @@ commons-csv = { module = 'org.apache.commons:commons-csv', version.ref = 'common
 commons-exec = { module = 'org.apache.commons:commons-exec', version.ref = 'commons-exec' }
 commons-io = { module = 'commons-io:commons-io', version.ref = 'commons-io' }
 commons-lang3 = { module = 'org.apache.commons:commons-lang3', version.ref = 'commons-lang3' }
+commons-pool2 = { module = 'org.apache.commons:commons-pool2', version.ref = 'commons-pool2' }
 commons-text = { module = 'org.apache.commons:commons-text', version.ref = 'commons-text' }
 
-sping-core = { module = 'org.springframework:spring-core', version.ref = 'spring' }
+caffeine = { module = 'com.github.ben-manes.caffeine:caffeine', version.ref = 'caffeine' }
 hamcrest = { module = 'org.hamcrest:hamcrest', version.ref = 'hamcrest' }
 jcommander = { module = 'org.jcommander:jcommander', version.ref = 'jcommander' }
+jool = { module = 'org.jooq:jool', version.ref = 'jool' }
 jooq = { module = 'org.jooq:jooq', version.ref = 'jooq' }
 jsonpath = { module = 'com.jayway.jsonpath:json-path', version.ref = 'jsonpath' }
+jsr305 = { module = 'com.google.code.findbugs:jsr305', version.ref = 'jsr305' }
 kafka-clients = { module = 'org.apache.kafka:kafka-clients', version.ref = 'kafka-clients' }
 nimbus-jose-jwt = { module = 'com.nimbusds:nimbus-jose-jwt', version.ref = 'nimbus-jose-jwt' }
 snakeyaml = { module = 'org.yaml:snakeyaml', version.ref = 'snakeyaml' }
+sping-core = { module = 'org.springframework:spring-core', version.ref = 'spring' }
+spotbugs-annotations = { module = 'com.github.spotbugs:spotbugs-annotations', version.ref = 'spotbugs' }
+swagger-annotations = { module = 'io.swagger.core.v3:swagger-annotations', version.ref = 'swagger' }
