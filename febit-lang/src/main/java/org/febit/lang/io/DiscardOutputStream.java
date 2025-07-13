@@ -19,6 +19,8 @@ import java.io.OutputStream;
 
 public class DiscardOutputStream extends OutputStream {
 
+    public static final DiscardOutputStream INSTANCE = new DiscardOutputStream();
+
     @Override
     public void write(int b) {
     }
