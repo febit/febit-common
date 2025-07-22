@@ -17,6 +17,8 @@ package org.febit.lang.io;
 
 import lombok.RequiredArgsConstructor;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.io.Writer;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
@@ -125,9 +127,14 @@ public class LineConsumerWriter extends Writer {
     }
 
     @Override
-    public void close() {
-        closed.set(true);
+    public void close() throws IOException {
+        if (!closed.compareAndSet(false, true)) {
+            return; // Already closed
+        }
         flush();
         popRemaining();
+        if (consumer instanceof Closeable closeable) {
+            closeable.close();
+        }
     }
 }
