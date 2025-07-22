@@ -7,10 +7,12 @@ codegenModule {
 dependencies {
   api project(':febit-lang')
 
+  compileOnly libs.commons.exec
   compileOnly libs.jcommander
   compileOnly libs.kafka.clients
   compileOnly libs.nimbus.jose.jwt
 
+  testImplementation libs.commons.exec
   testImplementation libs.jcommander
   testImplementation libs.kafka.clients
   testImplementation libs.nimbus.jose.jwt
