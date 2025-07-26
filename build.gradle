@@ -10,7 +10,7 @@ plugins {
 }
 
 group = 'org.febit'
-version = '3.3.3-SNAPSHOT'
+version = '3.3.3'
 
 description = 'Febit Commons'
 
