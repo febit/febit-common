@@ -44,8 +44,7 @@ public class ExecutorUtils {
             } catch (Exception e) {
                 var count = REJECTED_COUNT.updateAndGet(c -> c == Long.MAX_VALUE ? Long.MAX_VALUE : c + 1);
                 if (log.isDebugEnabled()) {
-                    log.debug("Task " + run + " rejected from " + e + "."
-                            + " total rejected: " + count, e);
+                    log.debug("Task {} rejected from {}. total rejected: {}", run, e, count, e);
                 }
                 ok = false;
             }

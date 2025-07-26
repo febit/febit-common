@@ -15,6 +15,7 @@
  */
 package org.febit.lang.io;
 
+import org.febit.lang.func.ClosableConsumer;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -34,7 +35,7 @@ import static org.mockito.Mockito.verify;
 class LineConsumerWriterTest {
 
     @Test
-    void illegalArguments() {
+    void illegalArguments() throws IOException {
         @SuppressWarnings("unchecked")
         var sink = (Consumer<String>) Mockito.mock(Consumer.class);
         try (var writer = LineConsumerWriter.create(sink)) {
@@ -61,6 +62,30 @@ class LineConsumerWriterTest {
             writer.write("");
         }
         assertTrue(sink.isEmpty(), "sink should be empty");
+    }
+
+    @Test
+    void closed() throws IOException {
+        @SuppressWarnings("unchecked")
+        var sink = (ClosableConsumer<String>) Mockito.mock(ClosableConsumer.class);
+
+        var writer = LineConsumerWriter.create(sink);
+        assertFalse(writer.closed());
+        verify(sink, never()).close();
+
+        try (writer) {
+            assertFalse(writer.closed());
+            verify(sink, never()).close();
+        }
+        assertTrue(writer.closed());
+        verify(sink, times(1)).close();
+
+        // Cannot write after close
+        assertThrows(IOException.class, () -> writer.write("Hello"));
+
+        // allow close multiple times
+        assertDoesNotThrow(writer::close);
+        verify(sink, times(1)).close();
     }
 
     @Test

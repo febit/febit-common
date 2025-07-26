@@ -34,7 +34,7 @@ public class LineConsumerWriter extends Writer {
     private final Consumer<String> consumer;
 
     @Override
-    public synchronized void write(char[] buf, int offset, int total) {
+    public synchronized void write(char[] buf, int offset, int total) throws IOException {
         if (offset < 0) {
             throw new IndexOutOfBoundsException("offset < 0: " + offset);
         }
@@ -44,6 +44,10 @@ public class LineConsumerWriter extends Writer {
         final int end = offset + total;
         if (buf.length < end) {
             throw new IndexOutOfBoundsException("buf.length < end: " + buf.length + " < " + end);
+        }
+
+        if (closed.get()) {
+            throw new IOException("Writer is closed");
         }
 
         // If remaining end with CR, check if the next character is LF
@@ -127,7 +131,7 @@ public class LineConsumerWriter extends Writer {
     }
 
     @Override
-    public void close() throws IOException {
+    public synchronized void close() throws IOException {
         if (!closed.compareAndSet(false, true)) {
             return; // Already closed
         }

@@ -41,7 +41,7 @@ class LinesTest {
     @Test
     void asOutputStream() throws IOException {
         var consumer = new ArrayList<String>();
-        try (var out = Lines.asOutputStream(consumer::add, UTF_8)) {
+        try (var out = Lines.asUtf8OutputStream(consumer::add)) {
             out.write("Hello\nWorld".getBytes(UTF_8));
         }
         assertEquals(List.of(

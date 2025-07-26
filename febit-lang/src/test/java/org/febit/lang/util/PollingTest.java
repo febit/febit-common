@@ -85,7 +85,7 @@ class PollingTest {
     }
 
     @Test
-    void allwaysFalseUntilTimeout() throws ExecutionException, InterruptedException {
+    void alwaysFalseUntilTimeout() throws ExecutionException, InterruptedException {
         assertThat(Polling.create(single("Hello"))
                 .dynamicDelay(context -> Duration.ofMillis(1))
                 .completeIf(ctx -> false)
