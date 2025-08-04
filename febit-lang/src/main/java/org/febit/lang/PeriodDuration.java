@@ -23,6 +23,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.DateTimeException;
 import java.time.Duration;
 import java.time.chrono.IsoChronology;
@@ -42,7 +44,9 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 @Getter
 @EqualsAndHashCode
 @RequiredArgsConstructor(staticName = "of")
-public class PeriodDuration implements TemporalAmount {
+public final class PeriodDuration implements TemporalAmount, Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private static final List<TemporalUnit> SUPPORTED_UNITS = List.of(MONTHS, SECONDS);
 
@@ -51,8 +55,8 @@ public class PeriodDuration implements TemporalAmount {
     public static final PeriodDuration ZERO = of("zero", 0, 0);
     public static final PeriodDuration NEVER = of(NEVER_RAW, 0, 0);
 
-    @JsonValue
     @Nonnull
+    @JsonValue
     @EqualsAndHashCode.Exclude
     private final String raw;
 
