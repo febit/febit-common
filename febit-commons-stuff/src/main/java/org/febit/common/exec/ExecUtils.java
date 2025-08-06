@@ -15,7 +15,6 @@
  */
 package org.febit.common.exec;
 
-import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import lombok.Singular;
 import lombok.experimental.UtilityClass;
@@ -26,6 +25,7 @@ import org.apache.commons.io.IOUtils;
 import org.febit.lang.io.Lines;
 import org.febit.lang.io.MpscPipeImpl;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -60,6 +60,9 @@ public class ExecUtils {
         }
     }
 
+    @SuppressWarnings({
+            "UnusedReturnValue"
+    })
     public static class Launcher {
 
         public Launcher stdout(OutputStream stdout) {
@@ -68,8 +71,12 @@ public class ExecUtils {
             ));
         }
 
+        public Launcher workingDir(File dir) {
+            return workingDir(dir.toPath());
+        }
+
         public Launcher stdout(
-                @Nonnull Consumer<String> sink
+                Consumer<String> sink
         ) {
             return stdout(Lines.asUtf8OutputStream(sink));
         }
@@ -81,13 +88,13 @@ public class ExecUtils {
         }
 
         public Launcher stderr(
-                @Nonnull Consumer<String> sink
+                Consumer<String> sink
         ) {
             return stderr(Lines.asUtf8OutputStream(sink));
         }
 
         public Launcher pipeLines(
-                @Nonnull Consumer<String> sink
+                Consumer<String> sink
         ) {
             // TODO: will close twice if sink is closable
             var out = Lines.asUtf8OutputStream(sink);
@@ -96,7 +103,7 @@ public class ExecUtils {
         }
 
         public Launcher pipeLineStream(
-                @Nonnull Consumer<Stream<String>> sink,
+                Consumer<Stream<String>> sink,
                 int bufferSize
         ) {
             var pipe = MpscPipeImpl.<String>ofBounded(bufferSize);
@@ -108,7 +115,7 @@ public class ExecUtils {
         }
 
         public Launcher pipeLineStream(
-                @Nonnull Consumer<Stream<String>> sink
+                Consumer<Stream<String>> sink
         ) {
             return pipeLineStream(sink, STREAM_LINES_DEFAULT_BUF_SIZE);
         }
@@ -128,11 +135,9 @@ public class ExecUtils {
             buildMethodName = "start"
     )
     private static ProcessFuture start(
-            @lombok.NonNull final CommandLine command,
-            @Singular("env")
-            @lombok.NonNull final Map<String, String> environments,
-            @Singular
-            @lombok.NonNull final List<Function<Process, Runnable>> handlers,
+            @lombok.NonNull CommandLine command,
+            @Singular("env") Map<String, String> environments,
+            @Singular List<Function<Process, Runnable>> handlers,
             @Nullable Path workingDir,
             @Nullable Executor executor
     ) {
@@ -198,7 +203,8 @@ public class ExecUtils {
 
     private static Integer handleProcess(@Nullable Process process, @Nullable Throwable throwable) {
         if (throwable != null) {
-            throw throwable instanceof RuntimeException r ? r : new RuntimeException(throwable);
+            throw throwable instanceof RuntimeException r
+                    ? r : new RuntimeException(throwable);
         }
         if (process == null) {
             throw new UncheckedIOException(new IOException("Process is null"));
