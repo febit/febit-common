@@ -37,6 +37,10 @@ import java.util.stream.Stream;
 @UtilityClass
 public class JsonCodec {
 
+    private static final String PROP_ID = "id";
+    private static final String PROP_METHOD = "method";
+    private static final String PROP_PARAMS = "params";
+
     public static JavaType resolveType(Type type) {
         return JacksonUtils.TYPE_FACTORY.constructType(type);
     }
@@ -100,8 +104,8 @@ public class JsonCodec {
                     .toException("invalid message version");
         }
 
-        var id = json.get("id");
-        var method = json.get("method");
+        var id = json.get(PROP_ID);
+        var method = json.get(PROP_METHOD);
 
         if (id == null && method == null) {
             throw StdRpcErrors.INVALID_REQUEST
@@ -111,7 +115,15 @@ public class JsonCodec {
             return convertToMessage(json, Response.class);
         }
 
-        json.computeIfAbsent("params", k -> List.of());
+        var params = json.get(PROP_PARAMS);
+        if (params == null) {
+            json.put(PROP_PARAMS, List.of());
+        } else if (!(params instanceof List)) {
+            json.put(PROP_PARAMS, List.of(
+                    params
+            ));
+        }
+
         if (id == null) {
             return convertToMessage(json, Notification.class);
         }

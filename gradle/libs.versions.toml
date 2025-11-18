@@ -21,7 +21,7 @@ hierynomus-license = '0.16.1'
 jackson = '2.19.2'
 jcommander = '2.0'
 jool = '0.9.15'
-jooq = '3.20.5'
+jooq = '3.19.28'
 jsonpath = '2.9.0'
 jsr305 = '3.0.2'
 kafka-clients = '3.9.0'
@@ -29,8 +29,9 @@ nimbus-jose-jwt = '10.3.1'
 slf4j = '2.0.17'
 snakeyaml = '2.4'
 spotbugs = '4.9.3'
-spring = '6.2.9'
-swagger = '2.2.35'
+spring = '6.2.10'
+swagger = '2.2.36'
+uuid-generator = '5.1.1'
 
 assertj = '3.27.3'
 hamcrest = '3.0'
@@ -79,5 +80,7 @@ kafka-clients = { module = 'org.apache.kafka:kafka-clients', version.ref = 'kafk
 nimbus-jose-jwt = { module = 'com.nimbusds:nimbus-jose-jwt', version.ref = 'nimbus-jose-jwt' }
 snakeyaml = { module = 'org.yaml:snakeyaml', version.ref = 'snakeyaml' }
 sping-core = { module = 'org.springframework:spring-core', version.ref = 'spring' }
+sping-web = { module = 'org.springframework:spring-web', version.ref = 'spring' }
 spotbugs-annotations = { module = 'com.github.spotbugs:spotbugs-annotations', version.ref = 'spotbugs' }
 swagger-annotations = { module = 'io.swagger.core.v3:swagger-annotations', version.ref = 'swagger' }
+uuid-generator = { module = 'com.fasterxml.uuid:java-uuid-generator', version.ref = 'uuid-generator' }

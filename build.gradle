@@ -131,6 +131,7 @@ configure(subprojects.findAll {
       dependency "${libs.kafka.clients.get()}"
       dependency "${libs.nimbus.jose.jwt.get()}"
       dependency "${libs.snakeyaml.get()}"
+      dependency "${libs.uuid.generator.get()}"
     }
   }
 }
