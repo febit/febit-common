@@ -117,7 +117,7 @@ public class JacksonUtils {
                 .addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(TimeUtils.FMT_DATE_TIME))
                 .addSerializer(Instant.class, InstantSerializer.INSTANCE);
 
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
+        mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL)
                 .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
                 .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)

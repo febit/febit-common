@@ -26,6 +26,7 @@ import org.febit.lang.io.DiscardOutputStream;
 import org.junit.jupiter.api.Test;
 import org.slf4j.event.Level;
 
+import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.time.Duration;
 import java.util.List;
@@ -47,13 +48,12 @@ class CommandsTest {
 
     @Test
     void noOptions() {
-        var console = spy(DISCART_CONSOLE);
+        var out = new ByteArrayOutputStream();
+        var console = new DefaultConsole(new PrintStream(out));
         var commands = Commands.create()
                 .console(console);
-
-        reset(console);
         commands.exec();
-        verify(console).println("Usage: <main class>\n");
+        assertEquals("Usage: <main class>\n", out.toString());
     }
 
     @Test
