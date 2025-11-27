@@ -71,8 +71,14 @@ public class ExecUtils {
             ));
         }
 
-        public Launcher workingDir(File dir) {
-            return workingDir(dir.toPath());
+        public Launcher workingDir(@Nullable File dir) {
+            Path path = dir == null ? null : dir.toPath();
+            return workingDir(path);
+        }
+
+        public Launcher workingDir(@Nullable Path dir) {
+            this.workingDir = dir;
+            return this;
         }
 
         public Launcher stdout(
@@ -135,7 +141,9 @@ public class ExecUtils {
             buildMethodName = "start"
     )
     private static ProcessFuture start(
+            @SuppressWarnings("NullableProblems")
             @lombok.NonNull CommandLine command,
+
             @Singular("env") Map<String, String> environments,
             @Singular List<Function<Process, Runnable>> handlers,
             @Nullable Path workingDir,
