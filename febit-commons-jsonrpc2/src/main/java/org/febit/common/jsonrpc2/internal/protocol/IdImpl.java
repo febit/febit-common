@@ -29,12 +29,17 @@ import java.util.Objects;
 public final class IdImpl implements Id {
 
     @NonNull
-    @JsonValue
     private final Serializable value;
 
     private IdImpl(Serializable value) {
         Objects.requireNonNull(value, "Message id can not be null");
         this.value = value;
+    }
+
+    @Override
+    @JsonValue
+    public Serializable value() {
+        return value;
     }
 
     @Override

@@ -17,7 +17,11 @@ package org.febit.common.jsonrpc2.protocol;
 
 import org.febit.common.jsonrpc2.internal.protocol.IdImpl;
 
+import java.io.Serializable;
+
 public interface Id {
+
+    Serializable value();
 
     static Id of(String value) {
         return IdImpl.of(value);
