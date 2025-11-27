@@ -88,46 +88,57 @@ public class JsonCodec {
                     .toException("message is empty");
         }
 
-        Map<String, Object> json;
+        Map<String, Object> raw;
         try {
-            json = JacksonUtils.parseToNamedMap(text);
+            raw = JacksonUtils.parseToNamedMap(text);
         } catch (Exception e) {
             throw StdRpcErrors.PARSE_ERROR
                     .toException("invalid json", e);
         }
-        if (json == null) {
+        return decode(raw);
+    }
+
+    /**
+     * Decode a map to RpcMessage.
+     *
+     * @param raw raw map
+     * @return RpcMessage
+     * @throws RpcErrorException when not a valid message
+     */
+    public static IRpcMessage decode(@Nullable Map<String, Object> raw) {
+        if (raw == null) {
             throw StdRpcErrors.PARSE_ERROR
                     .toException("invalid json");
         }
-        if (!Jsonrpc2.VERSION.equals(json.get("jsonrpc"))) {
+        if (!Jsonrpc2.VERSION.equals(raw.get("jsonrpc"))) {
             throw StdRpcErrors.INVALID_REQUEST
                     .toException("invalid message version");
         }
 
-        var id = json.get(PROP_ID);
-        var method = json.get(PROP_METHOD);
+        var id = raw.get(PROP_ID);
+        var method = raw.get(PROP_METHOD);
 
         if (id == null && method == null) {
             throw StdRpcErrors.INVALID_REQUEST
                     .toException("invalid request or notification or response");
         }
         if (method == null) {
-            return convertToMessage(json, Response.class);
+            return convertToMessage(raw, Response.class);
         }
 
-        var params = json.get(PROP_PARAMS);
+        var params = raw.get(PROP_PARAMS);
         if (params == null) {
-            json.put(PROP_PARAMS, List.of());
+            raw.put(PROP_PARAMS, List.of());
         } else if (!(params instanceof List)) {
-            json.put(PROP_PARAMS, List.of(
+            raw.put(PROP_PARAMS, List.of(
                     params
             ));
         }
 
         if (id == null) {
-            return convertToMessage(json, Notification.class);
+            return convertToMessage(raw, Notification.class);
         }
-        return convertToMessage(json, Request.class);
+        return convertToMessage(raw, Request.class);
     }
 
     private static <T> T convertToMessage(Map<String, Object> json, Class<T> type) {
