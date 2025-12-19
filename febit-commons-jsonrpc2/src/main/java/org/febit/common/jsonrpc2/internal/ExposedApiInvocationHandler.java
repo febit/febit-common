@@ -17,6 +17,7 @@ package org.febit.common.jsonrpc2.internal;
 
 import com.fasterxml.jackson.databind.JavaType;
 import jakarta.annotation.Nullable;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.febit.common.jsonrpc2.Rpc;
 import org.febit.common.jsonrpc2.exception.UncheckedRpcException;
@@ -27,7 +28,6 @@ import org.febit.lang.util.proxy.Invokers;
 
 import java.lang.reflect.Method;
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -44,38 +44,44 @@ public class ExposedApiInvocationHandler extends BaseInvocationHandler<Object> {
 
     protected Invoker<Object> createRpcInvoker(Method method) {
         var meta = RpcMappings.resolve(method);
+        var paramsComposer = ParamsComposers.resolve(meta);
+
         return switch (meta.type()) {
             case REQUEST -> RequestInvoker.builder()
                     .rpc(rpc)
                     .method(meta.method())
+                    .timeout(meta.timeout())
                     .resultType(meta.resultType())
                     .isFutureResult(meta.isFutureResult())
-                    .timeout(meta.timeout())
+                    .paramsComposer(paramsComposer)
                     .build();
             case NOTIFICATION -> NotifyInvoker.builder()
                     .rpc(rpc)
                     .method(meta.method())
+                    .paramsComposer(paramsComposer)
                     .build();
         };
     }
 
-    @lombok.Builder(
+    @Builder(
             builderClassName = "Builder"
     )
     protected static class NotifyInvoker implements Invoker<Object> {
         private final Rpc rpc;
         private final String method;
+        private final ParamsComposer paramsComposer;
 
         @Nullable
         @Override
-        public Object invoke(Object self, Object[] args) throws Throwable {
-            rpc.notify(method, Arrays.asList(args));
+        public Object invoke(Object self, Object[] args) {
+            var params = paramsComposer.compose(args);
+            rpc.notify(method, params);
             // NOTE: always return null for notification methods
             return null;
         }
     }
 
-    @lombok.Builder(
+    @Builder(
             builderClassName = "Builder"
     )
     protected static class RequestInvoker implements Invoker<Object> {
@@ -83,6 +89,7 @@ public class ExposedApiInvocationHandler extends BaseInvocationHandler<Object> {
         private final String method;
         private final JavaType resultType;
         private final boolean isFutureResult;
+        private final ParamsComposer paramsComposer;
 
         @Nullable
         private final Duration timeout;
@@ -90,7 +97,8 @@ public class ExposedApiInvocationHandler extends BaseInvocationHandler<Object> {
         @Nullable
         @Override
         public Object invoke(Object self, Object[] args) {
-            var future = rpc.request(method, Arrays.asList(args), timeout, resultType);
+            var params = paramsComposer.compose(args);
+            var future = rpc.request(method, params, timeout, resultType);
             if (isFutureResult) {
                 return future;
             }

@@ -15,11 +15,15 @@
  */
 package org.febit.common.jsonrpc2.internal.protocol;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.febit.common.jsonrpc2.protocol.IRpcError;
 
 public record ErrorImpl<E>(
         int code,
+        @Nonnull
         String message,
+        @Nullable
         E data
 ) implements IRpcError<E> {
 }

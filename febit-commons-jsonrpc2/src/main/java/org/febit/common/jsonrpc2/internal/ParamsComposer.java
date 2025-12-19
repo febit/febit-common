@@ -15,23 +15,11 @@
  */
 package org.febit.common.jsonrpc2.internal;
 
-import org.febit.common.jsonrpc2.protocol.IRpcNotification;
-import org.febit.common.jsonrpc2.protocol.IRpcNotificationHandler;
+import jakarta.annotation.Nullable;
 
-public class MethodNotificationHandler extends BaseMethodHandler implements IRpcNotificationHandler {
+@FunctionalInterface
+public interface ParamsComposer {
 
-    private MethodNotificationHandler(RpcMappingMeta meta, Object target) {
-        super(meta, target);
-    }
-
-    @Override
-    public void handle(IRpcNotification notification) {
-        var params = notification.params();
-        invoke(params);
-    }
-
-    public static MethodNotificationHandler create(Object target, RpcMappingMeta meta) {
-        return new MethodNotificationHandler(meta, target);
-    }
-
+    @Nullable
+    Object compose(@Nullable Object[] args);
 }

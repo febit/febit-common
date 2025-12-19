@@ -17,8 +17,7 @@ package org.febit.common.jsonrpc2.protocol;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.annotation.Nonnull;
-
-import java.util.List;
+import jakarta.annotation.Nullable;
 
 public interface IRpcRequest extends IRpcMessage {
 
@@ -29,8 +28,8 @@ public interface IRpcRequest extends IRpcMessage {
     @Nonnull
     String method();
 
-    @Nonnull
-    List<Object> params();
+    @Nullable
+    Object params();
 
     @Nonnull
     @JsonIgnore
@@ -43,9 +42,9 @@ public interface IRpcRequest extends IRpcMessage {
                 return IRpcRequest.this.method();
             }
 
-            @Nonnull
+            @Nullable
             @Override
-            public List<Object> params() {
+            public Object params() {
                 return IRpcRequest.this.params();
             }
         };

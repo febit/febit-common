@@ -15,33 +15,30 @@
  */
 package org.febit.common.jsonrpc2.internal;
 
-import com.fasterxml.jackson.databind.JavaType;
 import jakarta.annotation.Nullable;
-import org.febit.common.jsonrpc2.JsonCodec;
 import org.febit.common.jsonrpc2.exception.UncheckedRpcException;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 
 public abstract class BaseMethodHandler {
 
     protected final Object target;
     protected final RpcMappingMeta meta;
-    protected final JavaType[] paramTypes;
+    protected final ArgumentsResolver argumentsResolver;
 
     protected BaseMethodHandler(RpcMappingMeta meta, Object target) {
         this.target = target;
         this.meta = meta;
-        this.paramTypes = JsonCodec.resolveParameterTypes(meta.targetMethod());
+        this.argumentsResolver = ArgumentsResolvers.resolve(meta);
 
         meta.targetMethod().setAccessible(true);
     }
 
     @Nullable
-    protected Object invoke(List<Object> rawParams) {
-        var params = JsonCodec.convertParameters(rawParams, paramTypes);
+    protected Object invoke(@Nullable Object params) {
+        var args = this.argumentsResolver.resolve(params);
         try {
-            return meta.targetMethod().invoke(target, params);
+            return meta.targetMethod().invoke(target, args);
         } catch (IllegalAccessException e) {
             throw new UncheckedRpcException(e);
         } catch (InvocationTargetException e) {

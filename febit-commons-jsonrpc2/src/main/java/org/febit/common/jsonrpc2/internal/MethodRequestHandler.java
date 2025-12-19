@@ -32,8 +32,9 @@ public class MethodRequestHandler extends BaseMethodHandler implements IRpcReque
 
     @Override
     public CompletableFuture<Object> handle(IRpcRequest request) {
+        var params = request.params();
         return CompletableFuture.supplyAsync(
-                () -> invoke(request.params()),
+                () -> invoke(params),
                 executor
         );
     }

@@ -15,9 +15,7 @@
  */
 package org.febit.common.jsonrpc2;
 
-import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.febit.common.jsonrpc2.exception.RpcDuplicateHandlerRegistrationException;
 import org.febit.common.jsonrpc2.exception.RpcErrorException;
@@ -94,7 +92,9 @@ public final class RpcImpl implements Rpc {
             builderClassName = "Builder"
     )
     private static RpcImpl create(
-            @NonNull IRpcChannelFactory channelFactory,
+            @SuppressWarnings("NullableProblems")
+            @lombok.NonNull IRpcChannelFactory channelFactory,
+
             @Nullable Executor executor,
 
             @Nullable RequestPool requestPool,
@@ -188,7 +188,7 @@ public final class RpcImpl implements Rpc {
     }
 
     @Override
-    public void notify(String method, List<Object> params) {
+    public void notify(String method, @Nullable Object params) {
         var notification = new Notification(
                 method, params
         );
@@ -196,7 +196,7 @@ public final class RpcImpl implements Rpc {
     }
 
     @Override
-    public <T> CompletableFuture<T> request(String method, List<Object> params, @Nullable Duration timeout, Type resultType) {
+    public <T> CompletableFuture<T> request(String method, @Nullable Object params, @Nullable Duration timeout, Type resultType) {
         var id = requestIdGenerator.next();
         var request = new Request(
                 id, method, params
@@ -305,7 +305,7 @@ public final class RpcImpl implements Rpc {
         ));
     }
 
-    private IRpcError<?> resolveRpcError(@Nonnull Throwable original) {
+    private IRpcError<?> resolveRpcError(Throwable original) {
         // Unwrap ExecutionException
         if (original instanceof ExecutionException) {
             if (original.getCause() == null) {

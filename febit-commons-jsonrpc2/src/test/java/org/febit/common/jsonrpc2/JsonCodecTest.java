@@ -59,6 +59,30 @@ class JsonCodecTest {
                 )
         ;
 
+        assertThat(encodeToMap(new Notification("test", Map.of())))
+                .hasSize(3)
+                .containsEntry("method", "test")
+                .containsEntry("jsonrpc", "2.0")
+                .containsEntry("params", Map.of())
+                .doesNotContainKeys(
+                        "id", "result", "error"
+                )
+        ;
+
+        assertThat(encodeToMap(new Notification("test", Map.of(
+                "foo", "bar"
+        ))))
+                .hasSize(3)
+                .containsEntry("method", "test")
+                .containsEntry("jsonrpc", "2.0")
+                .containsEntry("params", Map.of(
+                        "foo", "bar"
+                ))
+                .doesNotContainKeys(
+                        "id", "result", "error"
+                )
+        ;
+
         // Request
         assertThat(encodeToMap(new Request(Id.of(1), "test", List.of(1, "test"))))
                 .hasSize(4)
@@ -119,6 +143,20 @@ class JsonCodecTest {
                 """)).asInstanceOf(type(Notification.class))
                 .returns("test", Notification::method)
                 .returns(List.of(), Notification::params);
+
+        assertThat(decode("""
+                {
+                    "jsonrpc": "2.0",
+                    "method": "test",
+                    "params": {
+                        "foo": "bar"
+                    }
+                }
+                """)).asInstanceOf(type(Notification.class))
+                .returns("test", Notification::method)
+                .returns(Map.of(
+                        "foo", "bar"
+                ), Notification::params);
 
         // Request
         assertThat(decode("""

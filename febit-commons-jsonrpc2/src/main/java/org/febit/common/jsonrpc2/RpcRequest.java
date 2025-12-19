@@ -36,6 +36,12 @@ public @interface RpcRequest {
     String value();
 
     /**
+     * @see RpcMapping#paramsKind()
+     */
+    @AliasFor(annotation = RpcMapping.class)
+    RpcMapping.ParamsKind paramsKind() default RpcMapping.ParamsKind.FIRST_ARGUMENT;
+
+    /**
      * Timeout in milliseconds.
      * <p>
      * == 0 means unset, will use default timeout if possible.

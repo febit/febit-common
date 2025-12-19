@@ -39,16 +39,15 @@ public class JsonCodec {
 
     private static final String PROP_ID = "id";
     private static final String PROP_METHOD = "method";
-    private static final String PROP_PARAMS = "params";
 
     public static JavaType resolveType(Type type) {
         return JacksonUtils.TYPE_FACTORY.constructType(type);
     }
 
-    public static JavaType[] resolveParameterTypes(Method method) {
+    public static List<JavaType> resolveParameterTypes(Method method) {
         return Stream.of(method.getGenericParameterTypes())
                 .map(JsonCodec::resolveType)
-                .toArray(JavaType[]::new);
+                .toList();
     }
 
     @Nullable
@@ -56,19 +55,11 @@ public class JsonCodec {
         if (result == null) {
             return null;
         }
-        return JacksonUtils.to(result, resultType);
-    }
-
-    public static Object[] convertParameters(List<Object> rawParams, JavaType[] paramTypes) {
-        var params = new Object[paramTypes.length];
         try {
-            for (int i = 0; i < params.length && i < rawParams.size(); i++) {
-                params[i] = JsonCodec.convert(rawParams.get(i), paramTypes[i]);
-            }
+            return JacksonUtils.to(result, resultType);
         } catch (Exception e) {
             throw StdRpcErrors.INVALID_PARAMS.toException("Invalid params: " + e.getCause(), e);
         }
-        return params;
     }
 
     public static String encode(IRpcMessage message) {
@@ -125,16 +116,6 @@ public class JsonCodec {
         if (method == null) {
             return convertToMessage(raw, Response.class);
         }
-
-        var params = raw.get(PROP_PARAMS);
-        if (params == null) {
-            raw.put(PROP_PARAMS, List.of());
-        } else if (!(params instanceof List)) {
-            raw.put(PROP_PARAMS, List.of(
-                    params
-            ));
-        }
-
         if (id == null) {
             return convertToMessage(raw, Notification.class);
         }

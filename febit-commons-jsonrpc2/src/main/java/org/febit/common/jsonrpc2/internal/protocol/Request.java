@@ -17,21 +17,18 @@ package org.febit.common.jsonrpc2.internal.protocol;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.febit.common.jsonrpc2.internal.codec.IdDeserializer;
 import org.febit.common.jsonrpc2.protocol.IRpcRequest;
 import org.febit.common.jsonrpc2.protocol.Id;
-
-import java.util.List;
 
 public record Request(
         @Nonnull
         @JsonDeserialize(using = IdDeserializer.class)
         Id id,
-
         @Nonnull
         String method,
-
-        @Nonnull
-        List<Object> params
+        @Nullable
+        Object params
 ) implements IRpcRequest {
 }

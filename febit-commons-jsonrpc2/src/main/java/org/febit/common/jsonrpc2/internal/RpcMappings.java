@@ -69,8 +69,15 @@ public class RpcMappings {
                             : basePath + SPLITER + method.getName()
                     )
                     .type(RpcMapping.Type.REQUEST)
+                    .paramsKind(baseAnno == null
+                            ? RpcMapping.ParamsKind.FIRST_ARGUMENT
+                            : baseAnno.paramsKind())
                     .build();
         }
+
+        builder.annotated(true);
+        builder.type(anno.type());
+        builder.paramsKind(anno.paramsKind());
 
         if (anno.timeout() < 0) {
             builder.timeout(null);
@@ -82,10 +89,6 @@ public class RpcMappings {
         builder.method(basePath.isEmpty() ? path
                 : basePath + SPLITER + path
         );
-
-        return builder
-                .annotated(true)
-                .type(anno.type())
-                .build();
+        return builder.build();
     }
 }

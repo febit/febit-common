@@ -29,6 +29,15 @@ import java.lang.annotation.*;
 @RpcMapping(type = RpcMapping.Type.NOTIFICATION)
 public @interface RpcNotification {
 
+    /**
+     * @see RpcMapping#value()
+     */
     @AliasFor(annotation = RpcMapping.class)
     String value();
+
+    /**
+     * @see RpcMapping#paramsKind()
+     */
+    @AliasFor(annotation = RpcMapping.class)
+    RpcMapping.ParamsKind paramsKind() default RpcMapping.ParamsKind.FIRST_ARGUMENT;
 }

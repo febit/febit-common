@@ -16,7 +16,6 @@
 package org.febit.common.jsonrpc2;
 
 import com.fasterxml.jackson.databind.JavaType;
-import lombok.NonNull;
 import org.febit.common.jsonrpc2.protocol.IRpcRequest;
 import org.febit.common.jsonrpc2.protocol.Id;
 
@@ -25,11 +24,12 @@ import java.util.concurrent.CompletableFuture;
 @lombok.Builder(
         builderClassName = "Builder"
 )
+@SuppressWarnings("NullableProblems")
 public record RequestPacket<T>(
-        @NonNull Id id,
-        @NonNull IRpcRequest request,
-        @NonNull CompletableFuture<T> future,
-        @NonNull JavaType resultType,
+        @lombok.NonNull Id id,
+        @lombok.NonNull IRpcRequest request,
+        @lombok.NonNull CompletableFuture<T> future,
+        @lombok.NonNull JavaType resultType,
         long postedAt,
         long timeoutAt
 ) {

@@ -30,6 +30,8 @@ public @interface RpcMapping {
 
     Type type() default Type.REQUEST;
 
+    ParamsKind paramsKind() default ParamsKind.FIRST_ARGUMENT;
+
     /**
      * Timeout in milliseconds.
      * <p>
@@ -37,6 +39,12 @@ public @interface RpcMapping {
      * &lt;= 0 means without limit.
      */
     long timeout() default 0;
+
+    enum ParamsKind {
+        FIRST_ARGUMENT,
+        FLATTEN_OBJECT,
+        FLATTEN_LIST,
+    }
 
     enum Type {
         REQUEST,

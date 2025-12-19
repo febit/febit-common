@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 
+import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.LongAdder;
@@ -83,7 +84,7 @@ class RpcImplTest {
         var pair = asyncPair();
         var b = pair.v1.exposeApi(BRpc.class);
 
-        var foo = b.createFoo("foo", 1);
+        var foo = b.createFoo(new BRpc.FooCreateParams("foo", 1));
         assertEquals("foo", foo.name());
         assertEquals(1, foo.age());
 
@@ -146,7 +147,7 @@ class RpcImplTest {
         var ex = assertThrows(RpcErrorException.class, b::methodNotExists);
         assertEquals(StdRpcErrors.METHOD_NOT_FOUND.code(), ex.getError().code());
 
-        var ex2 = assertThrows(RpcErrorException.class, () -> b.paramsNotMatch("a", "b"));
+        var ex2 = assertThrows(RpcErrorException.class, () -> b.paramsNotMatch("a"));
         assertEquals(StdRpcErrors.INVALID_PARAMS.code(), ex2.getError().code());
 
         var ex3 = assertThrows(RpcErrorException.class, () -> b.sleep(-1));
@@ -154,12 +155,47 @@ class RpcImplTest {
 
     }
 
+    @Test
+    void flattenParams() {
+        var pair = asyncPair();
+        var b = pair.v1.exposeApi(BRpc.class);
+
+        var foo = b.flattenParams("flattened", 30);
+        assertEquals("flattened", foo.name());
+        assertEquals(30, foo.age());
+    }
+
+    @Test
+    void flattenParamsArray() {
+        var pair = asyncPair();
+        var b = pair.v1.exposeApi(BRpc.class);
+
+        var arr = b.flattenParamsArray("arrayed", 25);
+        assertArrayEquals(new Object[]{"arrayed", 25}, arr);
+    }
+
+    @Test
+    void paramOverflow() {
+        var pair = asyncPair();
+        var b = pair.v1.exposeApi(BRpc.class);
+
+        assertThrows(IllegalStateException.class, () -> b.paramsOverflow("a", "b", "c"));
+    }
+
     @RpcMapping("b")
     interface BRpc {
 
         void methodNotExists();
 
-        void paramsNotMatch(String a, String b);
+        void paramsNotMatch(String a);
+
+        void paramsOverflow(String a, String b, String c);
+
+        @RpcRequest(value = "flattenParams", paramsKind = RpcMapping.ParamsKind.FLATTEN_OBJECT)
+        Foo flattenParams(String name, int age);
+
+        @RpcRequest(value = "flattenParamsArray", paramsKind = RpcMapping.ParamsKind.FLATTEN_LIST)
+        Object[] flattenParamsArray(String name, int age);
 
         BService.CountsVO counts();
 
@@ -169,8 +205,14 @@ class RpcImplTest {
         @RpcNotification("events/clicked")
         void whenClicked();
 
+        record FooCreateParams(
+                String name,
+                int age
+        ) {
+        }
+
         @RpcRequest("foo/create")
-        Foo createFoo(String name, int age);
+        Foo createFoo(FooCreateParams params);
 
         @RpcRequest("foo/patch")
         Foo patchFoo(Foo foo);
@@ -215,17 +257,27 @@ class RpcImplTest {
         }
 
         @RpcRequest("paramsNotMatch")
-        public void paramsNotMatch(int a, boolean b) {
+        public void paramsNotMatch(int a) {
+        }
+
+        @RpcRequest("flattenParams")
+        public Foo flattenParams(BRpc.FooCreateParams params) {
+            return createFoo(params);
+        }
+
+        @RpcRequest("flattenParamsArray")
+        public List<Object> flattenParamsArray(List<Object> params) {
+            return params;
         }
 
         @RpcRequest("foo/create")
-        public Foo createFoo(String name, int age) {
-            return new Foo(name, age);
+        public Foo createFoo(BRpc.FooCreateParams params) {
+            return new Foo(params.name(), params.age());
         }
 
-        @RpcRequest("foo/patch")
-        public Foo patchFoo(Foo foo) {
-            return new Foo(foo.name() + " patched", foo.age() + 1);
+        @RpcRequest(value = "foo/patch", paramsKind = RpcMapping.ParamsKind.FLATTEN_OBJECT)
+        public Foo patchFoo(String name, int age) {
+            return new Foo(name + " patched", age + 1);
         }
 
         @RpcNotification("events/touched")

@@ -15,12 +15,12 @@
  */
 package org.febit.common.jsonrpc2.internal.protocol;
 
+import jakarta.annotation.Nullable;
 import org.febit.common.jsonrpc2.protocol.IRpcNotification;
-
-import java.util.List;
 
 public record Notification(
         String method,
-        List<Object> params
+        @Nullable
+        Object params
 ) implements IRpcNotification {
 }

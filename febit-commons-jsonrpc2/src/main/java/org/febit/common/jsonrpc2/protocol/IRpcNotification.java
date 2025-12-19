@@ -16,8 +16,7 @@
 package org.febit.common.jsonrpc2.protocol;
 
 import jakarta.annotation.Nonnull;
-
-import java.util.List;
+import jakarta.annotation.Nullable;
 
 public interface IRpcNotification extends IRpcMessage {
 
@@ -29,6 +28,6 @@ public interface IRpcNotification extends IRpcMessage {
     @Nonnull
     String method();
 
-    @Nonnull
-    List<Object> params();
+    @Nullable
+    Object params();
 }

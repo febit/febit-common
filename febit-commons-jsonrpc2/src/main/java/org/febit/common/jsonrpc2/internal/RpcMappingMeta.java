@@ -31,6 +31,7 @@ import java.time.Duration;
 public record RpcMappingMeta(
         @NonNull @Nonnull String method,
         @NonNull @Nonnull RpcMapping.Type type,
+        @NonNull @Nonnull RpcMapping.ParamsKind paramsKind,
         @NonNull @Nonnull JavaType resultType,
         Method targetMethod,
         boolean isFutureResult,

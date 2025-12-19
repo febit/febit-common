@@ -21,26 +21,25 @@ import org.febit.common.jsonrpc2.protocol.IRpcRequestHandler;
 
 import java.lang.reflect.Type;
 import java.time.Duration;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public interface Rpc {
 
-    default <T> CompletableFuture<T> request(String method, List<Object> params, @Nullable Duration timeout, Class<T> resultType) {
+    default <T> CompletableFuture<T> request(String method, @Nullable Object params, @Nullable Duration timeout, Class<T> resultType) {
         return request(method, params, timeout, (Type) resultType);
     }
 
-    <T> CompletableFuture<T> request(String method, List<Object> params, @Nullable Duration timeout, Type resultType);
+    <T> CompletableFuture<T> request(String method, @Nullable Object params, @Nullable Duration timeout, Type resultType);
 
-    default <T> CompletableFuture<T> request(String method, List<Object> params, Class<T> resultType) {
+    default <T> CompletableFuture<T> request(String method, @Nullable Object params, Class<T> resultType) {
         return request(method, params, null, resultType);
     }
 
-    default <T> CompletableFuture<T> request(String method, List<Object> params, Type resultType) {
+    default <T> CompletableFuture<T> request(String method, @Nullable Object params, Type resultType) {
         return request(method, params, null, resultType);
     }
 
-    void notify(String method, List<Object> params);
+    void notify(String method, @Nullable Object params);
 
     <T> T exposeApi(Class<T> type);
 
