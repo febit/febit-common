@@ -16,9 +16,12 @@
 package org.febit.common.jsonrpc2.protocol;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.annotation.Nullable;
 import org.febit.common.jsonrpc2.Jsonrpc2;
+import org.febit.common.jsonrpc2.internal.codec.RpcMessageDeserializer;
 
+@JsonDeserialize(using = RpcMessageDeserializer.class)
 public interface IRpcMessage {
 
     @JsonProperty(

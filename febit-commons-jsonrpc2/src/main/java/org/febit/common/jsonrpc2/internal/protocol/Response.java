@@ -15,6 +15,7 @@
  */
 package org.febit.common.jsonrpc2.internal.protocol;
 
+import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
@@ -25,6 +26,7 @@ import org.febit.common.jsonrpc2.protocol.Id;
 
 import java.util.Objects;
 
+@JsonDeserialize(using = JsonDeserializer.None.class)
 public record Response<T>(
         @Nonnull
         @JsonDeserialize(using = IdDeserializer.class)

@@ -27,6 +27,7 @@ import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
 import jakarta.annotation.Nullable;
 import lombok.Singular;
+import org.assertj.core.annotation.CheckReturnValue;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.AbstractStringAssert;
 import org.assertj.core.api.AssertFactory;
@@ -36,7 +37,6 @@ import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.MapAssert;
 import org.assertj.core.api.ObjectAssert;
 import org.assertj.core.internal.Conditions;
-import org.assertj.core.util.CheckReturnValue;
 import org.febit.lang.util.JacksonUtils;
 
 import java.util.Collection;

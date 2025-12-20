@@ -20,13 +20,11 @@ import jakarta.annotation.Nullable;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.febit.common.jsonrpc2.exception.RpcErrorException;
-import org.febit.common.jsonrpc2.internal.protocol.Notification;
-import org.febit.common.jsonrpc2.internal.protocol.Request;
-import org.febit.common.jsonrpc2.internal.protocol.Response;
 import org.febit.common.jsonrpc2.protocol.IRpcMessage;
 import org.febit.common.jsonrpc2.protocol.StdRpcErrors;
 import org.febit.lang.util.JacksonUtils;
 
+import java.io.UncheckedIOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.List;
@@ -36,9 +34,6 @@ import java.util.stream.Stream;
 
 @UtilityClass
 public class JsonCodec {
-
-    private static final String PROP_ID = "id";
-    private static final String PROP_METHOD = "method";
 
     public static JavaType resolveType(Type type) {
         return JacksonUtils.TYPE_FACTORY.constructType(type);
@@ -78,15 +73,19 @@ public class JsonCodec {
             throw StdRpcErrors.PARSE_ERROR
                     .toException("message is empty");
         }
-
-        Map<String, Object> raw;
         try {
-            raw = JacksonUtils.parseToNamedMap(text);
+            var result = JacksonUtils.parse(text, IRpcMessage.class);
+            Objects.requireNonNull(result, "Invalid message");
+            return result;
+        } catch (RpcErrorException e) {
+            throw e;
+        } catch (UncheckedIOException e) {
+            throw StdRpcErrors.PARSE_ERROR
+                    .toException("invalid message: " + e.getCause().getMessage(), e);
         } catch (Exception e) {
             throw StdRpcErrors.PARSE_ERROR
-                    .toException("invalid json", e);
+                    .toException("invalid message: " + e.getMessage(), e);
         }
-        return decode(raw);
     }
 
     /**
@@ -99,32 +98,21 @@ public class JsonCodec {
     public static IRpcMessage decode(@Nullable Map<String, Object> raw) {
         if (raw == null) {
             throw StdRpcErrors.PARSE_ERROR
-                    .toException("invalid json");
+                    .toException("invalid message, null");
         }
-        if (!Jsonrpc2.VERSION.equals(raw.get("jsonrpc"))) {
-            throw StdRpcErrors.INVALID_REQUEST
-                    .toException("invalid message version");
+        try {
+            var result = JacksonUtils.to(raw, IRpcMessage.class);
+            Objects.requireNonNull(result, "Invalid message");
+            return result;
+        } catch (RpcErrorException e) {
+            throw e;
+        } catch (UncheckedIOException e) {
+            throw StdRpcErrors.PARSE_ERROR
+                    .toException("invalid message: " + e.getCause().getMessage(), e);
+        } catch (Exception e) {
+            throw StdRpcErrors.PARSE_ERROR
+                    .toException("invalid message: " + e.getMessage(), e);
         }
-
-        var id = raw.get(PROP_ID);
-        var method = raw.get(PROP_METHOD);
-
-        if (id == null && method == null) {
-            throw StdRpcErrors.INVALID_REQUEST
-                    .toException("invalid request or notification or response");
-        }
-        if (method == null) {
-            return convertToMessage(raw, Response.class);
-        }
-        if (id == null) {
-            return convertToMessage(raw, Notification.class);
-        }
-        return convertToMessage(raw, Request.class);
     }
 
-    private static <T> T convertToMessage(Map<String, Object> json, Class<T> type) {
-        var result = JacksonUtils.to(json, type);
-        Objects.requireNonNull(result, "Invalid message");
-        return result;
-    }
 }

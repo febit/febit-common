@@ -226,7 +226,7 @@ class JsonCodecTest {
                     }
                     """);
         });
-        assertEquals(StdRpcErrors.INVALID_REQUEST.code(), ex.getError().code());
+        assertEquals(StdRpcErrors.PARSE_ERROR.code(), ex.getError().code());
 
         // No id and method
         ex = assertThrows(RpcErrorException.class, () -> {
@@ -237,7 +237,7 @@ class JsonCodecTest {
                     }
                     """);
         });
-        assertEquals(StdRpcErrors.INVALID_REQUEST.code(), ex.getError().code());
+        assertEquals(StdRpcErrors.PARSE_ERROR.code(), ex.getError().code());
     }
 
 }
