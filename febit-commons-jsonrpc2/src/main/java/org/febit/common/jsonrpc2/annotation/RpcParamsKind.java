@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.common.jsonrpc2;
+package org.febit.common.jsonrpc2.annotation;
 
-import lombok.experimental.UtilityClass;
-
-@UtilityClass
-public class Jsonrpc2 {
-
-    public static final String VER_2_0 = "2.0";
+public enum RpcParamsKind {
+    FIRST_ARGUMENT,
+    FLATTEN_OBJECT,
+    FLATTEN_LIST,
 }

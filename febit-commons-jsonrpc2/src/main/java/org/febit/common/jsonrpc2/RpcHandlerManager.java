@@ -15,26 +15,14 @@
  */
 package org.febit.common.jsonrpc2;
 
-import lombok.RequiredArgsConstructor;
-import org.febit.common.jsonrpc2.protocol.Id;
+import jakarta.annotation.Nullable;
 
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.List;
 
-@RequiredArgsConstructor(staticName = "create")
-public class DefaultIdGenerator implements IdGenerator {
+public interface RpcHandlerManager {
 
-    private final AtomicLong next;
+    @Nullable
+    RpcRequestHandler<?> forRequest(String method);
 
-    @Override
-    public Id next() {
-        return Id.of(next.getAndIncrement());
-    }
-
-    public static DefaultIdGenerator create() {
-        return startFrom(1L);
-    }
-
-    public static DefaultIdGenerator startFrom(long initial) {
-        return create(new AtomicLong(initial));
-    }
+    List<RpcNotificationHandler> forNotification(String method);
 }

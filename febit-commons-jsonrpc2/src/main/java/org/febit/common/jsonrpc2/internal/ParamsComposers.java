@@ -16,7 +16,7 @@
 package org.febit.common.jsonrpc2.internal;
 
 import lombok.experimental.UtilityClass;
-import org.febit.common.jsonrpc2.RpcMapping;
+import org.febit.common.jsonrpc2.annotation.RpcParamsKind;
 import org.febit.lang.util.ArraysUtils;
 import org.febit.lang.util.Maps;
 
@@ -32,7 +32,7 @@ public class ParamsComposers {
         var paramsKind = meta.paramsKind();
         var paramTypes = meta.targetMethod().getParameterTypes();
 
-        if (paramsKind == RpcMapping.ParamsKind.FIRST_ARGUMENT) {
+        if (paramsKind == RpcParamsKind.FIRST_ARGUMENT) {
             return switch (paramTypes.length) {
                 case 0 -> ParamsComposers.nil();
                 case 1 -> ParamsComposers.first();
@@ -41,11 +41,11 @@ public class ParamsComposers {
             };
         }
 
-        if (paramsKind == RpcMapping.ParamsKind.FLATTEN_LIST) {
+        if (paramsKind == RpcParamsKind.FLATTEN_LIST) {
             return ParamsComposers.flattenList();
         }
 
-        if (paramsKind == RpcMapping.ParamsKind.FLATTEN_OBJECT) {
+        if (paramsKind == RpcParamsKind.FLATTEN_OBJECT) {
             var paramNames = ArraysUtils.collect(
                     meta.targetMethod().getParameters(),
                     String[]::new, Parameter::getName

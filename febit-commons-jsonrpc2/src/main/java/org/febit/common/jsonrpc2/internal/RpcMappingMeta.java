@@ -18,7 +18,8 @@ package org.febit.common.jsonrpc2.internal;
 import com.fasterxml.jackson.databind.JavaType;
 import jakarta.annotation.Nonnull;
 import lombok.NonNull;
-import org.febit.common.jsonrpc2.RpcMapping;
+import org.febit.common.jsonrpc2.annotation.RpcMethodType;
+import org.febit.common.jsonrpc2.annotation.RpcParamsKind;
 import org.febit.lang.annotation.NullableArgs;
 
 import java.lang.reflect.Method;
@@ -30,8 +31,8 @@ import java.time.Duration;
 @NullableArgs
 public record RpcMappingMeta(
         @NonNull @Nonnull String method,
-        @NonNull @Nonnull RpcMapping.Type type,
-        @NonNull @Nonnull RpcMapping.ParamsKind paramsKind,
+        @NonNull @Nonnull RpcMethodType type,
+        @NonNull @Nonnull RpcParamsKind paramsKind,
         @NonNull @Nonnull JavaType resultType,
         Method targetMethod,
         boolean isFutureResult,

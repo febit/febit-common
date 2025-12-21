@@ -16,37 +16,59 @@
 package org.febit.common.jsonrpc2;
 
 import jakarta.annotation.Nullable;
-import org.febit.common.jsonrpc2.protocol.IRpcNotificationHandler;
-import org.febit.common.jsonrpc2.protocol.IRpcRequestHandler;
+import org.febit.common.jsonrpc2.protocol.IRpcMessage;
 
 import java.lang.reflect.Type;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 
-public interface Rpc {
+/**
+ * RPC Channel.
+ */
+public interface RpcChannel {
 
-    default <T> CompletableFuture<T> request(String method, @Nullable Object params, @Nullable Duration timeout, Class<T> resultType) {
+    /**
+     * Create remote api proxy.
+     *
+     * @param type the api interface type
+     * @param <T>  the api type
+     * @return the proxy instance
+     */
+    <T> T remoteApi(Class<T> type);
+
+    <T> CompletableFuture<T> request(
+            String method,
+            @Nullable Object params,
+            @Nullable Duration timeout,
+            Type resultType
+    );
+
+    default <T> CompletableFuture<T> request(
+            String method,
+            @Nullable Object params,
+            @Nullable Duration timeout,
+            Class<T> resultType
+    ) {
         return request(method, params, timeout, (Type) resultType);
     }
 
-    <T> CompletableFuture<T> request(String method, @Nullable Object params, @Nullable Duration timeout, Type resultType);
-
-    default <T> CompletableFuture<T> request(String method, @Nullable Object params, Class<T> resultType) {
+    default <T> CompletableFuture<T> request(
+            String method,
+            @Nullable Object params,
+            Class<T> resultType
+    ) {
         return request(method, params, null, resultType);
     }
 
-    default <T> CompletableFuture<T> request(String method, @Nullable Object params, Type resultType) {
+    default <T> CompletableFuture<T> request(
+            String method,
+            @Nullable Object params,
+            Type resultType
+    ) {
         return request(method, params, null, resultType);
     }
 
     void notify(String method, @Nullable Object params);
 
-    <T> T exposeApi(Class<T> type);
-
-    void registerHandler(Object service);
-
-    void registerHandler(String method, IRpcRequestHandler<?> handler);
-
-    void registerHandler(String method, IRpcNotificationHandler handler);
-
+    void handle(IRpcMessage message);
 }

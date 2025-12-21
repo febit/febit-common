@@ -15,10 +15,29 @@
  */
 package org.febit.common.jsonrpc2;
 
-import lombok.experimental.UtilityClass;
+import lombok.RequiredArgsConstructor;
+import org.febit.common.jsonrpc2.protocol.Id;
 
-@UtilityClass
-public class Jsonrpc2 {
+import java.util.concurrent.atomic.AtomicLong;
 
-    public static final String VER_2_0 = "2.0";
+/**
+ * An Id generator that generates incrementing long Ids.
+ */
+@RequiredArgsConstructor(staticName = "create")
+public class IncrLongIdGenerator implements IdGenerator {
+
+    private final AtomicLong next;
+
+    @Override
+    public Id next() {
+        return Id.of(next.getAndIncrement());
+    }
+
+    public static IncrLongIdGenerator create() {
+        return startFrom(1L);
+    }
+
+    public static IncrLongIdGenerator startFrom(long initial) {
+        return create(new AtomicLong(initial));
+    }
 }

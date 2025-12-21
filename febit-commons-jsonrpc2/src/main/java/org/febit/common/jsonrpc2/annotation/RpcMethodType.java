@@ -13,23 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.common.jsonrpc2;
+package org.febit.common.jsonrpc2.annotation;
 
-import org.febit.common.jsonrpc2.protocol.Id;
-
-import java.util.concurrent.ConcurrentHashMap;
-
-public class DefaultRequestPool implements RequestPool {
-
-    private final ConcurrentHashMap<Id, RequestPacket<?>> requests = new ConcurrentHashMap<>();
-
-    @Override
-    public void add(RequestPacket<?> requestPacket) {
-        requests.put(requestPacket.id(), requestPacket);
-    }
-
-    @Override
-    public RequestPacket<?> pop(Id id) {
-        return requests.remove(id);
-    }
+public enum RpcMethodType {
+    REQUEST,
+    NOTIFICATION
 }

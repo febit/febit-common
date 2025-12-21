@@ -64,10 +64,10 @@ public class RpcMessageDeserializer extends StdDeserializer<IRpcMessage> {
                     "Invalid JSON-RPC message: missing 'jsonrpc' property.");
         }
         var version = versionNode.asText();
-        if (!Jsonrpc2.VERSION.equals(version)) {
+        if (!Jsonrpc2.VER_2_0.equals(version)) {
             throw new JsonMappingException(parser,
                     "Invalid JSON-RPC message: unsupported 'jsonrpc' version"
-                            + ", only " + Jsonrpc2.VERSION + " is supported.");
+                            + ", only " + Jsonrpc2.VER_2_0 + " is supported.");
         }
 
         var hasId = nonNullNode(node.get(ID));

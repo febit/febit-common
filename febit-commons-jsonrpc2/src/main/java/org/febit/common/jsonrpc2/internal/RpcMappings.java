@@ -18,7 +18,9 @@ package org.febit.common.jsonrpc2.internal;
 import com.fasterxml.jackson.databind.JavaType;
 import lombok.experimental.UtilityClass;
 import org.febit.common.jsonrpc2.JsonCodec;
-import org.febit.common.jsonrpc2.RpcMapping;
+import org.febit.common.jsonrpc2.annotation.RpcMapping;
+import org.febit.common.jsonrpc2.annotation.RpcMethodType;
+import org.febit.common.jsonrpc2.annotation.RpcParamsKind;
 import org.febit.lang.util.TypeParameters;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 
@@ -29,7 +31,7 @@ import java.util.concurrent.Future;
 @UtilityClass
 public class RpcMappings {
 
-    private static final String SPLITER = "/";
+    private static final String SPLITTER = "/";
 
     public static boolean annotated(Method method) {
         return AnnotatedElementUtils.findMergedAnnotation(method, RpcMapping.class) != null;
@@ -66,11 +68,11 @@ public class RpcMappings {
             return builder
                     .annotated(false)
                     .method(basePath.isEmpty() ? method.getName()
-                            : basePath + SPLITER + method.getName()
+                            : basePath + SPLITTER + method.getName()
                     )
-                    .type(RpcMapping.Type.REQUEST)
+                    .type(RpcMethodType.REQUEST)
                     .paramsKind(baseAnno == null
-                            ? RpcMapping.ParamsKind.FIRST_ARGUMENT
+                            ? RpcParamsKind.FIRST_ARGUMENT
                             : baseAnno.paramsKind())
                     .build();
         }
@@ -87,7 +89,7 @@ public class RpcMappings {
 
         var path = anno.value().isEmpty() ? method.getName() : anno.value();
         builder.method(basePath.isEmpty() ? path
-                : basePath + SPLITER + path
+                : basePath + SPLITTER + path
         );
         return builder.build();
     }

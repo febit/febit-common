@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.common.jsonrpc2.protocol;
+package org.febit.common.jsonrpc2;
 
-import java.util.concurrent.CompletableFuture;
+import edu.umd.cs.findbugs.annotations.Nullable;
+import org.febit.common.jsonrpc2.protocol.IRpcRequest;
 
 @FunctionalInterface
-public interface IRpcRequestHandler<T> {
+public interface RpcRequestHandler<T> {
 
-    CompletableFuture<T> handle(IRpcRequest request);
+    @Nullable
+    T handle(IRpcRequest request);
 }

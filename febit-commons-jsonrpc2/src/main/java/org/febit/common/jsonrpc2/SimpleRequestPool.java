@@ -13,10 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.common.jsonrpc2.protocol;
+package org.febit.common.jsonrpc2;
 
-@FunctionalInterface
-public interface IRpcNotificationHandler {
+import org.febit.common.jsonrpc2.protocol.Id;
 
-    void handle(IRpcNotification notification);
+import java.util.concurrent.ConcurrentHashMap;
+
+/**
+ * A simple thread-safe request pool implementation.
+ */
+public class SimpleRequestPool implements RequestPool {
+
+    private final ConcurrentHashMap<Id, RequestPacket<?>> requests = new ConcurrentHashMap<>();
+
+    @Override
+    public void add(RequestPacket<?> requestPacket) {
+        requests.put(requestPacket.id(), requestPacket);
+    }
+
+    @Override
+    public RequestPacket<?> pop(Id id) {
+        return requests.remove(id);
+    }
 }

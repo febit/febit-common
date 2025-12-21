@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.common.jsonrpc2;
-
-import org.springframework.core.annotation.AliasFor;
+package org.febit.common.jsonrpc2.annotation;
 
 import java.lang.annotation.*;
 
@@ -26,29 +24,19 @@ import java.lang.annotation.*;
         ElementType.TYPE,
         ElementType.ANNOTATION_TYPE
 })
-@RpcMapping(type = RpcMapping.Type.REQUEST)
-public @interface RpcRequest {
+public @interface RpcMapping {
 
-    /**
-     * @see RpcMapping#value()
-     */
-    @AliasFor(annotation = RpcMapping.class)
-    String value();
+    String value() default "";
 
-    /**
-     * @see RpcMapping#paramsKind()
-     */
-    @AliasFor(annotation = RpcMapping.class)
-    RpcMapping.ParamsKind paramsKind() default RpcMapping.ParamsKind.FIRST_ARGUMENT;
+    RpcMethodType type() default RpcMethodType.REQUEST;
+
+    RpcParamsKind paramsKind() default RpcParamsKind.FIRST_ARGUMENT;
 
     /**
      * Timeout in milliseconds.
      * <p>
      * == 0 means unset, will use default timeout if possible.
-     * &lt; 0 means without limit.
-     *
-     * @see RpcMapping#timeout()
+     * &lt;= 0 means without limit.
      */
-    @AliasFor(annotation = RpcMapping.class)
     long timeout() default 0;
 }

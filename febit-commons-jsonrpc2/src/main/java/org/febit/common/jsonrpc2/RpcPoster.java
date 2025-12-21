@@ -13,18 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.common.jsonrpc2.protocol;
+package org.febit.common.jsonrpc2;
 
-import org.febit.common.jsonrpc2.JsonCodec;
+import org.febit.common.jsonrpc2.protocol.IRpcMessage;
 import org.febit.lang.annotation.NonNullApi;
 
+/**
+ * RPC message poster.
+ */
 @NonNullApi
-public interface IRpcChannel {
+public interface RpcPoster {
 
+    /**
+     * Posts a RPC message to the remote endpoint.
+     *
+     * @param message the RPC message
+     */
     void post(IRpcMessage message);
 
-    interface Jsonified extends IRpcChannel {
+    /**
+     * A JSON string based RPC poster.
+     */
+    interface Jsonified extends RpcPoster {
 
+        /**
+         * Posts a JSON-formatted RPC message to the remote endpoint.
+         *
+         * @param json the JSON string
+         */
         void post(String json);
 
         default void post(IRpcMessage message) {

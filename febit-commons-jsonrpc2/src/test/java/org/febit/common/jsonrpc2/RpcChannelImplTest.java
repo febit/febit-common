@@ -16,8 +16,11 @@
 package org.febit.common.jsonrpc2;
 
 import lombok.RequiredArgsConstructor;
+import org.febit.common.jsonrpc2.annotation.RpcMapping;
+import org.febit.common.jsonrpc2.annotation.RpcNotification;
+import org.febit.common.jsonrpc2.annotation.RpcParamsKind;
+import org.febit.common.jsonrpc2.annotation.RpcRequest;
 import org.febit.common.jsonrpc2.exception.RpcErrorException;
-import org.febit.common.jsonrpc2.protocol.IRpcChannelFactory;
 import org.febit.common.jsonrpc2.protocol.StdRpcErrors;
 import org.febit.lang.Tuple2;
 import org.junit.jupiter.api.Test;
@@ -25,52 +28,57 @@ import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import java.util.List;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.LongAdder;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @Execution(ExecutionMode.CONCURRENT)
-class RpcImplTest {
+class RpcChannelImplTest {
 
-    static Tuple2<RpcImpl, RpcImpl> asyncPair() {
-        var pair = ExchangeChannel.newAsyncPair();
-        var executor = Executors.newCachedThreadPool();
+    static Tuple2<RpcChannelImpl, RpcChannelImpl> asyncPair() {
+        var pair = ChannelExchange.newAsync();
+        var executor = DefaultRpcExecutor.create(Executors.newCachedThreadPool());
         return pair(pair, executor);
     }
 
-    static Tuple2<RpcImpl, RpcImpl> syncPair() {
-        var pair = ExchangeChannel.newSyncPair();
-        return pair(pair, Runnable::run);
+    static Tuple2<RpcChannelImpl, RpcChannelImpl> syncPair() {
+        var pair = ChannelExchange.newSync();
+        var executor = DefaultRpcExecutor.create(Runnable::run);
+        return pair(pair, executor);
     }
 
-    static Tuple2<RpcImpl, RpcImpl> pair(
-            Tuple2<IRpcChannelFactory, IRpcChannelFactory> pair,
-            Executor executor
+    static Tuple2<RpcChannelImpl, RpcChannelImpl> pair(
+            ChannelExchange exchange,
+            RpcExecutor executor
     ) {
-        var a = RpcImpl.builder()
-                .channelFactory(pair.v1())
+        var a = RpcChannelImpl.builder()
                 .executor(executor)
+                .poster(exchange.posterToB())
+                .handlers(SimpleRpcHandlerManager.create()
+                        .register(new SystemService("A"))
+                )
                 .build();
 
-        var b = RpcImpl.builder()
-                .channelFactory(pair.v2())
+        var b = RpcChannelImpl.builder()
                 .executor(executor)
+                .poster(exchange.posterToA())
+                .handlers(SimpleRpcHandlerManager.create()
+                        .register(new SystemService("B"))
+                        .register(new BService())
+                )
                 .build();
 
-        a.registerHandler(new SystemService("A"));
-        b.registerHandler(new SystemService("B"));
-        b.registerHandler(new BService());
-
+        exchange.registerA(a);
+        exchange.registerB(b);
         return Tuple2.of(a, b);
     }
 
     @Test
     void ping() {
         var pair = asyncPair();
-        var a = pair.v1.exposeApi(SystemRpc.class);
-        var b = pair.v2.exposeApi(SystemRpc.class);
+        var a = pair.v1.remoteApi(SystemRpc.class);
+        var b = pair.v2.remoteApi(SystemRpc.class);
 
         assertEquals("pong", a.ping());
         assertEquals("pong", b.ping());
@@ -82,7 +90,7 @@ class RpcImplTest {
     @Test
     void foo() {
         var pair = asyncPair();
-        var b = pair.v1.exposeApi(BRpc.class);
+        var b = pair.v1.remoteApi(BRpc.class);
 
         var foo = b.createFoo(new BRpc.FooCreateParams("foo", 1));
         assertEquals("foo", foo.name());
@@ -96,7 +104,7 @@ class RpcImplTest {
     @Test
     void notification() {
         var pair = syncPair();
-        var b = pair.v1.exposeApi(BRpc.class);
+        var b = pair.v1.remoteApi(BRpc.class);
 
         var counts = b.counts();
         assertEquals(0, counts.bothRequest());
@@ -128,7 +136,7 @@ class RpcImplTest {
     @Test
     void timeout() {
         var pair = asyncPair();
-        var b = pair.v1.exposeApi(BRpc.class);
+        var b = pair.v1.remoteApi(BRpc.class);
 
         assertDoesNotThrow(() -> b.sleepWithTimeout(1));
         assertDoesNotThrow(() -> b.sleep(1));
@@ -142,7 +150,7 @@ class RpcImplTest {
     @Test
     void missmatch() {
         var pair = asyncPair();
-        var b = pair.v1.exposeApi(BRpc.class);
+        var b = pair.v1.remoteApi(BRpc.class);
 
         var ex = assertThrows(RpcErrorException.class, b::methodNotExists);
         assertEquals(StdRpcErrors.METHOD_NOT_FOUND.code(), ex.getError().code());
@@ -158,7 +166,7 @@ class RpcImplTest {
     @Test
     void flattenParams() {
         var pair = asyncPair();
-        var b = pair.v1.exposeApi(BRpc.class);
+        var b = pair.v1.remoteApi(BRpc.class);
 
         var foo = b.flattenParams("flattened", 30);
         assertEquals("flattened", foo.name());
@@ -168,7 +176,7 @@ class RpcImplTest {
     @Test
     void flattenParamsArray() {
         var pair = asyncPair();
-        var b = pair.v1.exposeApi(BRpc.class);
+        var b = pair.v1.remoteApi(BRpc.class);
 
         var arr = b.flattenParamsArray("arrayed", 25);
         assertArrayEquals(new Object[]{"arrayed", 25}, arr);
@@ -177,7 +185,7 @@ class RpcImplTest {
     @Test
     void paramOverflow() {
         var pair = asyncPair();
-        var b = pair.v1.exposeApi(BRpc.class);
+        var b = pair.v1.remoteApi(BRpc.class);
 
         assertThrows(IllegalStateException.class, () -> b.paramsOverflow("a", "b", "c"));
     }
@@ -191,10 +199,10 @@ class RpcImplTest {
 
         void paramsOverflow(String a, String b, String c);
 
-        @RpcRequest(value = "flattenParams", paramsKind = RpcMapping.ParamsKind.FLATTEN_OBJECT)
+        @RpcRequest(value = "flattenParams", paramsKind = RpcParamsKind.FLATTEN_OBJECT)
         Foo flattenParams(String name, int age);
 
-        @RpcRequest(value = "flattenParamsArray", paramsKind = RpcMapping.ParamsKind.FLATTEN_LIST)
+        @RpcRequest(value = "flattenParamsArray", paramsKind = RpcParamsKind.FLATTEN_LIST)
         Object[] flattenParamsArray(String name, int age);
 
         BService.CountsVO counts();
@@ -275,7 +283,7 @@ class RpcImplTest {
             return new Foo(params.name(), params.age());
         }
 
-        @RpcRequest(value = "foo/patch", paramsKind = RpcMapping.ParamsKind.FLATTEN_OBJECT)
+        @RpcRequest(value = "foo/patch", paramsKind = RpcParamsKind.FLATTEN_OBJECT)
         public Foo patchFoo(String name, int age) {
             return new Foo(name + " patched", age + 1);
         }

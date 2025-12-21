@@ -15,29 +15,28 @@
  */
 package org.febit.common.jsonrpc2;
 
-import org.springframework.core.annotation.AliasFor;
+import org.febit.common.jsonrpc2.protocol.IRpcNotification;
+import org.febit.common.jsonrpc2.protocol.IRpcRequest;
 
-import java.lang.annotation.*;
+import java.util.concurrent.CompletableFuture;
 
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target({
-        ElementType.METHOD,
-        ElementType.TYPE,
-        ElementType.ANNOTATION_TYPE
-})
-@RpcMapping(type = RpcMapping.Type.NOTIFICATION)
-public @interface RpcNotification {
+public interface RpcExecutor {
 
     /**
-     * @see RpcMapping#value()
+     * Execute notification handler.
+     *
+     * @param handler      the handler
+     * @param notification the notification
      */
-    @AliasFor(annotation = RpcMapping.class)
-    String value();
+    void execute(RpcNotificationHandler handler, IRpcNotification notification);
 
     /**
-     * @see RpcMapping#paramsKind()
+     * Execute request handler.
+     *
+     * @param handler the handler
+     * @param request the request
+     * @param <T>     the response type
+     * @return a future of response
      */
-    @AliasFor(annotation = RpcMapping.class)
-    RpcMapping.ParamsKind paramsKind() default RpcMapping.ParamsKind.FIRST_ARGUMENT;
+    <T> CompletableFuture<T> execute(RpcRequestHandler<T> handler, IRpcRequest request);
 }

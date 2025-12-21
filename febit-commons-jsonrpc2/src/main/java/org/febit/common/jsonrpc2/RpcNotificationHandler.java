@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.common.jsonrpc2.protocol;
+package org.febit.common.jsonrpc2;
 
-import java.util.function.Consumer;
+import org.febit.common.jsonrpc2.protocol.IRpcNotification;
 
-public interface IRpcChannelFactory {
+@FunctionalInterface
+public interface RpcNotificationHandler {
 
-    IRpcChannel create(Consumer<IRpcMessage> receiver);
+    void handle(IRpcNotification notification);
 }

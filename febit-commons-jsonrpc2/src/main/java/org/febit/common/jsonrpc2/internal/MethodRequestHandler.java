@@ -15,31 +15,24 @@
  */
 package org.febit.common.jsonrpc2.internal;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
+import org.febit.common.jsonrpc2.RpcRequestHandler;
 import org.febit.common.jsonrpc2.protocol.IRpcRequest;
-import org.febit.common.jsonrpc2.protocol.IRpcRequestHandler;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
+public class MethodRequestHandler extends BaseMethodHandler implements RpcRequestHandler<Object> {
 
-public class MethodRequestHandler extends BaseMethodHandler implements IRpcRequestHandler<Object> {
-
-    private final Executor executor;
-
-    private MethodRequestHandler(RpcMappingMeta meta, Object target, Executor executor) {
+    private MethodRequestHandler(RpcMappingMeta meta, Object target) {
         super(meta, target);
-        this.executor = executor;
     }
 
+    @Nullable
     @Override
-    public CompletableFuture<Object> handle(IRpcRequest request) {
+    public Object handle(IRpcRequest request) {
         var params = request.params();
-        return CompletableFuture.supplyAsync(
-                () -> invoke(params),
-                executor
-        );
+        return invoke(params);
     }
 
-    public static MethodRequestHandler create(RpcMappingMeta meta, Object target, Executor executor) {
-        return new MethodRequestHandler(meta, target, executor);
+    public static MethodRequestHandler create(RpcMappingMeta meta, Object target) {
+        return new MethodRequestHandler(meta, target);
     }
 }

@@ -29,7 +29,7 @@ public interface IRpcMessage {
             access = JsonProperty.Access.READ_ONLY
     )
     default String jsonrpc() {
-        return Jsonrpc2.VERSION;
+        return Jsonrpc2.VER_2_0;
     }
 
     /**

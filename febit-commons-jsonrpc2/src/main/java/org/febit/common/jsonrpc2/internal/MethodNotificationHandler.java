@@ -15,10 +15,10 @@
  */
 package org.febit.common.jsonrpc2.internal;
 
+import org.febit.common.jsonrpc2.RpcNotificationHandler;
 import org.febit.common.jsonrpc2.protocol.IRpcNotification;
-import org.febit.common.jsonrpc2.protocol.IRpcNotificationHandler;
 
-public class MethodNotificationHandler extends BaseMethodHandler implements IRpcNotificationHandler {
+public class MethodNotificationHandler extends BaseMethodHandler implements RpcNotificationHandler {
 
     private MethodNotificationHandler(RpcMappingMeta meta, Object target) {
         super(meta, target);
