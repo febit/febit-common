@@ -24,4 +24,23 @@ public class Defaults {
     public static <T> T nvl(@Nullable T obj, T ifNull) {
         return obj != null ? obj : ifNull;
     }
+
+    @Nullable
+    @SafeVarargs
+    public static <T> T collapse(@Nullable T obj, @Nullable T... defaults) {
+        if (obj != null) {
+            return obj;
+        }
+        if (defaults == null) {
+            return null;
+        }
+        for (T i : defaults) {
+            if (i != null) {
+                return i;
+            }
+        }
+        return null;
+    }
+
+
 }
