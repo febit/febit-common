@@ -27,6 +27,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.febit.common.jwt.JwtCodec.CODE_INVALID_TOKEN;
 import static org.febit.common.jwt.JwtCodec.CODE_TOKEN_EXPIRED;
 import static org.febit.common.jwt.JwtCodec.MSG_INVALID_FORMAT;
@@ -187,7 +188,9 @@ class JwtCodecTest {
         assertFalse(decoded.isSuccess());
         assertEquals(STATUS_UNAUTHORIZED, decoded.getStatus());
         assertEquals(CODE_INVALID_TOKEN, decoded.getCode());
-        assertTrue(decoded.getMessage().startsWith(MSG_INVALID_FORMAT));
+        assertThat(decoded.getMessage())
+                .isNotEmpty()
+                .startsWith(MSG_INVALID_FORMAT);
     }
 
     @Test
@@ -217,7 +220,9 @@ class JwtCodecTest {
         var decoded = CODEC_ALL.decode(token);
         assertEquals(STATUS_UNAUTHORIZED, decoded.getStatus());
         assertEquals(CODE_INVALID_TOKEN, decoded.getCode());
-        assertTrue(decoded.getMessage().startsWith(MSG_INVALID_FORMAT_PAYLOAD));
+        assertThat(decoded.getMessage())
+                .isNotEmpty()
+                .startsWith(MSG_INVALID_FORMAT_PAYLOAD);
     }
 
     @Test

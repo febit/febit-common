@@ -44,14 +44,14 @@ public class JwtCodec {
     static final String MSG_NO_SINGER_KEY = "no signer key found";
     static final String MSG_VERIFY_FAILED = "failed pass signing verifier";
 
+    protected final Lazy<Map<String, JwtKey.Resolved>> keys = Lazy.of(this::mappingKeys);
+    protected final Lazy<JwtKey.Resolved> signerKey = Lazy.of(this::resolveSingerKey);
+
     protected final JwtCodecProps props;
 
     public JwtCodec(JwtCodecProps props) {
         this.props = props;
     }
-
-    protected final Lazy<Map<String, JwtKey.Resolved>> keys = Lazy.of(this::mappingKeys);
-    protected final Lazy<JwtKey.Resolved> signerKey = Lazy.of(this::resolveSingerKey);
 
     private Map<String, JwtKey.Resolved> mappingKeys() {
         return Maps.mapping(this.props.keys(), JwtKey::id, JwtKey::resolve);
