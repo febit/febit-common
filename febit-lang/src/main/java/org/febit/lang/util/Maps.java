@@ -16,7 +16,6 @@
 package org.febit.lang.util;
 
 import lombok.experimental.UtilityClass;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -24,12 +23,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @SuppressWarnings({
-        "unused",
-        "WeakerAccess",
         "squid:S1319" // Declarations should use Java collection interfaces such as "List" rather than specific implementation classes
 })
 @UtilityClass
@@ -38,127 +34,340 @@ public class Maps {
     private static final int MAXIMUM_CAPACITY = 1 << 30;
 
     /**
-     * Compute a map.
+     * Creates a map by computing values from the given keys.
+     * <p>
+     * Note: in case of key collision, the latter value will overwrite the former one.
+     *
+     * @param keys        the keys
+     * @param valueMapper the value mapper
+     * @return the created map
      */
     public static <K, V> Map<K, V> compute(Collection<K> keys, Function<K, V> valueMapper) {
         return mapping(keys, Function.identity(), valueMapper);
     }
 
+    /**
+     * Creates a map by computing values from the given keys.
+     * <p>
+     * Note: in case of key collision, the latter value will overwrite the former one.
+     *
+     * @param keys        the keys
+     * @param valueMapper the value mapper
+     * @return the created map
+     */
     public static <K, V> Map<K, V> compute(K[] keys, Function<K, V> valueMapper) {
         return mapping(keys, Function.identity(), valueMapper);
     }
 
+    /**
+     * Creates a map by mapping the given values.
+     * <p>
+     * Note: in case of key collision, the latter value will overwrite the former one.
+     *
+     * @param values    the values
+     * @param keyMapper the key mapper
+     * @return the created map
+     */
     public static <K, V> Map<K, V> mapping(Collection<V> values, Function<V, K> keyMapper) {
         return mapping(values, keyMapper, Function.identity());
     }
 
+    /**
+     * Creates a map by mapping the given values.
+     * <p>
+     * Note: in case of key collision, the latter value will overwrite the former one.
+     *
+     * @param values    the values
+     * @param keyMapper the key mapper
+     * @return the created map
+     */
     public static <K, V> Map<K, V> mapping(V[] values, Function<V, K> keyMapper) {
         return mapping(values, keyMapper, Function.identity());
     }
 
+    /**
+     * Creates a map by mapping the given items.
+     * <p>
+     * Note: in case of key collision, the latter value will overwrite the former one.
+     *
+     * @param items       the items
+     * @param keyMapper   the key mapper
+     * @param valueMapper the value mapper
+     * @return the created map
+     */
     public static <K, V, T> Map<K, V> mapping(
             Collection<T> items,
             Function<T, K> keyMapper,
             Function<T, V> valueMapper
     ) {
-        return Map.ofEntries(ArraysUtils.collect(items,
-                Pairs::newArray,
-                i -> Pair.of(keyMapper.apply(i), valueMapper.apply(i))
+        return items.stream().collect(MapCollectors.overwriting(
+                keyMapper, valueMapper
         ));
     }
 
+    /**
+     * Creates a map by mapping the given items.
+     * <p>
+     * Note: in case of key collision, the latter value will overwrite the former one.
+     *
+     * @param items       the items
+     * @param keyMapper   the key mapper
+     * @param valueMapper the value mapper
+     * @return the created map
+     */
     public static <K, V, T> Map<K, V> mapping(
             T[] items,
             Function<T, K> keyMapper,
             Function<T, V> valueMapper
     ) {
-        return Map.ofEntries(ArraysUtils.collect(items,
-                Pairs::newArray,
-                i -> Pair.of(keyMapper.apply(i), valueMapper.apply(i))
+        return Stream.of(items).collect(MapCollectors.overwriting(
+                keyMapper, valueMapper
         ));
     }
 
+    /**
+     * Creates a map by mapping the given items with multiple key mappers.
+     * <p>
+     * Note: in case of key collision, the latter value will overwrite the former one.
+     *
+     * @param items   the items
+     * @param mappers the key mappers
+     * @return the created map
+     */
     @SafeVarargs
     public static <K, T> Map<K, T> mappingMultiKeys(T[] items, Function<T, K>... mappers) {
         var map = Maps.<K, T>create(items.length * mappers.length);
         for (var mapper : mappers) {
             map.putAll(mapping(items, mapper));
         }
-        return Map.copyOf(map);
+        return map;
     }
 
+    /**
+     * Creates a map by mapping the given items with multiple key mappers.
+     * <p>
+     * Note: in case of key collision, the latter value will overwrite the former one.
+     *
+     * @param items   the items
+     * @param mappers the key mappers
+     * @return the created map
+     */
     @SafeVarargs
     public static <K, T> Map<K, T> mappingMultiKeys(Collection<T> items, Function<T, K>... mappers) {
         var map = Maps.<K, T>create(items.size() * mappers.length);
         for (var mapper : mappers) {
             map.putAll(mapping(items, mapper));
         }
-        return Map.copyOf(map);
+        return map;
     }
 
+    /**
+     * Groups the given items by the key mapper.
+     *
+     * @param items     the items
+     * @param keyMapper the key mapper
+     * @return the created map
+     */
+    public static <T, K> Map<K, List<T>> grouping(
+            Collection<T> items, Function<T, K> keyMapper
+    ) {
+        return grouping(items.stream(), keyMapper);
+    }
+
+    /**
+     * Groups the given items by the key mapper.
+     *
+     * @param items     the items
+     * @param keyMapper the key mapper
+     * @return the created map
+     */
+    public static <T, K> Map<K, List<T>> grouping(
+            T[] items, Function<T, K> keyMapper
+    ) {
+        return grouping(Stream.of(items), keyMapper);
+    }
+
+    /**
+     * Groups the given stream by the key mapper.
+     *
+     * @param stream    the stream
+     * @param keyMapper the key mapper
+     * @return the created map
+     */
+    public static <T, K> Map<K, List<T>> grouping(
+            Stream<T> stream, Function<T, K> keyMapper
+    ) {
+        return stream.collect(MapCollectors.grouping(
+                keyMapper
+        ));
+    }
+
+    /**
+     * Groups the given items by the key mapper and value mapper.
+     *
+     * @param items       the items
+     * @param keyMapper   the key mapper
+     * @param valueMapper the value mapper
+     * @return the created map
+     */
+    public static <T, K, V> Map<K, List<V>> grouping(
+            T[] items, Function<T, K> keyMapper, Function<T, V> valueMapper
+    ) {
+        return grouping(Stream.of(items), keyMapper, valueMapper);
+    }
+
+    /**
+     * Groups the given items by the key mapper and value mapper.
+     *
+     * @param items       the items
+     * @param keyMapper   the key mapper
+     * @param valueMapper the value mapper
+     * @return the created map
+     */
     public static <T, K, V> Map<K, List<V>> grouping(
             Collection<T> items, Function<T, K> keyMapper, Function<T, V> valueMapper
     ) {
         return grouping(items.stream(), keyMapper, valueMapper);
     }
 
+    /**
+     * Groups the given stream by the key mapper and value mapper.
+     *
+     * @param stream      the stream
+     * @param keyMapper   the key mapper
+     * @param valueMapper the value mapper
+     * @return the created map
+     */
     public static <T, K, V> Map<K, List<V>> grouping(
             Stream<T> stream, Function<T, K> keyMapper, Function<T, V> valueMapper
     ) {
-        return stream.collect(Collectors.groupingBy(
-                keyMapper,
-                Collectors.mapping(
-                        valueMapper,
-                        Collectors.toList()
-                )
+        return stream.collect(MapCollectors.grouping(
+                keyMapper, valueMapper
         ));
     }
 
-    public static <T, K> Map<K, List<T>> grouping(
-            Collection<T> items, Function<T, K> keyMapper
+    /**
+     * Groups the given items by the key mapper into sets.
+     *
+     * @param items       the items
+     * @param keyMapper   the key mapper
+     * @param valueMapper the value mapper
+     * @return the created map
+     */
+    public static <T, K, V> Map<K, Set<V>> groupingSet(
+            Collection<T> items, Function<T, K> keyMapper, Function<T, V> valueMapper
     ) {
-        return items.stream()
-                .collect(Collectors.groupingBy(
-                        keyMapper,
-                        Collectors.toList()
-                ));
+        return groupingSet(items.stream(), keyMapper, valueMapper);
     }
 
+    /**
+     * Groups the given items by the key mapper into sets.
+     *
+     * @param items       the items
+     * @param keyMapper   the key mapper
+     * @param valueMapper the value mapper
+     * @return the created map
+     */
+    public static <T, K, V> Map<K, Set<V>> groupingSet(
+            T[] items, Function<T, K> keyMapper, Function<T, V> valueMapper
+    ) {
+        return groupingSet(Stream.of(items), keyMapper, valueMapper);
+    }
+
+    /**
+     * Groups the given stream by the key mapper into sets.
+     *
+     * @param stream      the stream
+     * @param keyMapper   the key mapper
+     * @param valueMapper the value mapper
+     * @return the created map
+     */
+    public static <T, K, V> Map<K, Set<V>> groupingSet(
+            Stream<T> stream, Function<T, K> keyMapper, Function<T, V> valueMapper
+    ) {
+        return stream.collect(MapCollectors.groupingSet(
+                keyMapper, valueMapper
+        ));
+    }
+
+    /**
+     * Groups the given items by the key mapper into sets.
+     *
+     * @param items     the items
+     * @param keyMapper the key mapper
+     * @return the created map
+     */
+    public static <T, K> Map<K, Set<T>> groupingSet(
+            Collection<T> items, Function<T, K> keyMapper
+    ) {
+        return groupingSet(items.stream(), keyMapper);
+    }
+
+    /**
+     * Groups the given items by the key mapper into sets.
+     *
+     * @param items     the items
+     * @param keyMapper the key mapper
+     * @return the created map
+     */
+    public static <T, K> Map<K, Set<T>> groupingSet(
+            T[] items, Function<T, K> keyMapper
+    ) {
+        return groupingSet(Stream.of(items), keyMapper);
+    }
+
+    /**
+     * Groups the given stream by the key mapper into sets.
+     *
+     * @param stream    the stream
+     * @param keyMapper the key mapper
+     * @return the created map
+     */
+    public static <T, K> Map<K, Set<T>> groupingSet(
+            Stream<T> stream, Function<T, K> keyMapper
+    ) {
+        return stream.collect(MapCollectors.groupingSet(
+                keyMapper
+        ));
+    }
+
+    /**
+     * @deprecated use {@link #groupingSet(Collection, Function, Function)}
+     */
+    @Deprecated
     public static <T, K, V> Map<K, Set<V>> uniqueGrouping(
             Collection<T> items, Function<T, K> keyMapper, Function<T, V> valueMapper
     ) {
-        return items.stream()
-                .collect(Collectors.groupingBy(
-                        keyMapper,
-                        Collectors.mapping(
-                                valueMapper,
-                                Collectors.toSet()
-                        )
-                ));
+        return groupingSet(items, keyMapper, valueMapper);
     }
 
+    /**
+     * @deprecated use {@link #groupingSet(Stream, Function, Function)}
+     */
+    @Deprecated
     public static <T, K, V> Map<K, Set<V>> uniqueGrouping(
             Stream<T> stream, Function<T, K> keyMapper, Function<T, V> valueMapper
     ) {
-        return stream.collect(Collectors.groupingBy(
-                keyMapper,
-                Collectors.mapping(
-                        valueMapper,
-                        Collectors.toSet()
-                )
-        ));
+        return groupingSet(stream, keyMapper, valueMapper);
     }
 
+    /**
+     * @deprecated use {@link #groupingSet(Collection, Function)}
+     */
+    @Deprecated
     public static <T, K> Map<K, Set<T>> uniqueGrouping(
             Collection<T> items, Function<T, K> keyMapper
     ) {
-        return items.stream()
-                .collect(Collectors.groupingBy(
-                        keyMapper,
-                        Collectors.toSet()
-                ));
+        return groupingSet(items, keyMapper);
     }
 
+    /**
+     * Transfers the source map to a new map by transferring keys and values.
+     *
+     * @param source        the source map
+     * @param keyTransfer   the key transfer function
+     * @param valueTransfer the value transfer function
+     */
     public static <K1, K2, V1, V2> Map<K2, V2> transfer(
             Map<K1, V1> source, Function<K1, K2> keyTransfer, Function<V1, V2> valueTransfer
     ) {
@@ -167,6 +376,12 @@ public class Maps {
                 entry -> valueTransfer.apply(entry.getValue()));
     }
 
+    /**
+     * Transfers the source map to a new map by transferring values only.
+     *
+     * @param source   the source map
+     * @param transfer the value transfer function
+     */
     public static <K, V1, V2> Map<K, V2> transferValue(
             Map<K, V1> source, Function<V1, V2> transfer
     ) {
@@ -189,20 +404,16 @@ public class Maps {
      * @param expectedSize the number of entries expected to add
      */
     public static <K, V> HashMap<K, V> newHashMap(int expectedSize) {
-        return new HashMap<>(calCapacityForHashMap(expectedSize));
+        int cap;
+        if (expectedSize < 3) {
+            cap = expectedSize <= 0 ? 1 : expectedSize + 1;
+        } else if (expectedSize >= MAXIMUM_CAPACITY) {
+            cap = MAXIMUM_CAPACITY;
+        } else {
+            cap = Math.min((int) ((float) expectedSize / 0.75F + 1.0F), MAXIMUM_CAPACITY);
+        }
+        return new HashMap<>(cap);
     }
 
-    private static int calCapacityForHashMap(int expectedSize) {
-        if (expectedSize < 3) {
-            if (expectedSize < 0) {
-                throw new IllegalArgumentException("Illegal expected size: " + expectedSize);
-            }
-            return expectedSize + 1;
-        }
-        if (expectedSize >= MAXIMUM_CAPACITY) {
-            return MAXIMUM_CAPACITY;
-        }
-        return Math.min((int) ((float) expectedSize / 0.75F + 1.0F), MAXIMUM_CAPACITY);
-    }
 }
 
