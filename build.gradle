@@ -24,7 +24,7 @@ allprojects {
   version = rootProject.version
 
   repositories {
-    maven { url = "https://maven.aliyun.com/repository/central" }
+    mavenCentral()
   }
 
   standardMavenPublish {
@@ -103,6 +103,7 @@ configure(subprojects.findAll {
         entry 'slf4j-simple'
       }
 
+      dependency "${libs.jspecify.get()}"
       dependency "${libs.jsr305.get()}"
       dependency "${libs.spotbugs.annotations.get()}"
       dependency "${libs.swagger.annotations.get()}"
