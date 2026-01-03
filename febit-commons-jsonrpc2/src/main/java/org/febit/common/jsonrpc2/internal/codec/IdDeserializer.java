@@ -15,12 +15,10 @@
  */
 package org.febit.common.jsonrpc2.internal.codec;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import org.febit.common.jsonrpc2.protocol.Id;
-
-import java.io.IOException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.deser.std.StdDeserializer;
 
 public class IdDeserializer extends StdDeserializer<Id> {
 
@@ -29,12 +27,12 @@ public class IdDeserializer extends StdDeserializer<Id> {
     }
 
     @Override
-    public Id deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+    public Id deserialize(JsonParser p, DeserializationContext ctxt) {
         return switch (p.currentToken()) {
             case VALUE_NULL -> null;
-            case VALUE_STRING -> Id.of(p.getText());
+            case VALUE_STRING -> Id.of(p.getString());
             case VALUE_NUMBER_INT, VALUE_NUMBER_FLOAT -> Id.of(p.getNumberValue());
-            default -> throw ctxt.weirdStringException(p.getText(), Id.class,
+            default -> throw ctxt.weirdStringException(p.getString(), Id.class,
                     "rpc message id must be string or number, but got " + p.currentToken());
         };
     }

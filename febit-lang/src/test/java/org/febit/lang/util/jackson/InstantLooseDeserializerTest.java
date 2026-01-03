@@ -15,10 +15,10 @@
  */
 package org.febit.lang.util.jackson;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.febit.lang.util.JacksonUtils;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
 
 import java.time.Instant;
 import java.util.stream.Stream;
@@ -29,8 +29,8 @@ class InstantLooseDeserializerTest {
 
     @Test
     void ex_type() {
-        var jackson = JacksonUtils.standardAndWrap(new ObjectMapper(),
-                mapper -> mapper.registerModule(new SimpleModule()
+        var jackson = JacksonUtils.standardAndWrap(JsonMapper.builder(),
+                mapper -> mapper.addModule(new SimpleModule()
                         .addDeserializer(Instant.class, InstantLooseDeserializer.INSTANCE)
                 )
         );
@@ -41,8 +41,8 @@ class InstantLooseDeserializerTest {
 
     @Test
     void deserialize() {
-        var jackson = JacksonUtils.standardAndWrap(new ObjectMapper(),
-                mapper -> mapper.registerModule(new SimpleModule()
+        var jackson = JacksonUtils.standardAndWrap(JsonMapper.builder(),
+                mapper -> mapper.addModule(new SimpleModule()
                         .addDeserializer(Instant.class, InstantLooseDeserializer.INSTANCE)
                 )
         );

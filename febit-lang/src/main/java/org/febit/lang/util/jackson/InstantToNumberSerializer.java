@@ -15,11 +15,11 @@
  */
 package org.febit.lang.util.jackson;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ser.std.StdSerializer;
 
-import java.io.IOException;
 import java.time.Instant;
 
 public abstract class InstantToNumberSerializer extends StdSerializer<Instant> {
@@ -32,8 +32,8 @@ public abstract class InstantToNumberSerializer extends StdSerializer<Instant> {
     public void serialize(
             Instant instant,
             JsonGenerator generator,
-            SerializerProvider provider
-    ) throws IOException {
+            SerializationContext provider
+    ) throws JacksonException {
         generator.writeNumber(toNumber(instant));
     }
 

@@ -15,19 +15,19 @@
  */
 package org.febit.common.kafka.deser;
 
-import com.fasterxml.jackson.databind.JavaType;
 import lombok.Getter;
 import org.febit.lang.util.JacksonUtils;
 import org.febit.lang.util.JacksonWrapper;
+import tools.jackson.databind.JavaType;
 
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-import static org.febit.lang.util.JacksonUtils.TYPE_FACTORY;
+import static org.febit.lang.util.JacksonUtils.TYPES;
 
 public class JsonDeserializer<T> extends BaseJacksonDeserializer<T> {
 
-    private static final JavaType DEFAULT_TYPE = TYPE_FACTORY.constructType(Object.class);
+    private static final JavaType DEFAULT_TYPE = TYPES.constructType(Object.class);
     private static final String PREFIX = "febit.kafka.deser.json.";
 
     public static final String TYPE_OF_KEY = PREFIX + "key.type";
@@ -57,7 +57,7 @@ public class JsonDeserializer<T> extends BaseJacksonDeserializer<T> {
     }
 
     protected JsonDeserializer(Class<T> type) {
-        this(TYPE_FACTORY.constructType(type));
+        this(TYPES.constructType(type));
     }
 
     protected JsonDeserializer(JavaType type) {
@@ -74,7 +74,7 @@ public class JsonDeserializer<T> extends BaseJacksonDeserializer<T> {
         super.configure(configs, isKey);
         var type = DeserializerUtils.resolveJavaType(configs, isKey ? TYPE_OF_KEY : TYPE_OF_VALUE);
         if (type != null) {
-            this.javaType = TYPE_FACTORY.constructType(type);
+            this.javaType = TYPES.constructType(type);
         }
     }
 

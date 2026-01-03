@@ -15,19 +15,17 @@
  */
 package org.febit.common.jsonrpc2.internal.codec;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import jakarta.annotation.Nullable;
 import org.febit.common.jsonrpc2.Jsonrpc2;
 import org.febit.common.jsonrpc2.internal.protocol.Notification;
 import org.febit.common.jsonrpc2.internal.protocol.Request;
 import org.febit.common.jsonrpc2.internal.protocol.Response;
 import org.febit.common.jsonrpc2.protocol.IRpcMessage;
-
-import java.io.IOException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DatabindException;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.deser.std.StdDeserializer;
 
 public class RpcMessageDeserializer extends StdDeserializer<IRpcMessage> {
 
@@ -40,12 +38,11 @@ public class RpcMessageDeserializer extends StdDeserializer<IRpcMessage> {
 
     @Nullable
     @Override
-    public IRpcMessage deserialize(JsonParser parser, DeserializationContext context)
-            throws IOException {
+    public IRpcMessage deserialize(JsonParser parser, DeserializationContext context) {
         var tree = parser.readValueAsTree();
 
         if (!(tree instanceof JsonNode node)) {
-            throw new JsonMappingException(parser,
+            throw DatabindException.from(parser,
                     "Invalid JSON-RPC message: not a JSON object.");
         }
 
@@ -54,18 +51,18 @@ public class RpcMessageDeserializer extends StdDeserializer<IRpcMessage> {
         }
 
         if (!node.isObject()) {
-            throw new JsonMappingException(parser,
+            throw DatabindException.from(parser,
                     "Invalid JSON-RPC message: not a JSON object.");
         }
 
         var versionNode = node.get("jsonrpc");
         if (!nonNullNode(versionNode)) {
-            throw new JsonMappingException(parser,
+            throw DatabindException.from(parser,
                     "Invalid JSON-RPC message: missing 'jsonrpc' property.");
         }
-        var version = versionNode.asText();
+        var version = versionNode.asString();
         if (!Jsonrpc2.VER_2_0.equals(version)) {
-            throw new JsonMappingException(parser,
+            throw DatabindException.from(parser,
                     "Invalid JSON-RPC message: unsupported 'jsonrpc' version"
                             + ", only " + Jsonrpc2.VER_2_0 + " is supported.");
         }
@@ -78,7 +75,7 @@ public class RpcMessageDeserializer extends StdDeserializer<IRpcMessage> {
             case 1 -> Response.class;
             case 2 -> Notification.class;
             case 3 -> Request.class;
-            default -> throw new JsonMappingException(
+            default -> throw DatabindException.from(
                     parser,
                     "Invalid JSON-RPC message: missing both 'id' and 'method' properties."
             );

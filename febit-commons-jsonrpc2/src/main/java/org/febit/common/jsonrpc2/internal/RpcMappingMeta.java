@@ -15,12 +15,12 @@
  */
 package org.febit.common.jsonrpc2.internal;
 
-import com.fasterxml.jackson.databind.JavaType;
 import jakarta.annotation.Nonnull;
 import lombok.NonNull;
 import org.febit.common.jsonrpc2.annotation.RpcMethodType;
 import org.febit.common.jsonrpc2.annotation.RpcParamsKind;
 import org.febit.lang.annotation.NullableArgs;
+import tools.jackson.databind.JavaType;
 
 import java.lang.reflect.Method;
 import java.time.Duration;

@@ -19,7 +19,7 @@ jspecify = '1.0.0'
 caffeine = '3.2.3'
 febit-devkit = '1.5.0'
 hierynomus-license = '0.16.1'
-jackson = '2.20.1'
+jackson = '3.0.3'
 jcommander = '3.0'
 jool = '0.9.15'
 jooq = '3.19.29'
@@ -50,7 +50,7 @@ license = { id = 'com.github.hierynomus.license', version.ref = 'hierynomus-lice
 
 [libraries]
 assertj-bom = { module = 'org.assertj:assertj-bom', version.ref = 'assertj' }
-jackson-bom = { module = 'com.fasterxml.jackson:jackson-bom', version.ref = 'jackson' }
+jackson-bom = { module = 'tools.jackson:jackson-bom', version.ref = 'jackson' }
 junit-bom = { module = 'org.junit:junit-bom', version.ref = 'junit' }
 mockito-bom = { module = 'org.mockito:mockito-bom', version.ref = 'mockito' }
 

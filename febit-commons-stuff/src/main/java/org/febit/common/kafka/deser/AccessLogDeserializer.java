@@ -15,11 +15,11 @@
  */
 package org.febit.common.kafka.deser;
 
-import com.fasterxml.jackson.databind.JavaType;
 import jakarta.annotation.Nullable;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.febit.common.parser.AccessLogParser;
 import org.febit.lang.util.JacksonUtils;
+import tools.jackson.databind.JavaType;
 
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
@@ -27,11 +27,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-import static org.febit.lang.util.JacksonUtils.TYPE_FACTORY;
+import static org.febit.lang.util.JacksonUtils.TYPES;
 
 public class AccessLogDeserializer<T> implements Deserializer<T> {
 
-    private static final JavaType DEFAULT_TYPE = TYPE_FACTORY.constructMapType(
+    private static final JavaType DEFAULT_TYPE = TYPES.constructMapType(
             LinkedHashMap.class, Object.class, Object.class
     );
 
@@ -89,7 +89,7 @@ public class AccessLogDeserializer<T> implements Deserializer<T> {
 
         var type = DeserializerUtils.resolveJavaType(configs, isKey ? TYPE_OF_KEY : TYPE_OF_VALUE);
         if (type != null) {
-            this.javaType = TYPE_FACTORY.constructType(type);
+            this.javaType = TYPES.constructType(type);
         }
     }
 

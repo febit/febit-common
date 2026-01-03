@@ -15,11 +15,10 @@
  */
 package org.febit.lang.util.jackson;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.util.DefaultIndenter;
-import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
-
-import java.io.IOException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.util.DefaultIndenter;
+import tools.jackson.core.util.DefaultPrettyPrinter;
 
 public class StandardPrettyPrinter extends DefaultPrettyPrinter {
 
@@ -30,12 +29,12 @@ public class StandardPrettyPrinter extends DefaultPrettyPrinter {
     }
 
     @Override
-    public void writeObjectFieldValueSeparator(JsonGenerator g) throws IOException {
+    public void writeObjectNameValueSeparator(JsonGenerator g) throws JacksonException {
         g.writeRaw(OBJECT_FIELD_VALUE_SEPARATOR);
     }
 
     @Override
-    public void writeEndObject(JsonGenerator g, int nrOfEntries) throws IOException {
+    public void writeEndObject(JsonGenerator g, int nrOfEntries) throws JacksonException {
         --_nesting;
         if (nrOfEntries > 0) {
             _objectIndenter.writeIndentation(g, _nesting);
@@ -44,7 +43,7 @@ public class StandardPrettyPrinter extends DefaultPrettyPrinter {
     }
 
     @Override
-    public void writeEndArray(JsonGenerator g, int nrOfValues) throws IOException {
+    public void writeEndArray(JsonGenerator g, int nrOfValues) throws JacksonException {
         --_nesting;
         if (nrOfValues > 0) {
             _arrayIndenter.writeIndentation(g, _nesting);

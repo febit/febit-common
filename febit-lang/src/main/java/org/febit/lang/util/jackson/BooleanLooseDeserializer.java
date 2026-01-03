@@ -15,14 +15,12 @@
  */
 package org.febit.lang.util.jackson;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonTokenId;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import jakarta.annotation.Nullable;
 import org.febit.lang.util.ConvertUtils;
-
-import java.io.IOException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.JsonTokenId;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.deser.std.StdDeserializer;
 
 public class BooleanLooseDeserializer extends StdDeserializer<Boolean> {
 
@@ -34,22 +32,16 @@ public class BooleanLooseDeserializer extends StdDeserializer<Boolean> {
 
     @Nullable
     @Override
-    public Boolean deserialize(JsonParser parser, DeserializationContext context) throws IOException {
-        switch (parser.currentTokenId()) {
-            case JsonTokenId.ID_TRUE:
-                return true;
-            case JsonTokenId.ID_FALSE:
-                return false;
-            case JsonTokenId.ID_NUMBER_FLOAT:
-                return ConvertUtils.toBoolean(parser.getDoubleValue());
-            case JsonTokenId.ID_NUMBER_INT:
-                return ConvertUtils.toBoolean(parser.getLongValue());
-            case JsonTokenId.ID_STRING:
-                return ConvertUtils.toBoolean(parser.getText().trim());
-            default:
-                throw new IllegalStateException("Unexpected token to deserialize boolean,"
-                        + " only Boolean, String and Number are supported: " + parser.currentTokenId());
-        }
+    public Boolean deserialize(JsonParser parser, DeserializationContext context) {
+        return switch (parser.currentTokenId()) {
+            case JsonTokenId.ID_TRUE -> true;
+            case JsonTokenId.ID_FALSE -> false;
+            case JsonTokenId.ID_NUMBER_FLOAT -> ConvertUtils.toBoolean(parser.getDoubleValue());
+            case JsonTokenId.ID_NUMBER_INT -> ConvertUtils.toBoolean(parser.getLongValue());
+            case JsonTokenId.ID_STRING -> ConvertUtils.toBoolean(parser.getString().trim());
+            default -> throw new IllegalStateException("Unexpected token to deserialize boolean,"
+                    + " only Boolean, String and Number are supported: " + parser.currentTokenId());
+        };
     }
 
 }

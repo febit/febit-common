@@ -78,7 +78,7 @@ class ListResponseTest {
                 }
                 """;
         var response = JacksonUtils.parse(json,
-                JacksonUtils.TYPE_FACTORY.constructParametricType(ListResponse.class, Item.class)
+                JacksonUtils.TYPES.constructParametricType(ListResponse.class, Item.class)
         );
         assertThat(response)
                 .asInstanceOf(type(ListResponse.class))
@@ -92,7 +92,7 @@ class ListResponseTest {
                 );
 
         var response2 = JacksonUtils.parse(json,
-                JacksonUtils.TYPE_FACTORY.constructParametricType(IListResponse.class, Item.class)
+                JacksonUtils.TYPES.constructParametricType(IListResponse.class, Item.class)
         );
 
         assertThat(response2)

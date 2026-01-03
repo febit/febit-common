@@ -15,10 +15,10 @@
  */
 package org.febit.lang.util.jackson;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.febit.lang.util.JacksonUtils;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
 
 import java.time.Instant;
 import java.util.Map;
@@ -33,8 +33,8 @@ class ToJsonStringSerializerTest {
 
     @Test
     void basic() {
-        var jackson = JacksonUtils.standardAndWrap(new ObjectMapper(),
-                mapper -> mapper.registerModule(new SimpleModule()
+        var jackson = JacksonUtils.standardAndWrap(JsonMapper.builder(),
+                mapper -> mapper.addModule(new SimpleModule()
                         .addSerializer(Instant.class, ToJsonStringSerializer.INSTANCE)
                         .addSerializer(Map.class, ToJsonStringSerializer.INSTANCE)
                 )

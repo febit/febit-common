@@ -15,7 +15,6 @@
  */
 package org.febit.common.jsonrpc2.internal;
 
-import com.fasterxml.jackson.databind.JavaType;
 import jakarta.annotation.Nullable;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +24,7 @@ import org.febit.common.jsonrpc2.protocol.StdRpcErrors;
 import org.febit.lang.util.proxy.BaseInvocationHandler;
 import org.febit.lang.util.proxy.Invoker;
 import org.febit.lang.util.proxy.Invokers;
+import tools.jackson.databind.JavaType;
 
 import java.lang.reflect.Method;
 import java.time.Duration;

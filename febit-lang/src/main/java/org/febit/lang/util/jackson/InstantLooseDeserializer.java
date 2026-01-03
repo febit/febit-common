@@ -15,14 +15,13 @@
  */
 package org.febit.lang.util.jackson;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonTokenId;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import jakarta.annotation.Nullable;
 import org.febit.lang.util.TimeUtils;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.JsonTokenId;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.deser.std.StdDeserializer;
 
-import java.io.IOException;
 import java.time.Instant;
 
 public class InstantLooseDeserializer extends StdDeserializer<Instant> {
@@ -35,16 +34,13 @@ public class InstantLooseDeserializer extends StdDeserializer<Instant> {
 
     @Nullable
     @Override
-    public Instant deserialize(JsonParser parser, DeserializationContext context) throws IOException {
-        switch (parser.currentTokenId()) {
-            case JsonTokenId.ID_NUMBER_INT:
-                return Instant.ofEpochMilli(parser.getLongValue());
-            case JsonTokenId.ID_STRING:
-                return TimeUtils.parseInstant(parser.getText().trim());
-            default:
-                throw new IllegalStateException("Unexpected token to deserialize instant,"
-                        + " only String and Number are supported: " + parser.currentTokenId());
-        }
+    public Instant deserialize(JsonParser parser, DeserializationContext context) {
+        return switch (parser.currentTokenId()) {
+            case JsonTokenId.ID_NUMBER_INT -> Instant.ofEpochMilli(parser.getLongValue());
+            case JsonTokenId.ID_STRING -> TimeUtils.parseInstant(parser.getString().trim());
+            default -> throw new IllegalStateException("Unexpected token to deserialize instant,"
+                    + " only String and Number are supported: " + parser.currentTokenId());
+        };
     }
 
 }

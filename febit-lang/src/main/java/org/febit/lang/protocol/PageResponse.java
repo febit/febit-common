@@ -15,7 +15,7 @@
  */
 package org.febit.lang.protocol;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize
 public class PageResponse<T> extends Response<Page<T>> implements IPageResponse<T> {

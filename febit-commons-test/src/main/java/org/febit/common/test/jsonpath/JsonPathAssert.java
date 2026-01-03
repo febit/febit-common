@@ -15,15 +15,12 @@
  */
 package org.febit.common.test.jsonpath;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.EvaluationListener;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
-import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
 import com.jayway.jsonpath.spi.json.JsonProvider;
-import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
 import jakarta.annotation.Nullable;
 import lombok.Singular;
@@ -38,6 +35,7 @@ import org.assertj.core.api.MapAssert;
 import org.assertj.core.api.ObjectAssert;
 import org.assertj.core.internal.Conditions;
 import org.febit.lang.util.JacksonUtils;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.Collection;
 import java.util.List;
@@ -290,10 +288,11 @@ public class JsonPathAssert extends AbstractAssert<JsonPathAssert, Object> {
         static final Configuration CONF;
 
         static {
-            var mapper = JacksonUtils.standard(new ObjectMapper());
+            var mapper = JacksonUtils.standard(JsonMapper.builder())
+                    .build();
             CONF = Configuration.builder()
-                    .jsonProvider(new JacksonJsonProvider(mapper))
-                    .mappingProvider(new JacksonMappingProvider(mapper))
+                    .jsonProvider(new Jackson3JsonProvider(mapper))
+                    .mappingProvider(new Jackson3MappingProvider(mapper))
                     .build();
         }
     }

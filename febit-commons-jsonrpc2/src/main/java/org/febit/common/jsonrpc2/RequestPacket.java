@@ -15,9 +15,9 @@
  */
 package org.febit.common.jsonrpc2;
 
-import com.fasterxml.jackson.databind.JavaType;
 import org.febit.common.jsonrpc2.protocol.IRpcRequest;
 import org.febit.common.jsonrpc2.protocol.Id;
+import tools.jackson.databind.JavaType;
 
 import java.util.concurrent.CompletableFuture;
 

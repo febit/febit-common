@@ -15,13 +15,12 @@
  */
 package org.febit.lang.util;
 
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.fasterxml.jackson.databind.util.LRUMap;
-import com.fasterxml.jackson.databind.util.LookupCache;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
+import tools.jackson.databind.JavaType;
+import tools.jackson.databind.type.TypeFactory;
+import tools.jackson.databind.util.SimpleLookupCache;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -32,12 +31,8 @@ public class TypeParameters {
 
     private static final ResolvedImpl NULL_RESOLVED = new ResolvedImpl(null);
 
-    private static final TypeFactory TYPE_FACTORY = TypeFactory.defaultInstance()
-            .withCache(createCache());
-
-    private static LookupCache<Object, JavaType> createCache() {
-        return new LRUMap<>(16, 128);
-    }
+    private static final TypeFactory TYPE_FACTORY = TypeFactory.createDefaultInstance()
+            .withCache(new SimpleLookupCache<>(16, 128));
 
     public static Resolved forType(Type target) {
         return ResolvedImpl.of(

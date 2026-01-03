@@ -15,17 +15,16 @@
  */
 package org.febit.lang.util.jackson;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import jakarta.annotation.Nullable;
 import org.febit.lang.util.TimeUtils;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.deser.std.StdDeserializer;
 
-import java.io.IOException;
 import java.time.Instant;
 
-import static com.fasterxml.jackson.core.JsonTokenId.ID_NUMBER_INT;
-import static com.fasterxml.jackson.core.JsonTokenId.ID_STRING;
+import static tools.jackson.core.JsonTokenId.ID_NUMBER_INT;
+import static tools.jackson.core.JsonTokenId.ID_STRING;
 
 public abstract class InstantFromNumberDeserializer extends StdDeserializer<Instant> {
 
@@ -35,15 +34,12 @@ public abstract class InstantFromNumberDeserializer extends StdDeserializer<Inst
 
     @Nullable
     @Override
-    public Instant deserialize(JsonParser parser, DeserializationContext context) throws IOException {
-        switch (parser.currentTokenId()) {
-            case ID_NUMBER_INT:
-                return fromNumber(parser.getLongValue());
-            case ID_STRING:
-                return TimeUtils.parseInstant(parser.getText().trim());
-            default:
-                throw new IllegalStateException("Unexpected seconds number: " + parser.currentToken());
-        }
+    public Instant deserialize(JsonParser parser, DeserializationContext context) {
+        return switch (parser.currentTokenId()) {
+            case ID_NUMBER_INT -> fromNumber(parser.getLongValue());
+            case ID_STRING -> TimeUtils.parseInstant(parser.getString().trim());
+            default -> throw new IllegalStateException("Unexpected seconds number: " + parser.currentToken());
+        };
     }
 
     protected abstract Instant fromNumber(long number);

@@ -15,7 +15,6 @@
  */
 package org.febit.common.jsonrpc2;
 
-import com.fasterxml.jackson.databind.JavaType;
 import jakarta.annotation.Nullable;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
@@ -23,6 +22,8 @@ import org.febit.common.jsonrpc2.exception.RpcErrorException;
 import org.febit.common.jsonrpc2.protocol.IRpcMessage;
 import org.febit.common.jsonrpc2.protocol.StdRpcErrors;
 import org.febit.lang.util.JacksonUtils;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JavaType;
 
 import java.io.UncheckedIOException;
 import java.lang.reflect.Method;
@@ -36,7 +37,7 @@ import java.util.stream.Stream;
 public class JsonCodec {
 
     public static JavaType resolveType(Type type) {
-        return JacksonUtils.TYPE_FACTORY.constructType(type);
+        return JacksonUtils.TYPES.constructType(type);
     }
 
     public static List<JavaType> resolveParameterTypes(Method method) {
@@ -75,16 +76,18 @@ public class JsonCodec {
         }
         try {
             var result = JacksonUtils.parse(text, IRpcMessage.class);
-            Objects.requireNonNull(result, "Invalid message");
+            if (result == null) {
+                throw StdRpcErrors.PARSE_ERROR.toException("invalid message: null");
+            }
             return result;
         } catch (RpcErrorException e) {
             throw e;
-        } catch (UncheckedIOException e) {
-            throw StdRpcErrors.PARSE_ERROR
-                    .toException("invalid message: " + e.getCause().getMessage(), e);
-        } catch (Exception e) {
+        } catch (JacksonException e) {
             throw StdRpcErrors.PARSE_ERROR
                     .toException("invalid message: " + e.getMessage(), e);
+        } catch (Exception e) {
+            throw StdRpcErrors.INTERNAL_ERROR
+                    .toException("cannot parse message: " + e.getMessage(), e);
         }
     }
 

@@ -15,8 +15,8 @@
  */
 package org.febit.lang.protocol;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.annotation.Nonnull;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 import java.util.function.Function;
 

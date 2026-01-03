@@ -15,18 +15,18 @@
  */
 package org.febit.common.jsonrpc2.internal.protocol;
 
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import org.febit.common.jsonrpc2.internal.codec.IdDeserializer;
 import org.febit.common.jsonrpc2.protocol.IRpcError;
 import org.febit.common.jsonrpc2.protocol.IRpcResponse;
 import org.febit.common.jsonrpc2.protocol.Id;
+import tools.jackson.databind.ValueDeserializer;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 import java.util.Objects;
 
-@JsonDeserialize(using = JsonDeserializer.None.class)
+@JsonDeserialize(using = ValueDeserializer.None.class)
 public record Response<T>(
         @Nonnull
         @JsonDeserialize(using = IdDeserializer.class)

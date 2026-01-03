@@ -15,17 +15,17 @@
  */
 package org.febit.common.kafka.deser;
 
-import com.fasterxml.jackson.databind.JavaType;
 import jakarta.annotation.Nullable;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.utils.Utils;
 import org.febit.lang.UncheckedException;
+import tools.jackson.databind.JavaType;
 
 import java.util.Map;
 
-import static org.febit.lang.util.JacksonUtils.TYPE_FACTORY;
+import static org.febit.lang.util.JacksonUtils.TYPES;
 
 @UtilityClass
 public class DeserializerUtils {
@@ -55,7 +55,7 @@ public class DeserializerUtils {
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("Unable to load type: " + type);
         }
-        return TYPE_FACTORY.constructType(cls);
+        return TYPES.constructType(cls);
     }
 
     @SuppressWarnings("unchecked")

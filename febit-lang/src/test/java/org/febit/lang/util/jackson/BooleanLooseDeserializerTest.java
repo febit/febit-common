@@ -15,10 +15,10 @@
  */
 package org.febit.lang.util.jackson;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.febit.lang.util.JacksonUtils;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -31,8 +31,8 @@ class BooleanLooseDeserializerTest {
 
     @Test
     void ex_type() {
-        var jackson = JacksonUtils.standardAndWrap(new ObjectMapper(),
-                mapper -> mapper.registerModule(new SimpleModule()
+        var jackson = JacksonUtils.standardAndWrap(JsonMapper.builder(),
+                mapper -> mapper.addModule(new SimpleModule()
                         .addDeserializer(Boolean.class, BooleanLooseDeserializer.INSTANCE)
                 )
         );
@@ -43,8 +43,8 @@ class BooleanLooseDeserializerTest {
 
     @Test
     void deserialize() {
-        var jackson = JacksonUtils.standardAndWrap(new ObjectMapper(),
-                mapper -> mapper.registerModule(new SimpleModule()
+        var jackson = JacksonUtils.standardAndWrap(JsonMapper.builder(),
+                mapper -> mapper.addModule(new SimpleModule()
                         .addDeserializer(Boolean.class, BooleanLooseDeserializer.INSTANCE)
                 )
         );

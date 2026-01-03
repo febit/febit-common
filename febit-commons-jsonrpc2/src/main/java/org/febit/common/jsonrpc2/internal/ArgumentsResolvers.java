@@ -15,12 +15,12 @@
  */
 package org.febit.common.jsonrpc2.internal;
 
-import com.fasterxml.jackson.databind.JavaType;
 import lombok.experimental.UtilityClass;
 import org.febit.common.jsonrpc2.JsonCodec;
 import org.febit.common.jsonrpc2.protocol.StdRpcErrors;
 import org.febit.lang.util.JacksonUtils;
 import org.febit.lang.util.Lists;
+import tools.jackson.databind.JavaType;
 
 import java.lang.reflect.Parameter;
 import java.util.List;

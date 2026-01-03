@@ -15,19 +15,17 @@
  */
 package org.febit.lang.util;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import jakarta.annotation.Nullable;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JavaType;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.type.TypeFactory;
 
 import javax.annotation.WillNotClose;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Reader;
-import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -35,24 +33,24 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.febit.lang.util.JacksonUtils.TYPE_FACTORY;
+import static org.febit.lang.util.JacksonUtils.TYPES;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public class JacksonWrapper {
 
-    static final JavaType TYPE_INTEGER = TYPE_FACTORY.constructType(Integer.class);
-    static final JavaType TYPE_STRING = TYPE_FACTORY.constructType(String.class);
-    static final JavaType TYPE_ARRAY = TYPE_FACTORY.constructArrayType(Object.class);
-    static final JavaType TYPE_ARRAY_STRING = TYPE_FACTORY.constructArrayType(String.class);
-    static final JavaType TYPE_LIST = TYPE_FACTORY.constructCollectionLikeType(ArrayList.class, Object.class);
+    static final JavaType TYPE_INTEGER = TYPES.constructType(Integer.class);
+    static final JavaType TYPE_STRING = TYPES.constructType(String.class);
+    static final JavaType TYPE_ARRAY = TYPES.constructArrayType(Object.class);
+    static final JavaType TYPE_ARRAY_STRING = TYPES.constructArrayType(String.class);
+    static final JavaType TYPE_LIST = TYPES.constructCollectionLikeType(ArrayList.class, Object.class);
 
-    static final JavaType TYPE_LIST_STRING = TYPE_FACTORY.constructCollectionLikeType(
+    static final JavaType TYPE_LIST_STRING = TYPES.constructCollectionLikeType(
             ArrayList.class, String.class
     );
-    static final JavaType TYPE_MAP = TYPE_FACTORY.constructMapType(
+    static final JavaType TYPE_MAP = TYPES.constructMapType(
             LinkedHashMap.class, Object.class, Object.class
     );
-    static final JavaType TYPE_MAP_NAMED = TYPE_FACTORY.constructMapType(
+    static final JavaType TYPE_MAP_NAMED = TYPES.constructMapType(
             LinkedHashMap.class, String.class, Object.class
     );
 
@@ -71,7 +69,7 @@ public class JacksonWrapper {
      *
      * @see #stringify(Object)
      */
-    public String toString(@Nullable Object data) {
+    public String toString(@Nullable Object data) throws JacksonException {
         return stringify(data);
     }
 
@@ -81,118 +79,111 @@ public class JacksonWrapper {
      * @param data object
      *             may be null
      * @return JSON string
-     * @throws UncheckedIOException if an error occurs
+     * @throws JacksonException if conversion failed
      * @since 3.2.1
      */
-    public String stringify(@Nullable Object data) {
-        try {
-            return this.mapper.writeValueAsString(data);
-        } catch (JsonProcessingException e) {
-            throw new UncheckedIOException(e);
-        }
+    public String stringify(@Nullable Object data) throws JacksonException {
+        return this.mapper.writeValueAsString(data);
     }
 
     @WillNotClose
-    public void writeTo(Writer writer, @Nullable Object data) throws IOException {
+    public void writeTo(Writer writer, @Nullable Object data) throws JacksonException {
         this.mapper.writeValue(writer, data);
     }
 
     @WillNotClose
-    public void writeTo(OutputStream out, @Nullable Object data) throws IOException {
+    public void writeTo(OutputStream out, @Nullable Object data) throws JacksonException {
         this.mapper.writeValue(out, data);
     }
 
     @Nullable
-    public <T> T parse(@Nullable String text, JavaType type) {
+    public <T> T parse(@Nullable String text, JavaType type) throws JacksonException {
         if (text == null) {
             return null;
         }
-        try {
-            return this.mapper.readValue(text, type);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
+        return this.mapper.readValue(text, type);
     }
 
     @Nullable
-    public <T> T parse(Reader reader, JavaType type) {
-        try {
-            return this.mapper.readValue(reader, type);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
+    public <T> T parse(Reader reader, JavaType type) throws JacksonException {
+        return this.mapper.readValue(reader, type);
     }
 
     @Nullable
-    public <T> T parse(@Nullable String text, Type type) {
+    public <T> T parse(@Nullable String text, Type type) throws JacksonException {
         return parse(text, constructType(type));
     }
 
     @Nullable
-    public <T> T parse(Reader reader, Type type) {
+    public <T> T parse(Reader reader, Type type) throws JacksonException {
         return parse(reader, constructType(type));
     }
 
     @Nullable
-    public <T> T parse(@Nullable String text, Class<T> type) {
+    public <T> T parse(@Nullable String text, Class<T> type) throws JacksonException {
         return parse(text, constructType(type));
     }
 
     @Nullable
-    public <T> T parse(Reader reader, Class<T> type) {
+    public <T> T parse(Reader reader, Class<T> type) throws JacksonException {
         return parse(reader, constructType(type));
     }
 
     @Nullable
-    public Map<Object, Object> parseToMap(@Nullable String text) {
+    public Map<Object, Object> parseToMap(@Nullable String text) throws JacksonException {
         return parse(text, TYPE_MAP);
     }
 
     @Nullable
-    public Map<Object, Object> parseToMap(Reader reader) {
+    public Map<Object, Object> parseToMap(Reader reader) throws JacksonException {
         return parse(reader, TYPE_MAP);
     }
 
     @Nullable
-    public <K, V> Map<K, V> parseToMap(@Nullable String text, Class<K> keyType, Class<V> valueType) {
+    public <K, V> Map<K, V> parseToMap(@Nullable String text, Class<K> keyType, Class<V> valueType)
+            throws JacksonException {
         return parse(text,
                 getTypeFactory().constructMapType(LinkedHashMap.class, keyType, valueType)
         );
     }
 
     @Nullable
-    public <K, V> Map<K, V> parseToMap(Reader reader, Class<K> keyType, Class<V> valueType) {
+    public <K, V> Map<K, V> parseToMap(Reader reader, Class<K> keyType, Class<V> valueType)
+            throws JacksonException {
         return parse(reader,
                 getTypeFactory().constructMapType(LinkedHashMap.class, keyType, valueType)
         );
     }
 
     @Nullable
-    public <K, V> Map<K, V> parseToMap(@Nullable String text, JavaType keyType, JavaType valueType) {
+    public <K, V> Map<K, V> parseToMap(@Nullable String text, JavaType keyType, JavaType valueType)
+            throws JacksonException {
         return parse(text,
                 getTypeFactory().constructMapType(LinkedHashMap.class, keyType, valueType)
         );
     }
 
     @Nullable
-    public <K, V> Map<K, V> parseToMap(Reader reader, JavaType keyType, JavaType valueType) {
+    public <K, V> Map<K, V> parseToMap(Reader reader, JavaType keyType, JavaType valueType)
+            throws JacksonException {
         return parse(reader,
                 getTypeFactory().constructMapType(LinkedHashMap.class, keyType, valueType)
         );
     }
 
     @Nullable
-    public Map<String, Object> parseToNamedMap(@Nullable String text) {
+    public Map<String, Object> parseToNamedMap(@Nullable String text) throws JacksonException {
         return parse(text, TYPE_MAP_NAMED);
     }
 
     @Nullable
-    public Map<String, Object> parseToNamedMap(Reader reader) {
+    public Map<String, Object> parseToNamedMap(Reader reader) throws JacksonException {
         return parse(reader, TYPE_MAP_NAMED);
     }
 
     @Nullable
-    public <V> Map<String, V> parseToNamedMap(@Nullable String text, Class<V> valueType) {
+    public <V> Map<String, V> parseToNamedMap(@Nullable String text, Class<V> valueType)
+            throws JacksonException {
         var tf = getTypeFactory();
         return parse(text,
                 tf.constructMapType(LinkedHashMap.class, TYPE_STRING,
@@ -202,7 +193,7 @@ public class JacksonWrapper {
     }
 
     @Nullable
-    public <V> Map<String, V> parseToNamedMap(Reader reader, Class<V> valueType) {
+    public <V> Map<String, V> parseToNamedMap(Reader reader, Class<V> valueType) throws JacksonException {
         var tf = getTypeFactory();
         return parse(reader,
                 tf.constructMapType(LinkedHashMap.class, TYPE_STRING,
@@ -212,148 +203,151 @@ public class JacksonWrapper {
     }
 
     @Nullable
-    public <V> Map<String, V> parseToNamedMap(@Nullable String text, JavaType valueType) {
+    public <V> Map<String, V> parseToNamedMap(@Nullable String text, JavaType valueType)
+            throws JacksonException {
         return parse(text,
                 getTypeFactory().constructMapType(LinkedHashMap.class, TYPE_STRING, valueType)
         );
     }
 
     @Nullable
-    public <V> Map<String, V> parseToNamedMap(Reader reader, JavaType valueType) {
+    public <V> Map<String, V> parseToNamedMap(Reader reader, JavaType valueType) throws JacksonException {
         return parse(reader,
                 getTypeFactory().constructMapType(LinkedHashMap.class, TYPE_STRING, valueType)
         );
     }
 
     @Nullable
-    public List<Object> parseToList(@Nullable String text) {
+    public List<Object> parseToList(@Nullable String text) throws JacksonException {
         return parse(text, TYPE_LIST);
     }
 
     @Nullable
-    public List<Object> parseToList(Reader reader) {
+    public List<Object> parseToList(Reader reader) throws JacksonException {
         return parse(reader, TYPE_LIST);
     }
 
     @Nullable
-    public <V> List<V> parseToList(@Nullable String text, Class<V> itemType) {
+    public <V> List<V> parseToList(@Nullable String text, Class<V> itemType) throws JacksonException {
         return parse(text,
                 getTypeFactory().constructCollectionType(ArrayList.class, itemType)
         );
     }
 
     @Nullable
-    public <V> List<V> parseToList(Reader reader, Class<V> itemType) {
+    public <V> List<V> parseToList(Reader reader, Class<V> itemType) throws JacksonException {
         return parse(reader,
                 getTypeFactory().constructCollectionType(ArrayList.class, itemType)
         );
     }
 
     @Nullable
-    public <V> List<V> parseToList(@Nullable String text, JavaType itemType) {
+    public <V> List<V> parseToList(@Nullable String text, JavaType itemType) throws JacksonException {
         return parse(text,
                 getTypeFactory().constructCollectionType(ArrayList.class, itemType)
         );
     }
 
     @Nullable
-    public <V> List<V> parseToList(Reader reader, JavaType itemType) {
+    public <V> List<V> parseToList(Reader reader, JavaType itemType) throws JacksonException {
         return parse(reader,
                 getTypeFactory().constructCollectionType(ArrayList.class, itemType)
         );
     }
 
     @Nullable
-    public List<String> parseToStringList(@Nullable String text) {
+    public List<String> parseToStringList(@Nullable String text) throws JacksonException {
         return parse(text, TYPE_LIST_STRING);
     }
 
     @Nullable
-    public List<String> parseToStringList(Reader reader) {
+    public List<String> parseToStringList(Reader reader) throws JacksonException {
         return parse(reader, TYPE_LIST_STRING);
     }
 
     @Nullable
-    public Object[] parseToArray(@Nullable String text) {
+    public Object[] parseToArray(@Nullable String text) throws JacksonException {
         return parse(text, TYPE_ARRAY);
     }
 
     @Nullable
-    public Object[] parseToArray(Reader reader) {
+    public Object[] parseToArray(Reader reader) throws JacksonException {
         return parse(reader, TYPE_ARRAY);
     }
 
     @Nullable
-    public <V> V[] parseToArray(@Nullable String text, Class<V> itemType) {
+    public <V> V[] parseToArray(@Nullable String text, Class<V> itemType) throws JacksonException {
         return parse(text, getTypeFactory().constructArrayType(itemType));
     }
 
     @Nullable
-    public <V> V[] parseToArray(Reader reader, Class<V> itemType) {
+    public <V> V[] parseToArray(Reader reader, Class<V> itemType) throws JacksonException {
         return parse(reader, getTypeFactory().constructArrayType(itemType));
     }
 
     @Nullable
-    public <V> V[] parseToArray(@Nullable String text, JavaType itemType) {
+    public <V> V[] parseToArray(@Nullable String text, JavaType itemType) throws JacksonException {
         return parse(text, getTypeFactory().constructArrayType(itemType));
     }
 
     @Nullable
-    public <V> V[] parseToArray(Reader reader, JavaType itemType) {
+    public <V> V[] parseToArray(Reader reader, JavaType itemType) throws JacksonException {
         return parse(reader, getTypeFactory().constructArrayType(itemType));
     }
 
     @Nullable
-    public String[] parseToStringArray(@Nullable String text) {
+    public String[] parseToStringArray(@Nullable String text) throws JacksonException {
         return parse(text, TYPE_ARRAY_STRING);
     }
 
     @Nullable
-    public String[] parseToStringArray(Reader reader) {
+    public String[] parseToStringArray(Reader reader) throws JacksonException {
         return parse(reader, TYPE_ARRAY_STRING);
     }
 
     @Nullable
-    public <T> T to(@Nullable Object source, JavaType type) {
+    public <T> T to(@Nullable Object source, JavaType type) throws JacksonException {
         return this.mapper.convertValue(source, constructType(type));
     }
 
     @Nullable
-    public <T> T to(@Nullable Object source, Type type) {
+    public <T> T to(@Nullable Object source, Type type) throws JacksonException {
         return to(source, constructType(type));
     }
 
     @Nullable
-    public <T> T to(@Nullable Object source, Class<T> type) {
+    public <T> T to(@Nullable Object source, Class<T> type) throws JacksonException {
         return to(source, constructType(type));
     }
 
     @Nullable
-    public Map<Object, Object> toMap(@Nullable Object source) {
+    public Map<Object, Object> toMap(@Nullable Object source) throws JacksonException {
         return to(source, TYPE_MAP);
     }
 
     @Nullable
-    public <K, V> Map<K, V> toMap(@Nullable Object source, Class<K> keyType, Class<V> valueType) {
+    public <K, V> Map<K, V> toMap(@Nullable Object source, Class<K> keyType, Class<V> valueType)
+            throws JacksonException {
         return to(source,
                 getTypeFactory().constructMapType(LinkedHashMap.class, keyType, valueType)
         );
     }
 
     @Nullable
-    public <K, V> Map<K, V> toMap(@Nullable Object source, JavaType keyType, JavaType valueType) {
+    public <K, V> Map<K, V> toMap(@Nullable Object source, JavaType keyType, JavaType valueType)
+            throws JacksonException {
         return to(source,
                 getTypeFactory().constructMapType(LinkedHashMap.class, keyType, valueType)
         );
     }
 
     @Nullable
-    public Map<String, Object> toNamedMap(@Nullable Object source) {
+    public Map<String, Object> toNamedMap(@Nullable Object source) throws JacksonException {
         return to(source, TYPE_MAP_NAMED);
     }
 
     @Nullable
-    public <V> Map<String, V> toNamedMap(@Nullable Object source, Class<V> valueType) {
+    public <V> Map<String, V> toNamedMap(@Nullable Object source, Class<V> valueType) throws JacksonException {
         var tf = getTypeFactory();
         return to(source,
                 tf.constructMapType(
@@ -364,53 +358,53 @@ public class JacksonWrapper {
     }
 
     @Nullable
-    public <V> Map<String, V> toNamedMap(@Nullable Object source, JavaType valueType) {
+    public <V> Map<String, V> toNamedMap(@Nullable Object source, JavaType valueType) throws JacksonException {
         return to(source,
                 getTypeFactory().constructMapType(LinkedHashMap.class, TYPE_STRING, valueType)
         );
     }
 
     @Nullable
-    public List<Object> toList(@Nullable Object source) {
+    public List<Object> toList(@Nullable Object source) throws JacksonException {
         return to(source, TYPE_LIST);
     }
 
     @Nullable
-    public <V> List<V> toList(@Nullable Object source, Class<V> itemType) {
+    public <V> List<V> toList(@Nullable Object source, Class<V> itemType) throws JacksonException {
         return to(source,
                 getTypeFactory().constructCollectionType(ArrayList.class, itemType)
         );
     }
 
     @Nullable
-    public <V> List<V> toList(@Nullable Object source, JavaType itemType) {
+    public <V> List<V> toList(@Nullable Object source, JavaType itemType) throws JacksonException {
         return to(source,
                 getTypeFactory().constructCollectionType(ArrayList.class, itemType)
         );
     }
 
     @Nullable
-    public List<String> toStringList(@Nullable Object source) {
+    public List<String> toStringList(@Nullable Object source) throws JacksonException {
         return to(source, TYPE_LIST_STRING);
     }
 
     @Nullable
-    public Object[] toArray(@Nullable Object source) {
+    public Object[] toArray(@Nullable Object source) throws JacksonException {
         return to(source, TYPE_ARRAY);
     }
 
     @Nullable
-    public <V> V[] toArray(@Nullable Object source, Class<V> itemType) {
+    public <V> V[] toArray(@Nullable Object source, Class<V> itemType) throws JacksonException {
         return to(source, getTypeFactory().constructArrayType(itemType));
     }
 
     @Nullable
-    public <V> V[] toArray(@Nullable Object source, JavaType itemType) {
+    public <V> V[] toArray(@Nullable Object source, JavaType itemType) throws JacksonException {
         return to(source, getTypeFactory().constructArrayType(itemType));
     }
 
     @Nullable
-    public String[] toStringArray(@Nullable Object source) {
+    public String[] toStringArray(@Nullable Object source) throws JacksonException {
         return to(source, TYPE_ARRAY_STRING);
     }
 }

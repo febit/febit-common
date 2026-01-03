@@ -15,13 +15,14 @@
  */
 package org.febit.common.jsonrpc2.internal.codec;
 
+import org.assertj.core.api.Assertions;
 import org.febit.common.jsonrpc2.internal.protocol.Request;
 import org.febit.common.jsonrpc2.protocol.IRpcMessage;
 import org.febit.common.jsonrpc2.protocol.Id;
 import org.febit.lang.util.JacksonUtils;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.DatabindException;
 
-import java.io.UncheckedIOException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,33 +40,36 @@ class RpcMessageDeserializerTest {
 
     @Test
     void invalidNotObject() {
-        var exception = assertThrows(UncheckedIOException.class, () -> parse("123"));
-        assertTrue(exception.getCause().getMessage().contains("not a JSON object"));
+        Assertions.assertThatThrownBy(() -> parse("123"))
+                .isInstanceOf(DatabindException.class)
+                .hasMessageContaining("not a JSON object");
     }
 
     @Test
     void invalidMissingVersion() {
-        var exception = assertThrows(UncheckedIOException.class, () -> parse("""
+        Assertions.assertThatThrownBy(() -> parse("""
                 {
                   "id": 1,
                   "method": "subtract",
                   "params": [42, 23]
                 }
-                """));
-        assertTrue(exception.getCause().getMessage().contains("missing 'jsonrpc' property"));
+                        """))
+                .isInstanceOf(DatabindException.class)
+                .hasMessageContaining("missing 'jsonrpc' property");
     }
 
     @Test
     void invalidUnsupportedVersion() {
-        var exception = assertThrows(UncheckedIOException.class, () -> parse("""
+        Assertions.assertThatThrownBy(() -> parse("""
                 {
                   "jsonrpc": "1.0",
                   "id": 1,
                   "method": "subtract",
                   "params": [42, 23]
                 }
-                """));
-        assertTrue(exception.getCause().getMessage().contains("unsupported 'jsonrpc' version"));
+                        """))
+                .isInstanceOf(DatabindException.class)
+                .hasMessageContaining("unsupported 'jsonrpc' version");
     }
 
     @Test
@@ -107,12 +111,13 @@ class RpcMessageDeserializerTest {
 
     @Test
     void invalidMissingIdAndMethod() {
-        var exception = assertThrows(UncheckedIOException.class, () -> parse("""
+        Assertions.assertThatThrownBy(() -> parse("""
                 {
                   "jsonrpc": "2.0"
                 }
-                """));
-        assertTrue(exception.getCause().getMessage().contains("missing both 'id' and 'method' properties"));
+                        """))
+                .isInstanceOf(DatabindException.class)
+                .hasMessageContaining("missing both 'id' and 'method' properties");
     }
 
 }

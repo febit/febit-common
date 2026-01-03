@@ -15,13 +15,13 @@
  */
 package org.febit.lang.util;
 
-import com.fasterxml.jackson.databind.JavaType;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
+import tools.jackson.databind.JavaType;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static org.febit.lang.util.JacksonUtils.TYPE_FACTORY;
+import static org.febit.lang.util.JacksonUtils.TYPES;
 import static org.febit.lang.util.JacksonWrapper.TYPE_MAP_NAMED;
 
 @RequiredArgsConstructor(
@@ -173,7 +173,7 @@ public class PatternFormatter<T> implements Serializable {
 
         public <T> PatternFormatter<T> build(Class<? extends T> beanType) {
             return build(
-                    TYPE_FACTORY.constructType(beanType)
+                    TYPES.constructType(beanType)
             );
         }
 
@@ -197,7 +197,7 @@ public class PatternFormatter<T> implements Serializable {
     public interface VarResolver {
 
         @Nullable
-        Object get(@Nonnull String name);
+        Object get(String name);
 
         static VarResolver ofEmpty() {
             return name -> null;
@@ -257,6 +257,7 @@ public class PatternFormatter<T> implements Serializable {
             return "(?<" + segmentKey() + ">" + pattern + ")";
         }
 
+        @Nullable
         @Override
         public String name() {
             return name;

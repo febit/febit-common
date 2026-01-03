@@ -46,22 +46,24 @@ class JacksonUtilsTest {
         assertEquals("{}", json.toString(Map.of()));
         assertEquals("[]", json.toString(List.of()));
 
-        assertEquals("{\n" +
-                        "  \"a\": 1,\n" +
-                        "  \"b\": 2\n" +
-                        "}",
+        assertEquals("""
+                        {
+                          "a": 1,
+                          "b": 2
+                        }""",
                 json.toString(new TreeMap<>(Map.of(
                         "a", 1,
                         "b", 2
                 )))
         );
 
-        assertEquals("[\n" +
-                        "  \"a\",\n" +
-                        "  1,\n" +
-                        "  \"b\",\n" +
-                        "  2\n" +
-                        "]",
+        assertEquals("""
+                        [
+                          "a",
+                          1,
+                          "b",
+                          2
+                        ]""",
                 json.toString(List.of(
                         "a", 1,
                         "b", 2
@@ -76,14 +78,16 @@ class JacksonUtilsTest {
         assertEquals("{}", json.toString(Map.of()));
         assertEquals("[]", json.toString(List.of()));
 
-        assertEquals("{\"a\":1,\"b\":2}",
+        assertEquals("""
+                        {"a":1,"b":2}""",
                 json.toString(new TreeMap<>(Map.of(
                         "a", 1,
                         "b", 2
                 )))
         );
 
-        assertEquals("[\"a\",1,\"b\",2]",
+        assertEquals("""
+                        ["a",1,"b",2]""",
                 json.toString(List.of(
                         "a", 1,
                         "b", 2
@@ -98,20 +102,24 @@ class JacksonUtilsTest {
         assertEquals("--- {}\n", yaml.toString(Map.of()));
         assertEquals("--- []\n", yaml.toString(List.of()));
 
-        assertEquals("---\n" +
-                        "a: 1\n" +
-                        "b: 2\n",
+        assertEquals("""
+                        ---
+                        a: 1
+                        b: 2
+                        """,
                 yaml.toString(new TreeMap<>(Map.of(
                         "a", 1,
                         "b", 2
                 )))
         );
 
-        assertEquals("---\n" +
-                        "- \"a\"\n" +
-                        "- 1\n" +
-                        "- \"b\"\n" +
-                        "- 2\n",
+        assertEquals("""
+                        ---
+                        - "a"
+                        - 1
+                        - "b"
+                        - 2
+                        """,
                 yaml.toString(List.of(
                         "a", 1,
                         "b", 2
@@ -125,7 +133,8 @@ class JacksonUtilsTest {
         assertEquals("true", JacksonUtils.toJsonString(true));
         assertEquals("{}", JacksonUtils.toJsonString(Map.of()));
         assertEquals("123", JacksonUtils.toJsonString(123));
-        assertEquals("{\"a\":1,\"b\":2}",
+        assertEquals("""
+                        {"a":1,"b":2}""",
                 JacksonUtils.toJsonString(new TreeMap<>(Map.of(
                         "a", 1,
                         "b", 2
@@ -174,7 +183,8 @@ class JacksonUtilsTest {
         assertNull(JacksonUtils.parseToMap((String) null, String.class, Integer.class));
         assertNull(JacksonUtils.parseToMap("null", String.class, Integer.class));
 
-        var json = "{\"a\":1,\"b\":2}";
+        var json = """
+                {"a":1,"b":2}""";
         var map = Map.of(
                 "a", 1,
                 "b", 2
@@ -206,7 +216,8 @@ class JacksonUtilsTest {
         assertNull(JacksonUtils.parseToNamedMap((String) null, TYPE_STRING));
         assertNull(JacksonUtils.parseToNamedMap("null", TYPE_STRING));
 
-        var json = "{\"a\":1,\"b\":2}";
+        var json = """
+                {"a":1,"b":2}""";
         var map = Map.of(
                 "a", 1,
                 "b", 2

@@ -15,10 +15,10 @@
  */
 package org.febit.lang.util.jackson;
 
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializerBase;
 import org.febit.lang.util.JacksonUtils;
 import org.febit.lang.util.JacksonWrapper;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ser.std.ToStringSerializerBase;
 
 public class ToJsonStringSerializer extends ToStringSerializerBase {
 
@@ -36,7 +36,7 @@ public class ToJsonStringSerializer extends ToStringSerializerBase {
     }
 
     @Override
-    public boolean isEmpty(SerializerProvider prov, Object value) {
+    public boolean isEmpty(SerializationContext prov, Object value) {
         return false;
     }
 
