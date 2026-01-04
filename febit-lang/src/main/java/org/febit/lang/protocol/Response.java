@@ -61,8 +61,8 @@ public class Response<T extends @Nullable Object> implements IMutableResponse<T>
         return Instant.ofEpochMilli(System.currentTimeMillis());
     }
 
-    public static <T extends @Nullable Object> Response<T> success(
-            int httpStatus, @Nullable String code, @Nullable String message, @Nullable T data) {
+    public static <T extends @Nullable Object> Response<T> ok(
+            int httpStatus, @Nullable String code, @Nullable String message, T data) {
         if (httpStatus > 0 // NOPMD
                 && (httpStatus < 200 || httpStatus >= 400) // NOPMD
         ) {
@@ -71,8 +71,17 @@ public class Response<T extends @Nullable Object> implements IMutableResponse<T>
         return of(httpStatus, true, code, message, now(), data);
     }
 
+    /**
+     * @deprecated use {@link #ok(int, String, String, Object)} instead
+     */
+    @Deprecated(since = "4.0.0", forRemoval = true)
+    public static <T extends @Nullable Object> Response<T> success(
+            int httpStatus, @Nullable String code, @Nullable String message, T data) {
+        return ok(httpStatus, code, message, data);
+    }
+
     public static <T extends @Nullable Object> Response<T> failed(
-            int httpStatus, String code, String message, @Nullable T data) {
+            int httpStatus, String code, String message, T data) {
         return of(httpStatus, false, code, message, now(), data);
     }
 

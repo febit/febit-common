@@ -130,7 +130,7 @@ public class JwtCodec {
         if (notBefore != null && notBefore.toInstant().isAfter(now)) {
             return onInvalidToken(MSG_TOKEN_NOT_EFFECTIVE);
         }
-        return IResponse.success(claims);
+        return IResponse.ok(claims);
     }
 
     public String encode(JWTClaimsSet payload) throws JOSEException {

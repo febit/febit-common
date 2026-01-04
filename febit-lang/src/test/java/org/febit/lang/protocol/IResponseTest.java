@@ -25,7 +25,7 @@ class IResponseTest {
 
     @Test
     void jsonify() {
-        var original = IResponse.success(200, "code", "message", "data");
+        var original = IResponse.ok(200, "code", "message", "data");
         var parsed = JacksonUtils.parse(
                 JacksonUtils.toJsonString(original),
                 IResponse.class
@@ -35,42 +35,42 @@ class IResponseTest {
 
     @Test
     void factory() {
-        assertThat(IResponse.success())
+        assertThat(IResponse.ok())
                 .returns(200, IResponse::getStatus)
                 .returns(true, IResponse::isSuccess)
                 .returns(null, IResponse::getCode)
                 .returns(null, IResponse::getMessage)
                 .returns(null, IResponse::getData);
 
-        assertThat(IResponse.success("data"))
+        assertThat(IResponse.ok("data"))
                 .returns(200, IResponse::getStatus)
                 .returns(true, IResponse::isSuccess)
                 .returns(null, IResponse::getCode)
                 .returns(null, IResponse::getMessage)
                 .returns("data", IResponse::getData);
 
-        assertThat(IResponse.success(201, "data"))
+        assertThat(IResponse.ok(201, "data"))
                 .returns(201, IResponse::getStatus)
                 .returns(true, IResponse::isSuccess)
                 .returns(null, IResponse::getCode)
                 .returns(null, IResponse::getMessage)
                 .returns("data", IResponse::getData);
 
-        assertThat(IResponse.success("code", "message", "data"))
+        assertThat(IResponse.ok("code", "message", "data"))
                 .returns(200, IResponse::getStatus)
                 .returns(true, IResponse::isSuccess)
                 .returns("code", IResponse::getCode)
                 .returns("message", IResponse::getMessage)
                 .returns("data", IResponse::getData);
 
-        assertThat(IResponse.success(202, "code", "message", "data"))
+        assertThat(IResponse.ok(202, "code", "message", "data"))
                 .returns(202, IResponse::getStatus)
                 .returns(true, IResponse::isSuccess)
                 .returns("code", IResponse::getCode)
                 .returns("message", IResponse::getMessage)
                 .returns("data", IResponse::getData);
 
-        assertThat(IResponse.success(499, "code", "message", "data"))
+        assertThat(IResponse.ok(499, "code", "message", "data"))
                 .returns(499, IResponse::getStatus)
                 .returns(true, IResponse::isSuccess)
                 .returns("code", IResponse::getCode)
@@ -108,7 +108,7 @@ class IResponseTest {
 
     @Test
     void props() {
-        assertThat(Response.success(200, "code", "message", "data"))
+        assertThat(Response.ok(200, "code", "message", "data"))
                 .returns(200, IResponse::getStatus)
                 .returns(true, IResponse::isSuccess)
                 .returns("code", IResponse::getCode)
@@ -122,7 +122,7 @@ class IResponseTest {
                 .returns(false, r -> r.isFailedWithStatus(200))
                 .returns(false, r -> r.isFailedWithStatus(400));
 
-        assertThat(Response.success(201, null, null, null))
+        assertThat(Response.ok(201, null, null, null))
                 .returns(201, IResponse::getStatus)
                 .returns(true, IResponse::isSuccess)
                 .returns(null, IResponse::getCode)
@@ -136,7 +136,7 @@ class IResponseTest {
                 .returns(false, r -> r.isFailedWithStatus(201))
                 .returns(false, r -> r.isFailedWithStatus(400));
 
-        assertThat(Response.success(300, "code", "message", "data"))
+        assertThat(Response.ok(300, "code", "message", "data"))
                 .returns(300, IResponse::getStatus)
                 .returns(true, IResponse::isSuccess)
                 .returns("data", IResponse::getData)

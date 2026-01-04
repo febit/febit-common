@@ -29,26 +29,68 @@ import java.util.function.Supplier;
 @JsonDeserialize(as = Response.class)
 public interface IResponse<T extends @Nullable Object> extends Fallible {
 
+    /**
+     * @deprecated use {@link #ok()} instead
+     */
+    @Deprecated(since = "4.0.0", forRemoval = true)
     static <T extends @Nullable Object> IResponse<T> success() {
-        return success(200, null);
+        return ok(200, null);
     }
 
-    static <T extends @Nullable Object> IResponse<T> success(@Nullable T data) {
-        return success(200, data);
+    /**
+     * @deprecated use {@link #ok(Object)} instead
+     */
+    @Deprecated(since = "4.0.0", forRemoval = true)
+    static <T extends @Nullable Object> IResponse<T> success(T data) {
+        return ok(200, data);
     }
 
-    static <T extends @Nullable Object> IResponse<T> success(int httpStatus, @Nullable T data) {
-        return success(httpStatus, null, null, data);
+    /**
+     * @deprecated use {@link #ok(int, Object)} instead
+     */
+    @Deprecated(since = "4.0.0", forRemoval = true)
+    static <T extends @Nullable Object> IResponse<T> success(int httpStatus, T data) {
+        return ok(httpStatus, null, null, data);
     }
 
+    /**
+     * @deprecated use {@link #ok(String, String, Object)} instead
+     */
+    @Deprecated(since = "4.0.0", forRemoval = true)
     static <T extends @Nullable Object> IResponse<T> success(
-            @Nullable String code, @Nullable String message, @Nullable T data) {
-        return success(200, code, message, data);
+            @Nullable String code, @Nullable String message, T data) {
+        return ok(200, code, message, data);
     }
 
+    /**
+     * @deprecated use {@link #ok(int, String, String, Object)} instead
+     */
+    @Deprecated(since = "4.0.0", forRemoval = true)
     static <T extends @Nullable Object> IResponse<T> success(
-            int httpStatus, @Nullable String code, @Nullable String message, @Nullable T data) {
-        return Response.success(httpStatus, code, message, data);
+            int httpStatus, @Nullable String code, @Nullable String message, T data) {
+        return ok(httpStatus, code, message, data);
+    }
+
+    static <T extends @Nullable Object> IResponse<T> ok() {
+        return ok(200, null);
+    }
+
+    static <T extends @Nullable Object> IResponse<T> ok(T data) {
+        return ok(200, data);
+    }
+
+    static <T extends @Nullable Object> IResponse<T> ok(int httpStatus, T data) {
+        return ok(httpStatus, null, null, data);
+    }
+
+    static <T extends @Nullable Object> IResponse<T> ok(
+            @Nullable String code, @Nullable String message, T data) {
+        return ok(200, code, message, data);
+    }
+
+    static <T extends @Nullable Object> IResponse<T> ok(
+            int httpStatus, @Nullable String code, @Nullable String message, T data) {
+        return Response.ok(httpStatus, code, message, data);
     }
 
     @NonNullArgs
@@ -62,13 +104,13 @@ public interface IResponse<T extends @Nullable Object> extends Fallible {
     }
 
     @NonNullArgs
-    static <T extends @Nullable Object> IResponse<T> failed(String code, String message, @Nullable T data) {
+    static <T extends @Nullable Object> IResponse<T> failed(String code, String message, T data) {
         return failed(500, code, message, data);
     }
 
     @NonNullArgs
     static <T extends @Nullable Object> IResponse<T> failed(
-            int httpStatus, String code, String message, @Nullable T data) {
+            int httpStatus, String code, String message, T data) {
         return Response.failed(httpStatus, code, message, data);
     }
 
@@ -155,7 +197,7 @@ public interface IResponse<T extends @Nullable Object> extends Fallible {
      *
      * @since 3.2.1
      */
-    default <D extends @Nullable Object> IResponse<D> map(Function<@Nullable T, @Nullable D> mapping) {
+    default <D extends @Nullable Object> IResponse<D> map(Function<@Nullable T, D> mapping) {
         return Response.of(
                 getStatus(), isSuccess(),
                 getCode(), getMessage(),

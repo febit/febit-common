@@ -21,12 +21,15 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.febit.lang.Valued;
+import org.jspecify.annotations.Nullable;
 
 @Data
 @AllArgsConstructor(staticName = "of")
 public class Sort {
 
     private String property;
+
+    @Nullable
     private Direction direction;
 
     public static Sort asc(String column) {

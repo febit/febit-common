@@ -25,7 +25,7 @@ class ResponseTest {
 
     @Test
     void jsonify() {
-        var original = Response.success(200, "code", "message", "data");
+        var original = Response.ok(200, "code", "message", "data");
         var parsed = JacksonUtils.parse(
                 JacksonUtils.toJsonString(original),
                 Response.class
@@ -50,7 +50,7 @@ class ResponseTest {
 
     @Test
     void transform() {
-        var original = Response.success(200, "code", "message", "data");
+        var original = Response.ok(200, "code", "message", "data");
 
         assertThat(original.map(d -> d + "1"))
                 .returns("data1", IResponse::getData);

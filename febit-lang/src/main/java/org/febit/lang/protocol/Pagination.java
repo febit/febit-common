@@ -19,6 +19,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Singular;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
@@ -37,6 +38,7 @@ public class Pagination {
     private int page;
     private int size;
 
+    @Nullable
     @Singular
     private List<Sort> sorts;
 

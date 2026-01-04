@@ -15,21 +15,23 @@
  */
 package org.febit.lang.protocol;
 
+import org.jspecify.annotations.Nullable;
+
 public interface IBasicApi {
 
-    default <T> IResponse<T> ok() {
-        return IResponse.success();
+    default <T extends @Nullable Object> IResponse<T> ok() {
+        return IResponse.ok();
     }
 
-    default <T> IResponse<T> ok(T data) {
-        return IResponse.success(data);
+    default <T extends @Nullable Object> IResponse<T> ok(T data) {
+        return IResponse.ok(data);
     }
 
-    default <T> IResponse<T> created() {
-        return IResponse.success(201, null);
+    default <T extends @Nullable Object> IResponse<T> created() {
+        return IResponse.ok(201, null);
     }
 
-    default <T> IResponse<T> accepted() {
-        return IResponse.success(202, null);
+    default <T extends @Nullable Object> IResponse<T> accepted() {
+        return IResponse.ok(202, null);
     }
 }
