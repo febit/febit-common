@@ -16,27 +16,27 @@
 package org.febit.common.jsonrpc2.protocol;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public interface IRpcRequest extends IRpcMessage {
 
-    @Nonnull
+    @NonNull
     @Override
     Id id();
 
-    @Nonnull
+    @NonNull
     String method();
 
     @Nullable
     Object params();
 
-    @Nonnull
+    @NonNull
     @JsonIgnore
     default IRpcNotification asNotification() {
         return new IRpcNotification() {
 
-            @Nonnull
+            @NonNull
             @Override
             public String method() {
                 return IRpcRequest.this.method();

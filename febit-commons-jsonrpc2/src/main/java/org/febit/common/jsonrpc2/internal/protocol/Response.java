@@ -15,20 +15,18 @@
  */
 package org.febit.common.jsonrpc2.internal.protocol;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import org.febit.common.jsonrpc2.internal.codec.IdDeserializer;
 import org.febit.common.jsonrpc2.protocol.IRpcError;
 import org.febit.common.jsonrpc2.protocol.IRpcResponse;
 import org.febit.common.jsonrpc2.protocol.Id;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.ValueDeserializer;
 import tools.jackson.databind.annotation.JsonDeserialize;
 
 import java.util.Objects;
 
 @JsonDeserialize(using = ValueDeserializer.None.class)
-public record Response<T>(
-        @Nonnull
+public record Response<T extends @Nullable Object>(
         @JsonDeserialize(using = IdDeserializer.class)
         Id id,
 
@@ -40,11 +38,15 @@ public record Response<T>(
         IRpcError<?> error
 ) implements IRpcResponse<T> {
 
-    public static <T> Response<T> ok(Id id, @Nullable T result) {
+    public static <T extends @Nullable Object> Response<T> ok(Id id, @Nullable T result) {
         return new Response<>(id, result, null);
     }
 
-    public static <T> Response<T> failed(Id id, @Nonnull IRpcError<?> error) {
+    public static <T> Response<T> ok(Id id) {
+        return new Response<>(id, null, null);
+    }
+
+    public static <T extends @Nullable Object> Response<T> failed(Id id, IRpcError<?> error) {
         Objects.requireNonNull(error, "rpc error must not be null");
         return new Response<>(id, null, error);
     }

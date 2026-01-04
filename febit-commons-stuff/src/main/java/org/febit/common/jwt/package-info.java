@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 @NullMarked
-package org.febit.common.test.jsonpath;
+package org.febit.common.jwt;
 
 import org.jspecify.annotations.NullMarked;

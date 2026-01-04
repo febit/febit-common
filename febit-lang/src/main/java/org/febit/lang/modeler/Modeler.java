@@ -15,10 +15,10 @@
  */
 package org.febit.lang.modeler;
 
-import jakarta.annotation.Nullable;
 import lombok.Getter;
 import org.febit.lang.util.Iterators;
 import org.febit.lang.util.JacksonUtils;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;

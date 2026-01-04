@@ -15,16 +15,15 @@
  */
 package org.febit.common.kafka.ser;
 
-import jakarta.annotation.Nullable;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.serialization.Serializer;
+import org.jspecify.annotations.Nullable;
 
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class DiscardSerializer<T> implements Serializer<T> {
 
-    @Nullable
-    private final byte[] replacedBy;
+    private final byte @Nullable [] replacedBy;
 
     public DiscardSerializer() {
         this(null);

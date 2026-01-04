@@ -20,7 +20,6 @@ import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.springframework.core.annotation.AliasFor;
 
-import javax.annotation.Nonnull;
 import java.lang.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +27,6 @@ import java.util.function.Consumer;
 
 public interface SearchForm {
 
-    @Nonnull
     default List<Condition> toConditions(DSLContext dsl) {
         var conditions = new ArrayList<Condition>();
         SearchFormUtils.collectAnnotatedConditions(dsl, this, conditions::add);

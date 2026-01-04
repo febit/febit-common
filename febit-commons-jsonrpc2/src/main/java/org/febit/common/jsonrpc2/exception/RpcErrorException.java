@@ -15,9 +15,9 @@
  */
 package org.febit.common.jsonrpc2.exception;
 
-import jakarta.annotation.Nullable;
 import lombok.Getter;
 import org.febit.common.jsonrpc2.protocol.IRpcError;
+import org.jspecify.annotations.Nullable;
 
 @Getter
 public class RpcErrorException extends RuntimeException {

@@ -16,13 +16,12 @@
 package org.febit.lang.protocol;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.febit.lang.util.Lists;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Function;
@@ -35,23 +34,19 @@ public class Page<T> {
     private Meta meta;
     private List<T> rows;
 
-    @Nonnull
     public static <T> Page<T> empty() {
         return Page.of(1, 0, 0, List.of());
     }
 
-    @Nonnull
-    public static <T> Page<T> of(Pagination pagination, long total, @Nonnull List<T> rows) {
+    public static <T> Page<T> of(Pagination pagination, long total, List<T> rows) {
         return of(Meta.of(pagination.getPage(), pagination.getSize(), total), rows);
     }
 
-    @Nonnull
-    public static <T> Page<T> of(@Nonnull Meta meta, @Nonnull List<T> rows) {
+    public static <T> Page<T> of(Meta meta, List<T> rows) {
         return new Page<>(meta, rows);
     }
 
-    @Nonnull
-    public static <T> Page<T> of(int page, int size, long total, @Nonnull List<T> rows) {
+    public static <T> Page<T> of(int page, int size, long total, List<T> rows) {
         return of(Meta.of(page, size, total), rows);
     }
 
@@ -59,7 +54,7 @@ public class Page<T> {
      * @deprecated use {@link #map(Function)} instead.
      */
     @Deprecated(since = "3.2.1")
-    public <D> Page<D> transfer(@Nonnull Function<T, D> mapping) {
+    public <D> Page<D> transfer(Function<T, D> mapping) {
         return map(mapping);
     }
 
@@ -71,7 +66,7 @@ public class Page<T> {
      * @return a new Page with mapped rows
      * @since 3.2.1
      */
-    public <D> Page<D> map(@Nonnull Function<T, D> mapping) {
+    public <D> Page<D> map(Function<T, D> mapping) {
         return Page.of(
                 getMeta(),
                 Lists.collect(getRows(), mapping)
@@ -84,6 +79,7 @@ public class Page<T> {
     }
 
     @JsonIgnore
+    @SuppressWarnings("ConstantValue")
     public boolean isLastPage() {
         if (meta != null && meta.total > 0) {
             return meta.total <= (long) meta.page * meta.size;

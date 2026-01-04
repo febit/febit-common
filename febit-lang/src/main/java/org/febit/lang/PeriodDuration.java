@@ -16,12 +16,12 @@
 package org.febit.lang;
 
 import com.fasterxml.jackson.annotation.JsonValue;
-import jakarta.annotation.Nonnull;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -55,7 +55,7 @@ public final class PeriodDuration implements TemporalAmount, Serializable {
     public static final PeriodDuration ZERO = of("zero", 0, 0);
     public static final PeriodDuration NEVER = of(NEVER_RAW, 0, 0);
 
-    @Nonnull
+    @NonNull
     @JsonValue
     @EqualsAndHashCode.Exclude
     private final String raw;

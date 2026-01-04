@@ -17,18 +17,14 @@ package org.febit.common.jsonrpc2.internal.protocol;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.EqualsAndHashCode;
-import lombok.NonNull;
 import org.febit.common.jsonrpc2.protocol.Id;
-import org.febit.lang.annotation.NonNullApi;
 
 import java.io.Serializable;
 import java.util.Objects;
 
-@NonNullApi
 @EqualsAndHashCode
 public final class IdImpl implements Id {
 
-    @NonNull
     private final Serializable value;
 
     private IdImpl(Serializable value) {

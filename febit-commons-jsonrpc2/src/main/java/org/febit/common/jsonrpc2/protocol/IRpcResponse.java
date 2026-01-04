@@ -16,12 +16,12 @@
 package org.febit.common.jsonrpc2.protocol;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
-public interface IRpcResponse<T> extends IRpcMessage {
+public interface IRpcResponse<T extends @Nullable Object> extends IRpcMessage {
 
-    @Nonnull
+    @NonNull
     @Override
     Id id();
 

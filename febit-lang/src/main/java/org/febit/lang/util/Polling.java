@@ -15,15 +15,12 @@
  */
 package org.febit.lang.util;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.experimental.UtilityClass;
-import org.febit.lang.annotation.NonNullApi;
 import org.febit.lang.func.ThrowingSupplier;
+import org.jspecify.annotations.Nullable;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -51,10 +48,14 @@ public class Polling {
             buildMethodName = "poll"
     )
     private static <T> CompletableFuture<Context<T>> poll0(
-            @Nonnull @NonNull final ThrowingSupplier<T, ? extends Throwable> supplier,
-            @Nonnull @NonNull final Function<Context<T>, Duration> dynamicDelay,
-            @Nonnull @NonNull final Predicate<Context<T>> completeIf,
-            @Nonnull @NonNull final Executor executor,
+            @SuppressWarnings("NullableProblems")
+            @lombok.NonNull final ThrowingSupplier<T, ? extends Throwable> supplier,
+            @SuppressWarnings("NullableProblems")
+            @lombok.NonNull final Function<Context<T>, Duration> dynamicDelay,
+            @SuppressWarnings("NullableProblems")
+            @lombok.NonNull final Predicate<Context<T>> completeIf,
+            @SuppressWarnings("NullableProblems")
+            @lombok.NonNull final Executor executor,
             @Nullable Instant timeoutAt,
             @Nullable Long timeoutInMillis,
             @Nullable Duration initialDelay,
@@ -85,7 +86,6 @@ public class Polling {
                 .thenCompose(ctrl::chain);
     }
 
-    @NonNullApi
     public static class Builder<T> {
 
         public Builder<T> delay(Duration delay) {
@@ -127,7 +127,6 @@ public class Polling {
         }
     }
 
-    @NonNullApi
     public interface Context<T> {
 
         Instant now();
@@ -193,10 +192,9 @@ public class Polling {
 
             var future = delayMillis <= 0
                     ? CompletableFuture.supplyAsync(this::exec, executor)
-                    : CompletableFuture.supplyAsync(
-                    this::exec,
-                    CompletableFuture.delayedExecutor(delayMillis, TimeUnit.MILLISECONDS, executor)
-            );
+                    : CompletableFuture.supplyAsync(this::exec,
+                    CompletableFuture.delayedExecutor(
+                            delayMillis, TimeUnit.MILLISECONDS, executor));
             return future;
         }
 
@@ -246,8 +244,8 @@ public class Polling {
         private final AtomicBoolean completed = new AtomicBoolean(false);
         private final AtomicBoolean timeout = new AtomicBoolean(false);
         private final AtomicReference<Duration> lastDelay = new AtomicReference<>(Duration.ZERO);
-        private final AtomicReference<T> lastResult = new AtomicReference<>();
-        private final AtomicReference<Throwable> lastError = new AtomicReference<>();
+        private final AtomicReference<@Nullable T> lastResult = new AtomicReference<>();
+        private final AtomicReference<@Nullable Throwable> lastError = new AtomicReference<>();
 
         public void report(@Nullable T result, @Nullable Throwable error) {
             lastResult.set(result);
@@ -279,11 +277,13 @@ public class Polling {
             return lastDelay.get();
         }
 
+        @Nullable
         @Override
         public T lastResult() {
             return lastResult.get();
         }
 
+        @Nullable
         @Override
         public Throwable lastError() {
             return lastError.get();

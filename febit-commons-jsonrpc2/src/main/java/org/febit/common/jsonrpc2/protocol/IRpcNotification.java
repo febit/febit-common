@@ -15,8 +15,8 @@
  */
 package org.febit.common.jsonrpc2.protocol;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public interface IRpcNotification extends IRpcMessage {
 
@@ -25,7 +25,7 @@ public interface IRpcNotification extends IRpcMessage {
         return null;
     }
 
-    @Nonnull
+    @NonNull
     String method();
 
     @Nullable

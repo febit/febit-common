@@ -15,11 +15,11 @@
  */
 package org.febit.lang.util.proxy;
 
-import jakarta.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 @FunctionalInterface
 public interface Invoker<T> {
 
     @Nullable
-    Object invoke(T self, Object[] args) throws Throwable;
+    Object invoke(T self, @Nullable Object[] args) throws Throwable;
 }

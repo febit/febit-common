@@ -15,8 +15,8 @@
  */
 package org.febit.lang.util.jackson;
 
-import jakarta.annotation.Nullable;
 import org.febit.lang.util.TimeUtils;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.core.JsonParser;
 import tools.jackson.databind.DeserializationContext;
 import tools.jackson.databind.deser.std.StdDeserializer;

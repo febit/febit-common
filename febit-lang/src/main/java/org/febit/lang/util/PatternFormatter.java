@@ -15,12 +15,11 @@
  */
 package org.febit.lang.util;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JavaType;
 
 import java.io.Serializable;
@@ -42,21 +41,17 @@ import static org.febit.lang.util.JacksonWrapper.TYPE_MAP_NAMED;
 public class PatternFormatter<T> implements Serializable {
 
     @Getter
-    @Nonnull
     private final JavaType resultType;
 
-    @Nonnull
     private final List<Segment> segments;
 
     /**
      * Mapping segment key to var name.
      */
     @Getter
-    @Nonnull
     private final Map<String, String> varNameMapping;
 
     @Getter
-    @Nonnull
     private final Pattern pattern;
 
     public static Builder builder() {

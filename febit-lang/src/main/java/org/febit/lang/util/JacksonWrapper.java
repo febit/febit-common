@@ -15,9 +15,9 @@
  */
 package org.febit.lang.util;
 
-import jakarta.annotation.Nullable;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JavaType;
 import tools.jackson.databind.ObjectMapper;
@@ -265,43 +265,35 @@ public class JacksonWrapper {
         return parse(reader, TYPE_LIST_STRING);
     }
 
-    @Nullable
-    public Object[] parseToArray(@Nullable String text) throws JacksonException {
+    public Object @Nullable [] parseToArray(@Nullable String text) throws JacksonException {
         return parse(text, TYPE_ARRAY);
     }
 
-    @Nullable
-    public Object[] parseToArray(Reader reader) throws JacksonException {
+    public Object @Nullable [] parseToArray(Reader reader) throws JacksonException {
         return parse(reader, TYPE_ARRAY);
     }
 
-    @Nullable
-    public <V> V[] parseToArray(@Nullable String text, Class<V> itemType) throws JacksonException {
+    public <V> V @Nullable [] parseToArray(@Nullable String text, Class<V> itemType) throws JacksonException {
         return parse(text, getTypeFactory().constructArrayType(itemType));
     }
 
-    @Nullable
-    public <V> V[] parseToArray(Reader reader, Class<V> itemType) throws JacksonException {
+    public <V> V @Nullable [] parseToArray(Reader reader, Class<V> itemType) throws JacksonException {
         return parse(reader, getTypeFactory().constructArrayType(itemType));
     }
 
-    @Nullable
-    public <V> V[] parseToArray(@Nullable String text, JavaType itemType) throws JacksonException {
+    public <V> V @Nullable [] parseToArray(@Nullable String text, JavaType itemType) throws JacksonException {
         return parse(text, getTypeFactory().constructArrayType(itemType));
     }
 
-    @Nullable
-    public <V> V[] parseToArray(Reader reader, JavaType itemType) throws JacksonException {
+    public <V> V @Nullable [] parseToArray(Reader reader, JavaType itemType) throws JacksonException {
         return parse(reader, getTypeFactory().constructArrayType(itemType));
     }
 
-    @Nullable
-    public String[] parseToStringArray(@Nullable String text) throws JacksonException {
+    public String @Nullable [] parseToStringArray(@Nullable String text) throws JacksonException {
         return parse(text, TYPE_ARRAY_STRING);
     }
 
-    @Nullable
-    public String[] parseToStringArray(Reader reader) throws JacksonException {
+    public String @Nullable [] parseToStringArray(Reader reader) throws JacksonException {
         return parse(reader, TYPE_ARRAY_STRING);
     }
 
@@ -388,23 +380,19 @@ public class JacksonWrapper {
         return to(source, TYPE_LIST_STRING);
     }
 
-    @Nullable
-    public Object[] toArray(@Nullable Object source) throws JacksonException {
+    public Object @Nullable [] toArray(@Nullable Object source) throws JacksonException {
         return to(source, TYPE_ARRAY);
     }
 
-    @Nullable
-    public <V> V[] toArray(@Nullable Object source, Class<V> itemType) throws JacksonException {
+    public <V> V @Nullable [] toArray(@Nullable Object source, Class<V> itemType) throws JacksonException {
         return to(source, getTypeFactory().constructArrayType(itemType));
     }
 
-    @Nullable
-    public <V> V[] toArray(@Nullable Object source, JavaType itemType) throws JacksonException {
+    public <V> V @Nullable [] toArray(@Nullable Object source, JavaType itemType) throws JacksonException {
         return to(source, getTypeFactory().constructArrayType(itemType));
     }
 
-    @Nullable
-    public String[] toStringArray(@Nullable Object source) throws JacksonException {
+    public String @Nullable [] toStringArray(@Nullable Object source) throws JacksonException {
         return to(source, TYPE_ARRAY_STRING);
     }
 }

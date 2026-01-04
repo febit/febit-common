@@ -15,8 +15,8 @@
  */
 package org.febit.lang.util;
 
-import jakarta.annotation.Nullable;
 import lombok.experimental.UtilityClass;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,11 +57,12 @@ public class Lists {
         return result;
     }
 
-    public static <S, T> List<T> collect(@Nullable Iterable<S> src, Function<S, T> mapping) {
+    public static <S extends @Nullable Object, T extends @Nullable Object>
+    List<T> collect(@Nullable Iterable<S> src, Function<S, T> mapping) {
         return collect(src != null ? src.iterator() : null, mapping);
     }
 
-    public static <T> List<T> collect(@Nullable Enumeration<T> e) {
+    public static <T extends @Nullable Object> List<T> collect(@Nullable Enumeration<T> e) {
         List<T> result = ofArrayList();
         if (e == null) {
             return result;
@@ -72,7 +73,8 @@ public class Lists {
         return result;
     }
 
-    public static <T, S> List<T> collect(@Nullable Enumeration<S> e, Function<S, T> mapping) {
+    public static <T extends @Nullable Object, S extends @Nullable Object>
+    List<T> collect(@Nullable Enumeration<S> e, Function<S, T> mapping) {
         List<T> result = ofArrayList();
         if (e == null) {
             return result;
@@ -83,14 +85,15 @@ public class Lists {
         return result;
     }
 
-    public static <T> List<T> collect(@Nullable T[] src) {
+    public static <T extends @Nullable Object> List<T> collect(T @Nullable [] src) {
         if (src == null) {
             return ofArrayList();
         }
         return new ArrayList<>(Arrays.asList(src));
     }
 
-    public static <S, T> List<T> collect(@Nullable S[] src, Function<S, T> mapping) {
+    public static <S extends @Nullable Object, T extends @Nullable Object>
+    List<T> collect(S @Nullable [] src, Function<S, T> mapping) {
         if (src == null) {
             return ofArrayList();
         }
@@ -134,7 +137,7 @@ public class Lists {
     }
 
     @Nullable
-    public static <T> List<T> transfer(@Nullable T[] src) {
+    public static <T> List<T> transfer(T @Nullable [] src) {
         if (src == null) {
             return null;
         }
@@ -142,7 +145,7 @@ public class Lists {
     }
 
     @Nullable
-    public static <S, T> List<T> transfer(@Nullable S[] src, Function<S, T> mapping) {
+    public static <S, T> List<T> transfer(S @Nullable [] src, Function<S, T> mapping) {
         if (src == null) {
             return null;
         }

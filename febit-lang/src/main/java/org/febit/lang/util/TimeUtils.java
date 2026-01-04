@@ -15,8 +15,8 @@
  */
 package org.febit.lang.util;
 
-import jakarta.annotation.Nullable;
 import lombok.experimental.UtilityClass;
+import org.jspecify.annotations.Nullable;
 
 import java.time.Instant;
 import java.time.LocalDate;

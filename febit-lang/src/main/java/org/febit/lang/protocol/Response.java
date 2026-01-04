@@ -15,8 +15,6 @@
  */
 package org.febit.lang.protocol;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,6 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.febit.lang.annotation.NullableArgs;
 import org.febit.lang.util.jackson.InstantLooseDeserializer;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.annotation.JsonDeserialize;
 
 import java.time.Instant;
@@ -39,7 +38,7 @@ import java.util.function.Function;
         access = AccessLevel.PACKAGE
 )
 @JsonDeserialize
-public class Response<T> implements IMutableResponse<T>, HttpStatusAware {
+public class Response<T extends @Nullable Object> implements IMutableResponse<T>, HttpStatusAware {
 
     private int status;
 
@@ -62,8 +61,7 @@ public class Response<T> implements IMutableResponse<T>, HttpStatusAware {
         return Instant.ofEpochMilli(System.currentTimeMillis());
     }
 
-    @Nonnull
-    public static <T> Response<T> success(
+    public static <T extends @Nullable Object> Response<T> success(
             int httpStatus, @Nullable String code, @Nullable String message, @Nullable T data) {
         if (httpStatus > 0 // NOPMD
                 && (httpStatus < 200 || httpStatus >= 400) // NOPMD
@@ -73,20 +71,19 @@ public class Response<T> implements IMutableResponse<T>, HttpStatusAware {
         return of(httpStatus, true, code, message, now(), data);
     }
 
-    public static <T> Response<T> failed(
+    public static <T extends @Nullable Object> Response<T> failed(
             int httpStatus, String code, String message, @Nullable T data) {
         return of(httpStatus, false, code, message, now(), data);
     }
 
-    @Nonnull
-    public <D> Response<D> map(@Nonnull Function<T, D> mapping) {
+    public <D extends @Nullable Object> Response<D> map(Function<@Nullable T, D> mapping) {
         var target = new Response<D>();
         target.copyProperties(this);
         target.setData(mapping.apply(getData()));
         return target;
     }
 
-    protected void copyProperties(@Nonnull IResponse<?> from) {
+    protected void copyProperties(IResponse<?> from) {
         this.setStatus(from.getStatus());
         setSuccess(from.isSuccess());
         setCode(from.getCode());

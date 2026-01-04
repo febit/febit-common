@@ -15,11 +15,11 @@
  */
 package org.febit.lang;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 @RequiredArgsConstructor
 @EqualsAndHashCode(
@@ -29,7 +29,7 @@ public final class Tuple4<V1, V2, V3, V4> implements Tuple, Comparable<Tuple4<V1
 
     private static final long serialVersionUID = 1L;
 
-    @Nonnull
+    @NonNull
     public static <V1, V2, V3, V4> Tuple4<V1, V2, V3, V4> of(V1 v1, V2 v2, V3 v3, V4 v4) {
         return new Tuple4<>(v1, v2, v3, v4);
     }
@@ -55,7 +55,7 @@ public final class Tuple4<V1, V2, V3, V4> implements Tuple, Comparable<Tuple4<V1
         return v4;
     }
 
-    @Nonnull
+    @NonNull
     @Override
     @SuppressWarnings("MethodDoesntCallSuperMethod")
     public Tuple4<V1, V2, V3, V4> clone() {

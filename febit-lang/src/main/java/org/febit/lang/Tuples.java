@@ -15,33 +15,33 @@
  */
 package org.febit.lang;
 
-import jakarta.annotation.Nonnull;
 import lombok.experimental.UtilityClass;
+import org.jspecify.annotations.NonNull;
 
 @UtilityClass
 public class Tuples {
 
-    @Nonnull
+    @NonNull
     public static <V1> Tuple1<V1> of(V1 v1) {
         return Tuple1.of(v1);
     }
 
-    @Nonnull
+    @NonNull
     public static <V1, V2> Tuple2<V1, V2> of(V1 v1, V2 v2) {
         return Tuple2.of(v1, v2);
     }
 
-    @Nonnull
+    @NonNull
     public static <V1, V2, V3> Tuple3<V1, V2, V3> of(V1 v1, V2 v2, V3 v3) {
         return Tuple3.of(v1, v2, v3);
     }
 
-    @Nonnull
+    @NonNull
     public static <V1, V2, V3, V4> Tuple4<V1, V2, V3, V4> of(V1 v1, V2 v2, V3 v3, V4 v4) {
         return Tuple4.of(v1, v2, v3, v4);
     }
 
-    @Nonnull
+    @NonNull
     public static <V1, V2, V3, V4, V5> Tuple5<V1, V2, V3, V4, V5> of(V1 v1, V2 v2, V3 v3, V4 v4, V5 v5) {
         return Tuple5.of(v1, v2, v3, v4, v5);
     }

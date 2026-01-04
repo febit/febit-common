@@ -15,13 +15,12 @@
  */
 package org.febit.lang.util;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import lombok.experimental.UtilityClass;
 import lombok.val;
 import org.apache.commons.collections4.IteratorUtils;
 import org.febit.lang.protocol.Page;
 import org.febit.lang.protocol.Pagination;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -52,10 +51,8 @@ public class Paging {
 
     private static class IteratorImpl<T> implements Iterator<T> {
 
-        @Nonnull
         private Iterator<T> current = IteratorUtils.emptyIterator();
 
-        @Nonnull
         private final Function<Pagination, Page<T>> api;
 
         @Nullable

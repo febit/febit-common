@@ -18,13 +18,12 @@ package org.febit.common.jcommander;
 import com.beust.jcommander.IDefaultProvider;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.internal.Console;
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +44,6 @@ public class Commands implements Context {
 
     @Getter
     @Setter
-    @Nonnull
     private String defaultCommand = HelpCommand.CMD;
 
     @Getter

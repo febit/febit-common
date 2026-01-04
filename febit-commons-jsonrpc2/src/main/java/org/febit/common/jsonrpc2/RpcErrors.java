@@ -15,10 +15,10 @@
  */
 package org.febit.common.jsonrpc2;
 
-import jakarta.annotation.Nullable;
 import org.febit.common.jsonrpc2.exception.RpcErrorException;
 import org.febit.common.jsonrpc2.internal.protocol.ErrorImpl;
 import org.febit.common.jsonrpc2.protocol.IRpcError;
+import org.jspecify.annotations.Nullable;
 
 public interface RpcErrors {
 

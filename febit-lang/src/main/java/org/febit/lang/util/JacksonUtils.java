@@ -16,9 +16,9 @@
 package org.febit.lang.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.annotation.Nullable;
 import lombok.experimental.UtilityClass;
 import org.febit.lang.util.jackson.StandardPrettyPrinter;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.JavaType;
@@ -232,23 +232,19 @@ public class JacksonUtils {
         return JsonLazyHolder.JSON.parseToStringList(json);
     }
 
-    @Nullable
-    public static Object[] parseToArray(@Nullable String json) {
+    public static Object @Nullable [] parseToArray(@Nullable String json) {
         return JsonLazyHolder.JSON.parseToArray(json);
     }
 
-    @Nullable
-    public static <V> V[] parseToArray(@Nullable String json, Class<V> itemType) {
+    public static <V> V @Nullable [] parseToArray(@Nullable String json, Class<V> itemType) {
         return JsonLazyHolder.JSON.parseToArray(json, itemType);
     }
 
-    @Nullable
-    public static <V> V[] parseToArray(@Nullable String json, JavaType itemType) {
+    public static <V> V @Nullable [] parseToArray(@Nullable String json, JavaType itemType) {
         return JsonLazyHolder.JSON.parseToArray(json, itemType);
     }
 
-    @Nullable
-    public static String[] parseToStringArray(@Nullable String json) {
+    public static String @Nullable [] parseToStringArray(@Nullable String json) {
         return JsonLazyHolder.JSON.parseToStringArray(json);
     }
 
@@ -317,23 +313,19 @@ public class JacksonUtils {
         return JsonLazyHolder.JSON.parseToStringList(reader);
     }
 
-    @Nullable
-    public static Object[] parseToArray(Reader reader) {
+    public static Object @Nullable [] parseToArray(Reader reader) {
         return JsonLazyHolder.JSON.parseToArray(reader);
     }
 
-    @Nullable
-    public static <V> V[] parseToArray(Reader reader, Class<V> itemType) {
+    public static <V> V @Nullable [] parseToArray(Reader reader, Class<V> itemType) {
         return JsonLazyHolder.JSON.parseToArray(reader, itemType);
     }
 
-    @Nullable
-    public static <V> V[] parseToArray(Reader reader, JavaType itemType) {
+    public static <V> V @Nullable [] parseToArray(Reader reader, JavaType itemType) {
         return JsonLazyHolder.JSON.parseToArray(reader, itemType);
     }
 
-    @Nullable
-    public static String[] parseToStringArray(Reader reader) {
+    public static String @Nullable [] parseToStringArray(Reader reader) {
         return JsonLazyHolder.JSON.parseToStringArray(reader);
     }
 
@@ -402,23 +394,19 @@ public class JacksonUtils {
         return JsonLazyHolder.JSON.toStringList(source);
     }
 
-    @Nullable
-    public static Object[] toArray(@Nullable Object source) {
+    public static Object @Nullable [] toArray(@Nullable Object source) {
         return JsonLazyHolder.JSON.toArray(source);
     }
 
-    @Nullable
-    public static <V> V[] toArray(@Nullable Object source, Class<V> itemType) {
+    public static <V> V @Nullable [] toArray(@Nullable Object source, Class<V> itemType) {
         return JsonLazyHolder.JSON.toArray(source, itemType);
     }
 
-    @Nullable
-    public static <V> V[] toArray(@Nullable Object source, JavaType itemType) {
+    public static <V> V @Nullable [] toArray(@Nullable Object source, JavaType itemType) {
         return JsonLazyHolder.JSON.toArray(source, itemType);
     }
 
-    @Nullable
-    public static String[] toStringArray(@Nullable Object source) {
+    public static String @Nullable [] toStringArray(@Nullable Object source) {
         return JsonLazyHolder.JSON.toStringArray(source);
     }
 

@@ -15,8 +15,8 @@
  */
 package org.febit.lang.modeler;
 
-import jakarta.annotation.Nullable;
 import lombok.experimental.UtilityClass;
+import org.jspecify.annotations.Nullable;
 
 import java.io.Serializable;
 import java.util.ArrayList;

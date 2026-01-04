@@ -15,7 +15,7 @@
  */
 package org.febit.common.jsonrpc2.internal;
 
-import jakarta.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 @FunctionalInterface
 public interface ArgumentsResolver {

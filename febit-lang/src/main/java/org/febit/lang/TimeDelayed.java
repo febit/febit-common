@@ -15,12 +15,12 @@
  */
 package org.febit.lang;
 
-import org.febit.lang.annotation.NonNullApi;
+import org.jspecify.annotations.NullMarked;
 
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
-@NonNullApi
+@NullMarked
 public interface TimeDelayed extends Delayed {
 
     long getTimeInMillis();

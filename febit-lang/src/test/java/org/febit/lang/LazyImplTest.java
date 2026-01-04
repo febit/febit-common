@@ -54,6 +54,7 @@ class LazyImplTest {
     @Test
     @SuppressWarnings("unchecked")
     void ex_npe() {
+        //noinspection DataFlowIssue
         assertThrows(NullPointerException.class, () -> new LazyImpl<>(null));
 
         var supplier = mock(SerializableSupplier.class);

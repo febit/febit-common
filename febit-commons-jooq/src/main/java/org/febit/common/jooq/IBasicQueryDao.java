@@ -15,7 +15,6 @@
  */
 package org.febit.common.jooq;
 
-import jakarta.annotation.Nullable;
 import org.apache.commons.collections4.CollectionUtils;
 import org.febit.lang.protocol.Page;
 import org.febit.lang.protocol.Pagination;
@@ -28,6 +27,7 @@ import org.jooq.SelectQuery;
 import org.jooq.Table;
 import org.jooq.TableLike;
 import org.jooq.TableRecord;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;

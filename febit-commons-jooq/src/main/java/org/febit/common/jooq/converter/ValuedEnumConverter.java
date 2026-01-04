@@ -15,10 +15,10 @@
  */
 package org.febit.common.jooq.converter;
 
-import jakarta.annotation.Nullable;
 import org.febit.lang.Valued;
 import org.febit.lang.util.TypeParameters;
 import org.jooq.impl.AbstractConverter;
+import org.jspecify.annotations.Nullable;
 
 import java.io.Serializable;
 import java.util.Map;

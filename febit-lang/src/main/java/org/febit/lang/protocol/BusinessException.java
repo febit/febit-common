@@ -15,8 +15,8 @@
  */
 package org.febit.lang.protocol;
 
-import jakarta.annotation.Nullable;
 import lombok.Getter;
+import org.jspecify.annotations.Nullable;
 
 @Getter
 public class BusinessException extends RuntimeException {

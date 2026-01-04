@@ -15,8 +15,8 @@
  */
 package org.febit.common.jsonrpc2.internal.protocol;
 
-import jakarta.annotation.Nullable;
 import org.febit.common.jsonrpc2.protocol.IRpcNotification;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.ValueDeserializer;
 import tools.jackson.databind.annotation.JsonDeserialize;
 

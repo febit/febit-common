@@ -15,7 +15,6 @@
  */
 package org.febit.lang.protocol;
 
-import jakarta.annotation.Nonnull;
 import org.febit.lang.util.Lists;
 import tools.jackson.databind.annotation.JsonDeserialize;
 
@@ -29,8 +28,7 @@ public interface IListResponse<T> extends IResponse<List<T>> {
      * @deprecated use {@link #mapEach(Function)} instead
      */
     @Deprecated(since = "3.2.1")
-    @Nonnull
-    default <D> IListResponse<D> transferItems(@Nonnull Function<T, D> mapping) {
+    default <D> IListResponse<D> transferItems(Function<T, D> mapping) {
         return mapEach(mapping);
     }
 
@@ -41,8 +39,7 @@ public interface IListResponse<T> extends IResponse<List<T>> {
      * @param mapping the mapping function
      * @since 3.2.1
      */
-    @Nonnull
-    default <D> ListResponse<D> mapEach(@Nonnull Function<T, D> mapping) {
+    default <D> ListResponse<D> mapEach(Function<T, D> mapping) {
         var target = new ListResponse<D>();
         target.copyProperties(this);
         if (getData() != null) {

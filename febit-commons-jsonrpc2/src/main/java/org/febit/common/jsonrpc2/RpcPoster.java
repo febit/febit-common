@@ -16,12 +16,10 @@
 package org.febit.common.jsonrpc2;
 
 import org.febit.common.jsonrpc2.protocol.IRpcMessage;
-import org.febit.lang.annotation.NonNullApi;
 
 /**
  * RPC message poster.
  */
-@NonNullApi
 public interface RpcPoster {
 
     /**

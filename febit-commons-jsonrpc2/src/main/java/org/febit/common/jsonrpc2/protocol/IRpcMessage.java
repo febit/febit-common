@@ -16,9 +16,9 @@
 package org.febit.common.jsonrpc2.protocol;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.annotation.Nullable;
 import org.febit.common.jsonrpc2.Jsonrpc2;
 import org.febit.common.jsonrpc2.internal.codec.RpcMessageDeserializer;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(using = RpcMessageDeserializer.class)

@@ -15,8 +15,8 @@
  */
 package org.febit.lang;
 
-import jakarta.annotation.Nonnull;
 import org.febit.lang.util.Maps;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.Map;
@@ -26,14 +26,14 @@ public interface Valued<T> {
 
     T getValue();
 
+    @NonNull
     @SafeVarargs
-    @Nonnull
-    static <T, V extends Valued<T>> Map<T, V> mapping(@Nonnull V... items) {
+    static <T, V extends Valued<T>> Map<T, V> mapping(@NonNull V... items) {
         return Maps.mapping(items, Valued::getValue);
     }
 
-    @Nonnull
-    static <K, V extends Valued<K>> Map<K, V> mapping(@Nonnull List<V> items) {
+    @NonNull
+    static <K, V extends Valued<K>> Map<K, V> mapping(@NonNull List<V> items) {
         return Maps.mapping(items, Valued::getValue);
     }
 }

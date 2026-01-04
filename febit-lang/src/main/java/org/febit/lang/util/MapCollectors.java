@@ -16,6 +16,7 @@
 package org.febit.lang.util;
 
 import lombok.experimental.UtilityClass;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -32,7 +33,11 @@ import java.util.stream.Collectors;
 @UtilityClass
 public class MapCollectors {
 
-    public static <T, K, U, M extends Map<K, U>> Collector<T, ?, M> of(
+    public static <T extends @Nullable Object,
+            K extends @Nullable Object,
+            U extends @Nullable Object,
+            M extends Map<K, U>>
+    Collector<T, ?, M> of(
             Function<? super T, ? extends K> keyMapper,
             Function<? super T, ? extends U> valueMapper,
             BinaryOperator<U> mergeFunction,
@@ -58,22 +63,33 @@ public class MapCollectors {
         return Collector.of(mapFactory, accumulator, mapMerger);
     }
 
-    public static <T, K, U, M extends Map<K, U>> Collector<T, ?, M> overwriting(
-            Function<T, K> keyMapper, Function<T, U> valueMapper) {
+    public static <T extends @Nullable Object,
+            K extends @Nullable Object,
+            U extends @Nullable Object,
+            M extends Map<K, U>>
+    Collector<T, ?, M> overwriting(Function<T, K> keyMapper, Function<T, U> valueMapper) {
         return overwriting(keyMapper, valueMapper, Factories.hashMapFactory());
     }
 
-    public static <T, K, U, M extends Map<K, U>> Collector<T, ?, M> overwriting(
-            Function<T, K> keyMapper, Function<T, U> valueMapper, Supplier<M> mapFactory) {
+    public static <T extends @Nullable Object,
+            K extends @Nullable Object,
+            U extends @Nullable Object,
+            M extends Map<K, U>>
+    Collector<T, ?, M> overwriting(Function<T, K> keyMapper, Function<T, U> valueMapper, Supplier<M> mapFactory) {
         return of(keyMapper, valueMapper, (u1, u2) -> u2, mapFactory);
     }
 
-    public static <T, K, M extends Map<K, List<T>>> Collector<T, ?, M> grouping(Function<T, K> keyMapper) {
+    public static <T extends @Nullable Object,
+            K extends @Nullable Object,
+            M extends Map<K, List<T>>>
+    Collector<T, ?, M> grouping(Function<T, K> keyMapper) {
         return grouping(keyMapper, Factories.hashMapFactory());
     }
 
-    public static <T, K, M extends Map<K, List<T>>> Collector<T, ?, M> grouping(
-            Function<T, K> keyMapper, Supplier<M> mapFactory) {
+    public static <T extends @Nullable Object,
+            K extends @Nullable Object,
+            M extends Map<K, List<T>>>
+    Collector<T, ?, M> grouping(Function<T, K> keyMapper, Supplier<M> mapFactory) {
         return Collectors.groupingBy(
                 keyMapper,
                 mapFactory,
@@ -81,13 +97,19 @@ public class MapCollectors {
         );
     }
 
-    public static <T, K, U, M extends Map<K, List<U>>> Collector<T, ?, M> grouping(
-            Function<T, K> keyMapper, Function<T, U> valueMapper) {
+    public static <T extends @Nullable Object,
+            K extends @Nullable Object,
+            U extends @Nullable Object,
+            M extends Map<K, List<U>>>
+    Collector<T, ?, M> grouping(Function<T, K> keyMapper, Function<T, U> valueMapper) {
         return grouping(keyMapper, valueMapper, Factories.hashMapFactory());
     }
 
-    public static <T, K, U, M extends Map<K, List<U>>> Collector<T, ?, M> grouping(
-            Function<T, K> keyMapper, Function<T, U> valueMapper, Supplier<M> mapFactory) {
+    public static <T extends @Nullable Object,
+            K extends @Nullable Object,
+            U extends @Nullable Object,
+            M extends Map<K, List<U>>>
+    Collector<T, ?, M> grouping(Function<T, K> keyMapper, Function<T, U> valueMapper, Supplier<M> mapFactory) {
         return Collectors.groupingBy(
                 keyMapper,
                 mapFactory,
@@ -98,12 +120,17 @@ public class MapCollectors {
         );
     }
 
-    public static <T, K, M extends Map<K, Set<T>>> Collector<T, ?, M> groupingSet(Function<T, K> keyMapper) {
+    public static <T extends @Nullable Object,
+            K extends @Nullable Object,
+            M extends Map<K, Set<T>>>
+    Collector<T, ?, M> groupingSet(Function<T, K> keyMapper) {
         return groupingSet(keyMapper, Factories.hashMapFactory());
     }
 
-    public static <T, K, M extends Map<K, Set<T>>> Collector<T, ?, M> groupingSet(
-            Function<T, K> keyMapper, Supplier<M> mapFactory) {
+    public static <T extends @Nullable Object,
+            K extends @Nullable Object,
+            M extends Map<K, Set<T>>>
+    Collector<T, ?, M> groupingSet(Function<T, K> keyMapper, Supplier<M> mapFactory) {
         return Collectors.groupingBy(
                 keyMapper,
                 mapFactory,
@@ -111,13 +138,18 @@ public class MapCollectors {
         );
     }
 
-    public static <T, K, U, M extends Map<K, Set<U>>> Collector<T, ?, M> groupingSet(
+    public static <T extends @Nullable Object,
+            K extends @Nullable Object,
+            U extends @Nullable Object, M extends Map<K, Set<U>>>
+    Collector<T, ?, M> groupingSet(
             Function<T, K> keyMapper, Function<T, U> valueMapper) {
         return groupingSet(keyMapper, valueMapper, Factories.hashMapFactory());
     }
 
-    public static <T, K, U, M extends Map<K, Set<U>>> Collector<T, ?, M> groupingSet(
-            Function<T, K> keyMapper, Function<T, U> valueMapper, Supplier<M> mapFactory) {
+    public static <T extends @Nullable Object,
+            K extends @Nullable Object,
+            U extends @Nullable Object, M extends Map<K, Set<U>>>
+    Collector<T, ?, M> groupingSet(Function<T, K> keyMapper, Function<T, U> valueMapper, Supplier<M> mapFactory) {
         return Collectors.groupingBy(
                 keyMapper,
                 mapFactory,

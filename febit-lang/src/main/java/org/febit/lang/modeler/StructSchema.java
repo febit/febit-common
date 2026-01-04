@@ -15,13 +15,13 @@
  */
 package org.febit.lang.modeler;
 
-import jakarta.annotation.Nullable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;
 import org.febit.lang.util.Maps;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;

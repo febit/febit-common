@@ -15,11 +15,11 @@
  */
 package org.febit.common.jsonrpc2.internal;
 
-import jakarta.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 @FunctionalInterface
 public interface ParamsComposer {
 
     @Nullable
-    Object compose(@Nullable Object[] args);
+    Object compose(Object @Nullable [] args);
 }

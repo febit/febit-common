@@ -15,10 +15,10 @@
  */
 package org.febit.common.kafka.deser;
 
-import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.febit.lang.util.JacksonWrapper;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JavaType;
 
 import java.nio.charset.StandardCharsets;
@@ -32,7 +32,7 @@ public abstract class BaseJacksonDeserializer<T> implements Deserializer<T> {
 
     @Nullable
     @Override
-    public T deserialize(String topic, @Nullable byte[] data) {
+    public T deserialize(String topic, byte @Nullable [] data) {
         if (data == null || data.length == 0) {
             return null;
         }

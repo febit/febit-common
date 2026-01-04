@@ -21,9 +21,8 @@ import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.crypto.factories.DefaultJWSVerifierFactory;
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import org.febit.lang.UncheckedException;
+import org.jspecify.annotations.Nullable;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -35,18 +34,18 @@ import java.util.Optional;
         toBuilder = true
 )
 public record JwtKey(
-        @Nonnull String id,
-        @Nonnull JwkAlgorithm algorithm,
+        String id,
+        JwkAlgorithm algorithm,
         @Nullable String verifierKey,
         @Nullable String signerKey
 ) {
 
     public record Resolved(
-            @Nonnull String id,
-            @Nonnull JwkAlgorithm algorithm,
-            @Nonnull Optional<PrivateKey> signerKey,
-            @Nonnull Optional<PublicKey> verifierKey,
-            @Nonnull Optional<JWSSigner> signer
+            String id,
+            JwkAlgorithm algorithm,
+            Optional<PrivateKey> signerKey,
+            Optional<PublicKey> verifierKey,
+            Optional<JWSSigner> signer
     ) {
         public JWSAlgorithm jwsAlgorithm() {
             return this.algorithm.getJws();

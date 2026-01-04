@@ -16,7 +16,6 @@
 package org.febit.common.jooq;
 
 import lombok.experimental.UtilityClass;
-import org.febit.lang.annotation.NonNullApi;
 import org.febit.lang.util.Lists;
 import org.jooq.Condition;
 import org.jooq.Field;
@@ -24,7 +23,6 @@ import org.jooq.impl.DSL;
 
 import java.util.Collection;
 
-@NonNullApi
 @UtilityClass
 public class Conditions {
 

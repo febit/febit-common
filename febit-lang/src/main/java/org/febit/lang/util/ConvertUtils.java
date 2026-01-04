@@ -15,8 +15,8 @@
  */
 package org.febit.lang.util;
 
-import jakarta.annotation.Nullable;
 import lombok.experimental.UtilityClass;
+import org.jspecify.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -59,22 +59,14 @@ public class ConvertUtils {
     }
 
     private static Boolean isTrue(String text) {
-        switch (text) {
-            case "true":
-            case "True":
-            case "TRUE":
-            case "yes":
-            case "Yes":
-            case "YES":
-            case "y":
-            case "Y":
-            case "on":
-            case "ON":
-            case "1":
-                return true;
-            default:
-                return false;
-        }
+        return switch (text) {
+            case "true", "True", "TRUE",
+                 "yes", "Yes", "YES",
+                 "y", "Y",
+                 "on", "ON", "On",
+                 "1" -> true;
+            default -> false;
+        };
     }
 
     @Nullable
@@ -175,7 +167,8 @@ public class ConvertUtils {
     }
 
     @Nullable
-    private static <T> T temporal(@Nullable Object obj, Function<TemporalAccessor, T> convert, Function<String, T> parser) {
+    private static <T extends @Nullable Object> T temporal(
+            @Nullable Object obj, Function<TemporalAccessor, T> convert, Function<String, T> parser) {
         if (obj == null) {
             return null;
         }
@@ -187,7 +180,8 @@ public class ConvertUtils {
     }
 
     @Nullable
-    private static <T> T utc(@Nullable Object obj, Function<ZonedDateTime, T> convert) {
+    private static <T extends @Nullable Object> T utc(
+            @Nullable Object obj, Function<ZonedDateTime, T> convert) {
         var time = toUtcZonedDateTime(obj);
         if (time == null) {
             return null;

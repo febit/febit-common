@@ -16,6 +16,7 @@
 package org.febit.lang.util;
 
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
 import java.util.Collection;
@@ -48,7 +49,8 @@ public class AsyncPromise {
      * @param <T>      target type
      * @see #submit(Callable, Consumer)
      */
-    public <S, T> void submit(Collection<S> items, Function<S, T> transfer, BiConsumer<S, T> consumer) {
+    public <S, T extends @Nullable Object> void submit(
+            Collection<S> items, Function<S, T> transfer, BiConsumer<S, T> consumer) {
         submit(items.iterator(), transfer, consumer);
     }
 
@@ -62,7 +64,8 @@ public class AsyncPromise {
      * @param <T>      target type
      * @see #submit(Callable, Consumer)
      */
-    public <S, T> void submit(Collection<S> items, Function<S, T> transfer, Consumer<T> consumer) {
+    public <S, T extends @Nullable Object> void submit(
+            Collection<S> items, Function<S, T> transfer, Consumer<T> consumer) {
         submit(items.iterator(), transfer, consumer);
     }
 
@@ -93,7 +96,8 @@ public class AsyncPromise {
      * @param <T>      target type
      * @see #submit(Callable, Consumer)
      */
-    public <S, T> void submit(Iterator<S> items, Function<S, T> transfer, Consumer<T> consumer) {
+    public <S, T extends @Nullable Object> void submit(
+            Iterator<S> items, Function<S, T> transfer, Consumer<T> consumer) {
         while (items.hasNext()) {
             S item = items.next();
             submit(() -> transfer.apply(item), consumer);
@@ -107,7 +111,7 @@ public class AsyncPromise {
      * @param consumer to receive result
      * @param <T>      target type
      */
-    public <T> void submit(Callable<T> call, Consumer<T> consumer) {
+    public <T extends @Nullable Object> void submit(Callable<T> call, Consumer<T> consumer) {
         queue.offer(executorService.submit(() -> {
             consumer.accept(call.call());
             return null;

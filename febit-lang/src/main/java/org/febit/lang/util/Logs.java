@@ -15,9 +15,9 @@
  */
 package org.febit.lang.util;
 
-import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.Supplier;
 
@@ -26,20 +26,20 @@ public class Logs {
 
     static final String FAIL_MSG = "!!SERIALIZE_FAILED!!";
 
-    public static <T> Object lazy(Supplier<T> supplier) {
+    public static <T extends @Nullable Object> Object lazy(Supplier<T> supplier) {
         return new ToStringWrapper<>(supplier);
     }
 
-    public static Object json(@Nullable Object obj) {
-        return new ToJsonWrapper<>(() -> obj);
+    public static <T extends @Nullable Object> Object json(@Nullable T obj) {
+        return new ToJsonWrapper<T>(() -> obj);
     }
 
-    public static <T> Object lazyJson(Supplier<T> supplier) {
+    public static <T extends @Nullable Object> Object lazyJson(Supplier<T> supplier) {
         return new ToJsonWrapper<>(supplier);
     }
 
     @RequiredArgsConstructor
-    private static class ToJsonWrapper<T> {
+    private static class ToJsonWrapper<T extends @Nullable Object> {
         private final Supplier<T> supplier;
 
         @Override
@@ -53,7 +53,7 @@ public class Logs {
     }
 
     @RequiredArgsConstructor
-    private static class ToStringWrapper<T> {
+    private static class ToStringWrapper<T extends @Nullable Object> {
         private final Supplier<T> supplier;
 
         @Override

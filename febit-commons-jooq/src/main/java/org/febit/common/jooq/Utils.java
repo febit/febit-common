@@ -15,7 +15,6 @@
  */
 package org.febit.common.jooq;
 
-import jakarta.annotation.Nullable;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +29,7 @@ import org.jooq.RecordListenerProvider;
 import org.jooq.UpdatableRecord;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultRecordListenerProvider;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;

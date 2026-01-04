@@ -15,8 +15,8 @@
  */
 package org.febit.lang.util;
 
-import jakarta.annotation.Nullable;
 import lombok.experimental.UtilityClass;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -66,17 +66,17 @@ public class Sets {
     }
 
     @Nullable
-    public static <T> Set<T> transfer(@Nullable T[] src) {
+    public static <T> Set<T> transfer(T @Nullable [] src) {
         return transfer(src, Function.identity(), HashSet::new);
     }
 
     @Nullable
-    public static <S, T> Set<T> transfer(@Nullable S[] src, Function<S, T> action) {
+    public static <S, T> Set<T> transfer(S @Nullable [] src, Function<S, T> action) {
         return transfer(src, action, HashSet::new);
     }
 
     @Nullable
-    public static <S, T> Set<T> transfer(@Nullable S[] src, Function<S, T> action, IntFunction<Set<T>> creator) {
+    public static <S, T> Set<T> transfer(S @Nullable [] src, Function<S, T> action, IntFunction<Set<T>> creator) {
         if (src == null) {
             return null;
         }
@@ -130,15 +130,15 @@ public class Sets {
         return result;
     }
 
-    public static <T> Set<T> collect(@Nullable T[] src) {
+    public static <T> Set<T> collect(T @Nullable [] src) {
         return collect(src, Function.identity(), HashSet::new);
     }
 
-    public static <S, T> Set<T> collect(@Nullable S[] src, Function<S, T> action) {
+    public static <S, T> Set<T> collect(S @Nullable [] src, Function<S, T> action) {
         return collect(src, action, HashSet::new);
     }
 
-    public static <S, T> Set<T> collect(@Nullable S[] src, Function<S, T> action, IntFunction<Set<T>> creator) {
+    public static <S, T> Set<T> collect(S @Nullable [] src, Function<S, T> action, IntFunction<Set<T>> creator) {
         if (src == null) {
             return creator.apply(0);
         }

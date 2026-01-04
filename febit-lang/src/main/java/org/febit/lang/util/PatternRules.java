@@ -15,12 +15,12 @@
  */
 package org.febit.lang.util;
 
-import jakarta.annotation.Nullable;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JavaType;
 
 import java.io.Serializable;
@@ -100,7 +100,7 @@ public class PatternRules implements Serializable {
 
         private final List<Rule> rules = new ArrayList<>();
 
-        private PatternFormatter.Builder pending;
+        private PatternFormatter.@Nullable Builder pending;
 
         protected void pushPendingIfPresent() {
             if (pending == null) {

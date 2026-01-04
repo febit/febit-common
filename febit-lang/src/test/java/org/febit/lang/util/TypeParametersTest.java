@@ -15,7 +15,7 @@
  */
 package org.febit.lang.util;
 
-import jakarta.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;

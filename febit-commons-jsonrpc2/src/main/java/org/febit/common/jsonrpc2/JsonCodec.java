@@ -15,13 +15,13 @@
  */
 package org.febit.common.jsonrpc2;
 
-import jakarta.annotation.Nullable;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.febit.common.jsonrpc2.exception.RpcErrorException;
 import org.febit.common.jsonrpc2.protocol.IRpcMessage;
 import org.febit.common.jsonrpc2.protocol.StdRpcErrors;
 import org.febit.lang.util.JacksonUtils;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JavaType;
 

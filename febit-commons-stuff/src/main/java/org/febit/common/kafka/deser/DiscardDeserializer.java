@@ -15,14 +15,14 @@
  */
 package org.febit.common.kafka.deser;
 
-import jakarta.annotation.Nullable;
 import org.apache.kafka.common.serialization.Deserializer;
+import org.jspecify.annotations.Nullable;
 
 public class DiscardDeserializer<T> implements Deserializer<T> {
 
     @Nullable
     @Override
-    public T deserialize(String topic, @Nullable byte[] data) {
+    public T deserialize(String topic, byte @Nullable [] data) {
         return null;
     }
 }

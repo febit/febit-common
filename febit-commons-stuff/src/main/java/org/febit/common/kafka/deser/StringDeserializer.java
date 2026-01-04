@@ -15,8 +15,8 @@
  */
 package org.febit.common.kafka.deser;
 
-import jakarta.annotation.Nullable;
 import org.apache.kafka.common.serialization.Deserializer;
+import org.jspecify.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
 
@@ -24,7 +24,7 @@ public class StringDeserializer implements Deserializer<String> {
 
     @Nullable
     @Override
-    public String deserialize(String topic, @Nullable byte[] data) {
+    public String deserialize(String topic, byte @Nullable [] data) {
         if (data == null) {
             return null;
         }

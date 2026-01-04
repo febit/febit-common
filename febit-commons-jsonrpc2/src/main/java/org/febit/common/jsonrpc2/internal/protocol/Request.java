@@ -15,20 +15,17 @@
  */
 package org.febit.common.jsonrpc2.internal.protocol;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import org.febit.common.jsonrpc2.internal.codec.IdDeserializer;
 import org.febit.common.jsonrpc2.protocol.IRpcRequest;
 import org.febit.common.jsonrpc2.protocol.Id;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.ValueDeserializer;
 import tools.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(using = ValueDeserializer.None.class)
 public record Request(
-        @Nonnull
         @JsonDeserialize(using = IdDeserializer.class)
         Id id,
-        @Nonnull
         String method,
         @Nullable
         Object params

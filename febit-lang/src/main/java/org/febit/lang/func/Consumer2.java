@@ -15,8 +15,8 @@
  */
 package org.febit.lang.func;
 
-import jakarta.annotation.Nonnull;
 import org.febit.lang.Tuple2;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Map;
 import java.util.Objects;
@@ -25,17 +25,17 @@ import java.util.function.BiConsumer;
 @FunctionalInterface
 public interface Consumer2<A1, A2> extends IConsumer, BiConsumer<A1, A2> {
 
-    default void accept(@Nonnull Tuple2<A1, A2> tuple) {
+    default void accept(@NonNull Tuple2<A1, A2> tuple) {
         accept(tuple.v1(), tuple.v2());
     }
 
-    default void accept(@Nonnull Map.Entry<A1, A2> entry) {
+    default void accept(Map.@NonNull Entry<A1, A2> entry) {
         accept(entry.getKey(), entry.getValue());
     }
 
-    @Nonnull
+    @NonNull
     @Override
-    default Consumer2<A1, A2> andThen(@Nonnull BiConsumer<? super A1, ? super A2> after) {
+    default Consumer2<A1, A2> andThen(@NonNull BiConsumer<? super A1, ? super A2> after) {
         Objects.requireNonNull(after);
         return (a1, a2) -> {
             accept(a1, a2);

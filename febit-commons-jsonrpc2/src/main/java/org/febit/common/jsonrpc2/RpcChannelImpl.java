@@ -15,7 +15,6 @@
  */
 package org.febit.common.jsonrpc2;
 
-import jakarta.annotation.Nullable;
 import lombok.extern.slf4j.Slf4j;
 import org.febit.common.jsonrpc2.exception.RpcErrorException;
 import org.febit.common.jsonrpc2.internal.RemoteApiInvocationHandler;
@@ -28,6 +27,7 @@ import org.febit.common.jsonrpc2.protocol.IRpcNotification;
 import org.febit.common.jsonrpc2.protocol.IRpcRequest;
 import org.febit.common.jsonrpc2.protocol.IRpcResponse;
 import org.febit.common.jsonrpc2.protocol.StdRpcErrors;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
@@ -46,24 +46,30 @@ import java.util.concurrent.TimeUnit;
 )
 public class RpcChannelImpl implements RpcChannel {
 
+    @SuppressWarnings("NullableProblems")
     @lombok.NonNull
     private final RpcExecutor executor;
 
+    @SuppressWarnings("NullableProblems")
     @lombok.NonNull
     private final RpcPoster poster;
 
+    @SuppressWarnings("NullableProblems")
     @lombok.NonNull
     @lombok.Builder.Default
     private final RpcHandlerManager handlers = SimpleRpcHandlerManager.create();
 
+    @SuppressWarnings("NullableProblems")
     @lombok.NonNull
     @lombok.Builder.Default
     private final IClock clock = System::currentTimeMillis;
 
+    @SuppressWarnings("NullableProblems")
     @lombok.NonNull
     @lombok.Builder.Default
     private final IdGenerator requestIdGenerator = IncrLongIdGenerator.create();
 
+    @SuppressWarnings("NullableProblems")
     @lombok.NonNull
     @lombok.Builder.Default
     private final RequestPool requestPool = new SimpleRequestPool();

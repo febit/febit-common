@@ -15,8 +15,8 @@
  */
 package org.febit.common.jooq.converter;
 
-import jakarta.annotation.Nullable;
 import org.jooq.Converter;
+import org.jspecify.annotations.Nullable;
 
 import java.sql.Timestamp;
 import java.time.Instant;

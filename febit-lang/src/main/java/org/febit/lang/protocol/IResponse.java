@@ -16,9 +16,9 @@
 package org.febit.lang.protocol;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import org.febit.lang.annotation.NonNullArgs;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.annotation.JsonDeserialize;
 
 import java.time.Instant;
@@ -27,54 +27,48 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 @JsonDeserialize(as = Response.class)
-public interface IResponse<T> extends Fallible {
+public interface IResponse<T extends @Nullable Object> extends Fallible {
 
-    static <T> IResponse<T> success() {
+    static <T extends @Nullable Object> IResponse<T> success() {
         return success(200, null);
     }
 
-    @Nonnull
-    static <T> IResponse<T> success(@Nullable T data) {
+    static <T extends @Nullable Object> IResponse<T> success(@Nullable T data) {
         return success(200, data);
     }
 
-    @Nonnull
-    static <T> IResponse<T> success(int httpStatus, @Nullable T data) {
+    static <T extends @Nullable Object> IResponse<T> success(int httpStatus, @Nullable T data) {
         return success(httpStatus, null, null, data);
     }
 
-    @Nonnull
-    static <T> IResponse<T> success(@Nullable String code, @Nullable String message, @Nullable T data) {
+    static <T extends @Nullable Object> IResponse<T> success(
+            @Nullable String code, @Nullable String message, @Nullable T data) {
         return success(200, code, message, data);
     }
 
-    @Nonnull
-    static <T> IResponse<T> success(int httpStatus, @Nullable String code, @Nullable String message, @Nullable T data) {
+    static <T extends @Nullable Object> IResponse<T> success(
+            int httpStatus, @Nullable String code, @Nullable String message, @Nullable T data) {
         return Response.success(httpStatus, code, message, data);
     }
 
-    @Nonnull
     @NonNullArgs
-    static <T> IResponse<T> failed(String code, String message) {
+    static <T extends @Nullable Object> IResponse<T> failed(String code, String message) {
         return failed(code, message, null);
     }
 
-    @Nonnull
     @NonNullArgs
-    static <T> IResponse<T> failed(int httpStatus, String code, String message) {
+    static <T extends @Nullable Object> IResponse<T> failed(int httpStatus, String code, String message) {
         return failed(httpStatus, code, message, null);
     }
 
-    @Nonnull
     @NonNullArgs
-    static <T> IResponse<T> failed(String code, String message, @Nullable T data) {
+    static <T extends @Nullable Object> IResponse<T> failed(String code, String message, @Nullable T data) {
         return failed(500, code, message, data);
     }
 
-    @Nonnull
     @NonNullArgs
-    static <T> IResponse<T> failed(int httpStatus,
-                                   String code, String message, @Nullable T data) {
+    static <T extends @Nullable Object> IResponse<T> failed(
+            int httpStatus, String code, String message, @Nullable T data) {
         return Response.failed(httpStatus, code, message, data);
     }
 
@@ -110,8 +104,7 @@ public interface IResponse<T> extends Fallible {
         return isFailed() && this.getStatus() == status;
     }
 
-    @Nonnull
-    default <D> IResponse<D> cleanData() {
+    default <D extends @Nullable Object> IResponse<D> cleanData() {
         return map(d -> null);
     }
 
@@ -121,8 +114,7 @@ public interface IResponse<T> extends Fallible {
      * @param supplier the supplying function that produces a response to be returned.
      * @since 3.2.1
      */
-    @Nonnull
-    default IResponse<T> or(@Nonnull Supplier<? extends T> supplier) {
+    default IResponse<T> or(Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier);
         if (isPresent()) {
             return this;
@@ -152,9 +144,9 @@ public interface IResponse<T> extends Fallible {
      * @since 3.2.1
      */
     @Nullable
-    default T orElseGet(@Nonnull Supplier<? extends T> supplier) {
+    default T orElseGet(Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier);
-        var data = getData();
+        T data = getData();
         return data != null ? data : supplier.get();
     }
 
@@ -163,8 +155,7 @@ public interface IResponse<T> extends Fallible {
      *
      * @since 3.2.1
      */
-    @Nonnull
-    default <D> IResponse<D> map(@Nonnull Function<T, D> mapping) {
+    default <D extends @Nullable Object> IResponse<D> map(Function<@Nullable T, @Nullable D> mapping) {
         return Response.of(
                 getStatus(), isSuccess(),
                 getCode(), getMessage(),
@@ -178,30 +169,27 @@ public interface IResponse<T> extends Fallible {
      *
      * @since 3.2.1
      */
-    @Nonnull
-    default <D> IResponse<D> mapIfPresent(@Nonnull Function<T, D> mapping) {
+    default <D extends @Nullable Object> IResponse<D> mapIfPresent(Function<@NonNull T, D> mapping) {
         return map(d -> d == null ? null : mapping.apply(d));
     }
 
     /**
      * @deprecated use {@link #map(Function)} instead
      */
-    @Nonnull
     @Deprecated(
             since = "3.2.1"
     )
-    default <D> IResponse<D> transferData(@Nonnull Function<T, D> mapping) {
+    default <D extends @Nullable Object> IResponse<D> transferData(Function<T, D> mapping) {
         return map(mapping);
     }
 
     /**
      * @deprecated use {@link #mapIfPresent(Function)} instead
      */
-    @Nonnull
     @Deprecated(
             since = "3.2.1"
     )
-    default <D> IResponse<D> transferDataIfPresent(@Nonnull Function<T, D> mapping) {
+    default <D extends @Nullable Object> IResponse<D> transferDataIfPresent(Function<@NonNull T, D> mapping) {
         return mapIfPresent(mapping);
     }
 

@@ -15,11 +15,11 @@
  */
 package org.febit.common.jooq;
 
-import jakarta.annotation.Nullable;
 import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.UpdatableRecord;
 import org.jooq.UpdateSetFirstStep;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.stream.IntStream;

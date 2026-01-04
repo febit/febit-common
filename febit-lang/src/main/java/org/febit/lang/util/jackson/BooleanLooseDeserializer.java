@@ -15,8 +15,8 @@
  */
 package org.febit.lang.util.jackson;
 
-import jakarta.annotation.Nullable;
 import org.febit.lang.util.ConvertUtils;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.core.JsonParser;
 import tools.jackson.core.JsonTokenId;
 import tools.jackson.databind.DeserializationContext;

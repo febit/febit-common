@@ -27,11 +27,13 @@ import java.lang.annotation.*;
  *
  * @see Nullable
  * @see Nonnull
+ * @deprecated use {@link org.jspecify.annotations.NullUnmarked} instead.
  */
 @Target({ElementType.PACKAGE, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Nonnull(when = When.MAYBE)
 @TypeQualifierDefault({ElementType.METHOD, ElementType.PARAMETER})
+@Deprecated(since = "4.0.0", forRemoval = true)
 public @interface NullableApi {
 }

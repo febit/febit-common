@@ -15,8 +15,8 @@
  */
 package org.febit.lang.util;
 
-import jakarta.annotation.Nullable;
 import lombok.experimental.UtilityClass;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.function.Function;
@@ -30,19 +30,18 @@ public class ArraysUtils {
         return t;
     }
 
-    @Nullable
     @SuppressWarnings({
             "squid:S1168" // Empty arrays and collections should be returned instead of null
     })
-    public static <T> T[] transfer(@Nullable Collection<T> src, IntFunction<T[]> creator) {
+    public static <T> T @Nullable [] transfer(@Nullable Collection<T> src, IntFunction<T[]> creator) {
         return transfer(src, creator, Function.identity());
     }
 
-    @Nullable
     @SuppressWarnings({
             "squid:S1168" // Empty arrays and collections should be returned instead of null
     })
-    public static <S, T> T[] transfer(@Nullable Collection<S> src, IntFunction<T[]> creator, Function<S, T> action) {
+    public static <S, T> T @Nullable [] transfer(
+            @Nullable Collection<S> src, IntFunction<T[]> creator, Function<S, T> action) {
         if (src == null) {
             return null;
         }
@@ -65,18 +64,17 @@ public class ArraysUtils {
         return arr;
     }
 
-    @Nullable
     @SuppressWarnings({
             "squid:S1168" // Empty arrays and collections should be returned instead of null
     })
-    public static <S, T> T[] transfer(@Nullable S[] src, IntFunction<T[]> creator, Function<S, T> action) {
+    public static <S, T> T @Nullable [] transfer(S @Nullable [] src, IntFunction<T[]> creator, Function<S, T> action) {
         if (src == null) {
             return null;
         }
         return collect(src, creator, action);
     }
 
-    public static <S, T> T[] collect(@Nullable S[] src, IntFunction<T[]> creator, Function<S, T> action) {
+    public static <S, T> T[] collect(S @Nullable [] src, IntFunction<T[]> creator, Function<S, T> action) {
         if (src == null || src.length == 0) {
             return creator.apply(0);
         }
@@ -93,12 +91,12 @@ public class ArraysUtils {
     }
 
     @Nullable
-    public static <T> T get(@Nullable T[] array, final int index) {
+    public static <T> T get(T @Nullable [] array, final int index) {
         return get(array, index, null);
     }
 
     @Nullable
-    public static <T> T get(@Nullable T[] array, final int index, @Nullable T defaultValue) {
+    public static <T> T get(T @Nullable [] array, final int index, @Nullable T defaultValue) {
         if (array != null && index >= 0 && index < array.length) {
             return array[index];
         }
@@ -187,11 +185,11 @@ public class ArraysUtils {
         }
     }
 
-    public static long[] longs(Collection<Long> collection) {
+    public static long[] longs(Collection<@Nullable Long> collection) {
         return longs(collection, 0L);
     }
 
-    public static long[] longs(Collection<Long> collection, long defaultValue) {
+    public static long[] longs(Collection<@Nullable Long> collection, long defaultValue) {
         long[] ret = new long[collection.size()];
         int i = 0;
         for (Number val : collection) {
@@ -200,11 +198,11 @@ public class ArraysUtils {
         return ret;
     }
 
-    public static int[] ints(Collection<Integer> collection) {
+    public static int[] ints(Collection<@Nullable Integer> collection) {
         return ints(collection, 0);
     }
 
-    public static int[] ints(Collection<Integer> collection, int defaultValue) {
+    public static int[] ints(Collection<@Nullable Integer> collection, int defaultValue) {
         int[] ret = new int[collection.size()];
         int i = 0;
         for (Number val : collection) {

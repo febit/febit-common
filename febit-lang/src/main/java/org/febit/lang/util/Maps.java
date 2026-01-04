@@ -16,6 +16,7 @@
 package org.febit.lang.util;
 
 import lombok.experimental.UtilityClass;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -42,7 +43,8 @@ public class Maps {
      * @param valueMapper the value mapper
      * @return the created map
      */
-    public static <K, V> Map<K, V> compute(Collection<K> keys, Function<K, V> valueMapper) {
+    public static <K extends @Nullable Object, V extends @Nullable Object>
+    Map<K, V> compute(Collection<K> keys, Function<K, V> valueMapper) {
         return mapping(keys, Function.identity(), valueMapper);
     }
 
@@ -55,7 +57,8 @@ public class Maps {
      * @param valueMapper the value mapper
      * @return the created map
      */
-    public static <K, V> Map<K, V> compute(K[] keys, Function<K, V> valueMapper) {
+    public static <K extends @Nullable Object, V extends @Nullable Object>
+    Map<K, V> compute(K[] keys, Function<K, V> valueMapper) {
         return mapping(keys, Function.identity(), valueMapper);
     }
 
@@ -68,7 +71,8 @@ public class Maps {
      * @param keyMapper the key mapper
      * @return the created map
      */
-    public static <K, V> Map<K, V> mapping(Collection<V> values, Function<V, K> keyMapper) {
+    public static <K extends @Nullable Object, V extends @Nullable Object>
+    Map<K, V> mapping(Collection<V> values, Function<V, K> keyMapper) {
         return mapping(values, keyMapper, Function.identity());
     }
 
@@ -81,7 +85,8 @@ public class Maps {
      * @param keyMapper the key mapper
      * @return the created map
      */
-    public static <K, V> Map<K, V> mapping(V[] values, Function<V, K> keyMapper) {
+    public static <K extends @Nullable Object, V extends @Nullable Object>
+    Map<K, V> mapping(V[] values, Function<V, K> keyMapper) {
         return mapping(values, keyMapper, Function.identity());
     }
 
@@ -95,11 +100,8 @@ public class Maps {
      * @param valueMapper the value mapper
      * @return the created map
      */
-    public static <K, V, T> Map<K, V> mapping(
-            Collection<T> items,
-            Function<T, K> keyMapper,
-            Function<T, V> valueMapper
-    ) {
+    public static <K extends @Nullable Object, V extends @Nullable Object, T extends @Nullable Object>
+    Map<K, V> mapping(Collection<T> items, Function<T, K> keyMapper, Function<T, V> valueMapper) {
         return items.stream().collect(MapCollectors.overwriting(
                 keyMapper, valueMapper
         ));
@@ -115,7 +117,8 @@ public class Maps {
      * @param valueMapper the value mapper
      * @return the created map
      */
-    public static <K, V, T> Map<K, V> mapping(
+    public static <K extends @Nullable Object, V extends @Nullable Object, T extends @Nullable Object>
+    Map<K, V> mapping(
             T[] items,
             Function<T, K> keyMapper,
             Function<T, V> valueMapper
@@ -135,7 +138,8 @@ public class Maps {
      * @return the created map
      */
     @SafeVarargs
-    public static <K, T> Map<K, T> mappingMultiKeys(T[] items, Function<T, K>... mappers) {
+    public static <K extends @Nullable Object, T extends @Nullable Object>
+    Map<K, T> mappingMultiKeys(T[] items, Function<T, K>... mappers) {
         var map = Maps.<K, T>create(items.length * mappers.length);
         for (var mapper : mappers) {
             map.putAll(mapping(items, mapper));
@@ -153,7 +157,8 @@ public class Maps {
      * @return the created map
      */
     @SafeVarargs
-    public static <K, T> Map<K, T> mappingMultiKeys(Collection<T> items, Function<T, K>... mappers) {
+    public static <K extends @Nullable Object, T extends @Nullable Object>
+    Map<K, T> mappingMultiKeys(Collection<T> items, Function<T, K>... mappers) {
         var map = Maps.<K, T>create(items.size() * mappers.length);
         for (var mapper : mappers) {
             map.putAll(mapping(items, mapper));
@@ -168,9 +173,8 @@ public class Maps {
      * @param keyMapper the key mapper
      * @return the created map
      */
-    public static <T, K> Map<K, List<T>> grouping(
-            Collection<T> items, Function<T, K> keyMapper
-    ) {
+    public static <T extends @Nullable Object, K extends @Nullable Object>
+    Map<K, List<T>> grouping(Collection<T> items, Function<T, K> keyMapper) {
         return grouping(items.stream(), keyMapper);
     }
 
@@ -181,9 +185,8 @@ public class Maps {
      * @param keyMapper the key mapper
      * @return the created map
      */
-    public static <T, K> Map<K, List<T>> grouping(
-            T[] items, Function<T, K> keyMapper
-    ) {
+    public static <T extends @Nullable Object, K extends @Nullable Object>
+    Map<K, List<T>> grouping(T[] items, Function<T, K> keyMapper) {
         return grouping(Stream.of(items), keyMapper);
     }
 
@@ -194,9 +197,8 @@ public class Maps {
      * @param keyMapper the key mapper
      * @return the created map
      */
-    public static <T, K> Map<K, List<T>> grouping(
-            Stream<T> stream, Function<T, K> keyMapper
-    ) {
+    public static <T extends @Nullable Object, K extends @Nullable Object>
+    Map<K, List<T>> grouping(Stream<T> stream, Function<T, K> keyMapper) {
         return stream.collect(MapCollectors.grouping(
                 keyMapper
         ));
@@ -210,9 +212,8 @@ public class Maps {
      * @param valueMapper the value mapper
      * @return the created map
      */
-    public static <T, K, V> Map<K, List<V>> grouping(
-            T[] items, Function<T, K> keyMapper, Function<T, V> valueMapper
-    ) {
+    public static <T extends @Nullable Object, K extends @Nullable Object, V extends @Nullable Object>
+    Map<K, List<V>> grouping(T[] items, Function<T, K> keyMapper, Function<T, V> valueMapper) {
         return grouping(Stream.of(items), keyMapper, valueMapper);
     }
 
@@ -224,9 +225,8 @@ public class Maps {
      * @param valueMapper the value mapper
      * @return the created map
      */
-    public static <T, K, V> Map<K, List<V>> grouping(
-            Collection<T> items, Function<T, K> keyMapper, Function<T, V> valueMapper
-    ) {
+    public static <T extends @Nullable Object, K extends @Nullable Object, V extends @Nullable Object>
+    Map<K, List<V>> grouping(Collection<T> items, Function<T, K> keyMapper, Function<T, V> valueMapper) {
         return grouping(items.stream(), keyMapper, valueMapper);
     }
 
@@ -238,9 +238,8 @@ public class Maps {
      * @param valueMapper the value mapper
      * @return the created map
      */
-    public static <T, K, V> Map<K, List<V>> grouping(
-            Stream<T> stream, Function<T, K> keyMapper, Function<T, V> valueMapper
-    ) {
+    public static <T extends @Nullable Object, K extends @Nullable Object, V extends @Nullable Object>
+    Map<K, List<V>> grouping(Stream<T> stream, Function<T, K> keyMapper, Function<T, V> valueMapper) {
         return stream.collect(MapCollectors.grouping(
                 keyMapper, valueMapper
         ));
@@ -254,9 +253,8 @@ public class Maps {
      * @param valueMapper the value mapper
      * @return the created map
      */
-    public static <T, K, V> Map<K, Set<V>> groupingSet(
-            Collection<T> items, Function<T, K> keyMapper, Function<T, V> valueMapper
-    ) {
+    public static <T extends @Nullable Object, K extends @Nullable Object, V extends @Nullable Object>
+    Map<K, Set<V>> groupingSet(Collection<T> items, Function<T, K> keyMapper, Function<T, V> valueMapper) {
         return groupingSet(items.stream(), keyMapper, valueMapper);
     }
 
@@ -268,9 +266,8 @@ public class Maps {
      * @param valueMapper the value mapper
      * @return the created map
      */
-    public static <T, K, V> Map<K, Set<V>> groupingSet(
-            T[] items, Function<T, K> keyMapper, Function<T, V> valueMapper
-    ) {
+    public static <T extends @Nullable Object, K extends @Nullable Object, V extends @Nullable Object>
+    Map<K, Set<V>> groupingSet(T[] items, Function<T, K> keyMapper, Function<T, V> valueMapper) {
         return groupingSet(Stream.of(items), keyMapper, valueMapper);
     }
 
@@ -282,9 +279,8 @@ public class Maps {
      * @param valueMapper the value mapper
      * @return the created map
      */
-    public static <T, K, V> Map<K, Set<V>> groupingSet(
-            Stream<T> stream, Function<T, K> keyMapper, Function<T, V> valueMapper
-    ) {
+    public static <T extends @Nullable Object, K extends @Nullable Object, V extends @Nullable Object>
+    Map<K, Set<V>> groupingSet(Stream<T> stream, Function<T, K> keyMapper, Function<T, V> valueMapper) {
         return stream.collect(MapCollectors.groupingSet(
                 keyMapper, valueMapper
         ));
@@ -297,9 +293,8 @@ public class Maps {
      * @param keyMapper the key mapper
      * @return the created map
      */
-    public static <T, K> Map<K, Set<T>> groupingSet(
-            Collection<T> items, Function<T, K> keyMapper
-    ) {
+    public static <T extends @Nullable Object, K extends @Nullable Object>
+    Map<K, Set<T>> groupingSet(Collection<T> items, Function<T, K> keyMapper) {
         return groupingSet(items.stream(), keyMapper);
     }
 
@@ -310,9 +305,8 @@ public class Maps {
      * @param keyMapper the key mapper
      * @return the created map
      */
-    public static <T, K> Map<K, Set<T>> groupingSet(
-            T[] items, Function<T, K> keyMapper
-    ) {
+    public static <T extends @Nullable Object, K extends @Nullable Object>
+    Map<K, Set<T>> groupingSet(T[] items, Function<T, K> keyMapper) {
         return groupingSet(Stream.of(items), keyMapper);
     }
 
@@ -323,9 +317,8 @@ public class Maps {
      * @param keyMapper the key mapper
      * @return the created map
      */
-    public static <T, K> Map<K, Set<T>> groupingSet(
-            Stream<T> stream, Function<T, K> keyMapper
-    ) {
+    public static <T extends @Nullable Object, K extends @Nullable Object>
+    Map<K, Set<T>> groupingSet(Stream<T> stream, Function<T, K> keyMapper) {
         return stream.collect(MapCollectors.groupingSet(
                 keyMapper
         ));
@@ -335,9 +328,8 @@ public class Maps {
      * @deprecated use {@link #groupingSet(Collection, Function, Function)}
      */
     @Deprecated
-    public static <T, K, V> Map<K, Set<V>> uniqueGrouping(
-            Collection<T> items, Function<T, K> keyMapper, Function<T, V> valueMapper
-    ) {
+    public static <T extends @Nullable Object, K extends @Nullable Object, V extends @Nullable Object>
+    Map<K, Set<V>> uniqueGrouping(Collection<T> items, Function<T, K> keyMapper, Function<T, V> valueMapper) {
         return groupingSet(items, keyMapper, valueMapper);
     }
 
@@ -345,7 +337,8 @@ public class Maps {
      * @deprecated use {@link #groupingSet(Stream, Function, Function)}
      */
     @Deprecated
-    public static <T, K, V> Map<K, Set<V>> uniqueGrouping(
+    public static <T extends @Nullable Object, K extends @Nullable Object, V extends @Nullable Object>
+    Map<K, Set<V>> uniqueGrouping(
             Stream<T> stream, Function<T, K> keyMapper, Function<T, V> valueMapper
     ) {
         return groupingSet(stream, keyMapper, valueMapper);
@@ -355,9 +348,8 @@ public class Maps {
      * @deprecated use {@link #groupingSet(Collection, Function)}
      */
     @Deprecated
-    public static <T, K> Map<K, Set<T>> uniqueGrouping(
-            Collection<T> items, Function<T, K> keyMapper
-    ) {
+    public static <T extends @Nullable Object, K extends @Nullable Object>
+    Map<K, Set<T>> uniqueGrouping(Collection<T> items, Function<T, K> keyMapper) {
         return groupingSet(items, keyMapper);
     }
 
@@ -368,7 +360,11 @@ public class Maps {
      * @param keyTransfer   the key transfer function
      * @param valueTransfer the value transfer function
      */
-    public static <K1, K2, V1, V2> Map<K2, V2> transfer(
+    public static <K1 extends @Nullable Object,
+            K2 extends @Nullable Object,
+            V1 extends @Nullable Object,
+            V2 extends @Nullable Object>
+    Map<K2, V2> transfer(
             Map<K1, V1> source, Function<K1, K2> keyTransfer, Function<V1, V2> valueTransfer
     ) {
         return mapping(source.entrySet(),
@@ -382,9 +378,8 @@ public class Maps {
      * @param source   the source map
      * @param transfer the value transfer function
      */
-    public static <K, V1, V2> Map<K, V2> transferValue(
-            Map<K, V1> source, Function<V1, V2> transfer
-    ) {
+    public static <K extends @Nullable Object, V1 extends @Nullable Object, V2 extends @Nullable Object>
+    Map<K, V2> transferValue(Map<K, V1> source, Function<V1, V2> transfer) {
         return mapping(source.entrySet(), Map.Entry::getKey,
                 entry -> transfer.apply(entry.getValue()));
     }
@@ -394,7 +389,8 @@ public class Maps {
      *
      * @param expectedSize the number of entries expected to add
      */
-    public static <K, V> HashMap<K, V> create(int expectedSize) {
+    public static <K extends @Nullable Object, V extends @Nullable Object>
+    HashMap<K, V> create(int expectedSize) {
         return newHashMap(expectedSize);
     }
 
@@ -403,7 +399,8 @@ public class Maps {
      *
      * @param expectedSize the number of entries expected to add
      */
-    public static <K, V> HashMap<K, V> newHashMap(int expectedSize) {
+    public static <K extends @Nullable Object, V extends @Nullable Object>
+    HashMap<K, V> newHashMap(int expectedSize) {
         int cap;
         if (expectedSize < 3) {
             cap = expectedSize <= 0 ? 1 : expectedSize + 1;

@@ -15,8 +15,8 @@
  */
 package org.febit.lang.util;
 
-import jakarta.annotation.Nullable;
 import lombok.experimental.UtilityClass;
+import org.jspecify.annotations.Nullable;
 
 @UtilityClass
 public class Defaults {
@@ -27,7 +27,7 @@ public class Defaults {
 
     @Nullable
     @SafeVarargs
-    public static <T> T collapse(@Nullable T obj, @Nullable T... defaults) {
+    public static <T> T collapse(@Nullable T obj, @Nullable T @Nullable ... defaults) {
         if (obj != null) {
             return obj;
         }
@@ -41,6 +41,5 @@ public class Defaults {
         }
         return null;
     }
-
 
 }

@@ -15,11 +15,10 @@
  */
 package org.febit.common.jsonrpc2.internal;
 
-import jakarta.annotation.Nonnull;
-import lombok.NonNull;
 import org.febit.common.jsonrpc2.annotation.RpcMethodType;
 import org.febit.common.jsonrpc2.annotation.RpcParamsKind;
 import org.febit.lang.annotation.NullableArgs;
+import org.jspecify.annotations.NonNull;
 import tools.jackson.databind.JavaType;
 
 import java.lang.reflect.Method;
@@ -30,10 +29,10 @@ import java.time.Duration;
 )
 @NullableArgs
 public record RpcMappingMeta(
-        @NonNull @Nonnull String method,
-        @NonNull @Nonnull RpcMethodType type,
-        @NonNull @Nonnull RpcParamsKind paramsKind,
-        @NonNull @Nonnull JavaType resultType,
+        @lombok.NonNull @NonNull String method,
+        @lombok.NonNull @NonNull RpcMethodType type,
+        @lombok.NonNull @NonNull RpcParamsKind paramsKind,
+        @lombok.NonNull @NonNull JavaType resultType,
         Method targetMethod,
         boolean isFutureResult,
         boolean annotated,

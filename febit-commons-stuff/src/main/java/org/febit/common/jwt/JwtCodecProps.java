@@ -16,6 +16,7 @@
 package org.febit.common.jwt;
 
 import lombok.Singular;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
@@ -24,7 +25,7 @@ import java.util.List;
         toBuilder = true
 )
 public record JwtCodecProps(
-        String signerKeyId,
+        @Nullable String signerKeyId,
         @Singular
         List<JwtKey> keys
 ) {

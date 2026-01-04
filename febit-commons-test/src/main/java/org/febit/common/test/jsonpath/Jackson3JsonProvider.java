@@ -17,8 +17,8 @@ package org.febit.common.test.jsonpath;
 
 import com.jayway.jsonpath.InvalidJsonException;
 import com.jayway.jsonpath.spi.json.AbstractJsonProvider;
-import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 

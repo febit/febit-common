@@ -15,11 +15,11 @@
  */
 package org.febit.lang.protocol;
 
-import jakarta.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.time.Instant;
 
-public interface IMutableResponse<T> extends IResponse<T> {
+public interface IMutableResponse<T extends @Nullable Object> extends IResponse<T> {
 
     void setStatus(int status);
 

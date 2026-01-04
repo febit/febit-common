@@ -15,10 +15,10 @@
  */
 package org.febit.common.kafka.deser;
 
-import jakarta.annotation.Nullable;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.febit.common.parser.AccessLogParser;
 import org.febit.lang.util.JacksonUtils;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JavaType;
 
 import java.nio.charset.StandardCharsets;
@@ -44,6 +44,8 @@ public class AccessLogDeserializer<T> implements Deserializer<T> {
     public static final String TYPE_OF_VALUE = PREFIX + "value.type";
 
     private JavaType javaType = DEFAULT_TYPE;
+
+    @Nullable
     private List<String> keys;
 
     public static void configKeyKeys(List<String> keys, BiConsumer<String, Object> configConsumer) {
@@ -85,7 +87,11 @@ public class AccessLogDeserializer<T> implements Deserializer<T> {
         if (keysRaw == null) {
             throw new IllegalArgumentException("Key list of log is required, please set to: " + key);
         }
-        this.keys = JacksonUtils.parseToStringList(keysRaw.toString());
+        var parsed = JacksonUtils.parseToStringList(keysRaw.toString());
+        if (parsed == null || parsed.isEmpty()) {
+            throw new IllegalArgumentException("Key list of log is required, please set to: " + key);
+        }
+        this.keys = parsed;
 
         var type = DeserializerUtils.resolveJavaType(configs, isKey ? TYPE_OF_KEY : TYPE_OF_VALUE);
         if (type != null) {
@@ -95,9 +101,13 @@ public class AccessLogDeserializer<T> implements Deserializer<T> {
 
     @Nullable
     @Override
-    public T deserialize(String topic, @Nullable byte[] data) {
+    public T deserialize(String topic, byte @Nullable [] data) {
         if (data == null || data.length == 0) {
             return null;
+        }
+        var keys = this.keys;
+        if (keys == null || keys.isEmpty()) {
+            throw new IllegalStateException("Deserializer is not configured properly, keys are missing.");
         }
         var str = new String(data, StandardCharsets.UTF_8);
         var values = AccessLogParser.parseToMap(str, keys);

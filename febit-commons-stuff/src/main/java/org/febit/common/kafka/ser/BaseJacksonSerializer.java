@@ -15,10 +15,10 @@
  */
 package org.febit.common.kafka.ser;
 
-import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.serialization.Serializer;
 import org.febit.lang.util.JacksonWrapper;
+import org.jspecify.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
 

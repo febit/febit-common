@@ -15,8 +15,8 @@
  */
 package org.febit.common.jsonrpc2;
 
-import jakarta.annotation.Nullable;
 import org.febit.common.jsonrpc2.protocol.Id;
+import org.jspecify.annotations.Nullable;
 
 public interface RequestPool {
 

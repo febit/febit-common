@@ -19,8 +19,8 @@ import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.TypeRef;
 import com.jayway.jsonpath.spi.mapper.MappingException;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
-import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.ObjectMapper;
 
 @RequiredArgsConstructor

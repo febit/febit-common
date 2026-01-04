@@ -15,7 +15,6 @@
  */
 package org.febit.common.jooq;
 
-import jakarta.annotation.Nullable;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.febit.lang.UncheckedException;
@@ -25,6 +24,7 @@ import org.febit.lang.util.TypeParameters;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
+import org.jspecify.annotations.Nullable;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.util.ConcurrentReferenceHashMap;
 

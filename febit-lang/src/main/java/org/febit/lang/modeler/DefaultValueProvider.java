@@ -15,7 +15,7 @@
  */
 package org.febit.lang.modeler;
 
-import jakarta.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 @FunctionalInterface
 public interface DefaultValueProvider {

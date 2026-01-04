@@ -15,6 +15,8 @@
  */
 package org.febit.lang.util;
 
+import org.jspecify.annotations.Nullable;
+
 import java.text.MessageFormat;
 
 public class StringWalker {
@@ -23,6 +25,7 @@ public class StringWalker {
     protected final int end;
     protected int pos;
 
+    @Nullable
     private StringBuilder _buf;
 
     public StringWalker(String text) {

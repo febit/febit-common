@@ -15,10 +15,10 @@
  */
 package org.febit.lang.util.jackson;
 
-import jakarta.annotation.Nullable;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.Singular;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JavaType;
 import tools.jackson.databind.cfg.MapperConfig;
 import tools.jackson.databind.introspect.AnnotatedClass;

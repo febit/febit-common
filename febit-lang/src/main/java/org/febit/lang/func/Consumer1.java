@@ -15,7 +15,7 @@
  */
 package org.febit.lang.func;
 
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -23,9 +23,9 @@ import java.util.function.Consumer;
 @FunctionalInterface
 public interface Consumer1<A1> extends IConsumer, Consumer<A1> {
 
-    @Nonnull
+    @NonNull
     @Override
-    default Consumer1<A1> andThen(@Nonnull Consumer<? super A1> after) {
+    default Consumer1<A1> andThen(@NonNull Consumer<? super A1> after) {
         Objects.requireNonNull(after);
         return (a1) -> {
             accept(a1);

@@ -15,8 +15,8 @@
  */
 package org.febit.lang.func;
 
-import jakarta.annotation.Nonnull;
 import org.febit.lang.Tuple3;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Objects;
 
@@ -25,13 +25,13 @@ public interface Consumer3<A1, A2, A3> extends IConsumer {
 
     void accept(A1 arg1, A2 arg2, A3 arg3);
 
-    default void accept(@Nonnull Tuple3<A1, A2, A3> tuple) {
+    default void accept(@NonNull Tuple3<A1, A2, A3> tuple) {
         accept(tuple.v1(), tuple.v2(), tuple.v3());
     }
 
-    @Nonnull
+    @NonNull
     default Consumer3<A1, A2, A3> andThen(
-            @Nonnull Consumer3<? super A1, ? super A2, ? super A3> after) {
+            @NonNull Consumer3<? super A1, ? super A2, ? super A3> after) {
         Objects.requireNonNull(after);
         return (a1, a2, a3) -> {
             accept(a1, a2, a3);

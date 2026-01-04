@@ -15,9 +15,8 @@
  */
 package org.febit.lang.util;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import org.febit.lang.func.Consumer1;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -29,15 +28,14 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class SingleElementConsumer<T> implements Consumer1<T> {
 
-    private final AtomicReference<T> holder = new AtomicReference<>();
+    private final AtomicReference<@Nullable T> holder = new AtomicReference<>();
 
     @Nullable
     public T getValue() {
         return holder.get();
     }
 
-    @Nonnull
-    public Optional<T> toOptional() {
+    public Optional<@Nullable T> toOptional() {
         return Optional.ofNullable(holder.get());
     }
 

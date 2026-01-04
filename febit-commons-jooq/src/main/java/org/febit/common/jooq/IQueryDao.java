@@ -15,8 +15,8 @@
  */
 package org.febit.common.jooq;
 
-import jakarta.annotation.Nullable;
 import org.jooq.TableRecord;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;

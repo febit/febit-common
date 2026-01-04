@@ -15,8 +15,8 @@
  */
 package org.febit.common.jsonrpc2.internal;
 
-import jakarta.annotation.Nullable;
 import org.febit.common.jsonrpc2.exception.UncheckedRpcException;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
 

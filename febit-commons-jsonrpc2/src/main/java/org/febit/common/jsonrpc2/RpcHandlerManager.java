@@ -15,7 +15,7 @@
  */
 package org.febit.common.jsonrpc2;
 
-import jakarta.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 

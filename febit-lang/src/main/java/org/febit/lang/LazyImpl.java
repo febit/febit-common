@@ -15,33 +15,34 @@
  */
 package org.febit.lang;
 
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.febit.lang.annotation.NonNullApi;
 import org.febit.lang.func.SerializableSupplier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * Lazy agent.
+ * A lazy value holder implementation.
  *
- * @param <T>
+ * @param <T> the type of value
  */
-@NonNullApi
+@NullMarked
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class LazyImpl<T> implements Serializable, Lazy<T> {
 
-    @Nonnull
+    @SuppressWarnings("NullableProblems")
+    @lombok.NonNull
     private final SerializableSupplier<T> supplier;
+
     @Nullable
     private transient volatile T value;
 
     @Override
     public T get() {
-        var result = this.value;
+        T result = this.value;
         if (result != null) {
             return result;
         }
@@ -64,7 +65,7 @@ final class LazyImpl<T> implements Serializable, Lazy<T> {
     }
 
     private synchronized T computeIfAbsent() {
-        var result = this.value;
+        T result = this.value;
         if (result != null) {
             return result;
         }

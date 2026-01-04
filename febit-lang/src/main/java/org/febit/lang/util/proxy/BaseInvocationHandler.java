@@ -15,7 +15,7 @@
  */
 package org.febit.lang.util.proxy;
 
-import jakarta.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -31,7 +31,7 @@ public abstract class BaseInvocationHandler<T> implements InvocationHandler {
     @Override
     @Nullable
     @SuppressWarnings("unchecked")
-    public Object invoke(Object self, Method method, @Nullable Object[] args) throws Throwable {
+    public Object invoke(Object self, Method method, @Nullable Object @Nullable [] args) throws Throwable {
         var invoker = invokerFor(method);
         return invoker.invoke((T) self, args == null ? EMPTY_ARGS : args);
     }

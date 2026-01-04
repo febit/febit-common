@@ -15,12 +15,12 @@
  */
 package org.febit.lang.util;
 
-import jakarta.annotation.Nullable;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.collections4.IteratorUtils;
 import org.apache.commons.collections4.ResettableIterator;
 import org.apache.commons.collections4.iterators.SingletonIterator;
 import org.apache.commons.collections4.iterators.UnmodifiableIterator;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.Enumeration;

@@ -16,11 +16,13 @@
 package org.febit.common.kafka.deser;
 
 import org.apache.kafka.common.serialization.Deserializer;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Map;
 
 public abstract class BaseDelegatedDeserializer<T, D> implements Deserializer<T> {
 
+    @Nullable
     private Deserializer<D> delegated;
 
     protected abstract String getNameOfDelegated(boolean isKey);
@@ -30,7 +32,7 @@ public abstract class BaseDelegatedDeserializer<T, D> implements Deserializer<T>
         if (d != null) {
             return d;
         }
-        throw new IllegalStateException("No delegated deser available, should call configure before use it.");
+        throw new IllegalStateException("Deserializer not configured yet.");
     }
 
     @Override
@@ -42,7 +44,7 @@ public abstract class BaseDelegatedDeserializer<T, D> implements Deserializer<T>
         var key = getNameOfDelegated(isKey);
         var cls = configs.get(key);
         if (cls == null) {
-            throw new IllegalArgumentException("Delegated deser is required, please given a deser class name by: " + key);
+            throw new IllegalArgumentException("Missing config: " + key);
         }
         return DeserializerUtils.create(cls.toString(), configs, isKey);
     }

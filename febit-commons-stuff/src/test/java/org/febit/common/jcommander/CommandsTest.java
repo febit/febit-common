@@ -23,6 +23,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.febit.common.jcommander.converter.DurationConverter;
 import org.febit.lang.io.DiscardOutputStream;
+import org.jspecify.annotations.NullMarked;
 import org.junit.jupiter.api.Test;
 import org.slf4j.event.Level;
 
@@ -66,6 +67,7 @@ class CommandsTest {
                 }))
         );
 
+        // noinspection DataFlowIssue
         assertThrows(NullPointerException.class,
                 () -> commands.add(SpyCommand.of(List.of("test"), () -> null, c -> {
                 }))
@@ -249,6 +251,7 @@ class CommandsTest {
         private String user;
     }
 
+    @NullMarked
     @RequiredArgsConstructor(staticName = "of")
     private static class SpyCommand<T extends IOptions> implements ICommand<T> {
 
@@ -272,6 +275,7 @@ class CommandsTest {
         }
     }
 
+    @NullMarked
     private static class FooCommand implements ICommand<FooOptions> {
 
         @Override

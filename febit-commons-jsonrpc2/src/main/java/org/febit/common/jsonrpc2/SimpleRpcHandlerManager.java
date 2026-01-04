@@ -15,7 +15,6 @@
  */
 package org.febit.common.jsonrpc2;
 
-import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.febit.common.jsonrpc2.exception.RpcDuplicateHandlerRegistrationException;
 import org.febit.common.jsonrpc2.internal.MethodNotificationHandler;
@@ -23,6 +22,7 @@ import org.febit.common.jsonrpc2.internal.MethodRequestHandler;
 import org.febit.common.jsonrpc2.internal.RpcMappingMeta;
 import org.febit.common.jsonrpc2.internal.RpcMappings;
 import org.febit.lang.util.ReflectUtils;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;

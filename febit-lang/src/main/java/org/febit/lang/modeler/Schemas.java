@@ -15,7 +15,6 @@
  */
 package org.febit.lang.modeler;
 
-import jakarta.annotation.Nullable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +22,7 @@ import lombok.experimental.Accessors;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.febit.lang.util.StringWalker;
+import org.jspecify.annotations.Nullable;
 
 import java.util.regex.Pattern;
 

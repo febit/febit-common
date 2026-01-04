@@ -20,10 +20,10 @@ import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import jakarta.annotation.Nullable;
 import org.febit.lang.Lazy;
 import org.febit.lang.protocol.IResponse;
 import org.febit.lang.util.Maps;
+import org.jspecify.annotations.Nullable;
 
 import java.text.ParseException;
 import java.time.Instant;
@@ -77,8 +77,7 @@ public class JwtCodec {
         return Instant.now();
     }
 
-    @Nullable
-    protected JwtKey.Resolved resolveKey(SignedJWT jwt) {
+    protected JwtKey.@Nullable Resolved resolveKey(SignedJWT jwt) {
         var id = jwt.getHeader().getKeyID();
         if (id == null) {
             return null;

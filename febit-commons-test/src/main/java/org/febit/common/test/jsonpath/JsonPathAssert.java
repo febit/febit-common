@@ -22,7 +22,6 @@ import com.jayway.jsonpath.Option;
 import com.jayway.jsonpath.spi.cache.CacheProvider;
 import com.jayway.jsonpath.spi.json.JsonProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
-import jakarta.annotation.Nullable;
 import lombok.Singular;
 import org.assertj.core.annotation.CheckReturnValue;
 import org.assertj.core.api.AbstractAssert;
@@ -35,6 +34,7 @@ import org.assertj.core.api.MapAssert;
 import org.assertj.core.api.ObjectAssert;
 import org.assertj.core.internal.Conditions;
 import org.febit.lang.util.JacksonUtils;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.util.Collection;

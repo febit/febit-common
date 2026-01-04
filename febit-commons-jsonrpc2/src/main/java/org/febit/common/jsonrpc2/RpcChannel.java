@@ -15,8 +15,8 @@
  */
 package org.febit.common.jsonrpc2;
 
-import jakarta.annotation.Nullable;
 import org.febit.common.jsonrpc2.protocol.IRpcMessage;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.Type;
 import java.time.Duration;

@@ -15,12 +15,12 @@
  */
 package org.febit.common.jsonrpc2;
 
-import jakarta.annotation.Nullable;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.febit.common.jsonrpc2.protocol.IRpcNotification;
 import org.febit.common.jsonrpc2.protocol.IRpcRequest;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;

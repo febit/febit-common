@@ -15,9 +15,9 @@
  */
 package org.febit.lang.util;
 
-import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JavaType;
 import tools.jackson.databind.type.TypeFactory;
 import tools.jackson.databind.util.SimpleLookupCache;
