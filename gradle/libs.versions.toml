@@ -30,14 +30,14 @@ nimbus-jose-jwt = '10.6'
 slf4j = '2.0.17'
 snakeyaml = '2.5'
 spotbugs = '4.9.8'
-spring = '6.2.15'
+spring = '7.0.2'
 swagger = '2.2.41'
 uuid-generator = '5.2.0'
 
 assertj = '3.27.6'
 hamcrest = '3.0'
-junit = '5.14.1'
-mockito = '5.20.0'
+junit = '6.0.1'
+mockito = '5.21.0'
 
 
 [plugins]
