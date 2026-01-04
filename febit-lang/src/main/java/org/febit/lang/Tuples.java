@@ -16,33 +16,66 @@
 package org.febit.lang;
 
 import lombok.experimental.UtilityClass;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 @UtilityClass
 public class Tuples {
 
-    @NonNull
     public static <V1> Tuple1<V1> of(V1 v1) {
         return Tuple1.of(v1);
     }
 
-    @NonNull
     public static <V1, V2> Tuple2<V1, V2> of(V1 v1, V2 v2) {
         return Tuple2.of(v1, v2);
     }
 
-    @NonNull
     public static <V1, V2, V3> Tuple3<V1, V2, V3> of(V1 v1, V2 v2, V3 v3) {
         return Tuple3.of(v1, v2, v3);
     }
 
-    @NonNull
     public static <V1, V2, V3, V4> Tuple4<V1, V2, V3, V4> of(V1 v1, V2 v2, V3 v3, V4 v4) {
         return Tuple4.of(v1, v2, v3, v4);
     }
 
-    @NonNull
     public static <V1, V2, V3, V4, V5> Tuple5<V1, V2, V3, V4, V5> of(V1 v1, V2 v2, V3 v3, V4 v4, V5 v5) {
         return Tuple5.of(v1, v2, v3, v4, v5);
     }
+
+    public static <V1 extends @Nullable Object>
+    Tuple1<V1> ofNullable(V1 v1) {
+        return Tuple1.ofNullable(v1);
+    }
+
+    public static <V1 extends @Nullable Object,
+            V2 extends @Nullable Object>
+    Tuple2<V1, V2> ofNullable(V1 v1, V2 v2) {
+        return Tuple2.ofNullable(v1, v2);
+    }
+
+    public static <V1 extends @Nullable Object,
+            V2 extends @Nullable Object,
+            V3 extends @Nullable Object>
+    Tuple3<V1, V2, V3> ofNullable(V1 v1, V2 v2, V3 v3) {
+        return Tuple3.ofNullable(v1, v2, v3);
+    }
+
+    public static <V1 extends @Nullable Object,
+            V2 extends @Nullable Object,
+            V3 extends @Nullable Object,
+            V4 extends @Nullable Object>
+    Tuple4<V1, V2, V3, V4> ofNullable(V1 v1, V2 v2, V3 v3, V4 v4) {
+        return Tuple4.ofNullable(v1, v2, v3, v4);
+    }
+
+    public static <V1 extends @Nullable Object,
+            V2 extends @Nullable Object,
+            V3 extends @Nullable Object,
+            V4 extends @Nullable Object,
+            V5 extends @Nullable Object>
+    Tuple5<V1, V2, V3, V4, V5> ofNullable(V1 v1, V2 v2, V3 v3, V4 v4, V5 v5) {
+        return Tuple5.ofNullable(v1, v2, v3, v4, v5);
+    }
+
 }

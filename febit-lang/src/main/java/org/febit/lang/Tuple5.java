@@ -15,52 +15,33 @@
  */
 package org.febit.lang;
 
-import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.builder.CompareToBuilder;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
-@RequiredArgsConstructor
-@EqualsAndHashCode(
-        cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY
-)
-public final class Tuple5<V1, V2, V3, V4, V5> implements Tuple, Comparable<Tuple5<V1, V2, V3, V4, V5>> {
+@NullMarked
+public record Tuple5<V1 extends @Nullable Object,
+        V2 extends @Nullable Object,
+        V3 extends @Nullable Object,
+        V4 extends @Nullable Object,
+        V5 extends @Nullable Object>(
+        V1 v1, V2 v2, V3 v3, V4 v4, V5 v5
+) implements Tuple, Comparable<Tuple5<V1, V2, V3, V4, V5>> {
 
-    private static final long serialVersionUID = 1L;
-
-    @NonNull
-    public static <V1, V2, V3, V4, V5> Tuple5<V1, V2, V3, V4, V5> of(V1 v1, V2 v2, V3 v3, V4 v4, V5 v5) {
+    public static <V1, V2, V3, V4, V5> Tuple5<V1, V2, V3, V4, V5> of(
+            V1 v1, V2 v2, V3 v3, V4 v4, V5 v5) {
         return new Tuple5<>(v1, v2, v3, v4, v5);
     }
 
-    public final V1 v1;
-    public final V2 v2;
-    public final V3 v3;
-    public final V4 v4;
-    public final V5 v5;
-
-    public V1 v1() {
-        return v1;
+    public static <V1 extends @Nullable Object,
+            V2 extends @Nullable Object,
+            V3 extends @Nullable Object,
+            V4 extends @Nullable Object,
+            V5 extends @Nullable Object>
+    Tuple5<V1, V2, V3, V4, V5> ofNullable(V1 v1, V2 v2, V3 v3, V4 v4, V5 v5) {
+        return new Tuple5<>(v1, v2, v3, v4, v5);
     }
 
-    public V2 v2() {
-        return v2;
-    }
-
-    public V3 v3() {
-        return v3;
-    }
-
-    public V4 v4() {
-        return v4;
-    }
-
-    public V5 v5() {
-        return v5;
-    }
-
-    @NonNull
     @Override
     @SuppressWarnings("MethodDoesntCallSuperMethod")
     public Tuple5<V1, V2, V3, V4, V5> clone() {

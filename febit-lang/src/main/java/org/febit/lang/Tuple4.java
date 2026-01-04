@@ -15,47 +15,31 @@
  */
 package org.febit.lang;
 
-import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.builder.CompareToBuilder;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
-@RequiredArgsConstructor
-@EqualsAndHashCode(
-        cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY
-)
-public final class Tuple4<V1, V2, V3, V4> implements Tuple, Comparable<Tuple4<V1, V2, V3, V4>> {
+@NullMarked
+public record Tuple4<V1 extends @Nullable Object,
+        V2 extends @Nullable Object,
+        V3 extends @Nullable Object,
+        V4 extends @Nullable Object>(
+        V1 v1, V2 v2, V3 v3, V4 v4
+) implements Tuple, Comparable<Tuple4<V1, V2, V3, V4>> {
 
-    private static final long serialVersionUID = 1L;
-
-    @NonNull
-    public static <V1, V2, V3, V4> Tuple4<V1, V2, V3, V4> of(V1 v1, V2 v2, V3 v3, V4 v4) {
+    public static <V1, V2, V3, V4> Tuple4<V1, V2, V3, V4> of(
+            V1 v1, V2 v2, V3 v3, V4 v4) {
         return new Tuple4<>(v1, v2, v3, v4);
     }
 
-    public final V1 v1;
-    public final V2 v2;
-    public final V3 v3;
-    public final V4 v4;
-
-    public V1 v1() {
-        return v1;
+    public static <V1 extends @Nullable Object,
+            V2 extends @Nullable Object,
+            V3 extends @Nullable Object,
+            V4 extends @Nullable Object>
+    Tuple4<V1, V2, V3, V4> ofNullable(V1 v1, V2 v2, V3 v3, V4 v4) {
+        return new Tuple4<>(v1, v2, v3, v4);
     }
 
-    public V2 v2() {
-        return v2;
-    }
-
-    public V3 v3() {
-        return v3;
-    }
-
-    public V4 v4() {
-        return v4;
-    }
-
-    @NonNull
     @Override
     @SuppressWarnings("MethodDoesntCallSuperMethod")
     public Tuple4<V1, V2, V3, V4> clone() {

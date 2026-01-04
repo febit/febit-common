@@ -77,8 +77,8 @@ class RpcChannelImplTest {
     @Test
     void ping() {
         var pair = asyncPair();
-        var a = pair.v1.remoteApi(SystemRpc.class);
-        var b = pair.v2.remoteApi(SystemRpc.class);
+        var a = pair.v1().remoteApi(SystemRpc.class);
+        var b = pair.v2().remoteApi(SystemRpc.class);
 
         assertEquals("pong", a.ping());
         assertEquals("pong", b.ping());
@@ -90,7 +90,7 @@ class RpcChannelImplTest {
     @Test
     void foo() {
         var pair = asyncPair();
-        var b = pair.v1.remoteApi(BRpc.class);
+        var b = pair.v1().remoteApi(BRpc.class);
 
         var foo = b.createFoo(new BRpc.FooCreateParams("foo", 1));
         assertEquals("foo", foo.name());
@@ -104,7 +104,7 @@ class RpcChannelImplTest {
     @Test
     void notification() {
         var pair = syncPair();
-        var b = pair.v1.remoteApi(BRpc.class);
+        var b = pair.v1().remoteApi(BRpc.class);
 
         var counts = b.counts();
         assertEquals(0, counts.bothRequest());
@@ -136,7 +136,7 @@ class RpcChannelImplTest {
     @Test
     void timeout() {
         var pair = asyncPair();
-        var b = pair.v1.remoteApi(BRpc.class);
+        var b = pair.v1().remoteApi(BRpc.class);
 
         assertDoesNotThrow(() -> b.sleepWithTimeout(1));
         assertDoesNotThrow(() -> b.sleep(1));
@@ -150,7 +150,7 @@ class RpcChannelImplTest {
     @Test
     void missmatch() {
         var pair = asyncPair();
-        var b = pair.v1.remoteApi(BRpc.class);
+        var b = pair.v1().remoteApi(BRpc.class);
 
         var ex = assertThrows(RpcErrorException.class, b::methodNotExists);
         assertEquals(StdRpcErrors.METHOD_NOT_FOUND.code(), ex.getError().code());
@@ -166,7 +166,7 @@ class RpcChannelImplTest {
     @Test
     void flattenParams() {
         var pair = asyncPair();
-        var b = pair.v1.remoteApi(BRpc.class);
+        var b = pair.v1().remoteApi(BRpc.class);
 
         var foo = b.flattenParams("flattened", 30);
         assertEquals("flattened", foo.name());
@@ -176,7 +176,7 @@ class RpcChannelImplTest {
     @Test
     void flattenParamsArray() {
         var pair = asyncPair();
-        var b = pair.v1.remoteApi(BRpc.class);
+        var b = pair.v1().remoteApi(BRpc.class);
 
         var arr = b.flattenParamsArray("arrayed", 25);
         assertArrayEquals(new Object[]{"arrayed", 25}, arr);
@@ -185,7 +185,7 @@ class RpcChannelImplTest {
     @Test
     void paramOverflow() {
         var pair = asyncPair();
-        var b = pair.v1.remoteApi(BRpc.class);
+        var b = pair.v1().remoteApi(BRpc.class);
 
         assertThrows(IllegalStateException.class, () -> b.paramsOverflow("a", "b", "c"));
     }

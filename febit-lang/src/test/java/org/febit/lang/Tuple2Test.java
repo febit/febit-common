@@ -33,7 +33,7 @@ class Tuple2Test {
 
         assertEquals(
                 List.of(1, 2),
-                List.of(numbers.v1, numbers.v2)
+                List.of(numbers.v1(), numbers.v2())
         );
         assertNotSame(numbers, numbers.clone());
         assertEquals(numbers, numbers.clone());
@@ -41,7 +41,7 @@ class Tuple2Test {
 
         assertEquals(
                 List.of(1, "2"),
-                List.of(mixed.v1, mixed.v2)
+                List.of(mixed.v1(), mixed.v2())
         );
         assertNotSame(mixed, mixed.clone());
         assertEquals(mixed, mixed.clone());

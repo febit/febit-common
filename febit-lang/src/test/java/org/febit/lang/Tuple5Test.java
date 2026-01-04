@@ -33,7 +33,7 @@ class Tuple5Test {
 
         assertEquals(
                 List.of(1, 2, 3, 4, 5),
-                List.of(numbers.v1, numbers.v2, numbers.v3, numbers.v4, numbers.v5)
+                List.of(numbers.v1(), numbers.v2(), numbers.v3(), numbers.v4(), numbers.v5())
         );
         assertNotSame(numbers, numbers.clone());
         assertEquals(numbers, numbers.clone());
@@ -41,11 +41,21 @@ class Tuple5Test {
 
         assertEquals(
                 List.of(1, "2", 3L, 4.0, 5.0f),
-                List.of(mixed.v1, mixed.v2, mixed.v3, mixed.v4, mixed.v5)
+                List.of(mixed.v1(), mixed.v2(), mixed.v3(), mixed.v4(), mixed.v5())
         );
         assertNotSame(mixed, mixed.clone());
         assertEquals(mixed, mixed.clone());
         assertEquals(mixed.hashCode(), mixed.clone().hashCode());
+    }
+
+    @Test
+    void nullable() {
+        var tuple = Tuple5.of(null, null, null, null, null);
+        assertNull(tuple.v1());
+        assertNull(tuple.v2());
+        assertNull(tuple.v3());
+        assertNull(tuple.v4());
+        assertNull(tuple.v5());
     }
 
     @Test

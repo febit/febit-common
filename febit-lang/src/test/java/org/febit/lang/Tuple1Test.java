@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class Tuple1Test {
 
+
     @Test
     void test() {
         var numbers = Tuple1.of(1);
@@ -33,7 +34,7 @@ class Tuple1Test {
 
         assertEquals(
                 List.of(1),
-                List.of(numbers.v1)
+                List.of(numbers.v1())
         );
         assertNotSame(numbers, numbers.clone());
         assertEquals(numbers, numbers.clone());
@@ -41,7 +42,7 @@ class Tuple1Test {
 
         assertEquals(
                 List.of("1"),
-                List.of(mixed.v1)
+                List.of(mixed.v1())
         );
         assertNotSame(mixed, mixed.clone());
         assertEquals(mixed, mixed.clone());

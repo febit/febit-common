@@ -15,32 +15,23 @@
  */
 package org.febit.lang;
 
-import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.builder.CompareToBuilder;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
-@RequiredArgsConstructor
-@EqualsAndHashCode(
-        cacheStrategy = EqualsAndHashCode.CacheStrategy.LAZY
-)
-public final class Tuple1<V1> implements Tuple, Comparable<Tuple1<V1>> {
+@NullMarked
+public record Tuple1<V1 extends @Nullable Object>(
+        V1 v1
+) implements Tuple, Comparable<Tuple1<V1>> {
 
-    private static final long serialVersionUID = 1L;
-
-    @NonNull
     public static <V1> Tuple1<V1> of(V1 v1) {
         return new Tuple1<>(v1);
     }
 
-    public final V1 v1;
-
-    public V1 v1() {
-        return v1;
+    public static <V1 extends @Nullable Object> Tuple1<V1> ofNullable(V1 v1) {
+        return new Tuple1<>(v1);
     }
 
-    @NonNull
     @Override
     @SuppressWarnings("MethodDoesntCallSuperMethod")
     public Tuple1<V1> clone() {
