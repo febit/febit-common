@@ -41,24 +41,24 @@ public class ConvertUtils {
         return obj.toString();
     }
 
-    public static Boolean toBoolean(@Nullable Object raw) {
-        if (raw instanceof Boolean) {
-            return (Boolean) raw;
+    public static boolean toBoolean(@Nullable Object raw) {
+        if (raw instanceof Boolean bool) {
+            return bool;
         }
         if (raw == null) {
             return false;
         }
-        if (raw instanceof Number) {
-            return ((Number) raw).doubleValue() == 1D;
+        if (raw instanceof Number number) {
+            return number.doubleValue() == 1D;
         }
-        if (raw instanceof String && isTrue((String) raw)) {
+        if (raw instanceof String str && isTrue(str)) {
             return true;
         }
         var text = raw.toString().trim().toLowerCase();
         return isTrue(text);
     }
 
-    private static Boolean isTrue(String text) {
+    private static boolean isTrue(String text) {
         return switch (text) {
             case "true", "True", "TRUE",
                  "yes", "Yes", "YES",
@@ -120,8 +120,8 @@ public class ConvertUtils {
             Function<Number, T> converter,
             @Nullable T defaultValue
     ) {
-        if (raw instanceof Number) {
-            return converter.apply((Number) raw);
+        if (raw instanceof Number number) {
+            return converter.apply(number);
         }
         if (raw == null) {
             return defaultValue;
@@ -142,26 +142,26 @@ public class ConvertUtils {
         if (obj == null) {
             return null;
         }
-        if (obj instanceof Number) {
-            if (obj instanceof BigDecimal) {
-                return (BigDecimal) obj;
+        if (obj instanceof Number number) {
+            if (number instanceof BigDecimal decimal) {
+                return decimal;
             }
             var type = obj.getClass();
             if (type == Integer.class
                     || type == Long.class
                     || type == Short.class
                     || type == Byte.class) {
-                return BigDecimal.valueOf(((Number) obj).longValue());
+                return BigDecimal.valueOf(number.longValue());
             }
             if (obj instanceof Double) {
-                return BigDecimal.valueOf(((Number) obj).doubleValue());
+                return BigDecimal.valueOf(number.doubleValue());
             }
-            if (obj instanceof BigInteger) {
-                return new BigDecimal((BigInteger) obj);
+            if (obj instanceof BigInteger bi) {
+                return new BigDecimal(bi);
             }
         }
-        if (obj instanceof Character) {
-            return new BigDecimal((int) ((Character) obj));
+        if (obj instanceof Character c) {
+            return new BigDecimal(c);
         }
         return new BigDecimal(obj.toString().trim());
     }
@@ -172,8 +172,8 @@ public class ConvertUtils {
         if (obj == null) {
             return null;
         }
-        if (obj instanceof TemporalAccessor) {
-            return convert.apply((TemporalAccessor) obj);
+        if (obj instanceof TemporalAccessor accessor) {
+            return convert.apply(accessor);
         }
         var str = obj.toString();
         return parser.apply(str);
@@ -191,24 +191,24 @@ public class ConvertUtils {
 
     @Nullable
     public static Instant toInstant(@Nullable Object obj) {
-        if (obj instanceof Number) {
-            return Instant.ofEpochMilli(((Number) obj).longValue());
+        if (obj instanceof Number number) {
+            return Instant.ofEpochMilli(number.longValue());
         }
         return temporal(obj, TimeUtils::instant, TimeUtils::parseInstant);
     }
 
     @Nullable
     public static Temporal toTemporal(@Nullable Object obj) {
-        if (obj instanceof Temporal) {
-            return (Temporal) obj;
+        if (obj instanceof Temporal temporal) {
+            return temporal;
         }
         return toZonedDateTime(obj);
     }
 
     @Nullable
     public static Long toMillis(@Nullable Object obj) {
-        if (obj instanceof Number) {
-            return ((Number) obj).longValue();
+        if (obj instanceof Number number) {
+            return number.longValue();
         }
         var instant = toInstant(obj);
         if (instant == null) {
@@ -222,8 +222,8 @@ public class ConvertUtils {
         if (obj == null) {
             return null;
         }
-        if (obj instanceof ZoneOffset) {
-            return (ZoneOffset) obj;
+        if (obj instanceof ZoneOffset offset) {
+            return offset;
         }
         return ZoneOffset.of(obj.toString());
     }
@@ -269,24 +269,24 @@ public class ConvertUtils {
 
     @Nullable
     public static LocalDateTime toUtcDateTime(@Nullable Object obj) {
-        if (obj instanceof LocalDateTime) {
-            return (LocalDateTime) obj;
+        if (obj instanceof LocalDateTime dt) {
+            return dt;
         }
         return utc(obj, ZonedDateTime::toLocalDateTime);
     }
 
     @Nullable
     public static LocalDate toUtcDate(@Nullable Object obj) {
-        if (obj instanceof LocalDate) {
-            return (LocalDate) obj;
+        if (obj instanceof LocalDate date) {
+            return date;
         }
         return utc(obj, ZonedDateTime::toLocalDate);
     }
 
     @Nullable
     public static LocalTime toUtcTime(@Nullable Object obj) {
-        if (obj instanceof LocalTime) {
-            return (LocalTime) obj;
+        if (obj instanceof LocalTime time) {
+            return time;
         }
         var time = toZonedDateTime(obj);
         if (time == null) {

@@ -23,13 +23,16 @@ public class DiscardOutputStream extends OutputStream {
 
     @Override
     public void write(int b) {
+        // discard
     }
 
     @Override
     public void write(byte[] bytes, int off, int len) {
+        // discard
     }
 
     @Override
     public void close() {
+        // noop
     }
 }

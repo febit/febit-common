@@ -27,18 +27,18 @@ class WildcardPathFilterTest {
     void create() {
         var filter = WildcardPathFilter.create(new File("/a/b"), "c");
 
-        assertEquals(filter.baseDir, "/a/b/");
-        assertEquals(filter.pattern, "c");
+        assertEquals("/a/b/", filter.baseDir);
+        assertEquals("c", filter.pattern);
         assertTrue(filter.sensitive);
 
         filter = WildcardPathFilter.create(new File("/a/../b"), "", false);
-        assertEquals(filter.baseDir, "/b/");
-        assertEquals(filter.pattern, "*");
+        assertEquals("/b/", filter.baseDir);
+        assertEquals("*", filter.pattern);
         assertFalse(filter.sensitive);
 
         filter = WildcardPathFilter.create(new File("/a/"), "/b/*.yml");
-        assertEquals(filter.baseDir, "/a/");
-        assertEquals(filter.pattern, "b/*.yml");
+        assertEquals("/a/", filter.baseDir);
+        assertEquals("b/*.yml", filter.pattern);
         assertTrue(filter.sensitive);
 
         assertThrows(IllegalArgumentException.class, () -> WildcardPathFilter.create(new File("/.."), ""));

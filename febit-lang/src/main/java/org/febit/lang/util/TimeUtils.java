@@ -56,7 +56,7 @@ public class TimeUtils {
 
     private static final DateTimeFormatter FMT_DT;
 
-    private static final long SECONDS_PER_DAY = 24 * 60 * 60;
+    private static final long SECONDS_PER_DAY = 24L * 60 * 60;
     private static final long NANO_PER_SECOND = 1000_000_000L;
 
     static {
@@ -70,6 +70,9 @@ public class TimeUtils {
     }
 
     @Nullable
+    @SuppressWarnings({
+            "java:S3776" // Cognitive Complexity of methods should not be too high
+    })
     public static ZonedDateTime parse(@Nullable String raw) {
         if (raw == null || raw.isEmpty()) {
             return null;
@@ -82,34 +85,21 @@ public class TimeUtils {
         for (int i = 0; i < raw.length(); i++) {
             char c = raw.charAt(i);
             switch (c) {
-                case '0':
-                case '1':
-                case '2':
-                case '3':
-                case '4':
-                case '5':
-                case '6':
-                case '7':
-                case '8':
-                case '9':
-                    numberCnt++;
-                    break;
-                case ':':
-                    colon++;
-                    break;
-                case '+':
-                case 'Z':
-                case 'z':
+                case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' -> numberCnt++;
+                case ':' -> colon++;
+                case '+', 'Z', 'z' -> {
                     if (zoneStart < 0) {
                         zoneStart = i;
                     }
-                    break;
-                case '-':
+                }
+                case '-' -> {
                     if (i == 0 || colon != 0 && zoneStart < 0) {
                         zoneStart = i;
                     }
-                    break;
-                default:
+                }
+                default -> {
+                    // Noop
+                }
             }
         }
         if (numberCnt == raw.length()) {
@@ -229,11 +219,11 @@ public class TimeUtils {
     }
 
     public static LocalDateTime localDateTime(TemporalAccessor temporal) {
-        if (temporal instanceof LocalDateTime) {
-            return ((LocalDateTime) temporal);
+        if (temporal instanceof LocalDateTime dt) {
+            return dt;
         }
-        if (temporal instanceof ZonedDateTime) {
-            return ((ZonedDateTime) temporal).toLocalDateTime();
+        if (temporal instanceof ZonedDateTime dt) {
+            return dt.toLocalDateTime();
         }
         var date = localDate(temporal);
         var time = localTime(temporal);
@@ -241,11 +231,11 @@ public class TimeUtils {
     }
 
     public static ZonedDateTime zonedDateTime(TemporalAccessor temporal) {
-        if (temporal instanceof ZonedDateTime) {
-            return ((ZonedDateTime) temporal);
+        if (temporal instanceof ZonedDateTime dt) {
+            return dt;
         }
-        if (temporal instanceof OffsetDateTime) {
-            return ((OffsetDateTime) temporal).toZonedDateTime();
+        if (temporal instanceof OffsetDateTime dt) {
+            return dt.toZonedDateTime();
         }
         ZoneId zone = zone(temporal);
         if (temporal.isSupported(INSTANT_SECONDS)) {
@@ -262,8 +252,8 @@ public class TimeUtils {
     }
 
     public static Instant instant(TemporalAccessor temporal) {
-        if (temporal instanceof Instant) {
-            return ((Instant) temporal);
+        if (temporal instanceof Instant instant) {
+            return instant;
         }
         if (temporal.isSupported(INSTANT_SECONDS)) {
             return Instant.from(temporal);

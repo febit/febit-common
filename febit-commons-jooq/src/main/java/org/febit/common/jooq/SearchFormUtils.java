@@ -177,17 +177,17 @@ public class SearchFormUtils {
 
     @SuppressWarnings({"unchecked"})
     private static Collection<Object> convertToCollection(@Nullable Object value) {
-        if (value instanceof Collection) {
-            return (Collection<Object>) value;
-        }
-        if (value instanceof Object[]) {
-            return Lists.collect((Object[]) value);
-        }
-        if (value instanceof Iterable) {
-            return Lists.collect((Iterable<Object>) value);
-        }
         if (value == null) {
             return List.of();
+        }
+        if (value instanceof Collection<?> collection) {
+            return (Collection<Object>) collection;
+        }
+        if (value instanceof Object[] arr) {
+            return Lists.collect(arr);
+        }
+        if (value instanceof Iterable<?> iter) {
+            return Lists.collect((Iterable<Object>) iter);
         }
         throw new IllegalArgumentException("Value cannot convert to collection: " + value.getClass());
     }

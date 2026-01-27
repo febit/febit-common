@@ -163,10 +163,7 @@ public class KafkaOptions implements IOptions {
     }
 
     public Map<String, Object> export() {
-        var result = new HashMap<String, Object>();
-        if (props != null) {
-            result.putAll(props);
-        }
+        var result = new HashMap<String, Object>(props);
 
         var buildIn = JacksonUtils.toNamedMap(this);
         Objects.requireNonNull(buildIn);

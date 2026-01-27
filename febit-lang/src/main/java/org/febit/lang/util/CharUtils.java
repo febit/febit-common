@@ -83,34 +83,11 @@ public class CharUtils {
     }
 
     public static int hexToDigit(char c) {
-        switch (c) {
-            case '0':
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-            case '7':
-            case '8':
-            case '9':
-                return c - '0';
-            case 'a':
-            case 'b':
-            case 'c':
-            case 'd':
-            case 'e':
-            case 'f':
-                return c - ('a' - 10);
-            case 'A':
-            case 'B':
-            case 'C':
-            case 'D':
-            case 'E':
-            case 'F':
-                return c - ('A' - 10);
-            default:
-                throw new IllegalArgumentException("must [0-9a-zA-Z]");
-        }
+        return switch (c) {
+            case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' -> c - '0';
+            case 'a', 'b', 'c', 'd', 'e', 'f' -> c - ('a' - 10);
+            case 'A', 'B', 'C', 'D', 'E', 'F' -> c - ('A' - 10);
+            default -> throw new IllegalArgumentException("must [0-9a-zA-Z]");
+        };
     }
 }

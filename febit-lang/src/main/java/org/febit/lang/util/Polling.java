@@ -190,17 +190,21 @@ public class Polling {
             context.lastDelay.set(delay);
             var delayMillis = delay.toMillis();
 
-            var future = delayMillis <= 0
-                    ? CompletableFuture.supplyAsync(this::exec, executor)
-                    : CompletableFuture.supplyAsync(this::exec,
+            if (delayMillis <= 0) {
+                return CompletableFuture.supplyAsync(this::exec, executor);
+            }
+            return CompletableFuture.supplyAsync(this::exec,
                     CompletableFuture.delayedExecutor(
-                            delayMillis, TimeUnit.MILLISECONDS, executor));
-            return future;
+                            delayMillis, TimeUnit.MILLISECONDS, executor)
+            );
         }
 
         /**
          * Run the action and check the result.
          */
+        @SuppressWarnings({
+                "java:S1181" // Throwable and Error should not be caught
+        })
         private Context<T> exec() {
             var ctx = context;
             var now = ctx.now();

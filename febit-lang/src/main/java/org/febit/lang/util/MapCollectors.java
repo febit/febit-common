@@ -161,6 +161,7 @@ public class MapCollectors {
     }
 
     @SuppressWarnings("unchecked")
+    @UtilityClass
     public static class Factories {
 
         public static <K, U, M extends Map<K, U>> Supplier<M> hashMapFactory() {

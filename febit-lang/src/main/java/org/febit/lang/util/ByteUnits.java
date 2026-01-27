@@ -18,6 +18,9 @@ package org.febit.lang.util;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
+@SuppressWarnings({
+        "java:S115" // Constant names should comply with a naming convention
+})
 public class ByteUnits {
 
     public static final long KB = 1000L;

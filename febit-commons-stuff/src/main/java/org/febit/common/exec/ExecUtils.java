@@ -113,9 +113,7 @@ public class ExecUtils {
                 int bufferSize
         ) {
             var pipe = MpscPipeImpl.<String>ofBounded(bufferSize);
-            handler(process -> () -> {
-                sink.accept(pipe.stream());
-            });
+            handler(process -> () -> sink.accept(pipe.stream()));
             return stdout(pipe.createProducer())
                     .stderr(pipe.createProducer());
         }

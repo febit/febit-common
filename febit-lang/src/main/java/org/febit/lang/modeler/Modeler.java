@@ -51,48 +51,26 @@ public class Modeler {
         if (source == null) {
             return defaultValueFor(schema);
         }
-        switch (schema.type()) {
-            case OPTIONAL:
-                return process(schema.valueType(), source);
-            case STRING:
-                return source.toString();
-            case BOOLEAN:
-                return toBoolean(source);
-            case SHORT:
-                return toNumber(source, Number::shortValue, (short) 0);
-            case INT:
-                return toNumber(source, Number::intValue, 0);
-            case LONG:
-                return toNumber(source, Number::longValue, 0L);
-            case FLOAT:
-                return toNumber(source, Number::floatValue, 0F);
-            case DOUBLE:
-                return toNumber(source, Number::doubleValue, 0D);
-            case INSTANT:
-                return toInstant(source);
-            case DATE:
-                return toDate(source);
-            case TIME:
-                return toTime(source);
-            case DATETIME:
-                return toDateTime(source);
-            case DATETIME_ZONED:
-                return toZonedDateTime(source);
-            case ARRAY:
-                return constructArray(schema, source);
-            case LIST:
-                return constructList(schema, source);
-            case MAP:
-                return constructMap(schema, source);
-            case STRUCT:
-                return constructStruct(schema, source);
-            case BYTES:
-            case ENUM:
-            case JSON:
-            case RAW:
-            default:
-                throw new IllegalArgumentException("Unsupported type: " + schema.type());
-        }
+        return switch (schema.type()) {
+            case OPTIONAL -> process(schema.valueType(), source);
+            case STRING -> source.toString();
+            case BOOLEAN -> toBoolean(source);
+            case SHORT -> toNumber(source, Number::shortValue, (short) 0);
+            case INT -> toNumber(source, Number::intValue, 0);
+            case LONG -> toNumber(source, Number::longValue, 0L);
+            case FLOAT -> toNumber(source, Number::floatValue, 0F);
+            case DOUBLE -> toNumber(source, Number::doubleValue, 0D);
+            case INSTANT -> toInstant(source);
+            case DATE -> toDate(source);
+            case TIME -> toTime(source);
+            case DATETIME -> toDateTime(source);
+            case DATETIME_ZONED -> toZonedDateTime(source);
+            case ARRAY -> constructArray(schema, source);
+            case LIST -> constructList(schema, source);
+            case MAP -> constructMap(schema, source);
+            case STRUCT -> constructStruct(schema, source);
+            case BYTES, ENUM, JSON, RAW -> throw new IllegalArgumentException("Unsupported type: " + schema.type());
+        };
     }
 
     @Nullable

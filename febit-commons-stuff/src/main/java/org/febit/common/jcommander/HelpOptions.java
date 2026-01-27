@@ -19,6 +19,8 @@ import com.beust.jcommander.Parameters;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serial;
+
 @Getter
 @Setter
 @Parameters(
@@ -28,5 +30,6 @@ import lombok.Setter;
 )
 public class HelpOptions implements IOptions {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 }

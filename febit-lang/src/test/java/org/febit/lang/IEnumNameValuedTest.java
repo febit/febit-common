@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class IEnumNameValuedTest {
 
     @Test
-    @SuppressWarnings("ConstantValue")
     void getValue() {
         assertInstanceOf(Valued.class, TestEnum.OK);
 

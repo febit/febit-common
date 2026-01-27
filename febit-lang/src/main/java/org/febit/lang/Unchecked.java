@@ -49,17 +49,20 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 
 @UtilityClass
+@SuppressWarnings({
+        "java:S1181" // Throwable and Error should not be caught
+})
 public class Unchecked {
 
     public static RuntimeException handle(Throwable throwable) {
-        if (throwable instanceof Error) {
-            throw (Error) throwable;
+        if (throwable instanceof Error err) {
+            throw err;
         }
-        if (throwable instanceof RuntimeException) {
-            return (RuntimeException) throwable;
+        if (throwable instanceof RuntimeException ex) {
+            return ex;
         }
-        if (throwable instanceof IOException) {
-            return new UncheckedIOException((IOException) throwable);
+        if (throwable instanceof IOException ex) {
+            return new UncheckedIOException(ex);
         }
         if (throwable instanceof InterruptedException) {
             Thread.currentThread().interrupt();
@@ -108,7 +111,7 @@ public class Unchecked {
     }
 
     public static <T, R, E extends Throwable> Function1<T, R> func1(ThrowingFunction1<T, R, E> func) {
-        return (t) -> {
+        return t -> {
             try {
                 return func.apply(t);
             } catch (Throwable e) {
@@ -176,7 +179,7 @@ public class Unchecked {
     }
 
     public static <T, E extends Throwable> Consumer1<T> consumer1(ThrowingConsumer1<T, E> consumer) {
-        return (t) -> {
+        return t -> {
             try {
                 consumer.accept(t);
             } catch (Throwable e) {

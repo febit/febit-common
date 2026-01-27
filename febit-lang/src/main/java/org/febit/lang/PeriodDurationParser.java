@@ -85,151 +85,55 @@ class PeriodDurationParser {
         throw new IllegalArgumentException(msg + ", pos='" + pos);
     }
 
+    @SuppressWarnings({
+            "java:S1479" // "switch" statements should not have too many "case" clauses
+    })
     private void takeWord(String word) {
         switch (word.toLowerCase()) {
-            case "and":
+            case "and" -> {
                 // Ignored
                 if (pendingNumber != null) {
                     takeUnit(ChronoUnit.SECONDS);
                 }
-                return;
-            case "never":
-                takeNever();
-                return;
-            case "s":
-            case "sec":
-            case "secs":
-            case "second":
-            case "seconds":
-                takeUnit(ChronoUnit.SECONDS);
-                return;
-            case "m":
-            case "min":
-            case "mins":
-            case "minute":
-            case "minutes":
-                takeUnit(ChronoUnit.MINUTES);
-                return;
-            case "h":
-            case "hr":
-            case "hrs":
-            case "hour":
-            case "hours":
-                takeUnit(ChronoUnit.HOURS);
-                return;
-            case "d":
-            case "day":
-            case "days":
-                takeUnit(ChronoUnit.DAYS);
-                return;
-            case "w":
-            case "wk":
-            case "wks":
-            case "week":
-            case "weeks":
-                takeUnit(ChronoUnit.WEEKS);
-                return;
-            case "mos":
-            case "mon":
-            case "mons":
-            case "month":
-            case "months":
-                takeUnit(ChronoUnit.MONTHS);
-                return;
-            case "y":
-            case "yr":
-            case "yrs":
-            case "year":
-            case "years":
-                takeUnit(ChronoUnit.YEARS);
-                return;
-            case "zero":
-                takeNumber(0);
-                return;
-            case "one":
-                takeNumber(1);
-                return;
-            case "two":
-                takeNumber(2);
-                return;
-            case "three":
-                takeNumber(3);
-                return;
-            case "four":
-                takeNumber(4);
-                return;
-            case "five":
-                takeNumber(5);
-                return;
-            case "six":
-                takeNumber(6);
-                return;
-            case "seven":
-                takeNumber(7);
-                return;
-            case "eight":
-                takeNumber(8);
-                return;
-            case "nine":
-                takeNumber(9);
-                return;
-            case "ten":
-                takeNumber(10);
-                return;
-            case "eleven":
-                takeNumber(11);
-                return;
-            case "twelve":
-                takeNumber(12);
-                return;
-            case "thirteen":
-                takeNumber(13);
-                return;
-            case "fourteen":
-                takeNumber(14);
-                return;
-            case "fifteen":
-                takeNumber(15);
-                return;
-            case "sixteen":
-                takeNumber(16);
-                return;
-            case "seventeen":
-                takeNumber(17);
-                return;
-            case "eighteen":
-                takeNumber(18);
-                return;
-            case "nineteen":
-                takeNumber(19);
-                return;
-            case "twenty":
-                takeNumber(20);
-                return;
-            case "thirty":
-                takeNumber(30);
-                return;
-            case "forty":
-                takeNumber(40);
-                return;
-            case "fifty":
-                takeNumber(50);
-                return;
-            case "sixty":
-                takeNumber(60);
-                return;
-            case "seventy":
-                takeNumber(70);
-                return;
-            case "eighty":
-                takeNumber(80);
-                return;
-            case "ninety":
-                takeNumber(90);
-                return;
-            default:
+            }
+            case "never" -> takeNever();
+            case "s", "sec", "secs", "second", "seconds" -> takeUnit(ChronoUnit.SECONDS);
+            case "m", "min", "mins", "minute", "minutes" -> takeUnit(ChronoUnit.MINUTES);
+            case "h", "hr", "hrs", "hour", "hours" -> takeUnit(ChronoUnit.HOURS);
+            case "d", "day", "days" -> takeUnit(ChronoUnit.DAYS);
+            case "w", "wk", "wks", "week", "weeks" -> takeUnit(ChronoUnit.WEEKS);
+            case "mos", "mon", "mons", "month", "months" -> takeUnit(ChronoUnit.MONTHS);
+            case "y", "yr", "yrs", "year", "years" -> takeUnit(ChronoUnit.YEARS);
+            case "zero" -> takeNumber(0);
+            case "one" -> takeNumber(1);
+            case "two" -> takeNumber(2);
+            case "three" -> takeNumber(3);
+            case "four" -> takeNumber(4);
+            case "five" -> takeNumber(5);
+            case "six" -> takeNumber(6);
+            case "seven" -> takeNumber(7);
+            case "eight" -> takeNumber(8);
+            case "nine" -> takeNumber(9);
+            case "ten" -> takeNumber(10);
+            case "eleven" -> takeNumber(11);
+            case "twelve" -> takeNumber(12);
+            case "thirteen" -> takeNumber(13);
+            case "fourteen" -> takeNumber(14);
+            case "fifteen" -> takeNumber(15);
+            case "sixteen" -> takeNumber(16);
+            case "seventeen" -> takeNumber(17);
+            case "eighteen" -> takeNumber(18);
+            case "nineteen" -> takeNumber(19);
+            case "twenty" -> takeNumber(20);
+            case "thirty" -> takeNumber(30);
+            case "forty" -> takeNumber(40);
+            case "fifty" -> takeNumber(50);
+            case "sixty" -> takeNumber(60);
+            case "seventy" -> takeNumber(70);
+            case "eighty" -> takeNumber(80);
+            case "ninety" -> takeNumber(90);
+            default -> throw parserException("Illegal word '" + word + "'");
         }
-        throw parserException("Illegal word '" + word + "'");
     }
 
     private void takeNumber(long number) {

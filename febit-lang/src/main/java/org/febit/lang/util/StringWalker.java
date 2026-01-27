@@ -19,6 +19,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.text.MessageFormat;
 
+@SuppressWarnings("UnusedReturnValue")
 public class StringWalker {
 
     protected final char[] chars;
@@ -26,7 +27,7 @@ public class StringWalker {
     protected int pos;
 
     @Nullable
-    private StringBuilder _buf;
+    private StringBuilder buffer;
 
     public StringWalker(String text) {
         this(text.toCharArray());
@@ -69,15 +70,15 @@ public class StringWalker {
     }
 
     public int skipChar(char skip) {
-        final int to = this.end;
         int i = pos;
-        while (i < to) {
+        while (i < this.end) {
             if (chars[i] != skip) {
                 break;
             }
             i++;
         }
-        return pos = i;
+        pos = i;
+        return i;
     }
 
     public int skipBlanks() {
@@ -85,15 +86,15 @@ public class StringWalker {
     }
 
     public int skipFlag(Checker checker) {
-        final int to = this.end;
         int i = pos;
-        while (i < to) {
+        while (i < this.end) {
             if (!checker.isFlag(chars[i])) {
                 break;
             }
             i++;
         }
-        return pos = i;
+        pos = i;
+        return i;
     }
 
     public void requireAndJumpChar(char c) {
@@ -134,9 +135,8 @@ public class StringWalker {
 
     public String readToFlag(final Checker checker, final boolean keepFlag) {
         final StringBuilder buf = buf();
-        final int to = this.end;
         int i = pos;
-        while (i < to) {
+        while (i < this.end) {
             char c = chars[i++];
             if (checker.isFlag(c)) {
                 if (keepFlag) {
@@ -151,10 +151,10 @@ public class StringWalker {
     }
 
     protected StringBuilder buf() {
-        StringBuilder buf = this._buf;
+        StringBuilder buf = this.buffer;
         if (buf == null) {
             buf = new StringBuilder();
-            this._buf = buf;
+            this.buffer = buf;
         } else {
             buf.setLength(0);
         }
@@ -167,9 +167,8 @@ public class StringWalker {
 
     public String readTo(final char endFlag, final boolean keepFlag) {
         final StringBuilder buf = buf();
-        final int to = this.end;
         int i = pos;
-        while (i < to) {
+        while (i < this.end) {
             char c = chars[i++];
             if (c == endFlag) {
                 if (keepFlag) {

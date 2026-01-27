@@ -83,12 +83,11 @@ public class PatternRules implements Serializable {
         private final Object bean;
     }
 
-    @RequiredArgsConstructor(staticName = "of")
-    private static class Rule implements Comparable<Rule>, Serializable {
-        private final int seq;
-        private final String name;
-        private final PatternFormatter<?> formatter;
-
+    private record Rule(
+            int seq,
+            String name,
+            PatternFormatter<?> formatter
+    ) implements Comparable<Rule>, Serializable {
         @Override
         public int compareTo(Rule o) {
             return Integer.compare(seq, o.seq);
@@ -144,7 +143,7 @@ public class PatternRules implements Serializable {
                 protected <T> PatternFormatter<T> build(JavaType beanType) {
                     var formatter = super.<T>build(beanType);
                     pending = null;
-                    rules.add(Rule.of(seq, name, formatter));
+                    rules.add(new Rule(seq, name, formatter));
                     return formatter;
                 }
             };

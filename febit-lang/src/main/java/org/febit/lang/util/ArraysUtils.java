@@ -91,12 +91,12 @@ public class ArraysUtils {
     }
 
     @Nullable
-    public static <T> T get(T @Nullable [] array, final int index) {
+    public static <T> T get(@Nullable T @Nullable [] array, final int index) {
         return get(array, index, null);
     }
 
     @Nullable
-    public static <T> T get(T @Nullable [] array, final int index, @Nullable T defaultValue) {
+    public static <T> T get(@Nullable T @Nullable [] array, final int index, @Nullable T defaultValue) {
         if (array != null && index >= 0 && index < array.length) {
             return array[index];
         }

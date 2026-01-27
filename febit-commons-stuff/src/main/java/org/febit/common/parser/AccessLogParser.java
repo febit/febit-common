@@ -83,16 +83,15 @@ public class AccessLogParser {
         walker.skipSpaces();
         while (!walker.isEnd()) {
             switch (walker.peek()) {
-                case '[':
+                case '[' -> {
                     walker.jump(1);
                     values.add(fixValue(walker.readTo(']', false)));
-                    break;
-                case '"':
+                }
+                case '"' -> {
                     walker.jump(1);
                     values.add(fixValue(walker.readTo('"', false)));
-                    break;
-                default:
-                    values.add(fixValue(walker.readTo(' ', false)));
+                }
+                default -> values.add(fixValue(walker.readTo(' ', false)));
             }
             walker.skipSpaces();
         }

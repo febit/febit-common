@@ -47,7 +47,7 @@ public class Invokers {
 
     public static <T> Invoker<T> isSameObject() {
         return (self, args) -> {
-            if (args.length != 1) {
+            if (args == null || args.length != 1) {
                 return false;
             }
             return self == args[0];

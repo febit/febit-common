@@ -17,12 +17,12 @@ package org.febit.lang.modeler;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;
 import org.febit.lang.util.Maps;
 import org.jspecify.annotations.Nullable;
 
+import java.io.Serial;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -31,6 +31,7 @@ import java.util.NoSuchElementException;
 @Accessors(fluent = true)
 class StructSchema implements Schema {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     @Getter
@@ -152,23 +153,15 @@ class StructSchema implements Schema {
         return toTypeString();
     }
 
-    @Accessors(fluent = true)
-    @RequiredArgsConstructor
-    @EqualsAndHashCode
-    static class FieldImpl implements Field {
+    record FieldImpl(
+            int pos,
+            String name,
+            Schema schema,
+            @Nullable String comment
+    ) implements Field {
 
+        @Serial
         private static final long serialVersionUID = 1L;
-
-        @Getter
-        private final int pos;
-        @Getter
-        private final String name;
-        @Getter
-        private final Schema schema;
-
-        @Getter
-        @Nullable
-        private final String comment;
 
         @Override
         public String toString() {

@@ -25,24 +25,21 @@ public class PatternUtils {
         var chars = raw.toCharArray();
         for (char c : chars) {
             switch (c) {
-                case '^':
-                case '$':
-                case '.':
-                case '*':
-                case '+':
-                case '?':
-                case '|':
-                case '\\':
-                case '[':
-                case ']':
-                case '(':
-                case ')':
-                case '{':
-                case '}':
-                    buf.append('\\').append(c);
-                    break;
-                default:
-                    buf.append(c);
+                case '^',
+                     '$',
+                     '.',
+                     '*',
+                     '+',
+                     '?',
+                     '|',
+                     '\\',
+                     '[',
+                     ']',
+                     '(',
+                     ')',
+                     '{',
+                     '}' -> buf.append('\\').append(c);
+                default -> buf.append(c);
             }
         }
         return buf.toString();

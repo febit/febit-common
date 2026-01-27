@@ -15,7 +15,6 @@
  */
 package org.febit.lang.util;
 
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JavaType;
@@ -31,12 +30,12 @@ public class TypeParameters {
 
     private static final ResolvedImpl NULL_RESOLVED = new ResolvedImpl(null);
 
-    private static final TypeFactory TYPE_FACTORY = TypeFactory.createDefaultInstance()
+    private static final TypeFactory TYPES = TypeFactory.createDefaultInstance()
             .withCache(new SimpleLookupCache<>(16, 128));
 
     public static Resolved forType(Type target) {
-        return ResolvedImpl.of(
-                TYPE_FACTORY.constructType(target)
+        return new ResolvedImpl(
+                TYPES.constructType(target)
         );
     }
 
@@ -53,28 +52,6 @@ public class TypeParameters {
         return forType(target).resolve(based, index).get();
     }
 
-    @Nullable
-    private static <T> Class<T> getRawClass(@Nullable JavaType javaType) {
-        if (javaType == null) {
-            return null;
-        }
-        @SuppressWarnings("unchecked")
-        var resultCls = (Class<T>) javaType.getRawClass();
-        return resultCls;
-    }
-
-    @Nullable
-    private static JavaType resolve0(JavaType target, Class<?> based, int index) {
-        if (index < 0) {
-            throw new IllegalArgumentException("index must >= 0");
-        }
-        var paramTypes = target.findTypeParameters(based);
-        if (paramTypes.length <= index) {
-            return null;
-        }
-        return paramTypes[index];
-    }
-
     public interface Resolved {
 
         Resolved resolve(Class<?> based, int index);
@@ -83,11 +60,21 @@ public class TypeParameters {
         <T> Class<T> get();
     }
 
-    @RequiredArgsConstructor(staticName = "of")
-    private static class ResolvedImpl implements Resolved {
+    private record ResolvedImpl(
+            @Nullable JavaType javaType
+    ) implements Resolved {
 
         @Nullable
-        private final JavaType javaType;
+        private static JavaType resolve0(JavaType target, Class<?> based, int index) {
+            if (index < 0) {
+                throw new IllegalArgumentException("index must >= 0");
+            }
+            var paramTypes = target.findTypeParameters(based);
+            if (paramTypes.length <= index) {
+                return null;
+            }
+            return paramTypes[index];
+        }
 
         @Override
         public Resolved resolve(Class<?> based, int index) {
@@ -97,13 +84,17 @@ public class TypeParameters {
             var resolved = resolve0(javaType, based, index);
             return resolved == null
                     ? NULL_RESOLVED
-                    : of(resolved);
+                    : new ResolvedImpl(resolved);
         }
 
         @Nullable
         @Override
+        @SuppressWarnings("unchecked")
         public <T> Class<T> get() {
-            return getRawClass(javaType);
+            if (javaType == null) {
+                return null;
+            }
+            return (Class<T>) javaType.getRawClass();
         }
     }
 

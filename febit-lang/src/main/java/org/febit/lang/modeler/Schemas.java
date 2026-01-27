@@ -15,10 +15,6 @@
  */
 package org.febit.lang.modeler;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.Accessors;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.febit.lang.util.StringWalker;
@@ -32,9 +28,11 @@ import static org.febit.lang.modeler.SchemaType.STRING;
 public class Schemas {
 
     static final String NOT_A_STRUCT = "Not a struct: ";
+
     private static final String TYPE_NAME_END_CHARS = "\r\n \t\f\b<>[],:;+=#";
     private static final String LINE_BREAKERS = "\r\n";
     private static final String LINE_BREAKERS_REPLACE = "  ";
+
     private static final Pattern NAME_PATTERN = Pattern.compile("^[_a-zA-Z][_a-zA-Z0-9]{0,64}$");
 
     static void checkName(String name) {
@@ -56,32 +54,16 @@ public class Schemas {
     }
 
     public static Schema ofPrimitive(SchemaType type) {
-        switch (type) {
-            case STRING:
-            case BYTES:
-            case SHORT:
-            case INT:
-            case LONG:
-            case FLOAT:
-            case DOUBLE:
-            case BOOLEAN:
-            case DATE:
-            case TIME:
-            case DATETIME:
-            case DATETIME_ZONED:
-            case INSTANT:
-                return PrimitiveSchema.of(type);
-            case LIST:
-            case ENUM:
-            case JSON:
-            case RAW:
-            case STRUCT:
-            case ARRAY:
-            case MAP:
-            case OPTIONAL:
-            default:
-                throw new IllegalArgumentException("Can't create Schema for type: " + type);
-        }
+        return switch (type) {
+            case STRING, BYTES,
+                 SHORT, INT, LONG, FLOAT, DOUBLE,
+                 BOOLEAN,
+                 DATE, TIME, DATETIME, DATETIME_ZONED,
+                 INSTANT -> PrimitiveSchema.of(type);
+            case LIST, ENUM, JSON,
+                 RAW, STRUCT, ARRAY, MAP,
+                 OPTIONAL -> throw new IllegalArgumentException("Can't create Schema for type: " + type);
+        };
     }
 
     public static Schema ofArray(Schema valueType) {
@@ -241,78 +223,43 @@ public class Schemas {
     private static Schema readType(@Nullable String space, @Nullable String name, StringWalker walker) {
         walker.skipBlanks();
         var typeName = walker.readToFlag(Schemas::isTypeNameEnding, true);
-        switch (typeName.toLowerCase()) {
-            case "short":
-            case "int16":
-            case "smallint":
-                return ofPrimitive(SchemaType.SHORT);
-            case "int":
-            case "int32":
-            case "integer":
-                return ofPrimitive(SchemaType.INT);
-            case "long":
-            case "int64":
-            case "bigint":
-                return ofPrimitive(SchemaType.LONG);
-            case "string":
-            case "varchar":
-            case "text":
-                return ofPrimitive(SchemaType.STRING);
-            case "bool":
-            case "boolean":
-                return ofPrimitive(SchemaType.BOOLEAN);
-            case "bytes":
-                return ofPrimitive(SchemaType.BYTES);
-            case "float":
-                return ofPrimitive(SchemaType.FLOAT);
-            case "double":
-                return ofPrimitive(SchemaType.DOUBLE);
-            case "date":
-            case "localdate":
-                return ofPrimitive(SchemaType.DATE);
-            case "time":
-            case "localtime":
-                return ofPrimitive(SchemaType.TIME);
-            case "instant":
-                return ofPrimitive(SchemaType.INSTANT);
-            case "datetime":
-            case "timestamp":
-            case "localdatetime":
-                return ofPrimitive(SchemaType.DATETIME);
-            case "timestamptz":
-            case "datetimetz":
-            case "zoneddatetime":
-            case "datetime_zoned":
-            case "datetime_with_timezone":
-            case "timestamp_with_timezone":
-                return ofPrimitive(SchemaType.DATETIME_ZONED);
-            case "optional":
-                return readElementSchema(SchemaType.OPTIONAL, space, name, walker);
-            case "json":
-                return readElementSchema(SchemaType.JSON, space, name, walker);
-            case "enum":
-                return readElementSchema(SchemaType.ENUM, space, name, walker);
-            case "array":
-                return readElementSchema(SchemaType.ARRAY, space, name, walker);
-            case "list":
-                return readElementSchema(SchemaType.LIST, space, name, walker);
-            case "map":
-                return readMapType(space, name, walker);
-            case "struct":
-                return readStructType(space, name, walker);
-            default:
-                return RawSchema.of(typeName);
-        }
+        return switch (typeName.toLowerCase()) {
+            case "short", "int16", "smallint" -> ofPrimitive(SchemaType.SHORT);
+            case "int", "int32", "integer" -> ofPrimitive(SchemaType.INT);
+            case "long", "int64", "bigint" -> ofPrimitive(SchemaType.LONG);
+            case "string", "varchar", "text" -> ofPrimitive(SchemaType.STRING);
+            case "bool", "boolean" -> ofPrimitive(SchemaType.BOOLEAN);
+            case "bytes" -> ofPrimitive(SchemaType.BYTES);
+            case "float" -> ofPrimitive(SchemaType.FLOAT);
+            case "double" -> ofPrimitive(SchemaType.DOUBLE);
+            case "date", "localdate" -> ofPrimitive(SchemaType.DATE);
+            case "time", "localtime" -> ofPrimitive(SchemaType.TIME);
+            case "instant" -> ofPrimitive(SchemaType.INSTANT);
+            case "datetime",
+                 "timestamp",
+                 "localdatetime" -> ofPrimitive(SchemaType.DATETIME);
+            case "timestamptz",
+                 "datetimetz",
+                 "zoneddatetime",
+                 "datetime_zoned",
+                 "datetime_with_timezone",
+                 "timestamp_with_timezone" -> ofPrimitive(SchemaType.DATETIME_ZONED);
+            case "optional" -> readElementSchema(SchemaType.OPTIONAL, space, name, walker);
+            case "json" -> readElementSchema(SchemaType.JSON, space, name, walker);
+            case "enum" -> readElementSchema(SchemaType.ENUM, space, name, walker);
+            case "array" -> readElementSchema(SchemaType.ARRAY, space, name, walker);
+            case "list" -> readElementSchema(SchemaType.LIST, space, name, walker);
+            case "map" -> readMapType(space, name, walker);
+            case "struct" -> readStructType(space, name, walker);
+            default -> RawSchema.of(typeName);
+        };
     }
 
-    @Getter
-    @EqualsAndHashCode
-    @Accessors(fluent = true)
-    @RequiredArgsConstructor(staticName = "of")
-    private static class PrimitiveSchema implements Schema {
-        private static final long serialVersionUID = 1L;
+    private record PrimitiveSchema(SchemaType type) implements Schema {
 
-        private final SchemaType type;
+        public static PrimitiveSchema of(SchemaType type) {
+            return new PrimitiveSchema(type);
+        }
 
         @Override
         public String toJavaTypeString() {
@@ -330,14 +277,11 @@ public class Schemas {
         }
     }
 
-    @Getter
-    @EqualsAndHashCode
-    @Accessors(fluent = true)
-    @RequiredArgsConstructor(staticName = "of")
-    private static class RawSchema implements Schema {
-        private static final long serialVersionUID = 1L;
+    private record RawSchema(String raw) implements Schema {
 
-        private final String raw;
+        public static RawSchema of(String raw) {
+            return new RawSchema(raw);
+        }
 
         @Override
         public SchemaType type() {
@@ -360,30 +304,22 @@ public class Schemas {
         }
     }
 
-    @Getter
-    @EqualsAndHashCode
-    @Accessors(fluent = true)
-    @RequiredArgsConstructor(staticName = "of")
-    private static class ElementSchema implements Schema {
-        private static final long serialVersionUID = 1L;
+    private record ElementSchema(SchemaType type, Schema valueType) implements Schema {
 
-        private final SchemaType type;
-        private final Schema valueType;
+        public static ElementSchema of(SchemaType type, Schema valueType) {
+            return new ElementSchema(type, valueType);
+        }
 
         @Override
         public String toJavaTypeString() {
             var valueTypeStr = valueType.toJavaTypeString();
-            switch (type) {
-                case ARRAY:
-                    return valueTypeStr + "[]";
-                case ENUM:
-                case OPTIONAL:
-                    return valueTypeStr;
-                default:
-                    return type.toJavaTypeString() + '<'
-                            + valueType.toJavaTypeString()
-                            + '>';
-            }
+            return switch (type) {
+                case ARRAY -> valueTypeStr + "[]";
+                case ENUM, OPTIONAL -> valueTypeStr;
+                default -> type.toJavaTypeString() + '<'
+                        + valueType.toJavaTypeString()
+                        + '>';
+            };
         }
 
         @Override
@@ -399,15 +335,11 @@ public class Schemas {
         }
     }
 
-    @Getter
-    @EqualsAndHashCode
-    @Accessors(fluent = true)
-    @RequiredArgsConstructor(staticName = "of")
-    private static class MapSchema implements Schema {
-        private static final long serialVersionUID = 1L;
+    private record MapSchema(Schema keyType, Schema valueType) implements Schema {
 
-        private final Schema keyType;
-        private final Schema valueType;
+        public static MapSchema of(Schema keyType, Schema valueType) {
+            return new MapSchema(keyType, valueType);
+        }
 
         @Override
         public SchemaType type() {

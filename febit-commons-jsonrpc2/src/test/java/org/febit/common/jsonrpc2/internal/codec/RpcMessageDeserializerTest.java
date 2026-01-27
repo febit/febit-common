@@ -48,11 +48,11 @@ class RpcMessageDeserializerTest {
     @Test
     void invalidMissingVersion() {
         Assertions.assertThatThrownBy(() -> parse("""
-                {
-                  "id": 1,
-                  "method": "subtract",
-                  "params": [42, 23]
-                }
+                        {
+                          "id": 1,
+                          "method": "subtract",
+                          "params": [42, 23]
+                        }
                         """))
                 .isInstanceOf(DatabindException.class)
                 .hasMessageContaining("missing 'jsonrpc' property");
@@ -61,12 +61,12 @@ class RpcMessageDeserializerTest {
     @Test
     void invalidUnsupportedVersion() {
         Assertions.assertThatThrownBy(() -> parse("""
-                {
-                  "jsonrpc": "1.0",
-                  "id": 1,
-                  "method": "subtract",
-                  "params": [42, 23]
-                }
+                        {
+                          "jsonrpc": "1.0",
+                          "id": 1,
+                          "method": "subtract",
+                          "params": [42, 23]
+                        }
                         """))
                 .isInstanceOf(DatabindException.class)
                 .hasMessageContaining("unsupported 'jsonrpc' version");
@@ -112,9 +112,9 @@ class RpcMessageDeserializerTest {
     @Test
     void invalidMissingIdAndMethod() {
         Assertions.assertThatThrownBy(() -> parse("""
-                {
-                  "jsonrpc": "2.0"
-                }
+                        {
+                          "jsonrpc": "2.0"
+                        }
                         """))
                 .isInstanceOf(DatabindException.class)
                 .hasMessageContaining("missing both 'id' and 'method' properties");

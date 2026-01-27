@@ -25,45 +25,45 @@ import static org.junit.jupiter.api.Assertions.*;
 class ArraysUtilsTest {
 
     @Test
-    public void findIntervalTest() {
+    void findIntervalTest() {
 
         int[] array1 = {2};
 
-        assertEquals(ArraysUtils.findInterval(array1, 1), 0);
-        assertEquals(ArraysUtils.findInterval(array1, 2), 0);
-        assertEquals(ArraysUtils.findInterval(array1, 3), 1);
+        assertEquals(0, ArraysUtils.findInterval(array1, 1));
+        assertEquals(0, ArraysUtils.findInterval(array1, 2));
+        assertEquals(1, ArraysUtils.findInterval(array1, 3));
 
         int[] array2 = {2, 6};
 
-        assertEquals(ArraysUtils.findInterval(array2, 1), 0);
-        assertEquals(ArraysUtils.findInterval(array2, 2), 0);
+        assertEquals(0, ArraysUtils.findInterval(array2, 1));
+        assertEquals(0, ArraysUtils.findInterval(array2, 2));
 
-        assertEquals(ArraysUtils.findInterval(array2, 5), 1);
-        assertEquals(ArraysUtils.findInterval(array2, 6), 1);
+        assertEquals(1, ArraysUtils.findInterval(array2, 5));
+        assertEquals(1, ArraysUtils.findInterval(array2, 6));
 
-        assertEquals(ArraysUtils.findInterval(array2, 7), 2);
+        assertEquals(2, ArraysUtils.findInterval(array2, 7));
 
         int[] array = {0, 2, 6, 9, 123, 10000};
 
-        assertEquals(ArraysUtils.findInterval(array, -1), 0);
-        assertEquals(ArraysUtils.findInterval(array, 0), 0);
+        assertEquals(0, ArraysUtils.findInterval(array, -1));
+        assertEquals(0, ArraysUtils.findInterval(array, 0));
 
-        assertEquals(ArraysUtils.findInterval(array, 1), 1);
-        assertEquals(ArraysUtils.findInterval(array, 2), 1);
+        assertEquals(1, ArraysUtils.findInterval(array, 1));
+        assertEquals(1, ArraysUtils.findInterval(array, 2));
 
-        assertEquals(ArraysUtils.findInterval(array, 5), 2);
-        assertEquals(ArraysUtils.findInterval(array, 6), 2);
+        assertEquals(2, ArraysUtils.findInterval(array, 5));
+        assertEquals(2, ArraysUtils.findInterval(array, 6));
 
-        assertEquals(ArraysUtils.findInterval(array, 8), 3);
-        assertEquals(ArraysUtils.findInterval(array, 9), 3);
+        assertEquals(3, ArraysUtils.findInterval(array, 8));
+        assertEquals(3, ArraysUtils.findInterval(array, 9));
 
-        assertEquals(ArraysUtils.findInterval(array, 122), 4);
-        assertEquals(ArraysUtils.findInterval(array, 123), 4);
+        assertEquals(4, ArraysUtils.findInterval(array, 122));
+        assertEquals(4, ArraysUtils.findInterval(array, 123));
 
-        assertEquals(ArraysUtils.findInterval(array, 124), 5);
-        assertEquals(ArraysUtils.findInterval(array, 10000), 5);
+        assertEquals(5, ArraysUtils.findInterval(array, 124));
+        assertEquals(5, ArraysUtils.findInterval(array, 10000));
 
-        assertEquals(ArraysUtils.findInterval(array, 100000), 6);
+        assertEquals(6, ArraysUtils.findInterval(array, 100000));
 
     }
 

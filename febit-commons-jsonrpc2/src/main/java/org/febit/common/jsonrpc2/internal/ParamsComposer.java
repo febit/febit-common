@@ -21,5 +21,5 @@ import org.jspecify.annotations.Nullable;
 public interface ParamsComposer {
 
     @Nullable
-    Object compose(Object @Nullable [] args);
+    Object compose(@Nullable Object @Nullable [] args);
 }

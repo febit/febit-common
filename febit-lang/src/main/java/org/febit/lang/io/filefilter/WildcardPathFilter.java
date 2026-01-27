@@ -24,12 +24,14 @@ import org.apache.commons.io.filefilter.IOFileFilter;
 import org.jspecify.annotations.Nullable;
 
 import java.io.File;
+import java.io.Serial;
 import java.io.Serializable;
 
 @ToString
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class WildcardPathFilter implements IOFileFilter, Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     final String baseDir;

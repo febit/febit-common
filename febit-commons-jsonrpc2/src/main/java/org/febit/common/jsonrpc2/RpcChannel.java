@@ -36,14 +36,14 @@ public interface RpcChannel {
      */
     <T> T remoteApi(Class<T> type);
 
-    <T> CompletableFuture<T> request(
+    <T extends @Nullable Object> CompletableFuture<T> request(
             String method,
             @Nullable Object params,
             @Nullable Duration timeout,
             Type resultType
     );
 
-    default <T> CompletableFuture<T> request(
+    default <T extends @Nullable Object> CompletableFuture<T> request(
             String method,
             @Nullable Object params,
             @Nullable Duration timeout,
@@ -52,7 +52,7 @@ public interface RpcChannel {
         return request(method, params, timeout, (Type) resultType);
     }
 
-    default <T> CompletableFuture<T> request(
+    default <T extends @Nullable Object> CompletableFuture<T> request(
             String method,
             @Nullable Object params,
             Class<T> resultType
@@ -60,7 +60,7 @@ public interface RpcChannel {
         return request(method, params, null, resultType);
     }
 
-    default <T> CompletableFuture<T> request(
+    default <T extends @Nullable Object> CompletableFuture<T> request(
             String method,
             @Nullable Object params,
             Type resultType

@@ -226,15 +226,12 @@ public class PatternFormatter<T> implements Serializable {
         }
     }
 
-    @RequiredArgsConstructor(staticName = "of")
-    private static class RegexSegment implements Segment {
-
-        private final String keyPrefix;
-        private final int seq;
-
-        @Nullable
-        private final String name;
-        private final String pattern;
+    private record RegexSegment(
+            String keyPrefix,
+            int seq,
+            @Nullable String name,
+            String pattern
+    ) implements Segment {
 
         @Override
         public void emit(StringBuilder buf, VarResolver resolver) {
@@ -252,22 +249,13 @@ public class PatternFormatter<T> implements Serializable {
             return "(?<" + segmentKey() + ">" + pattern + ")";
         }
 
-        @Nullable
-        @Override
-        public String name() {
-            return name;
-        }
-
         @Override
         public String segmentKey() {
             return keyPrefix + "s" + seq;
         }
     }
 
-    @RequiredArgsConstructor(staticName = "of")
-    private static class TextSegment implements Segment {
-
-        private final String value;
+    private record TextSegment(String value) implements Segment {
 
         @Override
         public void emit(StringBuilder buf, VarResolver resolver) {

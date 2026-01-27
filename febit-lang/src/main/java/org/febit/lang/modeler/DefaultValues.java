@@ -48,48 +48,26 @@ public class DefaultValues {
 
     @Nullable
     public static Object empty(Schema schema, Modeler modeler, DefaultValueProvider ifUnsupported) {
-        switch (schema.type()) {
-            case OPTIONAL:
-                return null;
-            case STRING:
-                return "";
-            case BOOLEAN:
-                return Boolean.FALSE;
-            case SHORT:
-                return (short) 0;
-            case INT:
-                return 0;
-            case LONG:
-                return 0L;
-            case FLOAT:
-                return 0F;
-            case DOUBLE:
-                return 0D;
-            case BYTES:
-                return new byte[0];
-            case ARRAY:
-                return new Object[0];
-            case LIST:
-                return new ArrayList<>(0);
-            case MAP:
-                return new HashMap<>(0);
-            case STRUCT:
-                return modeler.constructStruct(schema, Map.of());
-            case INSTANT:
-                return TimeUtils.INSTANT_DEFAULT;
-            case DATE:
-                return TimeUtils.DATE_DEFAULT;
-            case TIME:
-                return TimeUtils.TIME_DEFAULT;
-            case DATETIME:
-                return TimeUtils.DATETIME_DEFAULT;
-            case DATETIME_ZONED:
-                return TimeUtils.ZONED_DATETIME_DEFAULT;
-            case JSON:
-            case RAW:
-            case ENUM:
-            default:
-                return ifUnsupported.get(schema, modeler);
-        }
+        return switch (schema.type()) {
+            case OPTIONAL -> null;
+            case STRING -> "";
+            case BOOLEAN -> Boolean.FALSE;
+            case SHORT -> (short) 0;
+            case INT -> 0;
+            case LONG -> 0L;
+            case FLOAT -> 0F;
+            case DOUBLE -> 0D;
+            case BYTES -> new byte[0];
+            case ARRAY -> new Object[0];
+            case LIST -> new ArrayList<>(0);
+            case MAP -> new HashMap<>(0);
+            case INSTANT -> TimeUtils.INSTANT_DEFAULT;
+            case DATE -> TimeUtils.DATE_DEFAULT;
+            case TIME -> TimeUtils.TIME_DEFAULT;
+            case DATETIME -> TimeUtils.DATETIME_DEFAULT;
+            case DATETIME_ZONED -> TimeUtils.ZONED_DATETIME_DEFAULT;
+            case STRUCT -> modeler.constructStruct(schema, Map.of());
+            case JSON, RAW, ENUM -> ifUnsupported.get(schema, modeler);
+        };
     }
 }

@@ -21,5 +21,8 @@ import org.jspecify.annotations.Nullable;
 public interface Invoker<T> {
 
     @Nullable
-    Object invoke(T self, @Nullable Object[] args) throws Throwable;
+    @SuppressWarnings({
+            "java:S112" // Generic exceptions should never be thrown
+    })
+    Object invoke(T self, @Nullable Object @Nullable [] args) throws Throwable;
 }

@@ -83,14 +83,9 @@ public class SimpleRpcHandlerManager implements RpcHandlerManager {
 
     private void register(RpcMappingMeta meta, Object service) {
         switch (meta.type()) {
-            case REQUEST:
-                register(meta.method(), MethodRequestHandler.create(meta, service));
-                break;
-            case NOTIFICATION:
-                register(meta.method(), MethodNotificationHandler.create(service, meta));
-                break;
-            default:
-                throw new IllegalStateException("Unsupported method type: " + meta.type());
+            case REQUEST -> register(meta.method(), MethodRequestHandler.create(meta, service));
+            case NOTIFICATION -> register(meta.method(), MethodNotificationHandler.create(service, meta));
+            default -> throw new IllegalStateException("Unsupported method type: " + meta.type());
         }
     }
 }

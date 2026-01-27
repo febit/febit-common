@@ -171,31 +171,12 @@ public final class PeriodDuration implements TemporalAmount, Serializable {
 
         public Builder add(long num, ChronoUnit unit) {
             switch (unit) {
-                case SECONDS:
-                    seconds += num;
-                    break;
-                case MINUTES:
-                case HOURS:
-                case DAYS:
-                case WEEKS:
-                    seconds += num * unit.getDuration().getSeconds();
-                    break;
-                case MONTHS:
-                    months += (int) num;
-                    break;
-                case YEARS:
-                    months += (int) (num * 12);
-                    break;
-                case NANOS:
-                case MICROS:
-                case MILLIS:
-                case HALF_DAYS:
-                case DECADES:
-                case CENTURIES:
-                case MILLENNIA:
-                case ERAS:
-                case FOREVER:
-                    throw new IllegalStateException("Unsupported temporal unit: " + unit);
+                case SECONDS -> seconds += num;
+                case MINUTES, HOURS, DAYS, WEEKS -> seconds += num * unit.getDuration().getSeconds();
+                case MONTHS -> months += (int) num;
+                case YEARS -> months += (int) (num * 12);
+                case NANOS, MICROS, MILLIS, HALF_DAYS, DECADES, CENTURIES, MILLENNIA, ERAS, FOREVER ->
+                        throw new IllegalStateException("Unsupported temporal unit: " + unit);
             }
             return this;
         }

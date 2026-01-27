@@ -38,7 +38,7 @@ final class LazyImpl<T> implements Serializable, Lazy<T> {
     private final SerializableSupplier<T> supplier;
 
     @Nullable
-    private transient volatile T value;
+    private transient volatile T value; // NOSONAR
 
     @Override
     public T get() {

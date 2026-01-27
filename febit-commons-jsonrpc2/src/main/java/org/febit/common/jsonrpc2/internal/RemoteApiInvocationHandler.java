@@ -88,7 +88,7 @@ public class RemoteApiInvocationHandler extends BaseInvocationHandler<Object> {
         }
 
         @Nullable
-        private Object invoke(RpcChannel channel, Object self, Object[] args) {
+        private Object invoke(RpcChannel channel, Object self, @Nullable Object @Nullable [] args) {
             var params = paramsComposer.compose(args);
             channel.notify(method, params);
             // NOTE: always return null for notification methods
@@ -114,7 +114,7 @@ public class RemoteApiInvocationHandler extends BaseInvocationHandler<Object> {
         }
 
         @Nullable
-        private Object invoke(RpcChannel channel, Object self, Object[] args) {
+        private Object invoke(RpcChannel channel, Object self, @Nullable Object @Nullable [] args) {
             var params = paramsComposer.compose(args);
             var future = channel.request(method, params, timeout, resultType);
             if (isFutureResult) {

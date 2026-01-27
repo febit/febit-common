@@ -45,17 +45,17 @@ public class StructSpecs {
         private static final ListStructSpec INSTANCE = new ListStructSpec();
 
         @Override
-        public List<Object> builder(Schema schema) {
+        public List<@Nullable Object> builder(Schema schema) {
             return new ArrayList<>(Arrays.asList(new Object[schema.fieldsSize()]));
         }
 
         @Override
-        public List<Object> build(Schema schema, List<Object> builder) {
+        public List<@Nullable Object> build(Schema schema, List<Object> builder) {
             return builder;
         }
 
         @Override
-        public void set(List<Object> struct, Schema.Field field, @Nullable Object value) {
+        public void set(List<@Nullable Object> struct, Schema.Field field, @Nullable Object value) {
             struct.set(field.pos(), value);
         }
 
@@ -70,7 +70,7 @@ public class StructSpecs {
         private static final MapStructSpec INSTANCE = new MapStructSpec();
 
         @Override
-        public Map<String, Object> builder(Schema schema) {
+        public Map<String, @Nullable Object> builder(Schema schema) {
             int size = schema.fieldsSize();
             int cap = Math.max(4, Math.min(1 << 30,
                     (int) ((float) size / 0.75F + 1.0F)
@@ -79,18 +79,18 @@ public class StructSpecs {
         }
 
         @Override
-        public Map<String, Object> build(Schema schema, Map<String, Object> builder) {
+        public Map<String, @Nullable Object> build(Schema schema, Map<String, Object> builder) {
             return builder;
         }
 
         @Override
-        public void set(Map<String, Object> struct, Schema.Field field, @Nullable Object value) {
+        public void set(Map<String, @Nullable Object> struct, Schema.Field field, @Nullable Object value) {
             struct.put(field.name(), value);
         }
 
         @Nullable
         @Override
-        public Object get(Map<String, Object> struct, Schema.Field field) {
+        public Object get(Map<String, @Nullable Object> struct, Schema.Field field) {
             return struct.get(field.name());
         }
     }
@@ -100,23 +100,23 @@ public class StructSpecs {
         private static final ObjectArrayStructSpec INSTANCE = new ObjectArrayStructSpec();
 
         @Override
-        public Object[] builder(Schema schema) {
+        public @Nullable Object[] builder(Schema schema) {
             return new Object[schema.fieldsSize()];
         }
 
         @Override
-        public Object[] build(Schema schema, Object[] builder) {
+        public @Nullable Object[] build(Schema schema, Object[] builder) {
             return builder;
         }
 
         @Override
-        public void set(Object[] struct, Schema.Field field, @Nullable Object value) {
+        public void set(@Nullable Object[] struct, Schema.Field field, @Nullable Object value) {
             struct[field.pos()] = value;
         }
 
         @Nullable
         @Override
-        public Object get(Object[] struct, Schema.Field field) {
+        public Object get(@Nullable Object[] struct, Schema.Field field) {
             return struct[field.pos()];
         }
     }
