@@ -25,14 +25,6 @@ import java.util.function.Function;
 public interface IListResponse<T> extends IResponse<List<T>> {
 
     /**
-     * @deprecated use {@link #mapEach(Function)} instead
-     */
-    @Deprecated(since = "3.2.1", forRemoval = true)
-    default <D> IListResponse<D> transferItems(Function<T, D> mapping) {
-        return mapEach(mapping);
-    }
-
-    /**
      * Map each item to another type.
      *
      * @param <D>     the target type

@@ -51,14 +51,6 @@ public class Page<T> {
     }
 
     /**
-     * @deprecated use {@link #map(Function)} instead.
-     */
-    @Deprecated(since = "3.2.1", forRemoval = true)
-    public <D> Page<D> transfer(Function<T, D> mapping) {
-        return map(mapping);
-    }
-
-    /**
      * Map each row to another type.
      *
      * @param <D>     the new type

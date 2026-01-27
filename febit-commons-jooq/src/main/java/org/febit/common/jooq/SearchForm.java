@@ -15,7 +15,6 @@
  */
 package org.febit.common.jooq;
 
-import org.febit.lang.annotation.NonNullArgs;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.springframework.core.annotation.AliasFor;
@@ -37,7 +36,6 @@ public interface SearchForm {
     /**
      * Override to push custom conditions.
      */
-    @NonNullArgs
     default void apply(DSLContext dsl, Consumer<Condition> consumer) {
     }
 

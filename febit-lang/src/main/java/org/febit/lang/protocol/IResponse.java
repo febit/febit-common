@@ -16,7 +16,6 @@
 package org.febit.lang.protocol;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.febit.lang.annotation.NonNullArgs;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.annotation.JsonDeserialize;
@@ -93,22 +92,18 @@ public interface IResponse<T extends @Nullable Object> extends Fallible {
         return Response.ok(httpStatus, code, message, data);
     }
 
-    @NonNullArgs
     static <T extends @Nullable Object> IResponse<T> failed(String code, String message) {
         return failed(code, message, null);
     }
 
-    @NonNullArgs
     static <T extends @Nullable Object> IResponse<T> failed(int httpStatus, String code, String message) {
         return failed(httpStatus, code, message, null);
     }
 
-    @NonNullArgs
     static <T extends @Nullable Object> IResponse<T> failed(String code, String message, T data) {
         return failed(500, code, message, data);
     }
 
-    @NonNullArgs
     static <T extends @Nullable Object> IResponse<T> failed(
             int httpStatus, String code, String message, T data) {
         return Response.failed(httpStatus, code, message, data);
@@ -263,26 +258,6 @@ public interface IResponse<T extends @Nullable Object> extends Fallible {
      */
     default <D extends @Nullable Object> IResponse<D> mapIfPresent(Function<@NonNull T, D> mapping) {
         return map(d -> d == null ? null : mapping.apply(d));
-    }
-
-    /**
-     * @deprecated use {@link #map(Function)} instead
-     */
-    @Deprecated(
-            since = "3.2.1", forRemoval = true
-    )
-    default <D extends @Nullable Object> IResponse<D> transferData(Function<T, D> mapping) {
-        return map(mapping);
-    }
-
-    /**
-     * @deprecated use {@link #mapIfPresent(Function)} instead
-     */
-    @Deprecated(
-            since = "3.2.1", forRemoval = true
-    )
-    default <D extends @Nullable Object> IResponse<D> transferDataIfPresent(Function<@NonNull T, D> mapping) {
-        return mapIfPresent(mapping);
     }
 
     /**

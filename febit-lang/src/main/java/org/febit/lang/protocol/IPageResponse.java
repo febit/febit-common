@@ -23,14 +23,6 @@ import java.util.function.Function;
 public interface IPageResponse<T> extends IResponse<Page<T>> {
 
     /**
-     * @deprecated use {@link #mapEach(Function)} instead
-     */
-    @Deprecated(since = "3.2.1", forRemoval = true)
-    default <D> PageResponse<D> transferRows(Function<T, D> mapping) {
-        return mapEach(mapping);
-    }
-
-    /**
      * Map each row to another type.
      *
      * @param <D>     the target type
@@ -40,8 +32,9 @@ public interface IPageResponse<T> extends IResponse<Page<T>> {
     default <D> PageResponse<D> mapEach(Function<T, D> mapping) {
         var target = new PageResponse<D>();
         target.copyProperties(this);
-        if (getData() != null) {
-            target.setData(getData().map(mapping));
+        var data = data();
+        if (data != null) {
+            target.setData(data.map(mapping));
         }
         return target;
     }
