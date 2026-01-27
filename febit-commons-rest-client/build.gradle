@@ -1,0 +1,21 @@
+description = 'Febit Commons Web Client'
+
+codegenModule {
+  module 'org.febit.FebitCommonsWebClient'
+}
+
+configurations.named('testImplementation') {
+  exclude group: 'ch.qos.logback'
+}
+
+dependencies {
+  api project(':febit-lang')
+  api libs.spring.web
+
+  testImplementation platform(libs.spring.boot.deps)
+
+  testImplementation 'com.squareup.okhttp3:mockwebserver3'
+  testImplementation 'org.springframework.boot:spring-boot-starter-web'
+  testImplementation 'org.springframework.boot:spring-boot-starter-logging'
+  testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}

@@ -22,7 +22,7 @@ import org.jooq.UpdatableRecord;
  *
  * @deprecated Use {@link ICrudDao} instead.
  */
-@Deprecated(since = "3.3.2")
+@Deprecated(since = "3.3.2", forRemoval = true)
 @SuppressWarnings({"unused"})
 public interface ICurdDao<TB extends ITable<R, ID>, PO extends IEntity<ID>, ID, R extends UpdatableRecord<R>>
         extends ICrudDao<TB, PO, ID, R> {

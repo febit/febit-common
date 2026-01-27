@@ -27,7 +27,7 @@ public interface IListResponse<T> extends IResponse<List<T>> {
     /**
      * @deprecated use {@link #mapEach(Function)} instead
      */
-    @Deprecated(since = "3.2.1")
+    @Deprecated(since = "3.2.1", forRemoval = true)
     default <D> IListResponse<D> transferItems(Function<T, D> mapping) {
         return mapEach(mapping);
     }

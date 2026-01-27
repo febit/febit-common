@@ -25,7 +25,7 @@ public interface IPageResponse<T> extends IResponse<Page<T>> {
     /**
      * @deprecated use {@link #mapEach(Function)} instead
      */
-    @Deprecated(since = "3.2.1")
+    @Deprecated(since = "3.2.1", forRemoval = true)
     default <D> PageResponse<D> transferRows(Function<T, D> mapping) {
         return mapEach(mapping);
     }

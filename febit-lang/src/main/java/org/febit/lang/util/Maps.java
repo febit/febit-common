@@ -327,7 +327,7 @@ public class Maps {
     /**
      * @deprecated use {@link #groupingSet(Collection, Function, Function)}
      */
-    @Deprecated
+    @Deprecated(since = "3.4.0", forRemoval = true)
     public static <T extends @Nullable Object, K extends @Nullable Object, V extends @Nullable Object>
     Map<K, Set<V>> uniqueGrouping(Collection<T> items, Function<T, K> keyMapper, Function<T, V> valueMapper) {
         return groupingSet(items, keyMapper, valueMapper);
@@ -336,7 +336,7 @@ public class Maps {
     /**
      * @deprecated use {@link #groupingSet(Stream, Function, Function)}
      */
-    @Deprecated
+    @Deprecated(since = "3.4.0", forRemoval = true)
     public static <T extends @Nullable Object, K extends @Nullable Object, V extends @Nullable Object>
     Map<K, Set<V>> uniqueGrouping(
             Stream<T> stream, Function<T, K> keyMapper, Function<T, V> valueMapper
@@ -347,7 +347,7 @@ public class Maps {
     /**
      * @deprecated use {@link #groupingSet(Collection, Function)}
      */
-    @Deprecated
+    @Deprecated(since = "3.4.0", forRemoval = true)
     public static <T extends @Nullable Object, K extends @Nullable Object>
     Map<K, Set<T>> uniqueGrouping(Collection<T> items, Function<T, K> keyMapper) {
         return groupingSet(items, keyMapper);

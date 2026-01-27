@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.common.jooq;
+package org.febit.common.rest.client;
 
-import org.jooq.UpdatableRecord;
-import org.jspecify.annotations.Nullable;
+import lombok.experimental.UtilityClass;
+import org.febit.lang.protocol.IResponse;
+import org.febit.lang.util.JacksonUtils;
+import org.springframework.core.ParameterizedTypeReference;
 
-@SuppressWarnings({
-        "squid:S1609" // @FunctionalInterface annotation should be used to flag Single Abstract Method interfaces
-})
-public interface IEntity<I> {
+@UtilityClass
+public class TypeRefs {
 
-    @Nullable
-    I id();
-
-    <R extends UpdatableRecord<R>> R toRecord();
+    public static <T> ParameterizedTypeReference<IResponse<T>> forResponse(Class<T> clazz) {
+        var type = JacksonUtils.TYPES.constructParametricType(IResponse.class, clazz);
+        return ParameterizedTypeReference.forType(type);
+    }
 }

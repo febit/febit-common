@@ -17,6 +17,7 @@ package org.febit.lang.util;
 
 import lombok.experimental.UtilityClass;
 
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -36,4 +37,14 @@ public class Streams {
                 false
         );
     }
+
+    /**
+     * Convert Enumeration to Stream.
+     *
+     * @since 4.0.0
+     */
+    public static <T> Stream<T> of(Enumeration<T> enumeration) {
+        return of(Iterators.forEnumeration(enumeration));
+    }
+
 }

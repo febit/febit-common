@@ -13,18 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.common.jooq;
+package org.febit.common.rest.client.service.mvc.controller;
 
-import org.jooq.UpdatableRecord;
-import org.jspecify.annotations.Nullable;
+import org.febit.lang.protocol.IResponse;
 
-@SuppressWarnings({
-        "squid:S1609" // @FunctionalInterface annotation should be used to flag Single Abstract Method interfaces
-})
-public interface IEntity<I> {
+public interface MockController {
 
-    @Nullable
-    I id();
-
-    <R extends UpdatableRecord<R>> R toRecord();
+    default <T> IResponse<T> ok(T data) {
+        return IResponse.ok(data);
+    }
 }

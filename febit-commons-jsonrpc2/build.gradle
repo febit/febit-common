@@ -6,5 +6,5 @@ codegenModule {
 
 dependencies {
   api project(':febit-lang')
-  api libs.sping.core
+  api libs.spring.core
 }

@@ -7,7 +7,7 @@ configurations {
 dependencies {
   api project(':febit-lang')
   api 'org.jooq:jooq'
-  api libs.sping.core
+  api libs.spring.core
   api libs.jooq
 
   compileOnly libs.jakarta.xml.bind.api

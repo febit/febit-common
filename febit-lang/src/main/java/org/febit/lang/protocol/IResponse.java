@@ -130,6 +130,56 @@ public interface IResponse<T extends @Nullable Object> extends Fallible {
     @Nullable
     T getData();
 
+    /**
+     * Response status code, alias of {@link #getStatus()}.
+     *
+     * @see #getStatus()
+     * @since 4.0.0
+     */
+    default int status() {
+        return getStatus();
+    }
+
+    /**
+     * Response code, alias of {@link #getCode()}.
+     *
+     * @see #getCode()
+     * @since 4.0.0
+     */
+    default @Nullable String code() {
+        return getCode();
+    }
+
+    /**
+     * Response message, alias of {@link #getMessage()}.
+     *
+     * @see #getMessage()
+     * @since 4.0.0
+     */
+    default @Nullable String message() {
+        return getMessage();
+    }
+
+    /**
+     * Response timestamp, alias of {@link #getTimestamp()}.
+     *
+     * @see #getTimestamp()
+     * @since 4.0.0
+     */
+    default @Nullable Instant timestamp() {
+        return getTimestamp();
+    }
+
+    /**
+     * Response data, alias of {@link #getData()}.
+     *
+     * @see #getData()
+     * @since 4.0.0
+     */
+    default @Nullable T data() {
+        return getData();
+    }
+
     @JsonIgnore
     @Override
     default boolean isFailed() {
@@ -219,7 +269,7 @@ public interface IResponse<T extends @Nullable Object> extends Fallible {
      * @deprecated use {@link #map(Function)} instead
      */
     @Deprecated(
-            since = "3.2.1"
+            since = "3.2.1", forRemoval = true
     )
     default <D extends @Nullable Object> IResponse<D> transferData(Function<T, D> mapping) {
         return map(mapping);
@@ -229,7 +279,7 @@ public interface IResponse<T extends @Nullable Object> extends Fallible {
      * @deprecated use {@link #mapIfPresent(Function)} instead
      */
     @Deprecated(
-            since = "3.2.1"
+            since = "3.2.1", forRemoval = true
     )
     default <D extends @Nullable Object> IResponse<D> transferDataIfPresent(Function<@NonNull T, D> mapping) {
         return mapIfPresent(mapping);

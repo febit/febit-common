@@ -28,7 +28,7 @@ import org.jooq.UpdatableRecord;
  * @see ICrudDao
  * @deprecated use {@link BaseCrudDao} instead.
  */
-@Deprecated(since = "3.3.2")
+@Deprecated(since = "3.3.2", forRemoval = true)
 @SuppressWarnings({"WeakerAccess", "unused"})
 public abstract class BaseCurdDao<TB extends ITable<R, ID>, PO extends IEntity<ID>, ID, R extends UpdatableRecord<R>>
         extends BaseCrudDao<TB, PO, ID, R> implements ICurdDao<TB, PO, ID, R> {

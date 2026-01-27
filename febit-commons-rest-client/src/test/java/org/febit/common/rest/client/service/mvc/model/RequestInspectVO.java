@@ -13,18 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.common.jooq;
+package org.febit.common.rest.client.service.mvc.model;
 
-import org.jooq.UpdatableRecord;
 import org.jspecify.annotations.Nullable;
 
-@SuppressWarnings({
-        "squid:S1609" // @FunctionalInterface annotation should be used to flag Single Abstract Method interfaces
-})
-public interface IEntity<I> {
+import java.util.List;
+import java.util.TreeMap;
 
-    @Nullable
-    I id();
-
-    <R extends UpdatableRecord<R>> R toRecord();
+@lombok.Builder(
+        builderClassName = "Builder"
+)
+public record RequestInspectVO(
+        String method,
+        String path,
+        String query,
+        TreeMap<String, List<String>> queries,
+        TreeMap<String, List<String>> headers,
+        @Nullable String body
+) {
 }

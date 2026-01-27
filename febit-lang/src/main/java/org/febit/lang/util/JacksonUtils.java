@@ -65,7 +65,7 @@ public class JacksonUtils {
     /**
      * @deprecated Use {@link #TYPES} instead.
      */
-    @Deprecated
+    @Deprecated(since = "4.0.0")
     public static final TypeFactory TYPE_FACTORY = TYPES;
 
     private static final class JsonLazyHolder {

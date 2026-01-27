@@ -92,6 +92,7 @@ configure(subprojects.findAll {
       mavenBom "${libs.jackson.bom.get()}"
       mavenBom "${libs.junit.bom.get()}"
       mavenBom "${libs.mockito.bom.get()}"
+      mavenBom "${libs.okhttp.bom.get()}"
     }
     dependencies {
       dependencySet(group: 'org.slf4j', version: "${libs.versions.slf4j.get()}") {

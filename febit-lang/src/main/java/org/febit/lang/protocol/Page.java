@@ -53,7 +53,7 @@ public class Page<T> {
     /**
      * @deprecated use {@link #map(Function)} instead.
      */
-    @Deprecated(since = "3.2.1")
+    @Deprecated(since = "3.2.1", forRemoval = true)
     public <D> Page<D> transfer(Function<T, D> mapping) {
         return map(mapping);
     }
