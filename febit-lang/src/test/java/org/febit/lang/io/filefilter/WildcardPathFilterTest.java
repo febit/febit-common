@@ -54,6 +54,8 @@ class WildcardPathFilterTest {
         assertTrue(filter.accept(new File("/a/b/c/d")));
         assertTrue(filter.accept(new File("/a/b/../b/c")));
 
+        assertFalse(filter.accept(null));
+
         assertFalse(filter.accept(new File("/../a/b/c")));
         assertFalse(filter.accept(new File("/A/B/C")));
         assertFalse(filter.accept(new File("/a")));

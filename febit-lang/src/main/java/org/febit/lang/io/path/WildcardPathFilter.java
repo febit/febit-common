@@ -13,23 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.lang.io.filefilter;
+package org.febit.lang.io.path;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOCase;
-import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.file.PathFilter;
+import org.apache.commons.lang3.StringUtils;
 import org.jspecify.annotations.Nullable;
 
-import java.io.File;
 import java.io.Serial;
 import java.io.Serializable;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.function.Predicate;
 
 @ToString
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class WildcardPathFilter implements IOFileFilter, Serializable {
+public class WildcardPathFilter implements PathFilter, Predicate<Path>, Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -38,12 +42,12 @@ public class WildcardPathFilter implements IOFileFilter, Serializable {
     final String pattern;
     final boolean sensitive;
 
-    public static WildcardPathFilter create(File baseDir, String pattern) {
+    public static WildcardPathFilter create(Path baseDir, String pattern) {
         return create(baseDir, pattern, true);
     }
 
-    public static WildcardPathFilter create(File baseDir, String pattern, boolean sensitive) {
-        var abs = getAbsolutePath(baseDir);
+    public static WildcardPathFilter create(Path baseDir, String pattern, boolean sensitive) {
+        var abs = absolutePath(baseDir);
         if (abs == null) {
             throw new IllegalArgumentException("Invalid base dir");
         }
@@ -60,11 +64,18 @@ public class WildcardPathFilter implements IOFileFilter, Serializable {
     }
 
     @Override
-    public boolean accept(@Nullable File file) {
-        if (file == null) {
+    public FileVisitResult accept(@Nullable Path path, @Nullable BasicFileAttributes attributes) {
+        return test(path)
+                ? FileVisitResult.CONTINUE
+                : FileVisitResult.TERMINATE;
+    }
+
+    @Override
+    public boolean test(Path path) {
+        if (path == null) {
             return false;
         }
-        var abs = getAbsolutePath(file);
+        var abs = absolutePath(path);
         if (abs == null) {
             return false;
         }
@@ -77,19 +88,8 @@ public class WildcardPathFilter implements IOFileFilter, Serializable {
         );
     }
 
-    @Override
-    public boolean accept(final File dir, final String name) {
-        if (name.isEmpty()) {
-            return accept(dir);
-        }
-        if (name.startsWith("/")) {
-            return accept(new File(FilenameUtils.normalize(name)));
-        }
-        return accept(new File(dir, name));
-    }
-
-    @Nullable
-    static String getAbsolutePath(File file) {
-        return FilenameUtils.normalize(file.getAbsolutePath(), true);
+    static String absolutePath(Path file) {
+        var abs = file.toAbsolutePath().normalize().toString();
+        return StringUtils.replaceChars(abs, '\\', '/');
     }
 }
