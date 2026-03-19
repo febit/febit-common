@@ -91,18 +91,18 @@ class Utils {
         var idField = table.pkField();
         var result = new ArrayList<R>(pos.size());
         for (P po : pos) {
-            R record = dsl.newRecord(table, po);
+            R r = dsl.newRecord(table, po);
 
             if (mapping != null) {
-                mapping.put(record, po);
+                mapping.put(r, po);
             }
 
             if (forUpdate) {
-                record.changed(idField, false);
+                r.changed(idField, false);
             }
 
-            resetChangedOnNotNull(record);
-            result.add(record);
+            resetChangedOnNotNull(r);
+            result.add(r);
         }
         return result;
     }
@@ -115,28 +115,28 @@ class Utils {
             Configuration conf, IdentityHashMap<R, Object> mapping) {
         return ArrayUtils.add(conf.recordListenerProviders(),
                 new DefaultRecordListenerProvider((BaseRecordListener) ctx -> {
-                    var record = ctx.record();
-                    record.into(mapping.get(record));
+                    var r = ctx.record();
+                    r.into(mapping.get(r));
                 })
         );
     }
 
-    private static void resetChangedOnNotNull(Record record) {
-        int size = record.size();
+    private static void resetChangedOnNotNull(Record r) {
+        int size = r.size();
 
         for (int i = 0; i < size; i++) {
-            if (record.get(i) != null) {
+            if (r.get(i) != null) {
                 continue;
             }
-            var f = record.field(i);
+            var f = r.field(i);
             if (f != null
                     && !f.getDataType().nullable()) {
-                record.changed(i, false);
+                r.changed(i, false);
             }
         }
     }
 
-    static <R extends UpdatableRecord<R>, P, T extends ITable<R, I>, I> R record(
+    static <R extends UpdatableRecord<R>, P, T extends ITable<R, I>, I> R toRecord(
             Configuration conf,
             T table,
             P po,
@@ -156,12 +156,12 @@ class Utils {
         }
 
         var idField = table.pkField();
-        R record = dsl.newRecord(table, po);
+        R r = dsl.newRecord(table, po);
         if (forUpdate) {
-            record.changed(idField, false);
+            r.changed(idField, false);
         }
-        resetChangedOnNotNull(record);
-        return record;
+        resetChangedOnNotNull(r);
+        return r;
     }
 
     private static RecordListenerProvider[] providersForPojo(Configuration conf, Object pojo) {

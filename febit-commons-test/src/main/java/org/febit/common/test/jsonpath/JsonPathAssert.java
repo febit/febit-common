@@ -20,7 +20,9 @@ import com.jayway.jsonpath.EvaluationListener;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 import com.jayway.jsonpath.spi.cache.CacheProvider;
+import com.jayway.jsonpath.spi.json.Jackson3JsonProvider;
 import com.jayway.jsonpath.spi.json.JsonProvider;
+import com.jayway.jsonpath.spi.mapper.Jackson3MappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
 import lombok.Singular;
 import org.assertj.core.annotation.CheckReturnValue;
@@ -44,12 +46,12 @@ import java.util.Set;
 
 import static java.util.Objects.requireNonNull;
 
-public class JsonPathAssert<T> extends AbstractAssert<JsonPathAssert<T>, T> {
+public class JsonPathAssert<A> extends AbstractAssert<JsonPathAssert<A>, A> {
 
     private final Conditions conditions = Conditions.instance();
     private final Configuration conf;
 
-    protected JsonPathAssert(T root, Configuration conf) {
+    protected JsonPathAssert(A root, Configuration conf) {
         super(root, JsonPathAssert.class);
         this.conf = conf;
     }
@@ -155,121 +157,121 @@ public class JsonPathAssert<T> extends AbstractAssert<JsonPathAssert<T>, T> {
     }
 
     @Nullable
-    public T root() {
+    public A root() {
         return actual;
     }
 
-    public JsonPathAssert<T> isEqualTo(String path, Object expected) {
+    public JsonPathAssert<A> isEqualTo(String path, Object expected) {
         objects.assertEqual(info, read(path), expected);
         return myself;
     }
 
-    public JsonPathAssert<T> isNotEqualTo(String path, Object other) {
+    public JsonPathAssert<A> isNotEqualTo(String path, Object other) {
         objects.assertNotEqual(info, read(path), other);
         return myself;
     }
 
-    public JsonPathAssert<T> isNull(String path) {
+    public JsonPathAssert<A> isNull(String path) {
         objects.assertNull(info, read(path));
         return myself;
     }
 
-    public JsonPathAssert<T> isNotNull(String path) {
+    public JsonPathAssert<A> isNotNull(String path) {
         objects.assertNotNull(info, read(path));
         return myself;
     }
 
-    public JsonPathAssert<T> isSameAs(String path, Object expected) {
+    public JsonPathAssert<A> isSameAs(String path, Object expected) {
         objects.assertSame(info, read(path), expected);
         return myself;
     }
 
-    public JsonPathAssert<T> isNotSameAs(String path, Object other) {
+    public JsonPathAssert<A> isNotSameAs(String path, Object other) {
         objects.assertNotSame(info, read(path), other);
         return myself;
     }
 
-    public JsonPathAssert<T> isInstanceOf(String path, Class<?> type) {
+    public JsonPathAssert<A> isInstanceOf(String path, Class<?> type) {
         objects.assertIsInstanceOf(info, read(path), type);
         return myself;
     }
 
-    public JsonPathAssert<T> isInstanceOfAny(String path, Class<?>... types) {
+    public JsonPathAssert<A> isInstanceOfAny(String path, Class<?>... types) {
         objects.assertIsInstanceOfAny(info, read(path), types);
         return myself;
     }
 
-    public JsonPathAssert<T> isNotInstanceOf(String path, Class<?> type) {
+    public JsonPathAssert<A> isNotInstanceOf(String path, Class<?> type) {
         objects.assertIsNotInstanceOf(info, read(path), type);
         return myself;
     }
 
-    public JsonPathAssert<T> isNotInstanceOfAny(String path, Class<?>... types) {
+    public JsonPathAssert<A> isNotInstanceOfAny(String path, Class<?>... types) {
         objects.assertIsNotInstanceOfAny(info, read(path), types);
         return myself;
     }
 
-    public JsonPathAssert<T> hasSameClassAs(String path, Object other) {
+    public JsonPathAssert<A> hasSameClassAs(String path, Object other) {
         objects.assertHasSameClassAs(info, read(path), other);
         return myself;
     }
 
-    public JsonPathAssert<T> doesNotHaveSameClassAs(String path, Object other) {
+    public JsonPathAssert<A> doesNotHaveSameClassAs(String path, Object other) {
         objects.assertDoesNotHaveSameClassAs(info, read(path), other);
         return myself;
     }
 
-    public JsonPathAssert<T> hasToString(String path, String expectedToString) {
+    public JsonPathAssert<A> hasToString(String path, String expectedToString) {
         objects.assertHasToString(info, read(path), expectedToString);
         return myself;
     }
 
-    public JsonPathAssert<T> doesNotHaveToString(String path, String otherToString) {
+    public JsonPathAssert<A> doesNotHaveToString(String path, String otherToString) {
         objects.assertDoesNotHaveToString(info, read(path), otherToString);
         return myself;
     }
 
-    public JsonPathAssert<T> isExactlyInstanceOf(String path, Class<?> type) {
+    public JsonPathAssert<A> isExactlyInstanceOf(String path, Class<?> type) {
         objects.assertIsExactlyInstanceOf(info, read(path), type);
         return myself;
     }
 
-    public JsonPathAssert<T> isNotExactlyInstanceOf(String path, Class<?> type) {
+    public JsonPathAssert<A> isNotExactlyInstanceOf(String path, Class<?> type) {
         objects.assertIsNotExactlyInstanceOf(info, read(path), type);
         return myself;
     }
 
-    public JsonPathAssert<T> hasSameHashCodeAs(String path, Object other) {
+    public JsonPathAssert<A> hasSameHashCodeAs(String path, Object other) {
         objects.assertHasSameHashCodeAs(info, read(path), other);
         return myself;
     }
 
-    public JsonPathAssert<T> doesNotHaveSameHashCodeAs(String path, Object other) {
+    public JsonPathAssert<A> doesNotHaveSameHashCodeAs(String path, Object other) {
         objects.assertDoesNotHaveSameHashCodeAs(info, read(path), other);
         return myself;
     }
 
-    public JsonPathAssert<T> is(String path, Condition<Object> condition) {
+    public JsonPathAssert<A> is(String path, Condition<Object> condition) {
         conditions.assertIs(info, read(path), condition);
         return myself;
     }
 
-    public JsonPathAssert<T> isNot(String path, Condition<Object> condition) {
+    public JsonPathAssert<A> isNot(String path, Condition<Object> condition) {
         conditions.assertIsNot(info, read(path), condition);
         return myself;
     }
 
-    public JsonPathAssert<T> has(String path, Condition<Object> condition) {
+    public JsonPathAssert<A> has(String path, Condition<Object> condition) {
         conditions.assertHas(info, read(path), condition);
         return myself;
     }
 
-    public JsonPathAssert<T> doesNotHave(String path, Condition<Object> condition) {
+    public JsonPathAssert<A> doesNotHave(String path, Condition<Object> condition) {
         conditions.assertDoesNotHave(info, read(path), condition);
         return myself;
     }
 
-    public JsonPathAssert<T> satisfies(String path, Condition<Object> condition) {
+    public JsonPathAssert<A> satisfies(String path, Condition<Object> condition) {
         conditions.assertSatisfies(info, read(path), condition);
         return myself;
     }

@@ -1,6 +1,6 @@
 # Febit Common
 
-Common utils for you ;)
+Common utils
 
 ## License
 

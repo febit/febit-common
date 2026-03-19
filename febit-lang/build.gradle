@@ -10,6 +10,8 @@ dependencies {
   api 'org.apache.commons:commons-lang3'
   api 'org.apache.commons:commons-collections4'
 
-  api 'org.yaml:snakeyaml'
+  api 'org.snakeyaml:snakeyaml-engine'
+  api 'tools.jackson.core:jackson-core'
+  api 'tools.jackson.core:jackson-databind'
   api 'tools.jackson.dataformat:jackson-dataformat-yaml'
 }

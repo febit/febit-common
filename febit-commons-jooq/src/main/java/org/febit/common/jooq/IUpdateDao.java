@@ -30,7 +30,7 @@ public interface IUpdateDao<TB extends ITable<R, ID>, PO extends IEntity<ID>, ID
         extends IDao<TB, PO, R> {
 
     default int update(PO po) {
-        return Utils.record(conf(), table(), po, true)
+        return Utils.toRecord(conf(), table(), po, true)
                 .update();
     }
 

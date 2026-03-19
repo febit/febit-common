@@ -10,7 +10,7 @@ plugins {
 }
 
 group = 'org.febit'
-version = '4.0.0'
+version = '4.0.1-SNAPSHOT'
 
 description = 'Febit Commons'
 
@@ -104,6 +104,13 @@ configure(subprojects.findAll {
         entry 'slf4j-simple'
       }
 
+      dependencySet(group: 'io.swagger.core.v3', version: "${libs.versions.swagger.get()}") {
+        entry 'swagger-annotations'
+        entry 'swagger-annotations-jakarta'
+        entry 'swagger-core'
+        entry 'swagger-core-jakarta'
+      }
+
       dependency "${libs.jspecify.get()}"
       dependency "${libs.jsr305.get()}"
       dependency "${libs.spotbugs.annotations.get()}"
@@ -126,13 +133,14 @@ configure(subprojects.findAll {
       dependency "${libs.commons.text.get()}"
 
       dependency "${libs.caffeine.get()}"
+      dependency "${libs.disruptor.get()}"
       dependency "${libs.hamcrest.get()}"
       dependency "${libs.jcommander.get()}"
       dependency "${libs.jool.get()}"
       dependency "${libs.jsonpath.get()}"
       dependency "${libs.kafka.clients.get()}"
       dependency "${libs.nimbus.jose.jwt.get()}"
-      dependency "${libs.snakeyaml.get()}"
+      dependency "${libs.snakeyaml.engine.get()}"
       dependency "${libs.uuid.generator.get()}"
     }
   }
@@ -150,7 +158,7 @@ def customPom(MavenPom pom) {
     licenses {
       license {
         name = 'Apache License, Version 2.0'
-        url = 'https://github.com/febit/febit-common/blob/master/LICENSE.txt'
+        url = 'https://github.com/febit/febit-common/blob/main/LICENSE.txt'
         distribution = 'repo'
       }
     }

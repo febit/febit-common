@@ -17,8 +17,7 @@ package org.febit.common.jsonrpc2.internal;
 
 import org.febit.common.jsonrpc2.annotation.RpcMethodType;
 import org.febit.common.jsonrpc2.annotation.RpcParamsKind;
-import org.febit.lang.annotation.NullableArgs;
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JavaType;
 
 import java.lang.reflect.Method;
@@ -27,15 +26,22 @@ import java.time.Duration;
 @lombok.Builder(
         builderClassName = "Builder"
 )
-@NullableArgs
 public record RpcMappingMeta(
-        @lombok.NonNull @NonNull String method,
-        @lombok.NonNull @NonNull RpcMethodType type,
-        @lombok.NonNull @NonNull RpcParamsKind paramsKind,
-        @lombok.NonNull @NonNull JavaType resultType,
+        @SuppressWarnings("NullableProblems")
+        @lombok.NonNull String method,
+        @SuppressWarnings("NullableProblems")
+        @lombok.NonNull RpcMethodType type,
+        @SuppressWarnings("NullableProblems")
+        @lombok.NonNull RpcParamsKind paramsKind,
+        @SuppressWarnings("NullableProblems")
+        @lombok.NonNull JavaType resultType,
+
+        @Nullable
         Method targetMethod,
         boolean isFutureResult,
         boolean annotated,
+
+        @Nullable
         Duration timeout
 ) {
 }

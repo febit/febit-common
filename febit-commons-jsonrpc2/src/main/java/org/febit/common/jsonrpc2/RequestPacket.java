@@ -17,6 +17,7 @@ package org.febit.common.jsonrpc2;
 
 import org.febit.common.jsonrpc2.protocol.IRpcRequest;
 import org.febit.common.jsonrpc2.protocol.Id;
+import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JavaType;
 
 import java.util.concurrent.CompletableFuture;
@@ -28,7 +29,7 @@ import java.util.concurrent.CompletableFuture;
 public record RequestPacket<T>(
         @lombok.NonNull Id id,
         @lombok.NonNull IRpcRequest request,
-        @lombok.NonNull CompletableFuture<T> future,
+        @lombok.NonNull CompletableFuture<@Nullable T> future,
         @lombok.NonNull JavaType resultType,
         long postedAt,
         long timeoutAt

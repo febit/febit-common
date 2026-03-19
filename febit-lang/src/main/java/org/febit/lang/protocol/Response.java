@@ -20,7 +20,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.febit.lang.annotation.NullableArgs;
 import org.febit.lang.util.jackson.InstantLooseDeserializer;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.annotation.JsonDeserialize;
@@ -33,7 +32,6 @@ import java.util.function.Function;
 @SuppressWarnings({"unused"})
 @NoArgsConstructor
 @AllArgsConstructor(
-        onConstructor_ = {@NullableArgs},
         staticName = "of",
         access = AccessLevel.PACKAGE
 )
@@ -85,6 +83,7 @@ public class Response<T extends @Nullable Object> implements IMutableResponse<T>
         return of(httpStatus, false, code, message, now(), data);
     }
 
+    @Override
     public <D extends @Nullable Object> Response<D> map(Function<@Nullable T, D> mapping) {
         var target = new Response<D>();
         target.copyProperties(this);

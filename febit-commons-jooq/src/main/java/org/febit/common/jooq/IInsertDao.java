@@ -30,7 +30,7 @@ public interface IInsertDao<TB extends ITable<R, ID>, PO extends IEntity<ID>, ID
     }
 
     default void insert(PO po) {
-        Utils.record(conf(), table(), po, false)
+        Utils.toRecord(conf(), table(), po, false)
                 .insert();
     }
 
