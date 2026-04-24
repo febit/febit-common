@@ -78,6 +78,14 @@ public class Modeler {
         };
     }
 
+    /**
+     * Process the given source using the schema and return a ModeledValue
+     */
+    public ModeledValue processAsModeled(Schema schema, @Nullable Object source) {
+        var value = process(schema, source);
+        return new ModeledValue(schema, value, this.structSpec);
+    }
+
     public byte @Nullable [] toBytes(@Nullable Object source) {
         if (source == null) {
             return null;
@@ -201,6 +209,11 @@ public class Modeler {
         @Nullable
         public Object process(Schema schema, @Nullable Object source) {
             return build().process(schema, source);
+        }
+
+        @Nullable
+        public ModeledValue processAsModeled(Schema schema, @Nullable Object source) {
+            return build().processAsModeled(schema, source);
         }
     }
 

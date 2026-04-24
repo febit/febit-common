@@ -24,7 +24,7 @@ import java.time.Instant;
 
 public abstract class InstantToNumberSerializer extends StdSerializer<Instant> {
 
-    public InstantToNumberSerializer() {
+    protected InstantToNumberSerializer() {
         super(Instant.class);
     }
 
