@@ -18,6 +18,7 @@ package org.febit.lang.modeler;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -36,11 +37,13 @@ public enum SchemaType {
     STRING(String.class),
     BYTES(byte[].class),
     BOOLEAN(Boolean.class),
+    BYTE(Byte.class),
     SHORT(Short.class),
     INT(Integer.class),
     LONG(Long.class),
     FLOAT(Float.class),
     DOUBLE(Double.class),
+    DECIMAL(BigDecimal.class),
 
     INSTANT(Instant.class),
     DATE(LocalDate.class),

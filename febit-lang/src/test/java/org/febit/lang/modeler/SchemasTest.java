@@ -19,10 +19,12 @@ import org.junit.jupiter.api.Test;
 
 import static org.febit.lang.modeler.SchemaType.ARRAY;
 import static org.febit.lang.modeler.SchemaType.BOOLEAN;
+import static org.febit.lang.modeler.SchemaType.BYTE;
 import static org.febit.lang.modeler.SchemaType.BYTES;
 import static org.febit.lang.modeler.SchemaType.DATE;
 import static org.febit.lang.modeler.SchemaType.DATETIME;
 import static org.febit.lang.modeler.SchemaType.DATETIME_ZONED;
+import static org.febit.lang.modeler.SchemaType.DECIMAL;
 import static org.febit.lang.modeler.SchemaType.DOUBLE;
 import static org.febit.lang.modeler.SchemaType.ENUM;
 import static org.febit.lang.modeler.SchemaType.FLOAT;
@@ -39,10 +41,12 @@ import static org.febit.lang.modeler.SchemaType.STRING;
 import static org.febit.lang.modeler.SchemaType.STRUCT;
 import static org.febit.lang.modeler.SchemaType.TIME;
 import static org.febit.lang.modeler.TestSchemas.S_BOOLEAN;
+import static org.febit.lang.modeler.TestSchemas.S_BYTE;
 import static org.febit.lang.modeler.TestSchemas.S_BYTES;
 import static org.febit.lang.modeler.TestSchemas.S_DATE;
 import static org.febit.lang.modeler.TestSchemas.S_DATETIME;
 import static org.febit.lang.modeler.TestSchemas.S_DATETIME_ZONED;
+import static org.febit.lang.modeler.TestSchemas.S_DECIMAL;
 import static org.febit.lang.modeler.TestSchemas.S_DOUBLE;
 import static org.febit.lang.modeler.TestSchemas.S_FLOAT;
 import static org.febit.lang.modeler.TestSchemas.S_INSTANT;
@@ -82,11 +86,13 @@ class SchemasTest {
         assertDoesNotThrow(() -> Schemas.ofPrimitive(STRING));
         assertDoesNotThrow(() -> Schemas.ofPrimitive(BYTES));
         assertDoesNotThrow(() -> Schemas.ofPrimitive(BOOLEAN));
+        assertDoesNotThrow(() -> Schemas.ofPrimitive(BYTE));
         assertDoesNotThrow(() -> Schemas.ofPrimitive(SHORT));
         assertDoesNotThrow(() -> Schemas.ofPrimitive(INT));
         assertDoesNotThrow(() -> Schemas.ofPrimitive(LONG));
         assertDoesNotThrow(() -> Schemas.ofPrimitive(FLOAT));
         assertDoesNotThrow(() -> Schemas.ofPrimitive(DOUBLE));
+        assertDoesNotThrow(() -> Schemas.ofPrimitive(DECIMAL));
         assertDoesNotThrow(() -> Schemas.ofPrimitive(INSTANT));
         assertDoesNotThrow(() -> Schemas.ofPrimitive(DATE));
         assertDoesNotThrow(() -> Schemas.ofPrimitive(TIME));
@@ -135,6 +141,10 @@ class SchemasTest {
 
     @Test
     void parse_primitives() {
+        assertEquals(S_BYTE, Schema.parse("byte"));
+        assertEquals(S_BYTE, Schema.parse("int8"));
+        assertEquals(S_BYTE, Schema.parse("tinyint"));
+
         assertEquals(S_SHORT, Schema.parse("short"));
         assertEquals(S_SHORT, Schema.parse("int16"));
         assertEquals(S_SHORT, Schema.parse("smallint"));
@@ -158,6 +168,8 @@ class SchemasTest {
 
         assertEquals(S_FLOAT, Schema.parse("float"));
         assertEquals(S_DOUBLE, Schema.parse("double"));
+        assertEquals(S_DECIMAL, Schema.parse("decimal"));
+        assertEquals(S_DECIMAL, Schema.parse("bigdecimal"));
 
         assertEquals(S_INSTANT, Schema.parse("instant"));
 

@@ -19,6 +19,7 @@ import lombok.experimental.UtilityClass;
 import org.febit.lang.util.TimeUtils;
 import org.jspecify.annotations.Nullable;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,11 +53,13 @@ public class DefaultValues {
             case OPTIONAL -> null;
             case STRING -> "";
             case BOOLEAN -> Boolean.FALSE;
+            case BYTE -> (byte) 0;
             case SHORT -> (short) 0;
             case INT -> 0;
             case LONG -> 0L;
             case FLOAT -> 0F;
             case DOUBLE -> 0D;
+            case DECIMAL -> BigDecimal.ZERO;
             case BYTES -> new byte[0];
             case ARRAY -> new Object[0];
             case LIST -> new ArrayList<>(0);

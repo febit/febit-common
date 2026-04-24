@@ -19,7 +19,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.febit.lang.modeler.TestSchemas.S_ARRAY_STR;
 import static org.febit.lang.modeler.TestSchemas.S_BOOLEAN;
+import static org.febit.lang.modeler.TestSchemas.S_BYTE;
 import static org.febit.lang.modeler.TestSchemas.S_BYTES;
+import static org.febit.lang.modeler.TestSchemas.S_DECIMAL;
 import static org.febit.lang.modeler.TestSchemas.S_DOUBLE;
 import static org.febit.lang.modeler.TestSchemas.S_ENUM_STR;
 import static org.febit.lang.modeler.TestSchemas.S_FLOAT;
@@ -41,6 +43,7 @@ class SchemaTest {
     @Test
     void type() {
         assertTrue(S_INT.isIntType());
+        assertTrue(S_BYTE.isByteType());
         assertTrue(S_SHORT.isShortType());
         assertTrue(S_LONG.isBigintType());
         assertTrue(S_STRING.isStringType());
@@ -48,6 +51,7 @@ class SchemaTest {
         assertTrue(S_BYTES.isBytesType());
         assertTrue(S_FLOAT.isFloatType());
         assertTrue(S_DOUBLE.isDoubleType());
+        assertTrue(S_DECIMAL.isDecimalType());
         assertTrue(S_INSTANT.isInstantType());
         assertTrue(S_JSON_STR.isJsonType());
         assertTrue(S_RAW_STR.isRawType());

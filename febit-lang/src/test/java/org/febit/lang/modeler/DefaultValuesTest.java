@@ -18,12 +18,14 @@ package org.febit.lang.modeler;
 import org.febit.lang.util.TimeUtils;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.febit.lang.modeler.SchemaType.BOOLEAN;
+import static org.febit.lang.modeler.SchemaType.BYTE;
 import static org.febit.lang.modeler.SchemaType.INSTANT;
 import static org.febit.lang.modeler.SchemaType.INT;
 import static org.febit.lang.modeler.SchemaType.SHORT;
@@ -83,11 +85,13 @@ class DefaultValuesTest {
 
         assertEquals("", DefaultValues.emptyStrict(S_STRING, modeler));
         assertEquals(Boolean.FALSE, DefaultValues.emptyStrict(ofPrimitive(BOOLEAN), modeler));
+        assertEquals((byte) 0, DefaultValues.emptyStrict(ofPrimitive(BYTE), modeler));
         assertEquals((short) 0, DefaultValues.emptyStrict(ofPrimitive(SHORT), modeler));
         assertEquals(0, DefaultValues.emptyStrict(ofPrimitive(INT), modeler));
         assertEquals(0L, DefaultValues.emptyStrict(ofPrimitive(SchemaType.LONG), modeler));
         assertEquals(0F, DefaultValues.emptyStrict(ofPrimitive(SchemaType.FLOAT), modeler));
         assertEquals(0D, DefaultValues.emptyStrict(ofPrimitive(SchemaType.DOUBLE), modeler));
+        assertEquals(BigDecimal.ZERO, DefaultValues.emptyStrict(ofPrimitive(SchemaType.DECIMAL), modeler));
         assertEquals(TimeUtils.INSTANT_DEFAULT, DefaultValues.emptyStrict(ofPrimitive(INSTANT), modeler));
         assertEquals(TimeUtils.DATE_DEFAULT, DefaultValues.emptyStrict(ofPrimitive(SchemaType.DATE), modeler));
         assertEquals(TimeUtils.TIME_DEFAULT, DefaultValues.emptyStrict(ofPrimitive(SchemaType.TIME), modeler));

@@ -35,6 +35,7 @@ class SchemaTypeTest {
         assertEquals("string", SchemaType.STRING.toTypeString());
         assertEquals("bytes", SchemaType.BYTES.toTypeString());
         assertEquals("boolean", SchemaType.BOOLEAN.toTypeString());
+        assertEquals("byte", SchemaType.BYTE.toTypeString());
         assertEquals("short", SchemaType.SHORT.toTypeString());
         assertEquals("datetime", SchemaType.DATETIME.toTypeString());
 

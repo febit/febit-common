@@ -71,31 +71,49 @@ public class ConvertUtils {
 
     @Nullable
     public static Long toLong(@Nullable Object obj) {
+        if (obj instanceof Long l) {
+            return l;
+        }
         return toNumber(obj, Number::longValue);
     }
 
     @Nullable
     public static Integer toInteger(@Nullable Object obj) {
+        if (obj instanceof Integer i) {
+            return i;
+        }
         return toNumber(obj, Number::intValue);
     }
 
     @Nullable
     public static Byte toByte(@Nullable Object obj) {
+        if (obj instanceof Byte b) {
+            return b;
+        }
         return toNumber(obj, Number::byteValue);
     }
 
     @Nullable
     public static Double toDouble(@Nullable Object obj) {
+        if (obj instanceof Double d) {
+            return d;
+        }
         return toNumber(obj, Number::doubleValue);
     }
 
     @Nullable
     public static Float toFloat(@Nullable Object obj) {
+        if (obj instanceof Float f) {
+            return f;
+        }
         return toNumber(obj, Number::floatValue);
     }
 
     @Nullable
     public static Short toShort(@Nullable Object obj) {
+        if (obj instanceof Short s) {
+            return s;
+        }
         return toNumber(obj, Number::shortValue);
     }
 

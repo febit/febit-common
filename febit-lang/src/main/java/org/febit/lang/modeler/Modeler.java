@@ -20,11 +20,13 @@ import org.febit.lang.util.Iterators;
 import org.febit.lang.util.JacksonUtils;
 import org.jspecify.annotations.Nullable;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.febit.lang.util.ConvertUtils.toBigDecimal;
 import static org.febit.lang.util.ConvertUtils.toBoolean;
 import static org.febit.lang.util.ConvertUtils.toDate;
 import static org.febit.lang.util.ConvertUtils.toDateTime;
@@ -55,11 +57,13 @@ public class Modeler {
             case OPTIONAL -> process(schema.valueType(), source);
             case STRING -> source.toString();
             case BOOLEAN -> toBoolean(source);
-            case SHORT -> toNumber(source, Number::shortValue, (short) 0);
-            case INT -> toNumber(source, Number::intValue, 0);
-            case LONG -> toNumber(source, Number::longValue, 0L);
-            case FLOAT -> toNumber(source, Number::floatValue, 0F);
-            case DOUBLE -> toNumber(source, Number::doubleValue, 0D);
+            case BYTE -> toNumber(source, n -> n instanceof Byte ? n : n.byteValue(), (byte) 0);
+            case SHORT -> toNumber(source, n -> n instanceof Short ? n : n.shortValue(), (short) 0);
+            case INT -> toNumber(source, n -> n instanceof Integer ? n : n.intValue(), 0);
+            case LONG -> toNumber(source, n -> n instanceof Long ? n : n.longValue(), 0L);
+            case FLOAT -> toNumber(source, n -> n instanceof Float ? n : n.floatValue(), 0F);
+            case DOUBLE -> toNumber(source, n -> n instanceof Double ? n : n.doubleValue(), 0D);
+            case DECIMAL -> toBigDecimal(source);
             case INSTANT -> toInstant(source);
             case DATE -> toDate(source);
             case TIME -> toTime(source);
@@ -69,8 +73,27 @@ public class Modeler {
             case LIST -> constructList(schema, source);
             case MAP -> constructMap(schema, source);
             case STRUCT -> constructStruct(schema, source);
-            case BYTES, ENUM, JSON, RAW -> throw new IllegalArgumentException("Unsupported type: " + schema.type());
+            case BYTES -> toBytes(source);
+            case ENUM, JSON, RAW -> throw new IllegalArgumentException("Unsupported type: " + schema.type());
         };
+    }
+
+    public byte @Nullable [] toBytes(@Nullable Object source) {
+        if (source == null) {
+            return null;
+        }
+        if (source instanceof byte[] bytes) {
+            return bytes;
+        }
+        if (source instanceof String str) {
+            return str.getBytes();
+        }
+        if (source instanceof ByteBuffer buffer) {
+            var bytes = new byte[buffer.remaining()];
+            buffer.get(bytes);
+            return bytes;
+        }
+        throw new IllegalArgumentException("Unsupported type for bytes: " + source.getClass());
     }
 
     @Nullable

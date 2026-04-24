@@ -57,6 +57,10 @@ public interface Schema extends Serializable {
         return isType(SchemaType.BYTES);
     }
 
+    default boolean isByteType() {
+        return isType(SchemaType.BYTE);
+    }
+
     default boolean isShortType() {
         return isType(SchemaType.SHORT);
     }
@@ -75,6 +79,10 @@ public interface Schema extends Serializable {
 
     default boolean isDoubleType() {
         return isType(SchemaType.DOUBLE);
+    }
+
+    default boolean isDecimalType() {
+        return isType(SchemaType.DECIMAL);
     }
 
     default boolean isInstantType() {

@@ -56,7 +56,7 @@ public class Schemas {
     public static Schema ofPrimitive(SchemaType type) {
         return switch (type) {
             case STRING, BYTES,
-                 SHORT, INT, LONG, FLOAT, DOUBLE,
+                 BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, DECIMAL,
                  BOOLEAN,
                  DATE, TIME, DATETIME, DATETIME_ZONED,
                  INSTANT -> PrimitiveSchema.of(type);
@@ -224,6 +224,7 @@ public class Schemas {
         walker.skipBlanks();
         var typeName = walker.readToFlag(Schemas::isTypeNameEnding, true);
         return switch (typeName.toLowerCase()) {
+            case "byte", "int8", "tinyint" -> ofPrimitive(SchemaType.BYTE);
             case "short", "int16", "smallint" -> ofPrimitive(SchemaType.SHORT);
             case "int", "int32", "integer" -> ofPrimitive(SchemaType.INT);
             case "long", "int64", "bigint" -> ofPrimitive(SchemaType.LONG);
@@ -232,6 +233,7 @@ public class Schemas {
             case "bytes" -> ofPrimitive(SchemaType.BYTES);
             case "float" -> ofPrimitive(SchemaType.FLOAT);
             case "double" -> ofPrimitive(SchemaType.DOUBLE);
+            case "decimal", "bigdecimal" -> ofPrimitive(SchemaType.DECIMAL);
             case "date", "localdate" -> ofPrimitive(SchemaType.DATE);
             case "time", "localtime" -> ofPrimitive(SchemaType.TIME);
             case "instant" -> ofPrimitive(SchemaType.INSTANT);

@@ -18,6 +18,8 @@ package org.febit.lang.modeler;
 import org.febit.lang.util.ArraysUtils;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
+import java.nio.ByteBuffer;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,11 +29,15 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.febit.lang.modeler.TestSchemas.S_ARRAY_STR;
 import static org.febit.lang.modeler.TestSchemas.S_BOOLEAN;
+import static org.febit.lang.modeler.TestSchemas.S_BYTE;
+import static org.febit.lang.modeler.TestSchemas.S_BYTES;
 import static org.febit.lang.modeler.TestSchemas.S_DATE;
 import static org.febit.lang.modeler.TestSchemas.S_DATETIME;
 import static org.febit.lang.modeler.TestSchemas.S_DATETIME_ZONED;
+import static org.febit.lang.modeler.TestSchemas.S_DECIMAL;
 import static org.febit.lang.modeler.TestSchemas.S_DOUBLE;
 import static org.febit.lang.modeler.TestSchemas.S_FLOAT;
 import static org.febit.lang.modeler.TestSchemas.S_INSTANT;
@@ -52,10 +58,12 @@ class ModelerTest {
         var modeler = Modeler.builder().build();
 
         assertEquals(123, modeler.process(S_INT, "123"));
+        assertEquals((byte) 123, modeler.process(S_BYTE, "123"));
         assertEquals((short) 123, modeler.process(S_SHORT, "123"));
         assertEquals(123L, modeler.process(S_LONG, "123"));
         assertEquals(123F, modeler.process(S_FLOAT, "123"));
         assertEquals(123D, modeler.process(S_DOUBLE, "123"));
+        assertEquals(BigDecimal.valueOf(123), modeler.process(S_DECIMAL, "123"));
         assertEquals("123", modeler.process(S_STRING, "123"));
         assertEquals(Boolean.TRUE, modeler.process(S_BOOLEAN, "true"));
         assertEquals(Boolean.FALSE, modeler.process(S_BOOLEAN, "false"));
@@ -74,6 +82,19 @@ class ModelerTest {
                 modeler.process(S_DATETIME_ZONED, "0")
         );
 
+    }
+
+    @Test
+    void processBytes() {
+        var modeler = Modeler.builder().build();
+        assertNull(modeler.process(S_BYTES, null));
+        assertArrayEquals(new byte[0], (byte[]) modeler.process(S_BYTES, ""));
+        assertArrayEquals(new byte[]{1, 2, 3}, (byte[]) modeler.process(S_BYTES, new byte[]{1, 2, 3}));
+        assertArrayEquals(new byte[]{1, 2, 3}, (byte[]) modeler.process(S_BYTES, ByteBuffer.wrap(new byte[]{1, 2, 3})));
+
+        assertThatThrownBy(() -> modeler.process(S_BYTES, 123))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Unsupported type");
     }
 
     @Test
