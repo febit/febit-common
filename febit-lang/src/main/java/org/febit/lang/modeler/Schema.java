@@ -132,7 +132,7 @@ public interface Schema extends Serializable {
 
     @Nullable
     default String name() {
-        return type().getTypeString();
+        return type().identifier();
     }
 
     @Nullable

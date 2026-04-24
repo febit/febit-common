@@ -31,21 +31,21 @@ class SchemaTypeTest {
 
     @Test
     void toTypeString() {
-        assertEquals("int", INT.toTypeString());
-        assertEquals("string", SchemaType.STRING.toTypeString());
-        assertEquals("bytes", SchemaType.BYTES.toTypeString());
-        assertEquals("boolean", SchemaType.BOOLEAN.toTypeString());
-        assertEquals("byte", SchemaType.BYTE.toTypeString());
-        assertEquals("short", SchemaType.SHORT.toTypeString());
-        assertEquals("datetime", SchemaType.DATETIME.toTypeString());
+        assertEquals("int", SchemaType.INT.identifier());
+        assertEquals("string", SchemaType.STRING.identifier());
+        assertEquals("bytes", SchemaType.BYTES.identifier());
+        assertEquals("boolean", SchemaType.BOOLEAN.identifier());
+        assertEquals("byte", SchemaType.BYTE.identifier());
+        assertEquals("short", SchemaType.SHORT.identifier());
+        assertEquals("datetime", SchemaType.DATETIME.identifier());
 
-        assertEquals("list", SchemaType.LIST.toTypeString());
-        assertEquals("array", SchemaType.ARRAY.toTypeString());
-        assertEquals("raw", SchemaType.RAW.toTypeString());
-        assertEquals("struct", SchemaType.STRUCT.toTypeString());
-        assertEquals("json", SchemaType.JSON.toTypeString());
+        assertEquals("list", SchemaType.LIST.identifier());
+        assertEquals("array", SchemaType.ARRAY.identifier());
+        assertEquals("raw", SchemaType.RAW.identifier());
+        assertEquals("struct", SchemaType.STRUCT.identifier());
+        assertEquals("json", SchemaType.JSON.identifier());
 
-        assertEquals("datetimetz", SchemaType.DATETIME_ZONED.toTypeString());
+        assertEquals("datetimetz", SchemaType.DATETIME_ZONED.identifier());
     }
 
     @Test

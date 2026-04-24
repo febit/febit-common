@@ -17,6 +17,7 @@ package org.febit.lang.modeler;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -27,56 +28,72 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
+@Accessors(fluent = true)
 @RequiredArgsConstructor
 public enum SchemaType {
 
-    ARRAY(Object[].class),
-    LIST(List.class),
-    MAP(Map.class),
+    ARRAY("array", Object[].class, false),
+    LIST("list", List.class, false),
+    MAP("map", Map.class, false),
+    BYTES("bytes", byte[].class, false),
 
-    STRING(String.class),
-    BYTES(byte[].class),
-    BOOLEAN(Boolean.class),
-    BYTE(Byte.class),
-    SHORT(Short.class),
-    INT(Integer.class),
-    LONG(Long.class),
-    FLOAT(Float.class),
-    DOUBLE(Double.class),
-    DECIMAL(BigDecimal.class),
+    STRING("string", String.class, true),
+    BOOLEAN("boolean", Boolean.class, true),
+    BYTE("byte", Byte.class, true),
+    SHORT("short", Short.class, true),
+    INT("int", Integer.class, true),
+    LONG("long", Long.class, true),
+    FLOAT("float", Float.class, true),
+    DOUBLE("double", Double.class, true),
+    DECIMAL("decimal", BigDecimal.class, true),
+    INSTANT("instant", Instant.class, true),
+    DATE("date", LocalDate.class, true),
+    TIME("time", LocalTime.class, true),
+    DATETIME("datetime", LocalDateTime.class, true),
+    DATETIME_ZONED("datetimetz", ZonedDateTime.class, true),
 
-    INSTANT(Instant.class),
-    DATE(LocalDate.class),
-    TIME(LocalTime.class),
-    DATETIME(LocalDateTime.class),
-    DATETIME_ZONED("datetimetz", ZonedDateTime.class),
-
-    ENUM(Object.class),
-    OPTIONAL(Object.class),
-    STRUCT(Object.class),
-    JSON(Object.class),
-    RAW(Object.class),
+    ENUM("enum", Object.class, false),
+    OPTIONAL("optional", Object.class, false),
+    STRUCT("struct", Object.class, false),
+    JSON("json", Object.class, false),
+    RAW("raw", Object.class, false),
     ;
 
     @Getter
-    private final String typeString;
-
+    private final String identifier;
     @Getter
-    private final Class<?> javaType;
+    private final Class<?> javaClass;
+    @Getter
+    private final boolean basicType;
 
-    SchemaType(Class<?> javaType) {
-        this.javaType = javaType;
-        this.typeString = name().toLowerCase();
+    /**
+     * @deprecated use {@link #javaClass()} instead.
+     */
+    @Deprecated(since = "4.0.2", forRemoval = true)
+    public Class<?> getJavaClass() {
+        return javaClass();
     }
 
+    /**
+     * @deprecated use {@link #identifier()} instead.
+     */
+    @Deprecated(since = "4.0.2", forRemoval = true)
+    public String getTypeName() {
+        return identifier();
+    }
+
+    /**
+     * @deprecated use {@link #identifier()} instead.
+     */
+    @Deprecated(since = "4.0.2", forRemoval = true)
     public String toTypeString() {
-        return typeString;
+        return identifier();
     }
 
     public String toJavaTypeString() {
-        if ("java.lang".equals(javaType.getPackageName())) {
-            return javaType.getSimpleName();
+        if ("java.lang".equals(javaClass.getPackageName())) {
+            return javaClass.getSimpleName();
         }
-        return javaType.getCanonicalName();
+        return javaClass.getCanonicalName();
     }
 }

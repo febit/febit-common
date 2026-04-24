@@ -270,7 +270,7 @@ public class Schemas {
 
         @Override
         public String toTypeString() {
-            return type.toTypeString();
+            return type.identifier();
         }
 
         @Override
@@ -326,7 +326,7 @@ public class Schemas {
 
         @Override
         public String toTypeString() {
-            return type.toTypeString() + '<'
+            return type.identifier() + '<'
                     + valueType.toTypeString()
                     + '>';
         }
@@ -359,7 +359,7 @@ public class Schemas {
 
         @Override
         public String toTypeString() {
-            return type().toTypeString() + '<'
+            return type().identifier() + '<'
                     + keyType.toTypeString()
                     + ','
                     + valueType.toTypeString()
