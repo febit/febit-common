@@ -16,7 +16,9 @@
 package org.febit.lang.util;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JavaType;
@@ -35,6 +37,7 @@ import java.util.Map;
 
 import static org.febit.lang.util.JacksonUtils.TYPES;
 
+@Accessors(fluent = true)
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public class JacksonWrapper {
 
@@ -54,6 +57,7 @@ public class JacksonWrapper {
             LinkedHashMap.class, String.class, Object.class
     );
 
+    @Getter
     private final ObjectMapper mapper;
 
     public TypeFactory getTypeFactory() {
