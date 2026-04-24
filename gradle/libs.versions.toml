@@ -13,28 +13,30 @@ commons-text = '1.15.0'
 jakarta-annotation-api = '3.0.0'
 jakarta-persistence-api = '3.2.0'
 jakarta-validation-api = '3.1.1'
-jakarta-xml-bind-api = '4.0.4'
+jakarta-xml-bind-api = '4.0.5'
 jspecify = '1.0.0'
 
 caffeine = '3.2.3'
 disruptor = '4.0.0'
 febit-devkit = '1.6.0'
 hierynomus-license = '0.16.1'
-jackson = '3.1.0'
+jackson = '3.1.2'
 jcommander = '3.0'
 jool = '0.9.15'
-jooq = '3.19.30'
+jooq = '3.19.32'
 jsonpath = '3.0.0'
 jsr305 = '3.0.2'
 kafka-clients = '4.2.0'
-nimbus-jose-jwt = '10.8'
+nimbus-jose-jwt = '10.9'
 okhttp = '5.3.2'
+semver4j = '6.0.0'
 slf4j = '2.0.17'
 snakeyaml-engine = '3.0.1'
+snakeyaml2 = '2.6'
 spotbugs = '4.9.8'
-spring = '7.0.6'
-spring-boot = '4.0.3'
-swagger = '2.2.43'
+spring = '7.0.7'
+spring-boot = '4.0.6'
+swagger = '2.2.48'
 uuid-generator = '5.2.0'
 
 assertj = '3.27.7'
@@ -85,7 +87,9 @@ jsr305 = { module = 'com.google.code.findbugs:jsr305', version.ref = 'jsr305' }
 kafka-clients = { module = 'org.apache.kafka:kafka-clients', version.ref = 'kafka-clients' }
 nimbus-jose-jwt = { module = 'com.nimbusds:nimbus-jose-jwt', version.ref = 'nimbus-jose-jwt' }
 okhttp-bom = { module = 'com.squareup.okhttp3:okhttp-bom', version.ref = 'okhttp' }
+semver4j = { module = 'org.semver4j:semver4j', version.ref = 'semver4j' }
 snakeyaml-engine = { module = 'org.snakeyaml:snakeyaml-engine', version.ref = 'snakeyaml-engine' }
+snakeyaml2 = { module = 'org.yaml:snakeyaml', version.ref = 'snakeyaml2' }
 spring-core = { module = 'org.springframework:spring-core', version.ref = 'spring' }
 spring-web = { module = 'org.springframework:spring-web', version.ref = 'spring' }
 spring-boot-deps = { module = 'org.springframework.boot:spring-boot-dependencies', version.ref = 'spring-boot' }

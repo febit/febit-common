@@ -10,14 +10,14 @@ plugins {
 }
 
 group = 'org.febit'
-version = '4.0.1'
+version = '4.0.2-SNAPSHOT'
 
 description = 'Febit Commons'
 
 ext {
 }
 
-allprojects {
+allprojects { subproject ->
   apply plugin: 'com.github.hierynomus.license'
 
   group = rootProject.group
@@ -29,7 +29,7 @@ allprojects {
 
   standardMavenPublish {
     pom {
-      customPom(it)
+      customPom(subproject, it)
     }
   }
 
@@ -140,13 +140,15 @@ configure(subprojects.findAll {
       dependency "${libs.jsonpath.get()}"
       dependency "${libs.kafka.clients.get()}"
       dependency "${libs.nimbus.jose.jwt.get()}"
+      dependency "${libs.semver4j.get()}"
       dependency "${libs.snakeyaml.engine.get()}"
+      dependency "${libs.snakeyaml2.get()}"
       dependency "${libs.uuid.generator.get()}"
     }
   }
 }
 
-def customPom(MavenPom pom) {
+static def customPom(Project project, MavenPom pom) {
   pom.with {
     name.set project.name
     description.set project.description
