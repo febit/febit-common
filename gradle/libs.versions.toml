@@ -18,7 +18,7 @@ jspecify = '1.0.0'
 
 caffeine = '3.2.3'
 disruptor = '4.0.0'
-febit-devkit = '1.6.0'
+febit-devkit = '1.6.1'
 hierynomus-license = '0.16.1'
 jackson = '3.1.2'
 jcommander = '3.0'
