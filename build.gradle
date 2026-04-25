@@ -10,7 +10,7 @@ plugins {
 }
 
 group = 'org.febit'
-version = '4.0.2-SNAPSHOT'
+version = '4.0.2'
 
 description = 'Febit Commons'
 
