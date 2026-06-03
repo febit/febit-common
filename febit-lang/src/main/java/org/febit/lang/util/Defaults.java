@@ -18,11 +18,17 @@ package org.febit.lang.util;
 import lombok.experimental.UtilityClass;
 import org.jspecify.annotations.Nullable;
 
+import java.util.function.Supplier;
+
 @UtilityClass
 public class Defaults {
 
     public static <T> T nvl(@Nullable T obj, T ifNull) {
         return obj != null ? obj : ifNull;
+    }
+
+    public static <T> T nvl(@Nullable T obj, Supplier<T> ifNull) {
+        return obj != null ? obj : ifNull.get();
     }
 
     @Nullable
