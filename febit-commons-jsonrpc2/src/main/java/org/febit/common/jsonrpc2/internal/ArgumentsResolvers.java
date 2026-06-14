@@ -40,7 +40,7 @@ public class ArgumentsResolvers {
                 if (paramTypes.size() != 1) {
                     throw new IllegalStateException("ParamsKind.FIRST_ARGUMENT requires exactly one parameter.");
                 }
-                yield ArgumentsResolvers.first(paramTypes.get(0));
+                yield ArgumentsResolvers.first(paramTypes.getFirst());
             }
             case FLATTEN_LIST -> ArgumentsResolvers.flattenList(paramTypes);
             case FLATTEN_OBJECT -> {

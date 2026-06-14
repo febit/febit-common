@@ -87,21 +87,17 @@ public class Modeler {
     }
 
     public byte @Nullable [] toBytes(@Nullable Object source) {
-        if (source == null) {
-            return null;
-        }
-        if (source instanceof byte[] bytes) {
-            return bytes;
-        }
-        if (source instanceof String str) {
-            return str.getBytes();
-        }
-        if (source instanceof ByteBuffer buffer) {
-            var bytes = new byte[buffer.remaining()];
-            buffer.get(bytes);
-            return bytes;
-        }
-        throw new IllegalArgumentException("Unsupported type for bytes: " + source.getClass());
+        return switch (source) {
+            case null -> null;
+            case byte[] bytes -> bytes;
+            case String str -> str.getBytes();
+            case ByteBuffer buffer -> {
+                var bytes = new byte[buffer.remaining()];
+                buffer.get(bytes);
+                yield bytes;
+            }
+            default -> throw new IllegalArgumentException("Unsupported type for bytes: " + source.getClass());
+        };
     }
 
     @Nullable
@@ -138,7 +134,7 @@ public class Modeler {
         if (raw == null) {
             return new HashMap<>();
         }
-        var distMap = new HashMap<>(raw.size() * 4 / 3 + 1);
+        var distMap = HashMap.newHashMap(raw.size());
         var keyType = schema.keyType();
         var valueType = schema.valueType();
         for (var entry : raw.entrySet()) {

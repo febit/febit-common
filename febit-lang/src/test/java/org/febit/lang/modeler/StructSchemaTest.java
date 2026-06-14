@@ -75,7 +75,7 @@ class StructSchemaTest {
         assertEquals(2, schema.fieldsSize());
         assertEquals(2, schema.fields().size());
 
-        var field = schema.fields().get(0);
+        var field = schema.fields().getFirst();
         assertSame(schema.field("id"), field);
         assertEquals("id", field.name());
         assertEquals(0, field.pos());
@@ -93,15 +93,19 @@ class StructSchemaTest {
     @Test
     void toFieldLinesString() {
         var schema = S_STRUCT_SIMPLE;
-        assertEquals("int id\n"
-                + "string name\n", schema.toFieldLinesString());
+        assertEquals("""
+                int id
+                string name
+                """, schema.toFieldLinesString());
 
         schema = Schemas.newStruct()
                 .field("id", S_INSTANT, "id comment")
                 .field("name", TestSchemas.S_MAP_STRING, "name comment")
                 .build();
-        assertEquals("instant id #id comment\n"
-                + "map<string,string> name #name comment\n", schema.toFieldLinesString());
+        assertEquals("""
+                instant id #id comment
+                map<string,string> name #name comment
+                """, schema.toFieldLinesString());
     }
 
     @Test

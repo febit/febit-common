@@ -45,7 +45,7 @@ public interface IUpdateDao<TB extends ITable<R, ID>, PO extends IEntity<ID>, ID
         }
         var records = Utils.records(conf(), table(), pos, true);
         if (pos.size() == 1) {
-            return records.get(0).update();
+            return records.getFirst().update();
         }
         if (Utils.isNotReturnRecordToPojo(conf())
                 || Utils.isNotReturnAllOnUpdatableRecord(conf())) {

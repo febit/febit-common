@@ -45,7 +45,7 @@ public interface IInsertDao<TB extends ITable<R, ID>, PO extends IEntity<ID>, ID
         }
         var records = Utils.records(conf(), table(), pos, false);
         if (pos.size() == 1) {
-            records.get(0).insert();
+            records.getFirst().insert();
             return;
         }
         if (Utils.isNotReturnRecordToPojo(conf())) {

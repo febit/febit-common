@@ -54,14 +54,23 @@ configure(subprojects.findAll {
   apply plugin: 'java-library'
 
   java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 
     withJavadocJar()
     withSourcesJar()
   }
 
+  configurations {
+    mockitoAgent
+  }
+  dependencies {
+    mockitoAgent(libs.mockito.core) {
+      transitive = false
+    }
+  }
   test {
+    jvmArgs += "-javaagent:${configurations.mockitoAgent.asPath}"
     useJUnitPlatform()
   }
 

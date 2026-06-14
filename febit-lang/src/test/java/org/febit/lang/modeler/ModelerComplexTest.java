@@ -36,14 +36,18 @@ class ModelerComplexTest {
             "map<string,long> longMap\n",
             "optional<map<string,string>> optionalStringMap\n",
             "struct<id:string,launch:long,du:long,date:int> session\n",
-            "list<struct<" +
-                    "du:long," +
-                    "name:string," +
-                    "ts:optional<long>,\n" +
-                    "attrs:map<string,string>," +
-                    "struct:struct<xx:string>," +
-                    "flag:boolean" +
-                    ">> events\n",
+            """
+                    list<
+                      struct<
+                        du:long,
+                        name:string,
+                        ts:optional<long>,
+                        attrs:map<string,string>,
+                        struct:struct<xx:string>,
+                        flag:boolean
+                      >
+                    > events
+                    """,
             "list<struct<time:time,date:date,dt:datetime,dtz:datetimetz,instant:instant>> times"
     );
 
@@ -65,7 +69,7 @@ class ModelerComplexTest {
         var time = ZonedDateTime.parse("2022-01-23T02:03:56+07:00");
 
         @SuppressWarnings("unchecked")
-        var record = (List<Object>) Modeler.builder()
+        var out = (List<Object>) Modeler.builder()
                 .emptyStrictIfAbsent()
                 .structAsList()
                 .process(S_COMPLEX, map(
@@ -164,7 +168,7 @@ class ModelerComplexTest {
                                 time.toInstant()
                         )
                 )
-        ), record);
+        ), out);
     }
 
 }

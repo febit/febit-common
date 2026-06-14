@@ -58,6 +58,7 @@ assertj-bom = { module = 'org.assertj:assertj-bom', version.ref = 'assertj' }
 jackson-bom = { module = 'tools.jackson:jackson-bom', version.ref = 'jackson' }
 junit-bom = { module = 'org.junit:junit-bom', version.ref = 'junit' }
 mockito-bom = { module = 'org.mockito:mockito-bom', version.ref = 'mockito' }
+mockito-core = { module = 'org.mockito:mockito-core', version.ref = 'mockito' }
 
 jakarta-annotation-api = { module = 'jakarta.annotation:jakarta.annotation-api', version.ref = 'jakarta-annotation-api' }
 jakarta-persistence-api = { module = 'jakarta.persistence:jakarta.persistence-api', version.ref = 'jakarta-persistence-api' }

@@ -72,9 +72,7 @@ public class StructSpecs {
         @Override
         public Map<String, @Nullable Object> builder(Schema schema) {
             int size = schema.fieldsSize();
-            int cap = Math.max(4, Math.min(1 << 30,
-                    (int) ((float) size / 0.75F + 1.0F)
-            ));
+            int cap = Math.clamp((int) (size / 0.75F + 1.0F), 4, 1 << 30);
             return new HashMap<>(cap, 0.75F);
         }
 

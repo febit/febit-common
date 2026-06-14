@@ -94,7 +94,7 @@ public class Commands implements Context {
         keys.forEach(k -> commands.put(k, command));
 
         var aliases = keys.subList(1, keys.size()).toArray(new String[0]);
-        jcommander.addCommand(keys.get(0), options,
+        jcommander.addCommand(keys.getFirst(), options,
                 aliases
         );
         return this;

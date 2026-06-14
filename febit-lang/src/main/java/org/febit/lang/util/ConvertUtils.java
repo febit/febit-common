@@ -28,6 +28,10 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.Temporal;
 import java.time.temporal.TemporalAccessor;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.LongAccumulator;
+import java.util.concurrent.atomic.LongAdder;
 import java.util.function.Function;
 
 @UtilityClass
@@ -42,20 +46,13 @@ public class ConvertUtils {
     }
 
     public static boolean toBoolean(@Nullable Object raw) {
-        if (raw instanceof Boolean bool) {
-            return bool;
-        }
-        if (raw == null) {
-            return false;
-        }
-        if (raw instanceof Number number) {
-            return number.doubleValue() == 1D;
-        }
-        if (raw instanceof String str && isTrue(str)) {
-            return true;
-        }
-        var text = raw.toString().trim().toLowerCase();
-        return isTrue(text);
+        return switch (raw) {
+            case null -> false;
+            case Boolean bool -> bool;
+            case Number number -> number.doubleValue() == 1D;
+            case String str when isTrue(str) -> true;
+            default -> isTrue(raw.toString().trim().toLowerCase());
+        };
     }
 
     private static boolean isTrue(String text) {
@@ -157,31 +154,24 @@ public class ConvertUtils {
 
     @Nullable
     public static BigDecimal toBigDecimal(@Nullable Object obj) {
-        if (obj == null) {
-            return null;
-        }
-        if (obj instanceof Number number) {
-            if (number instanceof BigDecimal decimal) {
-                return decimal;
-            }
-            var type = obj.getClass();
-            if (type == Integer.class
-                    || type == Long.class
-                    || type == Short.class
-                    || type == Byte.class) {
-                return BigDecimal.valueOf(number.longValue());
-            }
-            if (obj instanceof Double) {
-                return BigDecimal.valueOf(number.doubleValue());
-            }
-            if (obj instanceof BigInteger bi) {
-                return new BigDecimal(bi);
-            }
-        }
-        if (obj instanceof Character c) {
-            return new BigDecimal(c);
-        }
-        return new BigDecimal(obj.toString().trim());
+        return switch (obj) {
+            case null -> null;
+            case BigDecimal decimal -> decimal;
+            case Byte b -> BigDecimal.valueOf(b);
+            case Short s -> BigDecimal.valueOf(s);
+            case Integer i -> BigDecimal.valueOf(i);
+            case Long l -> BigDecimal.valueOf(l);
+            case Float f -> BigDecimal.valueOf(f);
+            case Double d -> BigDecimal.valueOf(d);
+            case BigInteger bi -> new BigDecimal(bi);
+            case Character c -> new BigDecimal(c);
+            case AtomicInteger ai -> new BigDecimal(ai.get());
+            case AtomicLong al -> new BigDecimal(al.get());
+            case LongAdder la -> new BigDecimal(la.sum());
+            case LongAccumulator la -> new BigDecimal(la.get());
+            case String str -> new BigDecimal(str.trim());
+            default -> new BigDecimal(obj.toString().trim());
+        };
     }
 
     @Nullable

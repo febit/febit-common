@@ -62,27 +62,19 @@ public class Iterators {
 
     @SuppressWarnings({"unchecked"})
     public static <T> Iterator<T> forAny(@Nullable final Object o1) {
-        if (o1 == null) {
-            return empty();
-        }
-        if (o1 instanceof Iterator) {
-            return (Iterator<T>) o1;
-        }
-        if (o1 instanceof Iterable) {
-            return ((Iterable<T>) o1).iterator();
-        }
-        if (o1 instanceof Stream) {
-            return ((Stream<T>) o1).iterator();
-        }
-        if (o1 instanceof Object[]) {
-            return forArray((T[]) o1);
-        }
-        if (o1 instanceof Enumeration) {
-            return forEnumeration((Enumeration<T>) o1);
-        }
-        if (o1.getClass().isArray()) {
-            return IteratorUtils.arrayIterator(o1);
-        }
-        throw new IllegalArgumentException("Can't convert to iter: " + o1.getClass());
+        return (Iterator<T>) switch (o1) {
+            case null -> empty();
+            case Iterator<?> iterator -> iterator;
+            case Iterable<?> iterable -> iterable.iterator();
+            case Stream<?> stream -> stream.iterator();
+            case Object[] objects -> forArray(objects);
+            case Enumeration<?> enumeration -> forEnumeration(enumeration);
+            default -> {
+                if (o1.getClass().isArray()) {
+                    yield IteratorUtils.arrayIterator(o1);
+                }
+                throw new IllegalArgumentException("Can't convert to iter: " + o1.getClass());
+            }
+        };
     }
 }
