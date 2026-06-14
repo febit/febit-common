@@ -98,10 +98,10 @@ class Utils {
             }
 
             if (forUpdate) {
-                r.changed(idField, false);
+                r.touched(idField, false);
             }
 
-            resetChangedOnNotNull(r);
+            resetTouchedOnNotNull(r);
             result.add(r);
         }
         return result;
@@ -121,7 +121,7 @@ class Utils {
         );
     }
 
-    private static void resetChangedOnNotNull(Record r) {
+    private static void resetTouchedOnNotNull(Record r) {
         int size = r.size();
 
         for (int i = 0; i < size; i++) {
@@ -131,7 +131,7 @@ class Utils {
             var f = r.field(i);
             if (f != null
                     && !f.getDataType().nullable()) {
-                r.changed(i, false);
+                r.touched(i, false);
             }
         }
     }
@@ -158,9 +158,9 @@ class Utils {
         var idField = table.pkField();
         R r = dsl.newRecord(table, po);
         if (forUpdate) {
-            r.changed(idField, false);
+            r.touched(idField, false);
         }
-        resetChangedOnNotNull(r);
+        resetTouchedOnNotNull(r);
         return r;
     }
 
