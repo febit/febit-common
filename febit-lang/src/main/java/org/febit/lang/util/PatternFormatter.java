@@ -130,6 +130,14 @@ public class PatternFormatter<T> implements Serializable {
         return resolveRaw(matcher);
     }
 
+    public boolean matches(@Nullable String text) {
+        if (text == null) {
+            return false;
+        }
+        var matcher = pattern.matcher(text);
+        return matcher.find();
+    }
+
     protected Map<String, String> resolveRaw(Matcher matcher) {
         return Maps.mapping(
                 varNameMapping.entrySet(),
@@ -182,8 +190,10 @@ public class PatternFormatter<T> implements Serializable {
                             .filter(Objects::nonNull)
                             .toArray(Pairs::newArray)
             );
-            return PatternFormatter.create(
-                    beanType, segments, mapping,
+            return PatternFormatter.<T>create(
+                    beanType,
+                    List.copyOf(segments),
+                    mapping,
                     Pattern.compile("^(" + pattern + ")$")
             );
         }

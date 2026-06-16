@@ -23,8 +23,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class PatternFormatterTest {
 
@@ -92,6 +91,27 @@ class PatternFormatterTest {
                 "id", "",
                 "more", "names/a"
         )));
+    }
+
+    @Test
+    void matches() {
+        var fmt = PatternFormatter.builder()
+                .text("/")
+                .regex("entity", "[a-zA-Z-]+")
+                .text("/")
+                .regex("id", "[0-9]+")
+                .text("/")
+                .regex("more", "[^/]*")
+                .build();
+
+        assertThat(fmt.matches(null)).isFalse();
+        assertThat(fmt.matches("")).isFalse();
+
+        assertThat(fmt.matches("/users/123/names")).isTrue();
+
+        assertThat(fmt.matches("users/123/names")).isFalse();
+        assertThat(fmt.matches("/users/123/names/extra")).isFalse();
+        assertThat(fmt.matches("/users/123")).isFalse();
     }
 
     @Test
