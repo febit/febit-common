@@ -1,0 +1,21 @@
+description = 'Febit Commons Etcd'
+
+codegenModule {
+  module 'org.febit.FebitCommonsEtcd'
+}
+
+test {
+  def tmpDir = layout.buildDirectory.dir('tmp/test-cases')
+  systemProperty 'java.io.tmpdir', tmpDir.get().asFile.absolutePath
+  doFirst {
+    mkdir tmpDir.get().asFile
+  }
+}
+
+dependencies {
+  api project(':febit-lang')
+  api libs.jetcd.core
+
+  testImplementation libs.jetcd.core
+  testImplementation libs.jetcd.test
+}

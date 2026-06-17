@@ -22,6 +22,7 @@ febit-devkit = '1.6.1'
 hierynomus-license = '0.16.1'
 jackson = '3.2.0'
 jcommander = '3.0'
+jetcd = '0.8.6'
 jool = '0.9.15'
 jooq = '3.21.5'
 jsonpath = '3.0.0'
@@ -38,6 +39,7 @@ spring = '7.0.8'
 spring-boot = '4.1.0'
 swagger = '2.2.49'
 uuid-generator = '5.2.0'
+testcontainers = '2.0.5'
 
 assertj = '3.27.7'
 hamcrest = '3.0'
@@ -81,6 +83,8 @@ caffeine = { module = 'com.github.ben-manes.caffeine:caffeine', version.ref = 'c
 disruptor = { module = 'com.lmax:disruptor', version.ref = 'disruptor' }
 hamcrest = { module = 'org.hamcrest:hamcrest', version.ref = 'hamcrest' }
 jcommander = { module = 'org.jcommander:jcommander', version.ref = 'jcommander' }
+jetcd-core = { module = 'io.etcd:jetcd-core', version.ref = 'jetcd' }
+jetcd-test = { module = 'io.etcd:jetcd-test', version.ref = 'jetcd' }
 jool = { module = 'org.jooq:jool', version.ref = 'jool' }
 jooq = { module = 'org.jooq:jooq', version.ref = 'jooq' }
 jsonpath = { module = 'com.jayway.jsonpath:json-path', version.ref = 'jsonpath' }
@@ -97,3 +101,4 @@ spring-boot-deps = { module = 'org.springframework.boot:spring-boot-dependencies
 spotbugs-annotations = { module = 'com.github.spotbugs:spotbugs-annotations', version.ref = 'spotbugs' }
 swagger-annotations = { module = 'io.swagger.core.v3:swagger-annotations-jakarta', version.ref = 'swagger' }
 uuid-generator = { module = 'com.fasterxml.uuid:java-uuid-generator', version.ref = 'uuid-generator' }
+testcontainers-bom = { module = 'org.testcontainers:testcontainers-bom', version.ref = 'testcontainers' }
