@@ -15,7 +15,7 @@
  */
 package org.febit.lang.protocol;
 
-import org.febit.lang.util.JacksonUtils;
+import org.febit.lang.jackson.JacksonUtils;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

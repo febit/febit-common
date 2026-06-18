@@ -31,7 +31,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.febit.lang.util.JacksonUtils.TYPES;
+import static org.febit.lang.jackson.JacksonUtils.TYPES;
 
 /**
  * Resolves method arguments annotated with {@link RequestParamForm}

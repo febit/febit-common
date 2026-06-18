@@ -19,7 +19,7 @@ import org.assertj.core.api.Assertions;
 import org.febit.common.jsonrpc2.internal.protocol.Request;
 import org.febit.common.jsonrpc2.protocol.IRpcMessage;
 import org.febit.common.jsonrpc2.protocol.Id;
-import org.febit.lang.util.JacksonUtils;
+import org.febit.lang.jackson.JacksonUtils;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.DatabindException;
 

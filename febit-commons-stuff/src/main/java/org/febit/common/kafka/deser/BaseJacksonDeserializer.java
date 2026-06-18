@@ -17,7 +17,7 @@ package org.febit.common.kafka.deser;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.serialization.Deserializer;
-import org.febit.lang.util.JacksonWrapper;
+import org.febit.lang.jackson.JacksonWrapper;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JavaType;
 

@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.lang.util;
+package org.febit.lang.jackson;
 
+import org.febit.lang.util.ArraysUtils;
+import org.febit.lang.util.Lists;
+import org.febit.lang.util.Maps;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -28,9 +31,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static org.febit.lang.util.JacksonWrapper.TYPE_INTEGER;
-import static org.febit.lang.util.JacksonWrapper.TYPE_MAP;
-import static org.febit.lang.util.JacksonWrapper.TYPE_STRING;
+import static org.febit.lang.jackson.JacksonWrapper.TYPE_INTEGER;
+import static org.febit.lang.jackson.JacksonWrapper.TYPE_MAP;
+import static org.febit.lang.jackson.JacksonWrapper.TYPE_STRING;
 import static org.junit.jupiter.api.Assertions.*;
 
 class JacksonUtilsTest {

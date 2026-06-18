@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.lang.util;
+package org.febit.lang.jackson;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -35,25 +35,26 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.febit.lang.util.JacksonUtils.TYPES;
+import static org.febit.lang.jackson.JacksonUtils.TYPES;
 
 @Accessors(fluent = true)
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public class JacksonWrapper {
 
-    static final JavaType TYPE_INTEGER = TYPES.constructType(Integer.class);
-    static final JavaType TYPE_STRING = TYPES.constructType(String.class);
-    static final JavaType TYPE_ARRAY = TYPES.constructArrayType(Object.class);
-    static final JavaType TYPE_ARRAY_STRING = TYPES.constructArrayType(String.class);
-    static final JavaType TYPE_LIST = TYPES.constructCollectionLikeType(ArrayList.class, Object.class);
+    public static final JavaType TYPE_INTEGER = TYPES.constructType(Integer.class);
+    public static final JavaType TYPE_STRING = TYPES.constructType(String.class);
+    public static final JavaType TYPE_ARRAY = TYPES.constructArrayType(Object.class);
+    public static final JavaType TYPE_ARRAY_STRING = TYPES.constructArrayType(String.class);
+    public static final JavaType TYPE_LIST = TYPES.constructCollectionLikeType(ArrayList.class, Object.class);
 
-    static final JavaType TYPE_LIST_STRING = TYPES.constructCollectionLikeType(
+    public static final JavaType TYPE_LIST_STRING = TYPES.constructCollectionLikeType(
             ArrayList.class, String.class
     );
-    static final JavaType TYPE_MAP = TYPES.constructMapType(
+    public static final JavaType TYPE_MAP = TYPES.constructMapType(
             LinkedHashMap.class, Object.class, Object.class
     );
-    static final JavaType TYPE_MAP_NAMED = TYPES.constructMapType(
+
+    public static final JavaType TYPE_MAP_NAMED = TYPES.constructMapType(
             LinkedHashMap.class, String.class, Object.class
     );
 

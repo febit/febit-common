@@ -16,8 +16,8 @@
 package org.febit.lang.modeler;
 
 import lombok.Getter;
+import org.febit.lang.jackson.JacksonUtils;
 import org.febit.lang.util.Iterators;
-import org.febit.lang.util.JacksonUtils;
 import org.jspecify.annotations.Nullable;
 
 import java.nio.ByteBuffer;

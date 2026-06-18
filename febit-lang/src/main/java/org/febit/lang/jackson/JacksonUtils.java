@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.lang.util;
+package org.febit.lang.jackson;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.experimental.UtilityClass;
-import org.febit.lang.util.jackson.StandardPrettyPrinter;
+import org.febit.lang.util.TimeUtils;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.DeserializationFeature;

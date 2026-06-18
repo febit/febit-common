@@ -13,64 +13,61 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.lang.util.jackson;
+package org.febit.lang.jackson.deser;
 
-import org.febit.lang.util.JacksonUtils;
+import org.febit.lang.jackson.JacksonUtils;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.module.SimpleModule;
 
 import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class EpochMillisLooseDeserializerTest {
+class InstantFromNumberDeserializerTest {
 
     @Test
-    void deserialize() {
+    void fromEpochSecond() {
         var jackson = JacksonUtils.standardAndWrap(JsonMapper.builder(),
                 mapper -> mapper.addModule(new SimpleModule()
-                        .addDeserializer(Long.class, EpochMillisLooseDeserializer.INSTANCE)
+                        .addDeserializer(Instant.class, InstantFromNumberDeserializer.FromEpochSecond.INSTANCE)
                 )
         );
-        assertNull(jackson.parse((String) null, Long.class));
-        assertNull(jackson.parse("null", Long.class));
-        assertNull(jackson.to(null, Long.class));
-        assertNull(jackson.to("", Long.class));
+
+        assertNull(jackson.to("", Instant.class));
 
         var time = Instant.parse("2023-10-12T12:34:56.123456Z");
-        assertEquals(time.toEpochMilli(), jackson.to(time, Long.class));
-        assertEquals(time.toEpochMilli(), jackson.to(time.toEpochMilli(), Long.class));
-        assertEquals(time.toEpochMilli(), jackson.to(
-                ZonedDateTime.ofInstant(time, ZoneOffset.ofHours(8)), Long.class));
+        assertEquals(time, jackson.to(time.toString(), Instant.class));
+        assertEquals(Instant.ofEpochSecond(time.getEpochSecond()),
+                jackson.parse(String.valueOf(time.getEpochSecond()), Instant.class));
     }
 
     @Test
     void ex_type() {
         var jackson = JacksonUtils.standardAndWrap(JsonMapper.builder(),
                 mapper -> mapper.addModule(new SimpleModule()
-                        .addDeserializer(Long.class, EpochMillisLooseDeserializer.INSTANCE)
+                        .addDeserializer(Instant.class, InstantFromNumberDeserializer.FromEpochSecond.INSTANCE)
                 )
         );
 
         assertThrows(IllegalStateException.class,
-                () -> jackson.to(true, Long.class));
+                () -> jackson.to(true, Instant.class));
     }
 
     @Test
-    void zeroIfAbsent() {
+    void fromEpochMilli() {
         var jackson = JacksonUtils.standardAndWrap(JsonMapper.builder(),
                 mapper -> mapper.addModule(new SimpleModule()
-                        .addDeserializer(Long.class, EpochMillisLooseDeserializer.ZeroIfAbsent.INSTANCE)
+                        .addDeserializer(Instant.class, InstantFromNumberDeserializer.FromEpochMilli.INSTANCE)
                 )
         );
 
-        assertEquals(0L, jackson.parse("null", Long.class));
-        assertEquals(0L, jackson.to("", Long.class));
+        assertNull(jackson.to("", Instant.class));
 
         var time = Instant.parse("2023-10-12T12:34:56.123456Z");
-        assertEquals(time.toEpochMilli(), jackson.to(time, Long.class));
+        assertEquals(time, jackson.to(time.toString(), Instant.class));
+        assertEquals(Instant.ofEpochMilli(time.toEpochMilli()),
+                jackson.parse(String.valueOf(time.toEpochMilli()), Instant.class));
     }
+
 }

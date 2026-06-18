@@ -19,6 +19,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
+import org.febit.lang.jackson.JacksonUtils;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JavaType;
 
@@ -31,8 +32,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static org.febit.lang.util.JacksonUtils.TYPES;
-import static org.febit.lang.util.JacksonWrapper.TYPE_MAP_NAMED;
+import static org.febit.lang.jackson.JacksonUtils.TYPES;
+import static org.febit.lang.jackson.JacksonWrapper.TYPE_MAP_NAMED;
 
 @RequiredArgsConstructor(
         access = AccessLevel.PRIVATE,

@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 @NullMarked
-package org.febit.lang.util.jackson;
+package org.febit.lang.jackson;
 
 import org.jspecify.annotations.NullMarked;

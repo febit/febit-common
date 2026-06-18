@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.lang.util.jackson;
+package org.febit.lang.jackson;
 
 import tools.jackson.core.JacksonException;
 import tools.jackson.core.JsonGenerator;

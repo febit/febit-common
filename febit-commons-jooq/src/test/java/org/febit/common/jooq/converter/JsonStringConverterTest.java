@@ -22,7 +22,7 @@ import java.util.Map;
 
 import static org.febit.common.jooq.converter.Pojos.F1;
 import static org.febit.common.jooq.converter.Pojos.F2000;
-import static org.febit.lang.util.JacksonUtils.toJsonString;
+import static org.febit.lang.jackson.JacksonUtils.toJsonString;
 import static org.junit.jupiter.api.Assertions.*;
 
 class JsonStringConverterTest {

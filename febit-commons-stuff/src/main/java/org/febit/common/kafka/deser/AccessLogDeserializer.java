@@ -17,7 +17,7 @@ package org.febit.common.kafka.deser;
 
 import org.apache.kafka.common.serialization.Deserializer;
 import org.febit.common.parser.AccessLogParser;
-import org.febit.lang.util.JacksonUtils;
+import org.febit.lang.jackson.JacksonUtils;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JavaType;
 
@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-import static org.febit.lang.util.JacksonUtils.TYPES;
+import static org.febit.lang.jackson.JacksonUtils.TYPES;
 
 public class AccessLogDeserializer<T> implements Deserializer<T> {
 

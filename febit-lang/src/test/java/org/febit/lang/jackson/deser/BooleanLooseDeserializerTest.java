@@ -13,41 +13,54 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.lang.util.jackson;
+package org.febit.lang.jackson.deser;
 
-import org.febit.lang.util.JacksonUtils;
+import org.febit.lang.jackson.JacksonUtils;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.module.SimpleModule;
 
-import java.time.Instant;
+import java.util.List;
+import java.util.stream.Stream;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 import static org.junit.jupiter.api.Assertions.*;
 
-class InstantToNumberSerializerTest {
+class BooleanLooseDeserializerTest {
 
     @Test
-    void toEpochSecond() {
+    void ex_type() {
         var jackson = JacksonUtils.standardAndWrap(JsonMapper.builder(),
                 mapper -> mapper.addModule(new SimpleModule()
-                        .addSerializer(Instant.class, InstantToNumberSerializer.ToEpochSecond.INSTANCE)
+                        .addDeserializer(Boolean.class, BooleanLooseDeserializer.INSTANCE)
                 )
         );
 
-        var time = Instant.parse("2023-10-12T12:34:56.123456Z");
-        assertEquals(String.valueOf(time.getEpochSecond()), jackson.toString(time));
+        assertThrows(IllegalStateException.class,
+                () -> jackson.to(List.of(), Boolean.class));
     }
 
     @Test
-    void toEpochMilli() {
+    void deserialize() {
         var jackson = JacksonUtils.standardAndWrap(JsonMapper.builder(),
                 mapper -> mapper.addModule(new SimpleModule()
-                        .addSerializer(Instant.class, InstantToNumberSerializer.ToEpochMilli.INSTANCE)
+                        .addDeserializer(Boolean.class, BooleanLooseDeserializer.INSTANCE)
                 )
         );
 
-        var time = Instant.parse("2023-10-12T12:34:56.123456Z");
-        assertEquals(String.valueOf(time.toEpochMilli()), jackson.toString(time));
+        assertNull(jackson.parse((String) null, Boolean.class));
+        assertNull(jackson.parse("null", Boolean.class));
+        assertNull(jackson.to(null, Boolean.class));
+
+        Stream.of(true, 1, 1L, 1.0D, "true", "Y", "yes").forEach(
+                v -> assertEquals(TRUE, jackson.to(v, Boolean.class))
+        );
+
+        Stream.of(false, 0, 1.1D, "", "NO", "false").forEach(
+                v -> assertEquals(FALSE, jackson.to(v, Boolean.class))
+        );
+
     }
 
 }

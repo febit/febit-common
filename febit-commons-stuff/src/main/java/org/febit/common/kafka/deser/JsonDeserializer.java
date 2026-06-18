@@ -16,14 +16,14 @@
 package org.febit.common.kafka.deser;
 
 import lombok.Getter;
-import org.febit.lang.util.JacksonUtils;
-import org.febit.lang.util.JacksonWrapper;
+import org.febit.lang.jackson.JacksonUtils;
+import org.febit.lang.jackson.JacksonWrapper;
 import tools.jackson.databind.JavaType;
 
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-import static org.febit.lang.util.JacksonUtils.TYPES;
+import static org.febit.lang.jackson.JacksonUtils.TYPES;
 
 public class JsonDeserializer<T> extends BaseJacksonDeserializer<T> {
 

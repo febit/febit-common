@@ -25,7 +25,7 @@ import tools.jackson.databind.JavaType;
 
 import java.util.Map;
 
-import static org.febit.lang.util.JacksonUtils.TYPES;
+import static org.febit.lang.jackson.JacksonUtils.TYPES;
 
 @UtilityClass
 public class DeserializerUtils {

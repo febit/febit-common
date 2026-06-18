@@ -16,8 +16,8 @@
 package org.febit.common.rest.client;
 
 import lombok.experimental.UtilityClass;
+import org.febit.lang.jackson.JacksonUtils;
 import org.febit.lang.protocol.IResponse;
-import org.febit.lang.util.JacksonUtils;
 import org.springframework.core.ParameterizedTypeReference;
 
 @UtilityClass

@@ -13,45 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.lang.util.jackson;
+package org.febit.lang.jackson.ser;
 
-import org.febit.lang.util.JacksonUtils;
+import org.febit.lang.jackson.JacksonUtils;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.module.SimpleModule;
 
 import java.time.Instant;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ToJsonStringSerializerTest {
-
-    static String toExpected(Object obj) {
-        return JacksonUtils.toJsonString(JacksonUtils.toJsonString(obj));
-    }
+class InstantToNumberSerializerTest {
 
     @Test
-    void basic() {
+    void toEpochSecond() {
         var jackson = JacksonUtils.standardAndWrap(JsonMapper.builder(),
                 mapper -> mapper.addModule(new SimpleModule()
-                        .addSerializer(Instant.class, ToJsonStringSerializer.INSTANCE)
-                        .addSerializer(Map.class, ToJsonStringSerializer.INSTANCE)
+                        .addSerializer(Instant.class, InstantToNumberSerializer.ToEpochSecond.INSTANCE)
                 )
         );
 
-        assertEquals("null", jackson.toString(null));
+        var time = Instant.parse("2023-10-12T12:34:56.123456Z");
+        assertEquals(String.valueOf(time.getEpochSecond()), jackson.toString(time));
+    }
+
+    @Test
+    void toEpochMilli() {
+        var jackson = JacksonUtils.standardAndWrap(JsonMapper.builder(),
+                mapper -> mapper.addModule(new SimpleModule()
+                        .addSerializer(Instant.class, InstantToNumberSerializer.ToEpochMilli.INSTANCE)
+                )
+        );
 
         var time = Instant.parse("2023-10-12T12:34:56.123456Z");
-        assertEquals(toExpected(time), jackson.toString(time));
-
-        var map = Map.of(
-                "a", 1,
-                "b", 2,
-                "c", time
-        );
-        assertEquals(toExpected(map), jackson.toString(map));
-
+        assertEquals(String.valueOf(time.toEpochMilli()), jackson.toString(time));
     }
 
 }

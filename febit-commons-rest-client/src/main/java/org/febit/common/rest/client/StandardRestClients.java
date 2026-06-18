@@ -16,7 +16,7 @@
 package org.febit.common.rest.client;
 
 import lombok.experimental.UtilityClass;
-import org.febit.lang.util.JacksonUtils;
+import org.febit.lang.jackson.JacksonUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverters;

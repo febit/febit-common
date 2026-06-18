@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.lang.util.jackson;
+package org.febit.lang.jackson.deser;
 
 import org.febit.lang.util.ConvertUtils;
 import org.jspecify.annotations.Nullable;

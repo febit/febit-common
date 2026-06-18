@@ -18,7 +18,7 @@ package org.febit.common.jsonrpc2.internal;
 import lombok.experimental.UtilityClass;
 import org.febit.common.jsonrpc2.JsonCodec;
 import org.febit.common.jsonrpc2.protocol.StdRpcErrors;
-import org.febit.lang.util.JacksonUtils;
+import org.febit.lang.jackson.JacksonUtils;
 import org.febit.lang.util.Lists;
 import tools.jackson.databind.JavaType;
 

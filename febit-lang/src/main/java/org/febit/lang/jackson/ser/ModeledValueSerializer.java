@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.lang.util.jackson;
+package org.febit.lang.jackson.ser;
 
+import org.febit.lang.jackson.JacksonUtils;
+import org.febit.lang.jackson.JacksonWrapper;
 import org.febit.lang.modeler.ModeledValue;
 import org.febit.lang.modeler.Schema;
 import org.febit.lang.modeler.StructSpec;
-import org.febit.lang.util.JacksonUtils;
-import org.febit.lang.util.JacksonWrapper;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.core.JacksonException;
 import tools.jackson.core.JsonGenerator;

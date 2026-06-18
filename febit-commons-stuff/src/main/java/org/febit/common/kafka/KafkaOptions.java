@@ -26,7 +26,7 @@ import lombok.Singular;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.febit.common.jcommander.IOptions;
 import org.febit.common.kafka.deser.StringDeserializer;
-import org.febit.lang.util.JacksonUtils;
+import org.febit.lang.jackson.JacksonUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;

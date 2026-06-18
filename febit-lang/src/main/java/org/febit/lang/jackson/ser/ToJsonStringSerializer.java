@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.lang.util.jackson;
+package org.febit.lang.jackson.ser;
 
-import org.febit.lang.util.JacksonUtils;
-import org.febit.lang.util.JacksonWrapper;
+import org.febit.lang.jackson.JacksonUtils;
+import org.febit.lang.jackson.JacksonWrapper;
 import tools.jackson.databind.SerializationContext;
 import tools.jackson.databind.ser.std.ToStringSerializerBase;
 

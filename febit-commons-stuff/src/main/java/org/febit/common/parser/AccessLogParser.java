@@ -18,7 +18,7 @@ package org.febit.common.parser;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.febit.lang.util.JacksonUtils;
+import org.febit.lang.jackson.JacksonUtils;
 import org.febit.lang.util.Lists;
 import org.febit.lang.util.Pairs;
 import org.febit.lang.util.StringWalker;
