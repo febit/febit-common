@@ -15,7 +15,8 @@
  */
 package org.febit.lang.jackson.ser;
 
-import org.febit.lang.jackson.JacksonUtils;
+import org.febit.lang.jackson.JacksonCodec;
+import org.febit.lang.jackson.JacksonCodecImpl;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.module.SimpleModule;
@@ -28,11 +29,10 @@ class InstantToNumberSerializerTest {
 
     @Test
     void toEpochSecond() {
-        var jackson = JacksonUtils.standardAndWrap(JsonMapper.builder(),
-                mapper -> mapper.addModule(new SimpleModule()
-                        .addSerializer(Instant.class, InstantToNumberSerializer.ToEpochSecond.INSTANCE)
-                )
-        );
+        JsonMapper.Builder builder = JsonMapper.builder();
+        var jackson = (JacksonCodec) JacksonCodecImpl.ofStandard(builder, mapper -> mapper.addModule(new SimpleModule()
+                .addSerializer(Instant.class, InstantToNumberSerializer.ToEpochSecond.INSTANCE)
+        ));
 
         var time = Instant.parse("2023-10-12T12:34:56.123456Z");
         assertEquals(String.valueOf(time.getEpochSecond()), jackson.toString(time));
@@ -40,11 +40,10 @@ class InstantToNumberSerializerTest {
 
     @Test
     void toEpochMilli() {
-        var jackson = JacksonUtils.standardAndWrap(JsonMapper.builder(),
-                mapper -> mapper.addModule(new SimpleModule()
-                        .addSerializer(Instant.class, InstantToNumberSerializer.ToEpochMilli.INSTANCE)
-                )
-        );
+        JsonMapper.Builder builder = JsonMapper.builder();
+        var jackson = (JacksonCodec) JacksonCodecImpl.ofStandard(builder, mapper -> mapper.addModule(new SimpleModule()
+                .addSerializer(Instant.class, InstantToNumberSerializer.ToEpochMilli.INSTANCE)
+        ));
 
         var time = Instant.parse("2023-10-12T12:34:56.123456Z");
         assertEquals(String.valueOf(time.toEpochMilli()), jackson.toString(time));

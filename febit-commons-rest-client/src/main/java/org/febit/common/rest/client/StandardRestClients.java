@@ -16,7 +16,7 @@
 package org.febit.common.rest.client;
 
 import lombok.experimental.UtilityClass;
-import org.febit.lang.jackson.JacksonUtils;
+import org.febit.lang.jackson.JacksonStandard;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverters;
@@ -31,7 +31,7 @@ import java.util.function.Consumer;
 public class StandardRestClients {
 
     public static JsonMapper defaultJsonMapper() {
-        return JacksonUtils.standard(JsonMapper.builder())
+        return JacksonStandard.standard(JsonMapper.builder())
                 .build();
     }
 

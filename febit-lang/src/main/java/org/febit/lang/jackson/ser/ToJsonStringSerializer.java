@@ -16,7 +16,7 @@
 package org.febit.lang.jackson.ser;
 
 import org.febit.lang.jackson.JacksonUtils;
-import org.febit.lang.jackson.JacksonWrapper;
+import org.febit.lang.jackson.JacksonCodec;
 import tools.jackson.databind.SerializationContext;
 import tools.jackson.databind.ser.std.ToStringSerializerBase;
 
@@ -24,15 +24,15 @@ public class ToJsonStringSerializer extends ToStringSerializerBase {
 
     public static final ToJsonStringSerializer INSTANCE = new ToJsonStringSerializer();
 
-    private final JacksonWrapper jackson;
+    private final JacksonCodec codec;
 
     public ToJsonStringSerializer() {
         this(JacksonUtils.json());
     }
 
-    public ToJsonStringSerializer(JacksonWrapper jackson) {
+    public ToJsonStringSerializer(JacksonCodec codec) {
         super(Object.class);
-        this.jackson = jackson;
+        this.codec = codec;
     }
 
     @Override
@@ -42,6 +42,6 @@ public class ToJsonStringSerializer extends ToStringSerializerBase {
 
     @Override
     public final String valueToString(Object value) {
-        return jackson.toString(value);
+        return codec.toString(value);
     }
 }

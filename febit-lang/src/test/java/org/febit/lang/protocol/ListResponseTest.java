@@ -15,6 +15,7 @@
  */
 package org.febit.lang.protocol;
 
+import org.febit.lang.jackson.JacksonTypes;
 import org.febit.lang.jackson.JacksonUtils;
 import org.junit.jupiter.api.Test;
 
@@ -78,7 +79,7 @@ class ListResponseTest {
                 }
                 """;
         var response = JacksonUtils.parse(json,
-                JacksonUtils.TYPES.constructParametricType(ListResponse.class, Item.class)
+                JacksonTypes.FACTORY.constructParametricType(ListResponse.class, Item.class)
         );
         assertThat(response)
                 .asInstanceOf(type(ListResponse.class))
@@ -92,7 +93,7 @@ class ListResponseTest {
                 );
 
         var response2 = JacksonUtils.parse(json,
-                JacksonUtils.TYPES.constructParametricType(IListResponse.class, Item.class)
+                JacksonTypes.FACTORY.constructParametricType(IListResponse.class, Item.class)
         );
 
         assertThat(response2)

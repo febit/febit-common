@@ -16,7 +16,7 @@
 package org.febit.common.rest.client;
 
 import lombok.experimental.UtilityClass;
-import org.febit.lang.jackson.JacksonUtils;
+import org.febit.lang.jackson.JacksonTypes;
 import org.febit.lang.protocol.IResponse;
 import org.springframework.core.ParameterizedTypeReference;
 
@@ -24,7 +24,7 @@ import org.springframework.core.ParameterizedTypeReference;
 public class TypeRefs {
 
     public static <T> ParameterizedTypeReference<IResponse<T>> forResponse(Class<T> clazz) {
-        var type = JacksonUtils.TYPES.constructParametricType(IResponse.class, clazz);
+        var type = JacksonTypes.FACTORY.constructParametricType(IResponse.class, clazz);
         return ParameterizedTypeReference.forType(type);
     }
 }

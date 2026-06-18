@@ -20,6 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.febit.common.jsonrpc2.exception.RpcErrorException;
 import org.febit.common.jsonrpc2.protocol.IRpcMessage;
 import org.febit.common.jsonrpc2.protocol.StdRpcErrors;
+import org.febit.lang.jackson.JacksonTypes;
 import org.febit.lang.jackson.JacksonUtils;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.core.JacksonException;
@@ -37,7 +38,7 @@ import java.util.stream.Stream;
 public class JsonCodec {
 
     public static JavaType resolveType(Type type) {
-        return JacksonUtils.TYPES.constructType(type);
+        return JacksonTypes.FACTORY.constructType(type);
     }
 
     public static List<JavaType> resolveParameterTypes(Method method) {

@@ -25,7 +25,7 @@ import tools.jackson.databind.JavaType;
 
 import java.util.Map;
 
-import static org.febit.lang.jackson.JacksonUtils.TYPES;
+import static org.febit.lang.jackson.JacksonTypes.FACTORY;
 
 @UtilityClass
 public class DeserializerUtils {
@@ -55,7 +55,7 @@ public class DeserializerUtils {
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("Unable to load type: " + type);
         }
-        return TYPES.constructType(cls);
+        return FACTORY.constructType(cls);
     }
 
     @SuppressWarnings("unchecked")

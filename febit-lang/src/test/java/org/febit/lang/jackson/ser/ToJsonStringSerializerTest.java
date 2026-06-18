@@ -15,6 +15,8 @@
  */
 package org.febit.lang.jackson.ser;
 
+import org.febit.lang.jackson.JacksonCodec;
+import org.febit.lang.jackson.JacksonCodecImpl;
 import org.febit.lang.jackson.JacksonUtils;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.json.JsonMapper;
@@ -33,12 +35,11 @@ class ToJsonStringSerializerTest {
 
     @Test
     void basic() {
-        var jackson = JacksonUtils.standardAndWrap(JsonMapper.builder(),
-                mapper -> mapper.addModule(new SimpleModule()
-                        .addSerializer(Instant.class, ToJsonStringSerializer.INSTANCE)
-                        .addSerializer(Map.class, ToJsonStringSerializer.INSTANCE)
-                )
-        );
+        JsonMapper.Builder builder = JsonMapper.builder();
+        var jackson = (JacksonCodec) JacksonCodecImpl.ofStandard(builder, mapper -> mapper.addModule(new SimpleModule()
+                .addSerializer(Instant.class, ToJsonStringSerializer.INSTANCE)
+                .addSerializer(Map.class, ToJsonStringSerializer.INSTANCE)
+        ));
 
         assertEquals("null", jackson.toString(null));
 

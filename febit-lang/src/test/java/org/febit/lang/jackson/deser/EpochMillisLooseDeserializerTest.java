@@ -15,7 +15,8 @@
  */
 package org.febit.lang.jackson.deser;
 
-import org.febit.lang.jackson.JacksonUtils;
+import org.febit.lang.jackson.JacksonCodec;
+import org.febit.lang.jackson.JacksonCodecImpl;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.module.SimpleModule;
@@ -30,11 +31,10 @@ class EpochMillisLooseDeserializerTest {
 
     @Test
     void deserialize() {
-        var jackson = JacksonUtils.standardAndWrap(JsonMapper.builder(),
-                mapper -> mapper.addModule(new SimpleModule()
-                        .addDeserializer(Long.class, EpochMillisLooseDeserializer.INSTANCE)
-                )
-        );
+        JsonMapper.Builder builder = JsonMapper.builder();
+        var jackson = (JacksonCodec) JacksonCodecImpl.ofStandard(builder, mapper -> mapper.addModule(new SimpleModule()
+                .addDeserializer(Long.class, EpochMillisLooseDeserializer.INSTANCE)
+        ));
         assertNull(jackson.parse((String) null, Long.class));
         assertNull(jackson.parse("null", Long.class));
         assertNull(jackson.to(null, Long.class));
@@ -49,11 +49,10 @@ class EpochMillisLooseDeserializerTest {
 
     @Test
     void ex_type() {
-        var jackson = JacksonUtils.standardAndWrap(JsonMapper.builder(),
-                mapper -> mapper.addModule(new SimpleModule()
-                        .addDeserializer(Long.class, EpochMillisLooseDeserializer.INSTANCE)
-                )
-        );
+        JsonMapper.Builder builder = JsonMapper.builder();
+        var jackson = (JacksonCodec) JacksonCodecImpl.ofStandard(builder, mapper -> mapper.addModule(new SimpleModule()
+                .addDeserializer(Long.class, EpochMillisLooseDeserializer.INSTANCE)
+        ));
 
         assertThrows(IllegalStateException.class,
                 () -> jackson.to(true, Long.class));
@@ -61,11 +60,10 @@ class EpochMillisLooseDeserializerTest {
 
     @Test
     void zeroIfAbsent() {
-        var jackson = JacksonUtils.standardAndWrap(JsonMapper.builder(),
-                mapper -> mapper.addModule(new SimpleModule()
-                        .addDeserializer(Long.class, EpochMillisLooseDeserializer.ZeroIfAbsent.INSTANCE)
-                )
-        );
+        JsonMapper.Builder builder = JsonMapper.builder();
+        var jackson = (JacksonCodec) JacksonCodecImpl.ofStandard(builder, mapper -> mapper.addModule(new SimpleModule()
+                .addDeserializer(Long.class, EpochMillisLooseDeserializer.ZeroIfAbsent.INSTANCE)
+        ));
 
         assertEquals(0L, jackson.parse("null", Long.class));
         assertEquals(0L, jackson.to("", Long.class));

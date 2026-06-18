@@ -15,6 +15,7 @@
  */
 package org.febit.common.jooq.converter;
 
+import org.febit.lang.jackson.JacksonTypes;
 import org.febit.lang.jackson.JacksonUtils;
 import org.jooq.impl.AbstractConverter;
 import org.jspecify.annotations.Nullable;
@@ -40,26 +41,26 @@ public class JsonStringConverter<V> extends AbstractConverter<String, V> {
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static <K, V> JsonStringConverter<Map<K, V>> forBeanMap(Class<K> keyType, Class<V> beanType) {
-        var type = JacksonUtils.TYPES.constructMapType(
+        var type = JacksonTypes.FACTORY.constructMapType(
                 Map.class, keyType, beanType);
         return new JsonStringConverter(Map.class, type);
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static <V> JsonStringConverter<List<V>> forBeanList(Class<V> beanType) {
-        var type = JacksonUtils.TYPES.constructCollectionType(
+        var type = JacksonTypes.FACTORY.constructCollectionType(
                 List.class, beanType);
         return new JsonStringConverter(List.class, type);
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static <V> JsonStringConverter<V[]> forBeanArray(Class<V> beanType) {
-        var type = JacksonUtils.TYPES.constructArrayType(beanType);
+        var type = JacksonTypes.FACTORY.constructArrayType(beanType);
         return new JsonStringConverter(Array.newInstance(beanType, 0).getClass(), type);
     }
 
     public static <V> JsonStringConverter<V> forBean(Class<V> beanType) {
-        var type = JacksonUtils.TYPES.constructType(beanType);
+        var type = JacksonTypes.FACTORY.constructType(beanType);
         return new JsonStringConverter<>(beanType, type);
     }
 

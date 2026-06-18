@@ -35,6 +35,7 @@ import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.MapAssert;
 import org.assertj.core.api.ObjectAssert;
 import org.assertj.core.internal.Conditions;
+import org.febit.lang.jackson.JacksonStandard;
 import org.febit.lang.jackson.JacksonUtils;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.json.JsonMapper;
@@ -328,7 +329,7 @@ public class JsonPathAssert<A> extends AbstractAssert<JsonPathAssert<A>, A> {
         static final Configuration CONF;
 
         static {
-            var mapper = JacksonUtils.standard(JsonMapper.builder())
+            var mapper = JacksonStandard.standard(JsonMapper.builder())
                     .build();
             CONF = Configuration.builder()
                     .jsonProvider(new Jackson3JsonProvider(mapper))

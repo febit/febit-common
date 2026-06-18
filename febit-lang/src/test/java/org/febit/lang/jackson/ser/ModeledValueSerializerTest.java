@@ -15,8 +15,9 @@
  */
 package org.febit.lang.jackson.ser;
 
+import org.febit.lang.jackson.JacksonCodecImpl;
 import org.febit.lang.jackson.JacksonUtils;
-import org.febit.lang.jackson.JacksonWrapper;
+import org.febit.lang.jackson.JacksonCodec;
 import org.febit.lang.modeler.ModeledValue;
 import org.febit.lang.modeler.Modeler;
 import org.febit.lang.modeler.Schema;
@@ -45,7 +46,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ModeledValueSerializerTest {
 
-    final JacksonWrapper jackson = JacksonUtils.standardAndWrap(JsonMapper.builder()
+    final JacksonCodec codec = JacksonCodecImpl.ofStandard(JsonMapper.builder()
             .enable(SerializationFeature.INDENT_OUTPUT)
             .addModule(new SimpleModule()
                     .addSerializer(ModeledValue.class, ModeledValueSerializer.INSTANCE)
@@ -62,11 +63,11 @@ class ModeledValueSerializerTest {
 
     private String modelAndJsonify(Schema schema, @Nullable Object value) {
         var mv = modeler.processAsModeled(schema, value);
-        return jackson.stringify(mv);
+        return codec.stringify(mv);
     }
 
     private String jsonifyModeled(Schema schema, @Nullable Object value) {
-        return jackson.stringify(new ModeledValue(schema, value, modeler.getStructSpec()));
+        return codec.stringify(new ModeledValue(schema, value, modeler.getStructSpec()));
     }
 
     @Test
@@ -100,7 +101,7 @@ class ModeledValueSerializerTest {
 
         // bytes
         var bytes = new byte[]{1, 2, 3};
-        assertEquals(jackson.stringify(bytes), modelAndJsonify(SchemaType.BYTES, bytes));
+        assertEquals(codec.stringify(bytes), modelAndJsonify(SchemaType.BYTES, bytes));
     }
 
     @Test
@@ -111,11 +112,11 @@ class ModeledValueSerializerTest {
         var zonedDateTime = ZonedDateTime.of(dateTime, ZoneOffset.ofHours(8));
         var instant = Instant.parse("2024-01-02T03:04:05Z");
 
-        assertEquals(jackson.stringify(date), modelAndJsonify(SchemaType.DATE, date));
-        assertEquals(jackson.stringify(time), modelAndJsonify(SchemaType.TIME, time));
-        assertEquals(jackson.stringify(dateTime), modelAndJsonify(SchemaType.DATETIME, dateTime));
-        assertEquals(jackson.stringify(zonedDateTime), modelAndJsonify(SchemaType.DATETIME_ZONED, zonedDateTime));
-        assertEquals(jackson.stringify(instant), modelAndJsonify(SchemaType.INSTANT, instant));
+        assertEquals(codec.stringify(date), modelAndJsonify(SchemaType.DATE, date));
+        assertEquals(codec.stringify(time), modelAndJsonify(SchemaType.TIME, time));
+        assertEquals(codec.stringify(dateTime), modelAndJsonify(SchemaType.DATETIME, dateTime));
+        assertEquals(codec.stringify(zonedDateTime), modelAndJsonify(SchemaType.DATETIME_ZONED, zonedDateTime));
+        assertEquals(codec.stringify(instant), modelAndJsonify(SchemaType.INSTANT, instant));
     }
 
     @Test
@@ -193,7 +194,7 @@ class ModeledValueSerializerTest {
     void raw() {
         var rawSchema = ofRaw("x");
         var rawValue = Map.of("id", 1, "name", "Neo");
-        assertEquals(jackson.stringify(rawValue), jsonifyModeled(rawSchema, rawValue));
+        assertEquals(codec.stringify(rawValue), jsonifyModeled(rawSchema, rawValue));
     }
 
     @Test
@@ -201,7 +202,7 @@ class ModeledValueSerializerTest {
         var jsonSchema = Schemas.ofJson(ofRaw("x"));
         var inner = Map.of("k", "v");
         var mvJson = new ModeledValue(jsonSchema, inner, modeler.getStructSpec());
-        assertEquals(jackson.stringify(JacksonUtils.jsonify(inner)), jackson.stringify(mvJson));
+        assertEquals(codec.stringify(JacksonUtils.jsonify(inner)), codec.stringify(mvJson));
     }
 
     @Test

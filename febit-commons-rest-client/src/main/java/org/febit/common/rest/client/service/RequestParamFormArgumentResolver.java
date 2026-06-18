@@ -31,7 +31,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.febit.lang.jackson.JacksonUtils.TYPES;
+import static org.febit.lang.jackson.JacksonTypes.FACTORY;
 
 /**
  * Resolves method arguments annotated with {@link RequestParamForm}
@@ -57,7 +57,7 @@ import static org.febit.lang.jackson.JacksonUtils.TYPES;
 @RequiredArgsConstructor(staticName = "create")
 public class RequestParamFormArgumentResolver implements HttpServiceArgumentResolver {
 
-    static final JavaType TYPE_MAP_NAMED = TYPES.constructMapType(
+    static final JavaType TYPE_MAP_NAMED = FACTORY.constructMapType(
             LinkedHashMap.class, String.class, Object.class
     );
 

@@ -32,8 +32,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static org.febit.lang.jackson.JacksonUtils.TYPES;
-import static org.febit.lang.jackson.JacksonWrapper.TYPE_MAP_NAMED;
+import static org.febit.lang.jackson.JacksonTypes.FACTORY;
+import static org.febit.lang.jackson.JacksonTypes.MAP_NAMED;
 
 @RequiredArgsConstructor(
         access = AccessLevel.PRIVATE,
@@ -172,12 +172,12 @@ public class PatternFormatter<T> implements Serializable {
         }
 
         public PatternFormatter<Map<String, Object>> build() {
-            return build(TYPE_MAP_NAMED);
+            return build(MAP_NAMED);
         }
 
         public <T> PatternFormatter<T> build(Class<? extends T> beanType) {
             return build(
-                    TYPES.constructType(beanType)
+                    FACTORY.constructType(beanType)
             );
         }
 

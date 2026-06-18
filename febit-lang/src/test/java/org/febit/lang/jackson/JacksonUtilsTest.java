@@ -31,9 +31,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static org.febit.lang.jackson.JacksonWrapper.TYPE_INTEGER;
-import static org.febit.lang.jackson.JacksonWrapper.TYPE_MAP;
-import static org.febit.lang.jackson.JacksonWrapper.TYPE_STRING;
+import static org.febit.lang.jackson.JacksonTypes.INTEGER;
+import static org.febit.lang.jackson.JacksonTypes.MAP;
+import static org.febit.lang.jackson.JacksonTypes.STRING;
 import static org.junit.jupiter.api.Assertions.*;
 
 class JacksonUtilsTest {
@@ -161,22 +161,22 @@ class JacksonUtilsTest {
 
         assertNull(JacksonUtils.parse("null", Map.class));
         assertNull(JacksonUtils.parse("null", (Type) Map.class));
-        assertNull(JacksonUtils.parse("null", TYPE_MAP));
+        assertNull(JacksonUtils.parse("null", MAP));
 
         assertNull(JacksonUtils.parse((String) null, Map.class));
         assertNull(JacksonUtils.parse((String) null, (Type) Map.class));
-        assertNull(JacksonUtils.parse((String) null, TYPE_MAP));
+        assertNull(JacksonUtils.parse((String) null, MAP));
     }
 
     @Test
     void parse() {
         assertEquals(Map.of(), JacksonUtils.parse("{}", Map.class));
         assertEquals(Map.of(), JacksonUtils.parse("{}", (Type) Map.class));
-        assertEquals(Map.of(), JacksonUtils.parse("{}", TYPE_MAP));
+        assertEquals(Map.of(), JacksonUtils.parse("{}", MAP));
 
         assertEquals(Map.of(), JacksonUtils.parse(reader("{}"), Map.class));
         assertEquals(Map.of(), JacksonUtils.parse(reader("{}"), (Type) Map.class));
-        assertEquals(Map.of(), JacksonUtils.parse(reader("{}"), TYPE_MAP));
+        assertEquals(Map.of(), JacksonUtils.parse(reader("{}"), MAP));
     }
 
     @Test
@@ -201,12 +201,12 @@ class JacksonUtilsTest {
         assertEquals(map, JacksonUtils.parseToMap(json, String.class, Integer.class));
         assertEquals(mapAsString, JacksonUtils.parseToMap(json, String.class, String.class));
         assertEquals(mapAsLong, JacksonUtils.parseToMap(json, String.class, Long.class));
-        assertEquals(mapAsString, JacksonUtils.parseToMap(json, TYPE_STRING, TYPE_STRING));
+        assertEquals(mapAsString, JacksonUtils.parseToMap(json, STRING, STRING));
 
         assertEquals(map, JacksonUtils.parseToMap(reader(json), String.class, Integer.class));
         assertEquals(mapAsString, JacksonUtils.parseToMap(reader(json), String.class, String.class));
         assertEquals(mapAsLong, JacksonUtils.parseToMap(reader(json), String.class, Long.class));
-        assertEquals(mapAsString, JacksonUtils.parseToMap(reader(json), TYPE_STRING, TYPE_STRING));
+        assertEquals(mapAsString, JacksonUtils.parseToMap(reader(json), STRING, STRING));
     }
 
     @Test
@@ -216,8 +216,8 @@ class JacksonUtilsTest {
 
         assertNull(JacksonUtils.parseToNamedMap((String) null, Integer.class));
         assertNull(JacksonUtils.parseToNamedMap("null", Integer.class));
-        assertNull(JacksonUtils.parseToNamedMap((String) null, TYPE_STRING));
-        assertNull(JacksonUtils.parseToNamedMap("null", TYPE_STRING));
+        assertNull(JacksonUtils.parseToNamedMap((String) null, STRING));
+        assertNull(JacksonUtils.parseToNamedMap("null", STRING));
 
         var json = """
                 {"a":1,"b":2}""";
@@ -234,12 +234,12 @@ class JacksonUtilsTest {
         assertEquals(map, JacksonUtils.parseToNamedMap(json, Integer.class));
         assertEquals(mapAsString, JacksonUtils.parseToNamedMap(json, String.class));
         assertEquals(mapAsLong, JacksonUtils.parseToNamedMap(json, Long.class));
-        assertEquals(mapAsString, JacksonUtils.parseToNamedMap(json, TYPE_STRING));
+        assertEquals(mapAsString, JacksonUtils.parseToNamedMap(json, STRING));
 
         assertEquals(map, JacksonUtils.parseToNamedMap(reader(json), Integer.class));
         assertEquals(mapAsString, JacksonUtils.parseToNamedMap(reader(json), String.class));
         assertEquals(mapAsLong, JacksonUtils.parseToNamedMap(reader(json), Long.class));
-        assertEquals(mapAsString, JacksonUtils.parseToNamedMap(reader(json), TYPE_STRING));
+        assertEquals(mapAsString, JacksonUtils.parseToNamedMap(reader(json), STRING));
     }
 
     @Test
@@ -255,12 +255,12 @@ class JacksonUtilsTest {
         assertEquals(list, JacksonUtils.parseToList(json, Integer.class));
         assertEquals(listAsString, JacksonUtils.parseToList(json, String.class));
         assertEquals(listAsLong, JacksonUtils.parseToList(json, Long.class));
-        assertEquals(listAsString, JacksonUtils.parseToList(json, TYPE_STRING));
+        assertEquals(listAsString, JacksonUtils.parseToList(json, STRING));
 
         assertEquals(list, JacksonUtils.parseToList(reader(json), Integer.class));
         assertEquals(listAsString, JacksonUtils.parseToList(reader(json), String.class));
         assertEquals(listAsLong, JacksonUtils.parseToList(reader(json), Long.class));
-        assertEquals(listAsString, JacksonUtils.parseToList(reader(json), TYPE_STRING));
+        assertEquals(listAsString, JacksonUtils.parseToList(reader(json), STRING));
     }
 
     @Test
@@ -286,12 +286,12 @@ class JacksonUtilsTest {
         assertArrayEquals(arr, JacksonUtils.parseToArray(json, Integer.class));
         assertArrayEquals(arrAsString, JacksonUtils.parseToArray(json, String.class));
         assertArrayEquals(arrAsLong, JacksonUtils.parseToArray(json, Long.class));
-        assertArrayEquals(arrAsString, JacksonUtils.parseToArray(json, TYPE_STRING));
+        assertArrayEquals(arrAsString, JacksonUtils.parseToArray(json, STRING));
 
         assertArrayEquals(arr, JacksonUtils.parseToArray(reader(json), Integer.class));
         assertArrayEquals(arrAsString, JacksonUtils.parseToArray(reader(json), String.class));
         assertArrayEquals(arrAsLong, JacksonUtils.parseToArray(reader(json), Long.class));
-        assertArrayEquals(arrAsString, JacksonUtils.parseToArray(reader(json), TYPE_STRING));
+        assertArrayEquals(arrAsString, JacksonUtils.parseToArray(reader(json), STRING));
     }
 
     @Test
@@ -308,17 +308,17 @@ class JacksonUtilsTest {
     void to() {
         assertNull(JacksonUtils.to(null, Map.class));
         assertNull(JacksonUtils.to(null, (Type) Map.class));
-        assertNull(JacksonUtils.to(null, TYPE_MAP));
+        assertNull(JacksonUtils.to(null, MAP));
 
         assertEquals(1, JacksonUtils.to(1, Integer.class));
         assertEquals(1, JacksonUtils.to(1L, Integer.class));
 
         assertEquals("1", JacksonUtils.to(1L, String.class));
         assertEquals("1", JacksonUtils.to(1L, (Type) String.class));
-        assertEquals("1", JacksonUtils.to(1L, TYPE_STRING));
+        assertEquals("1", JacksonUtils.to(1L, STRING));
 
-        assertEquals((Integer) 1, JacksonUtils.to(1L, TYPE_INTEGER));
-        assertEquals((Integer) 1, JacksonUtils.to("1", TYPE_INTEGER));
+        assertEquals((Integer) 1, JacksonUtils.to(1L, INTEGER));
+        assertEquals((Integer) 1, JacksonUtils.to("1", INTEGER));
     }
 
     @Test
@@ -337,7 +337,7 @@ class JacksonUtilsTest {
         assertEquals(map, JacksonUtils.toMap(map, String.class, Integer.class));
         assertEquals(mapAsString, JacksonUtils.toMap(map, String.class, String.class));
         assertEquals(mapAsLong, JacksonUtils.toMap(map, String.class, Long.class));
-        assertEquals(mapAsString, JacksonUtils.toMap(map, TYPE_STRING, TYPE_STRING));
+        assertEquals(mapAsString, JacksonUtils.toMap(map, STRING, STRING));
     }
 
     @Test
@@ -356,7 +356,7 @@ class JacksonUtilsTest {
         assertEquals(map, JacksonUtils.toNamedMap(map, Integer.class));
         assertEquals(mapAsString, JacksonUtils.toNamedMap(map, String.class));
         assertEquals(mapAsLong, JacksonUtils.toNamedMap(map, Long.class));
-        assertEquals(mapAsString, JacksonUtils.toNamedMap(map, TYPE_STRING));
+        assertEquals(mapAsString, JacksonUtils.toNamedMap(map, STRING));
     }
 
     @Test
@@ -370,7 +370,7 @@ class JacksonUtilsTest {
         assertEquals(list, JacksonUtils.toList(list, Integer.class));
         assertEquals(listAsString, JacksonUtils.toList(list, String.class));
         assertEquals(listAsLong, JacksonUtils.toList(list, Long.class));
-        assertEquals(listAsString, JacksonUtils.toList(list, TYPE_STRING));
+        assertEquals(listAsString, JacksonUtils.toList(list, STRING));
     }
 
     @Test
@@ -392,7 +392,7 @@ class JacksonUtilsTest {
         assertArrayEquals(arr, JacksonUtils.toArray(arr, Integer.class));
         assertArrayEquals(arrAsString, JacksonUtils.toArray(arr, String.class));
         assertArrayEquals(arrAsLong, JacksonUtils.toArray(arr, Long.class));
-        assertArrayEquals(arrAsString, JacksonUtils.toArray(arr, TYPE_STRING));
+        assertArrayEquals(arrAsString, JacksonUtils.toArray(arr, STRING));
     }
 
     @Test

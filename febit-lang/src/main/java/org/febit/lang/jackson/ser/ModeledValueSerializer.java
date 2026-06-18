@@ -16,7 +16,7 @@
 package org.febit.lang.jackson.ser;
 
 import org.febit.lang.jackson.JacksonUtils;
-import org.febit.lang.jackson.JacksonWrapper;
+import org.febit.lang.jackson.JacksonCodec;
 import org.febit.lang.modeler.ModeledValue;
 import org.febit.lang.modeler.Schema;
 import org.febit.lang.modeler.StructSpec;
@@ -40,15 +40,15 @@ public class ModeledValueSerializer extends StdSerializer<ModeledValue> {
 
     public static final ModeledValueSerializer INSTANCE = new ModeledValueSerializer();
 
-    private final JacksonWrapper jackson;
+    private final JacksonCodec codec;
 
     public ModeledValueSerializer() {
         this(JacksonUtils.json());
     }
 
-    public ModeledValueSerializer(JacksonWrapper jackson) {
+    public ModeledValueSerializer(JacksonCodec codec) {
         super(ModeledValue.class);
-        this.jackson = jackson;
+        this.codec = codec;
     }
 
     @Override
@@ -71,7 +71,7 @@ public class ModeledValueSerializer extends StdSerializer<ModeledValue> {
         }
 
         switch (schema.type()) {
-            case JSON -> gen.writeString(jackson.stringify(value));
+            case JSON -> gen.writeString(codec.stringify(value));
             case STRUCT -> writeStruct((StructSpec<Object, ?>) structSpec, schema, value, gen, context);
             case ARRAY -> writeArray(structSpec, schema, (Object[]) value, gen, context);
             case LIST -> writeList(structSpec, schema, (List<?>) value, gen, context);

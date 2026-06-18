@@ -15,27 +15,12 @@
  */
 package org.febit.lang.jackson;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.experimental.UtilityClass;
-import org.febit.lang.util.TimeUtils;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.core.JacksonException;
-import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.JavaType;
-import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.SerializationFeature;
-import tools.jackson.databind.cfg.DateTimeFeature;
-import tools.jackson.databind.cfg.MapperBuilder;
-import tools.jackson.databind.ext.javatime.deser.LocalDateDeserializer;
-import tools.jackson.databind.ext.javatime.deser.LocalDateTimeDeserializer;
-import tools.jackson.databind.ext.javatime.deser.LocalTimeDeserializer;
-import tools.jackson.databind.ext.javatime.ser.InstantSerializer;
-import tools.jackson.databind.ext.javatime.ser.LocalDateSerializer;
-import tools.jackson.databind.ext.javatime.ser.LocalDateTimeSerializer;
-import tools.jackson.databind.ext.javatime.ser.LocalTimeSerializer;
 import tools.jackson.databind.json.JsonMapper;
-import tools.jackson.databind.module.SimpleModule;
-import tools.jackson.databind.type.TypeFactory;
 import tools.jackson.dataformat.yaml.YAMLMapper;
 
 import javax.annotation.WillNotClose;
@@ -43,13 +28,8 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.Type;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
-import java.util.function.UnaryOperator;
 
 /**
  * Jackson Utils.
@@ -60,80 +40,30 @@ import java.util.function.UnaryOperator;
 @UtilityClass
 public class JacksonUtils {
 
-    public static final TypeFactory TYPES = TypeFactory.createDefaultInstance();
-
-    /**
-     * @deprecated Use {@link #TYPES} instead.
-     */
-    @Deprecated(since = "4.0.0")
-    public static final TypeFactory TYPE_FACTORY = TYPES;
-
     private static final class JsonLazyHolder {
-        static final JacksonWrapper JSON = standardAndWrap(JsonMapper.builder());
+        static final JacksonCodecImpl<JsonMapper> JSON = JacksonCodecImpl.ofStandard(JsonMapper.builder());
     }
 
     private static final class YamlLazyHolder {
-        static final JacksonWrapper YAML = standardAndWrap(YAMLMapper.builder());
+        static final JacksonCodecImpl<YAMLMapper> YAML = JacksonCodecImpl.ofStandard(YAMLMapper.builder());
     }
 
     private static final class PrettyJsonLazyHolder {
-        static final JacksonWrapper PRETTY_JSON = standardAndWrap(JsonMapper.builder()
+        static final JacksonCodecImpl<JsonMapper> PRETTY_JSON = JacksonCodecImpl.ofStandard(JsonMapper.builder()
                 .enable(SerializationFeature.INDENT_OUTPUT)
         );
     }
 
-    public static JacksonWrapper prettyJson() {
+    public static JacksonCodec prettyJson() {
         return PrettyJsonLazyHolder.PRETTY_JSON;
     }
 
-    public static JacksonWrapper json() {
+    public static JacksonCodec json() {
         return JsonLazyHolder.JSON;
     }
 
-    public static JacksonWrapper yaml() {
+    public static JacksonCodec yaml() {
         return YamlLazyHolder.YAML;
-    }
-
-    public static JacksonWrapper wrap(ObjectMapper mapper) {
-        return new JacksonWrapper(mapper);
-    }
-
-    public static <M extends ObjectMapper, B extends MapperBuilder<M, B>> JacksonWrapper standardAndWrap(
-            B builder) {
-        return standardAndWrap(builder, UnaryOperator.identity());
-    }
-
-    public static <M extends ObjectMapper, B extends MapperBuilder<M, B>> JacksonWrapper standardAndWrap(
-            B builder, UnaryOperator<B> transform) {
-        var mapper = transform
-                .apply(standard(builder))
-                .build();
-        return wrap(mapper);
-    }
-
-    public static <M extends ObjectMapper, B extends MapperBuilder<M, B>> B standard(B builder) {
-        var module = new SimpleModule()
-                .addDeserializer(LocalTime.class, new LocalTimeDeserializer(TimeUtils.FMT_TIME))
-                .addSerializer(LocalTime.class, new LocalTimeSerializer(TimeUtils.FMT_TIME))
-                .addDeserializer(LocalDate.class, new LocalDateDeserializer(TimeUtils.FMT_DATE))
-                .addSerializer(LocalDate.class, new LocalDateSerializer(TimeUtils.FMT_DATE))
-                .addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(TimeUtils.FMT_DATE_TIME))
-                .addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(TimeUtils.FMT_DATE_TIME))
-                .addSerializer(Instant.class, InstantSerializer.INSTANCE);
-
-        builder.changeDefaultPropertyInclusion(inclusion -> inclusion
-                        .withValueInclusion(JsonInclude.Include.NON_NULL)
-                        .withContentInclusion(JsonInclude.Include.NON_NULL)
-                )
-                .disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS)
-                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-                .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
-                .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
-                .defaultPrettyPrinter(
-                        new StandardPrettyPrinter()
-                )
-                .addModule(module);
-        return builder;
     }
 
     /**

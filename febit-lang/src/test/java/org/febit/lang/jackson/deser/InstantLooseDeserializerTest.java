@@ -15,7 +15,8 @@
  */
 package org.febit.lang.jackson.deser;
 
-import org.febit.lang.jackson.JacksonUtils;
+import org.febit.lang.jackson.JacksonCodec;
+import org.febit.lang.jackson.JacksonCodecImpl;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.module.SimpleModule;
@@ -29,11 +30,10 @@ class InstantLooseDeserializerTest {
 
     @Test
     void ex_type() {
-        var jackson = JacksonUtils.standardAndWrap(JsonMapper.builder(),
-                mapper -> mapper.addModule(new SimpleModule()
-                        .addDeserializer(Instant.class, InstantLooseDeserializer.INSTANCE)
-                )
-        );
+        JsonMapper.Builder builder = JsonMapper.builder();
+        var jackson = (JacksonCodec) JacksonCodecImpl.ofStandard(builder, mapper -> mapper.addModule(new SimpleModule()
+                .addDeserializer(Instant.class, InstantLooseDeserializer.INSTANCE)
+        ));
 
         assertThrows(IllegalStateException.class,
                 () -> jackson.to(true, Instant.class));
@@ -41,11 +41,10 @@ class InstantLooseDeserializerTest {
 
     @Test
     void deserialize() {
-        var jackson = JacksonUtils.standardAndWrap(JsonMapper.builder(),
-                mapper -> mapper.addModule(new SimpleModule()
-                        .addDeserializer(Instant.class, InstantLooseDeserializer.INSTANCE)
-                )
-        );
+        JsonMapper.Builder builder = JsonMapper.builder();
+        var jackson = (JacksonCodec) JacksonCodecImpl.ofStandard(builder, mapper -> mapper.addModule(new SimpleModule()
+                .addDeserializer(Instant.class, InstantLooseDeserializer.INSTANCE)
+        ));
 
         assertNull(jackson.parse((String) null, Instant.class));
         assertNull(jackson.parse("null", Instant.class));

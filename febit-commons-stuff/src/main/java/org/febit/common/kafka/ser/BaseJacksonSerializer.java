@@ -17,7 +17,7 @@ package org.febit.common.kafka.ser;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.serialization.Serializer;
-import org.febit.lang.jackson.JacksonWrapper;
+import org.febit.lang.jackson.JacksonCodec;
 import org.jspecify.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
@@ -25,11 +25,11 @@ import java.nio.charset.StandardCharsets;
 @RequiredArgsConstructor
 public abstract class BaseJacksonSerializer<T> implements Serializer<T> {
 
-    private final JacksonWrapper jackson;
+    private final JacksonCodec codec;
 
     @Override
     public byte[] serialize(String topic, @Nullable T data) {
-        var text = jackson.toString(data);
+        var text = codec.toString(data);
         return text.getBytes(StandardCharsets.UTF_8);
     }
 }

@@ -15,7 +15,8 @@
  */
 package org.febit.lang.jackson.deser;
 
-import org.febit.lang.jackson.JacksonUtils;
+import org.febit.lang.jackson.JacksonCodec;
+import org.febit.lang.jackson.JacksonCodecImpl;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.module.SimpleModule;
@@ -31,11 +32,10 @@ class BooleanLooseDeserializerTest {
 
     @Test
     void ex_type() {
-        var jackson = JacksonUtils.standardAndWrap(JsonMapper.builder(),
-                mapper -> mapper.addModule(new SimpleModule()
-                        .addDeserializer(Boolean.class, BooleanLooseDeserializer.INSTANCE)
-                )
-        );
+        JsonMapper.Builder builder = JsonMapper.builder();
+        var jackson = (JacksonCodec) JacksonCodecImpl.ofStandard(builder, mapper -> mapper.addModule(new SimpleModule()
+                .addDeserializer(Boolean.class, BooleanLooseDeserializer.INSTANCE)
+        ));
 
         assertThrows(IllegalStateException.class,
                 () -> jackson.to(List.of(), Boolean.class));
@@ -43,11 +43,10 @@ class BooleanLooseDeserializerTest {
 
     @Test
     void deserialize() {
-        var jackson = JacksonUtils.standardAndWrap(JsonMapper.builder(),
-                mapper -> mapper.addModule(new SimpleModule()
-                        .addDeserializer(Boolean.class, BooleanLooseDeserializer.INSTANCE)
-                )
-        );
+        JsonMapper.Builder builder = JsonMapper.builder();
+        var jackson = (JacksonCodec) JacksonCodecImpl.ofStandard(builder, mapper -> mapper.addModule(new SimpleModule()
+                .addDeserializer(Boolean.class, BooleanLooseDeserializer.INSTANCE)
+        ));
 
         assertNull(jackson.parse((String) null, Boolean.class));
         assertNull(jackson.parse("null", Boolean.class));
