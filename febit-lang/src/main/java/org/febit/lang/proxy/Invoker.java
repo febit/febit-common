@@ -13,7 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@NullMarked
-package org.febit.lang.util.proxy;
+package org.febit.lang.proxy;
 
-import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+
+@FunctionalInterface
+public interface Invoker<T> {
+
+    @Nullable
+    @SuppressWarnings({
+            "java:S112" // Generic exceptions should never be thrown
+    })
+    Object invoke(T self, @Nullable Object @Nullable [] args) throws Throwable;
+}

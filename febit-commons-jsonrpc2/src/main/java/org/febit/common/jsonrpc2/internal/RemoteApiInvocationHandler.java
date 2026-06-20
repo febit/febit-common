@@ -20,9 +20,9 @@ import lombok.RequiredArgsConstructor;
 import org.febit.common.jsonrpc2.RpcChannel;
 import org.febit.common.jsonrpc2.exception.UncheckedRpcException;
 import org.febit.common.jsonrpc2.protocol.StdRpcErrors;
-import org.febit.lang.util.proxy.BaseInvocationHandler;
-import org.febit.lang.util.proxy.Invoker;
-import org.febit.lang.util.proxy.Invokers;
+import org.febit.lang.proxy.BaseInvocationHandler;
+import org.febit.lang.proxy.Invoker;
+import org.febit.lang.proxy.Invokers;
 import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JavaType;
 
