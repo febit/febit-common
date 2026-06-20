@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 @NullMarked
-package org.febit.lang.util.security;
+package org.febit.lang.security;
 
 import org.jspecify.annotations.NullMarked;

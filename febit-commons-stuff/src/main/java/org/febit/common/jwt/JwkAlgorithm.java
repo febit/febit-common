@@ -22,7 +22,7 @@ import com.nimbusds.jose.crypto.ECDSASigner;
 import com.nimbusds.jose.crypto.RSASSASigner;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.febit.lang.util.security.SecurityAlgorithm;
+import org.febit.lang.security.SecurityAlgorithm;
 
 import java.security.Key;
 import java.security.PrivateKey;

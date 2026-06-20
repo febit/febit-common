@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.lang.util.security;
+package org.febit.lang.security;
 
 import lombok.RequiredArgsConstructor;
 import org.febit.lang.UncheckedException;
@@ -61,7 +61,7 @@ public enum SecurityAlgorithm {
         }
     }
 
-    private interface KeyDecoder<T extends Key> {
+    interface KeyDecoder<T extends Key> {
         T decode(String encoded) throws NoSuchAlgorithmException, InvalidKeySpecException;
     }
 
