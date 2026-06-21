@@ -38,7 +38,10 @@ import static org.febit.common.etcd.locks.EtcdLockSupport.unwrap;
  * If acquisition stops part-way through, already acquired keys are released in reverse order.
  * Unlocking also happens in reverse order.
  * <p>
- * Sibling instances with the same ordered key list on the same thread share the same remote hold.
+ * Reentrancy is scoped to a single {@link EtcdLockRegistry} instance:
+ * on the same thread, sibling instances with the same ordered key list
+ * share a single remote hold via reference counting. Locks from different
+ * registry instances are always independent.
  *
  * @see EtcdLock
  * @see EtcdLockRegistry#lockFor(String)
@@ -55,7 +58,7 @@ public final class EtcdLockImpl implements EtcdLock {
 
     private final AtomicBoolean acquired = new AtomicBoolean(false);
     private final AtomicBoolean unlocked = new AtomicBoolean(false);
-    private final AtomicBoolean lossConfirmed = new AtomicBoolean(false);
+    private final AtomicBoolean lossAcknowledged = new AtomicBoolean(false);
 
     EtcdLockImpl(EtcdLockRegistry registry, List<ByteSequence> keys) {
         validateKeys(keys);
@@ -93,8 +96,8 @@ public final class EtcdLockImpl implements EtcdLock {
     }
 
     @Override
-    public void confirmLockLoss() {
-        lossConfirmed.set(true);
+    public void acknowledgeLoss() {
+        lossAcknowledged.set(true);
     }
 
     @Override
@@ -187,8 +190,8 @@ public final class EtcdLockImpl implements EtcdLock {
             unlocked.set(true);
         } catch (EtcdLockLostException e) {
             unlocked.set(true);
-            if (lossConfirmed.get()) {
-                log.debug("Lock loss already confirmed, ignoring unlock failure, for keys {}", keys, e);
+            if (lossAcknowledged.get()) {
+                log.debug("Lock loss already acknowledged, ignoring unlock failure, for keys {}", keys, e);
                 return;
             }
             throw e;

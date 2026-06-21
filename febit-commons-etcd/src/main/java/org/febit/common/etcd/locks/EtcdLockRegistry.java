@@ -58,6 +58,12 @@ import java.util.List;
  * // both keys acquired atomically; released in reverse order on close()
  * }</pre>
  *
+ * <h3>Reentrancy scope</h3>
+ * Per-thread state is scoped to each registry instance. Reentrancy
+ * (reference-counted re-acquisition of the same key) only works within
+ * a single {@code EtcdLockRegistry}. Locks from different registry
+ * instances are independent — see {@link EtcdLock} for details.
+ *
  * @see EtcdLock
  * @see EtcdLockOptions
  */

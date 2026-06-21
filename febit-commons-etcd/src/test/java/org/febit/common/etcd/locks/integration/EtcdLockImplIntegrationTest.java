@@ -397,8 +397,8 @@ class EtcdLockImplIntegrationTest {
     }
 
     @Test
-    void confirmedRemoteKeyLossAllowsFinalUnlockToCompleteSilently() throws Exception {
-        var lockName = bytes("integration/multi-lock-confirmed-remote-key-missing/" + UUID.randomUUID());
+    void acknowledgedRemoteKeyLossAllowsFinalUnlockToCompleteSilently() throws Exception {
+        var lockName = bytes("integration/multi-lock-acknowledged-remote-key-missing/" + UUID.randomUUID());
         var keys = List.of(lockName + "/a", lockName + "/b");
 
         try (var ownerClient = newClient();
@@ -416,7 +416,7 @@ class EtcdLockImplIntegrationTest {
             assertTrue(first.isLockLost());
             assertTrue(second.isLockLost());
 
-            second.confirmLockLoss();
+            second.acknowledgeLoss();
 
             first.unlock();
             assertFalse(registry.heldByCurrentThread().isEmpty());
@@ -456,8 +456,8 @@ class EtcdLockImplIntegrationTest {
     }
 
     @Test
-    void closeDoesNotThrowAfterRemoteLossWasConfirmed() throws Exception {
-        var lockName = bytes("integration/multi-lock-close-confirmed-loss/" + UUID.randomUUID());
+    void closeDoesNotThrowAfterRemoteLossWasAcknowledged() throws Exception {
+        var lockName = bytes("integration/multi-lock-close-acknowledged-loss/" + UUID.randomUUID());
         var keys = List.of(lockName + "/a", lockName + "/b");
 
         var ownerClient = newClient();
@@ -473,7 +473,7 @@ class EtcdLockImplIntegrationTest {
 
             assertTrue(lock.isLockLost());
 
-            lock.confirmLockLoss();
+            lock.acknowledgeLoss();
 
             assertDoesNotThrow(lock::close);
             assertTrue(registry.heldByCurrentThread().isEmpty());
@@ -482,8 +482,8 @@ class EtcdLockImplIntegrationTest {
     }
 
     @Test
-    void confirmedLossIsSharedAcrossSiblingInstancesEvenWhenUnlockOrderInterleaves() throws InterruptedException {
-        var lockName = bytes("integration/multi-lock-confirmed-loss-interleave/" + UUID.randomUUID());
+    void acknowledgedLossIsSharedAcrossSiblingInstancesEvenWhenUnlockOrderInterleaves() throws InterruptedException {
+        var lockName = bytes("integration/multi-lock-acknowledged-loss-interleave/" + UUID.randomUUID());
         var keys = List.of(lockName + "/a", lockName + "/b");
 
         try (var ownerClient = newClient();
@@ -505,7 +505,7 @@ class EtcdLockImplIntegrationTest {
             assertTrue(first.isLockLost());
             assertTrue(second.isLockLost());
 
-            first.confirmLockLoss();
+            first.acknowledgeLoss();
 
             assertDoesNotThrow(second::unlock);
             assertFalse(first.registry().heldByCurrentThread().isEmpty());

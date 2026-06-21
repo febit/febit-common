@@ -418,16 +418,16 @@ class EtcdLockImplTest {
     }
 
     @Test
-    void unlockAfterConfirmLockLossDoesNotThrow() throws InterruptedException {
+    void unlockAfterAcknowledgeLossDoesNotThrow() throws InterruptedException {
         var specs = List.of(
-                new LockSpec("unlock/loss-confirmed", "unlock/loss-confirmed/holder",
-                        completedLockResponse(bytes("unlock/loss-confirmed/holder"))));
+                new LockSpec("unlock/loss-acknowledged", "unlock/loss-acknowledged/holder",
+                        completedLockResponse(bytes("unlock/loss-acknowledged/holder"))));
         var client = mockClient(782L, specs);
         var registry = EtcdLockRegistry.create(client);
-        var lock = registry.lockFor("unlock/loss-confirmed");
+        var lock = registry.lockFor("unlock/loss-acknowledged");
 
         assertTrue(lock.tryLock(Duration.ofSeconds(2)));
-        lock.confirmLockLoss();
+        lock.acknowledgeLoss();
         lock.unlock();
         assertTrue(lock.isUnlocked());
     }
