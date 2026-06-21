@@ -225,6 +225,385 @@ class PollingTest {
     }
 
     @Test
+    void timeoutWithTimeUnit() throws ExecutionException, InterruptedException {
+        var fixedNow = Instant.now();
+        assertThat(Polling.create(single("ok"))
+                .delay(Duration.ZERO)
+                .timeout(1, TimeUnit.HOURS)
+                .completeIf(ctx -> true)
+                .executor(Runnable::run)
+                .clock(() -> fixedNow)
+                .poll()
+                .get()
+        )
+                .isNotNull()
+                .returns(true, Context::isCompleted)
+                .returns(fixedNow.plusMillis(Millis.HOUR), Context::timeoutAt);
+    }
+
+    @Test
+    void completeIfNoErrors() throws ExecutionException, InterruptedException {
+        // Succeeds immediately, no errors
+        assertThat(Polling.create(single("ok"))
+                .delay(Duration.ZERO)
+                .timeoutInMillis(Millis.HOUR)
+                .completeIfNoErrors()
+                .executor(Runnable::run)
+                .poll()
+                .get()
+        )
+                .isNotNull()
+                .returns(true, Context::isCompleted)
+                .returns(false, Context::hasError)
+                .returns("ok", Context::get);
+    }
+
+    @Test
+    void hasLastResultFalseForNullResult() throws ExecutionException, InterruptedException {
+        var supplier = queue(Arrays.asList(null, null, "finally"));
+        assertThat(Polling.create(supplier)
+                .delay(Duration.ZERO)
+                .timeoutInMillis(Millis.HOUR)
+                .completeIfHasResult()
+                .executor(Runnable::run)
+                .poll()
+                .get()
+        )
+                .isNotNull()
+                .returns(true, Context::isCompleted)
+                .returns(false, Context::hasError)
+                .returns(true, Context::hasLastResult)
+                .returns(3L, Context::attempts);
+    }
+
+    // ──── Builder parameter validation ────
+
+    @Test
+    void noTimeoutThrowsException() {
+        assertThrows(IllegalArgumentException.class, () ->
+                Polling.create(single("ok"))
+                        .delay(Duration.ZERO)
+                        .completeIf(ctx -> true)
+                        .executor(Runnable::run)
+                        .poll()
+        );
+    }
+
+    @Test
+    void missingDynamicDelayThrows() {
+        assertThrows(NullPointerException.class, () ->
+                Polling.create(single("ok"))
+                        .completeIf(ctx -> true)
+                        .executor(Runnable::run)
+                        .timeoutInMillis(Millis.SECOND)
+                        .poll()
+        );
+    }
+
+    @Test
+    void missingCompleteIfThrows() {
+        assertThrows(NullPointerException.class, () ->
+                Polling.create(single("ok"))
+                        .delay(Duration.ZERO)
+                        .executor(Runnable::run)
+                        .timeoutInMillis(Millis.SECOND)
+                        .poll()
+        );
+    }
+
+    @Test
+    void missingExecutorThrows() {
+        assertThrows(NullPointerException.class, () ->
+                Polling.create(single("ok"))
+                        .delay(Duration.ZERO)
+                        .completeIf(ctx -> true)
+                        .timeoutInMillis(Millis.SECOND)
+                        .poll()
+        );
+    }
+
+    @Test
+    void nullDynamicDelayThrows() {
+        assertThrows(NullPointerException.class, () ->
+                Polling.create(single("ok"))
+                        .dynamicDelay(null)
+                        .completeIf(ctx -> true)
+                        .executor(Runnable::run)
+                        .timeoutInMillis(Millis.SECOND)
+                        .poll()
+        );
+    }
+
+    @Test
+    void nullCompleteIfThrows() {
+        assertThrows(NullPointerException.class, () ->
+                Polling.create(single("ok"))
+                        .delay(Duration.ZERO)
+                        .completeIf(null)
+                        .executor(Runnable::run)
+                        .timeoutInMillis(Millis.SECOND)
+                        .poll()
+        );
+    }
+
+    @Test
+    void nullExecutorThrows() {
+        assertThrows(NullPointerException.class, () ->
+                Polling.create(single("ok"))
+                        .delay(Duration.ZERO)
+                        .completeIf(ctx -> true)
+                        .executor(null)
+                        .timeoutInMillis(Millis.SECOND)
+                        .poll()
+        );
+    }
+
+    @Test
+    void nullTimeoutDurationThrows() {
+        assertThrows(NullPointerException.class, () ->
+                Polling.create(single("ok"))
+                        .delay(Duration.ZERO)
+                        .completeIf(ctx -> true)
+                        .executor(Runnable::run)
+                        .timeout((Duration) null)
+        );
+    }
+
+    @Test
+    void nullTimeoutTimeUnitThrows() {
+        assertThrows(NullPointerException.class, () ->
+                Polling.create(single("ok"))
+                        .delay(Duration.ZERO)
+                        .completeIf(ctx -> true)
+                        .executor(Runnable::run)
+                        .timeout(1, null)
+        );
+    }
+
+    // ──── Timeout configuration edge cases ────
+
+    @Test
+    void timeoutAtDirect() throws ExecutionException, InterruptedException {
+        var fixedNow = Instant.now();
+        var timeoutAt = fixedNow.plusSeconds(60);
+        assertThat(Polling.create(single("ok"))
+                .delay(Duration.ZERO)
+                .completeIf(ctx -> true)
+                .executor(Runnable::run)
+                .timeoutAt(timeoutAt)
+                .clock(() -> fixedNow)
+                .poll()
+                .get()
+        )
+                .isNotNull()
+                .returns(true, Context::isCompleted)
+                .returns(timeoutAt, Context::timeoutAt);
+    }
+
+    @Test
+    void timeoutEarlierWins_timeoutAtEarlier() throws ExecutionException, InterruptedException {
+        var fixedNow = Instant.now();
+        var timeoutAt = fixedNow.plusMillis(Millis.SECOND);
+        assertThat(Polling.create(single("ok"))
+                .delay(Duration.ZERO)
+                .completeIf(ctx -> true)
+                .executor(Runnable::run)
+                .timeoutAt(timeoutAt)
+                .timeoutInMillis(Millis.HOUR)
+                .clock(() -> fixedNow)
+                .poll()
+                .get()
+        )
+                .isNotNull()
+                .returns(timeoutAt, Context::timeoutAt);
+    }
+
+    @Test
+    void timeoutEarlierWins_timeoutInMillisEarlier() throws ExecutionException, InterruptedException {
+        var fixedNow = Instant.now();
+        var timeoutAt = fixedNow.plusMillis(Millis.HOUR);
+        assertThat(Polling.create(single("ok"))
+                .delay(Duration.ZERO)
+                .completeIf(ctx -> true)
+                .executor(Runnable::run)
+                .timeoutAt(timeoutAt)
+                .timeoutInMillis(Millis.SECOND)
+                .clock(() -> fixedNow)
+                .poll()
+                .get()
+        )
+                .isNotNull()
+                .returns(fixedNow.plusMillis(Millis.SECOND), Context::timeoutAt);
+    }
+
+    @Test
+    void timeoutAtInPastImmediateTimeout() throws ExecutionException, InterruptedException {
+        var fixedNow = Instant.now();
+        var timeoutAt = fixedNow.minusMillis(1);
+        assertThat(Polling.create(single("ok"))
+                .delay(Duration.ofMinutes(1))
+                .completeIf(ctx -> false)
+                .executor(Runnable::run)
+                .timeoutAt(timeoutAt)
+                .clock(() -> fixedNow)
+                .poll()
+                .get()
+        )
+                .isNotNull()
+                .returns(true, Context::isTimeout)
+                .returns(0L, Context::attempts);
+    }
+
+    @Test
+    void clockDefaultsToSystemTime() throws ExecutionException, InterruptedException {
+        // null clock → defaults to Instant::now
+        var before = Instant.now();
+        var result = Polling.create(single("ok"))
+                .delay(Duration.ZERO)
+                .completeIf(c -> true)
+                .executor(Runnable::run)
+                .timeoutInMillis(Millis.HOUR)
+                .poll()
+                .get();
+        var after = Instant.now();
+        assertNotNull(result.now());
+        assertFalse(result.now().isBefore(before));
+        assertFalse(result.now().isAfter(after.plusSeconds(1)));
+    }
+
+    // ──── CompleteIf edge cases ────
+
+    @Test
+    void completeIfReturnsNull() throws ExecutionException, InterruptedException {
+        assertThat(Polling.create(queue(Arrays.asList("a", null, "b")))
+                .delay(Duration.ZERO)
+                .timeoutInMillis(Millis.HOUR)
+                .completeIfReturns(null)
+                .executor(Runnable::run)
+                .poll()
+                .get()
+        )
+                .isNotNull()
+                .returns(true, Context::isCompleted)
+                .returns(null, Context::get)
+                .returns(null, Context::lastResult)
+                .returns(2L, Context::attempts);
+    }
+
+    // ──── Error handling ────
+
+    @Test
+    void supplierThrowsRuntimeException() throws ExecutionException, InterruptedException {
+        var msg = "boom";
+        var supplier = new ThrowingSupplier<Object, RuntimeException>() {
+            @Override
+            public Object get() {
+                throw new RuntimeException(msg);
+            }
+        };
+        assertThat(Polling.create(supplier)
+                .delay(Duration.ZERO)
+                .timeoutInMillis(Millis.HOUR)
+                .completeIf(c -> c.hasError())
+                .executor(Runnable::run)
+                .poll()
+                .get()
+        )
+                .isNotNull()
+                .returns(true, Context::isCompleted)
+                .returns(true, Context::hasError)
+                .satisfies(ctx -> {
+                    assertNotNull(ctx.lastError());
+                    assertEquals(msg, ctx.lastError().getMessage());
+                });
+    }
+
+    @Test
+    void supplierThrowsExceptionThenRecovers() throws ExecutionException, InterruptedException {
+        var supplier = new ThrowingSupplier<>() {
+            private int count = 0;
+
+            @Override
+            public String get() {
+                count++;
+                if (count == 1) {
+                    throw new RuntimeException("fail");
+                }
+                return "recovered";
+            }
+        };
+        assertThat(Polling.create(supplier)
+                .delay(Duration.ZERO)
+                .timeoutInMillis(Millis.HOUR)
+                .completeIfHasResult()
+                .executor(Runnable::run)
+                .poll()
+                .get()
+        )
+                .isNotNull()
+                .returns(true, Context::isCompleted)
+                .returns(false, Context::hasError)
+                .returns("recovered", Context::get)
+                .returns(2L, Context::attempts);
+    }
+
+    // ──── Initial delay ────
+
+    @Test
+    void initialDelayReflectedInLastDelay() throws ExecutionException, InterruptedException {
+        var initDelay = Duration.ofMillis(50);
+        assertThat(Polling.create(single("ok"))
+                .initialDelay(initDelay)
+                .dynamicDelay(ctx -> Duration.ZERO)
+                .completeIf(ctx -> true)
+                .executor(Runnable::run)
+                .timeoutInMillis(Millis.HOUR)
+                .poll()
+                .get()
+        )
+                .isNotNull()
+                .returns(initDelay, Context::lastDelay)
+                .returns(1L, Context::attempts);
+    }
+
+    @Test
+    void initialDelayNullDefaultsToZero() throws ExecutionException, InterruptedException {
+        assertThat(Polling.create(single("ok"))
+                .initialDelay(null)
+                .dynamicDelay(ctx -> Duration.ofMillis(1))
+                .completeIf(ctx -> true)
+                .executor(Runnable::run)
+                .timeoutInMillis(Millis.HOUR)
+                .poll()
+                .get()
+        )
+                .isNotNull()
+                .returns(Duration.ZERO, Context::lastDelay);
+    }
+
+    // ──── Runtime behavior ────
+
+    @Test
+    void interruptedExceptionDuringSupplierSetsCompleted() throws ExecutionException, InterruptedException {
+        var supplier = new ThrowingSupplier<Object, InterruptedException>() {
+            @Override
+            public Object get() throws InterruptedException {
+                throw new InterruptedException("interrupted");
+            }
+        };
+        var result = Polling.create(supplier)
+                .delay(Duration.ZERO)
+                .timeoutInMillis(Millis.HOUR)
+                .completeIf(ctx -> false)
+                .executor(Runnable::run)
+                .poll()
+                .get();
+        assertTrue(result.isCompleted());
+        assertTrue(result.hasError());
+        assertEquals(1, result.attempts());
+    }
+
+    @Test
     void untilFixedValue() throws Throwable {
         var supplier = spy(queue(List.of(1, 2, 3, 4, 5)));
 

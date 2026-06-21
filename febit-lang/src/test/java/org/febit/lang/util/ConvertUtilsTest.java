@@ -26,6 +26,10 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.LongAccumulator;
+import java.util.concurrent.atomic.LongAdder;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -104,13 +108,19 @@ class ConvertUtilsTest {
     @Test
     void toByte() {
         assertNull(ConvertUtils.toByte(null));
+        assertEquals((byte) 1, ConvertUtils.toByte((byte) 1));
+        assertEquals((byte) 1, ConvertUtils.toByte((short) 1));
         assertEquals((byte) 1, ConvertUtils.toByte(1));
         assertEquals((byte) 1, ConvertUtils.toByte(1L));
         assertEquals((byte) 1, ConvertUtils.toByte(1.0D));
         assertEquals((byte) 1, ConvertUtils.toByte(1.0F));
         assertEquals((byte) 1, ConvertUtils.toByte(BigInteger.valueOf(1)));
+        assertEquals((byte) 1, ConvertUtils.toByte(BigDecimal.valueOf(1)));
         assertEquals((byte) 1, ConvertUtils.toByte("1"));
         assertEquals((byte) 1, ConvertUtils.toByte("1.0"));
+        assertEquals((byte) 65, ConvertUtils.toByte('A'));
+        assertEquals((byte) 127, ConvertUtils.toByte((byte) 127));
+        assertEquals((byte) -128, ConvertUtils.toByte((byte) -128));
     }
 
     @Test
@@ -140,13 +150,19 @@ class ConvertUtilsTest {
     @Test
     void toShort() {
         assertNull(ConvertUtils.toShort(null));
+        assertEquals((short) 1, ConvertUtils.toShort((short) 1));
+        assertEquals((short) 1, ConvertUtils.toShort((byte) 1));
         assertEquals((short) 1, ConvertUtils.toShort(1));
         assertEquals((short) 1, ConvertUtils.toShort(1L));
         assertEquals((short) 1, ConvertUtils.toShort(1.0D));
         assertEquals((short) 1, ConvertUtils.toShort(1.0F));
         assertEquals((short) 1, ConvertUtils.toShort(BigInteger.valueOf(1)));
+        assertEquals((short) 1, ConvertUtils.toShort(BigDecimal.valueOf(1)));
         assertEquals((short) 1, ConvertUtils.toShort("1"));
         assertEquals((short) 1, ConvertUtils.toShort("1.0"));
+        assertEquals((short) 65, ConvertUtils.toShort('A'));
+        assertEquals(Short.MAX_VALUE, ConvertUtils.toShort(Short.MAX_VALUE));
+        assertEquals(Short.MIN_VALUE, ConvertUtils.toShort(Short.MIN_VALUE));
     }
 
     @Test
@@ -165,6 +181,7 @@ class ConvertUtilsTest {
     void toBigDecimal() {
         assertNull(ConvertUtils.toBigDecimal(null));
         assertEquals(BigDecimal.valueOf(1), ConvertUtils.toBigDecimal((byte) 1));
+        assertEquals(BigDecimal.valueOf(1), ConvertUtils.toBigDecimal((short) 1));
         assertEquals(BigDecimal.valueOf(1), ConvertUtils.toBigDecimal(1));
         assertEquals(BigDecimal.valueOf(1), ConvertUtils.toBigDecimal(1L));
         assertEquals(BigDecimal.valueOf(1.0D), ConvertUtils.toBigDecimal(1.0D));
@@ -174,6 +191,23 @@ class ConvertUtilsTest {
         assertEquals(BigDecimal.valueOf(1), ConvertUtils.toBigDecimal("1"));
         assertEquals(BigDecimal.valueOf(1.0D), ConvertUtils.toBigDecimal("1.0"));
         assertEquals(BigDecimal.valueOf(97), ConvertUtils.toBigDecimal('a'));
+
+        // AtomicInteger, AtomicLong, LongAdder, LongAccumulator
+        assertEquals(BigDecimal.valueOf(42), ConvertUtils.toBigDecimal(new AtomicInteger(42)));
+        assertEquals(BigDecimal.valueOf(99), ConvertUtils.toBigDecimal(new AtomicLong(99)));
+        var adder = new LongAdder();
+        adder.add(100);
+        assertEquals(BigDecimal.valueOf(100), ConvertUtils.toBigDecimal(adder));
+        var accumulator = new LongAccumulator(Long::sum, 55);
+        assertEquals(BigDecimal.valueOf(55), ConvertUtils.toBigDecimal(accumulator));
+
+        // default branch: arbitrary Object.toString()
+        assertEquals(new BigDecimal("123"), ConvertUtils.toBigDecimal(new Object() {
+            @Override
+            public String toString() {
+                return "123";
+            }
+        }));
     }
 
     @Test

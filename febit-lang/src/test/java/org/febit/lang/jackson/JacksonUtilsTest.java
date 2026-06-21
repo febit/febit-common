@@ -375,10 +375,12 @@ class JacksonUtilsTest {
 
     @Test
     void toStringList() {
+        assertNull(JacksonUtils.toStringList(null));
+
         var list = List.of(1, 2, 3);
         var listAsString = Lists.collect(list, String::valueOf);
 
-        assertEquals(listAsString, JacksonUtils.toList(list, String.class));
+        assertEquals(listAsString, JacksonUtils.toStringList(list));
     }
 
     @Test

@@ -17,23 +17,97 @@ package org.febit.lang.util;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-@SuppressWarnings("ObviousNullCheck")
 class DefaultsTest {
 
     @Test
-    void nvl() {
+    void nvl_object_returnsObjectWhenNonNull() {
         assertEquals("a", Defaults.nvl("a", "b"));
+    }
+
+    @Test
+    void nvl_object_returnsDefaultWhenNull() {
         assertEquals("b", Defaults.nvl(null, "b"));
     }
 
     @Test
-    void collapse() {
+    void nvl_supplier_invokesOnlyWhenNull() {
+        var counter = new AtomicInteger();
+        assertEquals("a", Defaults.nvl("a", () -> {
+            counter.incrementAndGet();
+            return "fb";
+        }));
+        assertEquals(0, counter.get());
+
+        assertEquals("fb", Defaults.nvl(null, () -> {
+            counter.incrementAndGet();
+            return "fb";
+        }));
+        assertEquals(1, counter.get());
+    }
+
+    @Test
+    void nvl_supplier_calledOnceWhenNull() {
+        var counter = new AtomicInteger();
+        Defaults.nvl(null, () -> {
+            counter.incrementAndGet();
+            return "x";
+        });
+        assertEquals(1, counter.get());
+    }
+
+    @Test
+    void collapse_returnsObjectWhenNonNull() {
         assertEquals("a", Defaults.collapse("a", "b", "c"));
-        assertEquals("b", Defaults.collapse(null, "b", "c"));
-        assertEquals("c", Defaults.collapse(null, null, "c"));
+    }
+
+    @Test
+    void collapse_returnsFirstNonNullDefault() {
+        assertEquals("b", Defaults.collapse(null, null, "b", "c"));
+    }
+
+    @Test
+    void collapse_allNull_returnsNull() {
         assertNull(Defaults.collapse(null, null, null));
+    }
+
+    @Test
+    void collapse_objectIsNull_noDefaults() {
+        assertNull(Defaults.collapse(null, (String[]) null));
+    }
+
+    @Test
+    void collapse_emptyDefaults_returnsNull() {
         assertNull(Defaults.collapse(null));
+    }
+
+    @Test
+    void collapse_emptyDefaultsAndNonNullObject_returnsObject() {
+        assertEquals("a", Defaults.collapse("a"));
+    }
+
+    @Test
+    void collapse_firstDefaultWins() {
+        assertEquals("first", Defaults.collapse(null, "first", "second"));
+    }
+
+    @Test
+    void collapse_objectBeatsAnyDefault() {
+        assertEquals("a", Defaults.collapse("a", "b", "c", "d"));
+    }
+
+    @Test
+    void nvl_zeroIsNotNull() {
+        // 0 is not null; nvl should return 0
+        Integer zero = 0;
+        assertEquals(zero, Defaults.nvl(zero, 99));
+    }
+
+    @Test
+    void nvl_emptyStringIsNotNull() {
+        assertEquals("", Defaults.nvl("", "fb"));
     }
 }
