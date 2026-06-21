@@ -39,6 +39,9 @@ import static org.febit.common.etcd.locks.EtcdLockSupport.unwrap;
  * Unlocking also happens in reverse order.
  * <p>
  * Sibling instances with the same ordered key list on the same thread share the same remote hold.
+ *
+ * @see EtcdLock
+ * @see EtcdLockRegistry#lockFor(String)
  */
 @Slf4j
 @Accessors(fluent = true)

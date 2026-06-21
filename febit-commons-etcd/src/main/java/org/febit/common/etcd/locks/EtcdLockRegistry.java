@@ -26,6 +26,41 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Central registry for creating and tracking etcd-based distributed locks.
+ * <p>
+ * Each thread gets its own {@link EtcdLockLocalGuard} (via {@code ThreadLocal}) to manage
+ * lease lifecycle and hold tracking.
+ *
+ * <h3>Quick start</h3>
+ * <pre>{@code
+ * var registry = EtcdLockRegistry.create(client);
+ * var lock = registry.lockFor("resource-key");
+ * if (lock.tryLock(Duration.ofSeconds(2))) {
+ *     try { doWork(); }
+ *     finally { lock.close(); }
+ * }
+ * }</pre>
+ *
+ * <h3>Custom options</h3>
+ * <pre>{@code
+ * var registry = EtcdLockRegistry.builder()
+ *         .client(client)
+ *         .ttl(Duration.ofSeconds(10))
+ *         .tryLockTimeout(Duration.ofSeconds(5))
+ *         .build();
+ * }</pre>
+ *
+ * <h3>Multi-key lock</h3>
+ * <pre>{@code
+ * var lock = registry.lockFor("users/123", "orders/456");
+ * lock.tryLock(Duration.ofSeconds(3));
+ * // both keys acquired atomically; released in reverse order on close()
+ * }</pre>
+ *
+ * @see EtcdLock
+ * @see EtcdLockOptions
+ */
 @Getter
 @Accessors(fluent = true)
 public class EtcdLockRegistry implements AutoCloseable {

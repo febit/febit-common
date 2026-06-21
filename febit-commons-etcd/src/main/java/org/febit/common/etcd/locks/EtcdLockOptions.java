@@ -20,6 +20,29 @@ import lombok.experimental.Accessors;
 
 import java.time.Duration;
 
+/**
+ * Configuration for etcd lock behavior.
+ *
+ * <h3>Defaults</h3>
+ * <pre>{@code
+ * var opts = EtcdLockOptions.defaults();
+ * // ttl            = 5s (lease TTL)
+ * // tryLockTimeout = 2s (max wait for lock acquisition)
+ * // strict         = false
+ * // waitMax        = -1s (unlimited blocking wait)
+ * }</pre>
+ *
+ * <h3>Customization</h3>
+ * <pre>{@code
+ * var opts = EtcdLockOptions.builder()
+ *         .ttl(Duration.ofSeconds(10))
+ *         .tryLockTimeout(Duration.ofSeconds(1))
+ *         .strict(true)
+ *         .build();
+ * }</pre>
+ *
+ * @see EtcdLockRegistry
+ */
 @Getter
 @lombok.Builder(
         builderClassName = "Builder"

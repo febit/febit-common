@@ -17,6 +17,14 @@ package org.febit.common.etcd.locks;
 
 import io.etcd.jetcd.ByteSequence;
 
+/**
+ * Immutable snapshot of a granted lock hold.
+ *
+ * @param leaseId      etcd lease ID backing this lock
+ * @param key          the original lock key requested
+ * @param grantedKey   the actual etcd lock key returned by the server
+ * @param fencingToken the create-revision of {@code grantedKey}, used to detect stale holders
+ */
 public record EtcdLockCredential(
         long leaseId,
         ByteSequence key,

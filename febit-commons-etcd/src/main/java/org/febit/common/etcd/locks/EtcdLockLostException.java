@@ -19,6 +19,13 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.jspecify.annotations.Nullable;
 
+/**
+ * Thrown when a previously acquired lock is no longer held — the remote key is missing,
+ * or the lease keep-alive has terminated past TTL.
+ *
+ * @see EtcdLock#isLockLost()
+ * @see EtcdLockLostReason
+ */
 @Accessors(fluent = true)
 public class EtcdLockLostException extends EtcdLockException {
 
@@ -28,8 +35,7 @@ public class EtcdLockLostException extends EtcdLockException {
     private final EtcdLockLostReason reason;
 
     EtcdLockLostException(EtcdLockLostReason reason, EtcdLockCredential credential, @Nullable Throwable cause) {
-        super("Remote lock already lost for: " + credential
-                + ", reason: " + reason, cause);
+        super("Remote lock already lost for: " + credential + ", reason: " + reason, cause);
         this.credential = credential;
         this.reason = reason;
     }

@@ -20,6 +20,9 @@ import org.jspecify.annotations.Nullable;
 import java.time.Duration;
 import java.util.concurrent.TimeoutException;
 
+/**
+ * NanoTime-based deadline; {@link #remaining()} throws {@link TimeoutException} once elapsed.
+ */
 record Deadline(long at) {
 
     @Nullable

@@ -17,6 +17,9 @@ package org.febit.common.etcd.locks;
 
 /**
  * Base runtime exception for etcd lock related failures.
+ *
+ * @see EtcdLockLostException
+ * @see EtcdLockNotOwnerException
  */
 public class EtcdLockException extends RuntimeException {
 

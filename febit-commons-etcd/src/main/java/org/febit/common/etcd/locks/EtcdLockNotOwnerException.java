@@ -18,8 +18,8 @@ package org.febit.common.etcd.locks;
 /**
  * Thrown when the current thread does not own the lock instance being unlocked.
  * <p>
- * This extends {@link IllegalMonitorStateException} to remain compatible with callers
- * that expect that standard JVM exception.
+ * This extends {@link EtcdLockException}. Use {@link EtcdLock#isAcquired()}
+ * or {@link EtcdLock#isUnlocked()} to check lock state before unlock.
  */
 public class EtcdLockNotOwnerException extends EtcdLockException {
 

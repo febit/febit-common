@@ -34,6 +34,10 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import static org.febit.common.etcd.locks.EtcdLockSupport.unwrap;
 
+/**
+ * A granted etcd lease with a keep-alive stream. Provides definite-loss detection
+ * based on keep-alive termination + TTL threshold.
+ */
 @Slf4j
 @Accessors(fluent = true)
 @RequiredArgsConstructor(access = lombok.AccessLevel.PRIVATE)

@@ -35,6 +35,10 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.febit.common.etcd.locks.EtcdLockSupport.unwrap;
 
+/**
+ * Per-thread guard managing lease lifecycle, lock holds (with reference counting),
+ * and lock-loss detection for the owning {@link EtcdLockRegistry}.
+ */
 @Slf4j
 @RequiredArgsConstructor
 class EtcdLockLocalGuard {

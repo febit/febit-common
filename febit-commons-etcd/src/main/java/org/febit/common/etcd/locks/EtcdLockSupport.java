@@ -25,6 +25,9 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.RejectedExecutionException;
 
+/**
+ * Internal helpers: unlock, lock-loss detection, and error handling.
+ */
 @Slf4j
 @UtilityClass
 public class EtcdLockSupport {
