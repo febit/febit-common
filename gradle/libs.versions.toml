@@ -41,6 +41,8 @@ swagger = '2.2.49'
 uuid-generator = '5.2.0'
 testcontainers = '2.0.5'
 
+h2database = '2.4.240'
+
 assertj = '3.27.7'
 hamcrest = '3.0'
 junit = '6.1.0'
@@ -87,6 +89,7 @@ jetcd-core = { module = 'io.etcd:jetcd-core', version.ref = 'jetcd' }
 jetcd-test = { module = 'io.etcd:jetcd-test', version.ref = 'jetcd' }
 jool = { module = 'org.jooq:jool', version.ref = 'jool' }
 jooq = { module = 'org.jooq:jooq', version.ref = 'jooq' }
+jooq-jpa-extensions = { module = 'org.jooq:jooq-jpa-extensions', version.ref = 'jooq' }
 jsonpath = { module = 'com.jayway.jsonpath:json-path', version.ref = 'jsonpath' }
 jsr305 = { module = 'com.google.code.findbugs:jsr305', version.ref = 'jsr305' }
 kafka-clients = { module = 'org.apache.kafka:kafka-clients', version.ref = 'kafka-clients' }
@@ -101,4 +104,5 @@ spring-boot-deps = { module = 'org.springframework.boot:spring-boot-dependencies
 spotbugs-annotations = { module = 'com.github.spotbugs:spotbugs-annotations', version.ref = 'spotbugs' }
 swagger-annotations = { module = 'io.swagger.core.v3:swagger-annotations-jakarta', version.ref = 'swagger' }
 uuid-generator = { module = 'com.fasterxml.uuid:java-uuid-generator', version.ref = 'uuid-generator' }
+h2database = { module = 'com.h2database:h2', version.ref = 'h2database' }
 testcontainers-bom = { module = 'org.testcontainers:testcontainers-bom', version.ref = 'testcontainers' }

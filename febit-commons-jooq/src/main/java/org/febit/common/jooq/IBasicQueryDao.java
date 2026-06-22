@@ -192,7 +192,8 @@ public interface IBasicQueryDao<TB extends Table<R>, PO, R extends TableRecord<R
             Collection<? extends OrderField<?>> orders,
             RecordMapper<R1, V> mapper
     ) {
-        return pageWithFetcher(table, pagination, orders, query -> query.fetch(mapper));
+        return pageWithFetcher(table, pagination, orders,
+                query -> query.fetch(mapper));
     }
 
     default <V, R1 extends Record> Page<V> pageWithFetcher(

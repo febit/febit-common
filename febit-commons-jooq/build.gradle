@@ -11,5 +11,10 @@ dependencies {
   api libs.jooq
 
   compileOnly libs.jakarta.xml.bind.api
+
+  testImplementation libs.jooq.jpa.extensions
+  testImplementation libs.jakarta.persistence.api
+  testImplementation libs.jakarta.validation.api
+  testImplementation libs.h2database
 }
 
