@@ -18,16 +18,15 @@ package org.febit.common.etcd.locks;
 import io.etcd.jetcd.ByteSequence;
 import org.junit.jupiter.api.Test;
 
-import java.nio.charset.StandardCharsets;
-
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.*;
 
 class EtcdLockCredentialTest {
 
     @Test
-    void recordComponentsAccessible() {
-        var key = ByteSequence.from("key", StandardCharsets.UTF_8);
-        var grantedKey = ByteSequence.from("granted", StandardCharsets.UTF_8);
+    void componentsAccessible() {
+        var key = ByteSequence.from("key", UTF_8);
+        var grantedKey = ByteSequence.from("granted", UTF_8);
         var credential = new EtcdLockCredential(123L, key, grantedKey, 456L);
 
         assertEquals(123L, credential.leaseId());
@@ -38,8 +37,8 @@ class EtcdLockCredentialTest {
 
     @Test
     void toStringContainsComponents() {
-        var key = ByteSequence.from("key", StandardCharsets.UTF_8);
-        var grantedKey = ByteSequence.from("granted", StandardCharsets.UTF_8);
+        var key = ByteSequence.from("key", UTF_8);
+        var grantedKey = ByteSequence.from("granted", UTF_8);
         var credential = new EtcdLockCredential(123L, key, grantedKey, 456L);
 
         var str = credential.toString();
@@ -48,9 +47,9 @@ class EtcdLockCredentialTest {
     }
 
     @Test
-    void equalsAndHashCodeSameValues() {
-        var key = ByteSequence.from("key", StandardCharsets.UTF_8);
-        var grantedKey = ByteSequence.from("granted", StandardCharsets.UTF_8);
+    void equalsAndHashCode() {
+        var key = ByteSequence.from("key", UTF_8);
+        var grantedKey = ByteSequence.from("granted", UTF_8);
         var a = new EtcdLockCredential(1L, key, grantedKey, 10L);
         var b = new EtcdLockCredential(1L, key, grantedKey, 10L);
 
@@ -59,9 +58,9 @@ class EtcdLockCredentialTest {
     }
 
     @Test
-    void equalsDifferentValuesNotEqual() {
-        var key = ByteSequence.from("key", StandardCharsets.UTF_8);
-        var grantedKey = ByteSequence.from("granted", StandardCharsets.UTF_8);
+    void notEquals() {
+        var key = ByteSequence.from("key", UTF_8);
+        var grantedKey = ByteSequence.from("granted", UTF_8);
         var a = new EtcdLockCredential(1L, key, grantedKey, 10L);
         var b = new EtcdLockCredential(2L, key, grantedKey, 10L);
 

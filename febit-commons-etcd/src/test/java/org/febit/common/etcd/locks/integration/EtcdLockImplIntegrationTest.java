@@ -26,7 +26,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -37,11 +36,17 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.InstanceOfAssertFactories.type;
 import static org.febit.common.etcd.support.EtcdIntegrationTestSupport.awaitCondition;
 import static org.febit.common.etcd.support.EtcdIntegrationTestSupport.awaitLockKeyDeletion;
 import static org.febit.common.etcd.support.EtcdIntegrationTestSupport.awaitQueuedContender;
-import static org.febit.common.etcd.support.EtcdIntegrationTestSupport.bytes;
 import static org.febit.common.etcd.support.EtcdIntegrationTestSupport.lockQueueDepth;
+import static org.febit.common.etcd.support.TestSupport.DU_1S;
+import static org.febit.common.etcd.support.TestSupport.DU_200MS;
+import static org.febit.common.etcd.support.TestSupport.DU_2S;
+import static org.febit.common.etcd.support.TestSupport.DU_300MS;
+import static org.febit.common.etcd.support.TestSupport.DU_5S;
+import static org.febit.common.etcd.support.TestSupport.bytes;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Timeout(30)
@@ -61,12 +66,12 @@ class EtcdLockImplIntegrationTest {
     private static EtcdLockRegistry registry(Client client) {
         return EtcdLockRegistry.builder()
                 .client(client)
-                .ttl(Duration.ofSeconds(5))
+                .ttl(DU_5S)
                 .build();
     }
 
     @Test
-    void blocksUntilDifferentClientReleasesRemoteLock() throws InterruptedException {
+    void blocksUntilReleased() throws InterruptedException {
         var lockName = bytes("integration/multi-lock-blocks-until-release/" + UUID.randomUUID());
         var keys = List.of(lockName + "/a", lockName + "/b");
         var started = new CountDownLatch(1);
@@ -77,7 +82,7 @@ class EtcdLockImplIntegrationTest {
              var owner = registry(ownerClient).lockFor(keys);
              var waiter = registry(waiterClient).lockFor(keys)
         ) {
-            assertTrue(owner.tryLock(Duration.ofSeconds(2)));
+            assertTrue(owner.tryLock(DU_2S));
             var thread = new Thread(() -> {
                 started.countDown();
                 try {
@@ -93,7 +98,7 @@ class EtcdLockImplIntegrationTest {
             });
             thread.start();
             assertTrue(started.await(1, TimeUnit.SECONDS));
-            awaitQueuedContender(ownerClient, bytes(lockName + "/a"), Duration.ofSeconds(2));
+            awaitQueuedContender(ownerClient, bytes(lockName + "/a"), DU_2S);
             owner.unlock();
             assertTrue(acquired.await(2, TimeUnit.SECONDS));
             thread.join();
@@ -104,7 +109,7 @@ class EtcdLockImplIntegrationTest {
     }
 
     @Test
-    void siblingInstancesShareOneRemoteHoldOnSameThread() throws InterruptedException {
+    void siblingsShareRemoteHold() throws InterruptedException {
         var lockName = bytes("integration/multi-lock-sibling-share/" + UUID.randomUUID());
         var keys = List.of(lockName + "/a", lockName + "/b");
         try (
@@ -113,8 +118,8 @@ class EtcdLockImplIntegrationTest {
                 var first = registry.lockFor(keys);
                 var second = registry.lockFor(keys);
         ) {
-            assertTrue(first.tryLock(Duration.ofSeconds(2)));
-            assertTrue(second.tryLock(Duration.ofSeconds(2)));
+            assertTrue(first.tryLock(DU_2S));
+            assertTrue(second.tryLock(DU_2S));
 
             assertTrue(first.isAcquired());
             assertTrue(second.isAcquired());
@@ -129,7 +134,7 @@ class EtcdLockImplIntegrationTest {
     }
 
     @Test
-    void sharingIsLimitedToTheSameClientInstance() throws InterruptedException {
+    void sharingLimitedToSameClient() throws InterruptedException {
         var lockName = bytes("integration/multi-lock-client-boundary/" + UUID.randomUUID());
         var keys = List.of(lockName + "/a", lockName + "/b");
 
@@ -137,20 +142,20 @@ class EtcdLockImplIntegrationTest {
              var secondClient = newClient();
              var first = registry(firstClient).lockFor(keys);
              var second = registry(secondClient).lockFor(keys)) {
-            assertTrue(first.tryLock(Duration.ofSeconds(2)));
+            assertTrue(first.tryLock(DU_2S));
 
-            assertFalse(second.tryLock(Duration.ofMillis(200)));
+            assertFalse(second.tryLock(DU_200MS));
             assertTrue(second.registry().heldByCurrentThread().isEmpty());
 
             first.unlock();
 
-            assertTrue(second.tryLock(Duration.ofSeconds(2)));
+            assertTrue(second.tryLock(DU_2S));
             second.unlock();
         }
     }
 
     @Test
-    void sameKeysDifferentOrderShareTheSameRemoteHold() throws InterruptedException {
+    void sameKeysDifferentOrder() throws InterruptedException {
         var lockName = bytes("integration/multi-lock-order-matters/" + UUID.randomUUID());
         var forwardKeys = List.of(lockName + "/a", lockName + "/b");
         var reverseKeys = List.of(lockName + "/b", lockName + "/a");
@@ -160,8 +165,8 @@ class EtcdLockImplIntegrationTest {
              var forward = registry.lockFor(forwardKeys);
              var reverse = registry.lockFor(reverseKeys)) {
 
-            assertTrue(forward.tryLock(Duration.ofSeconds(2)));
-            assertTrue(reverse.tryLock(Duration.ofMillis(200)));
+            assertTrue(forward.tryLock(DU_2S));
+            assertTrue(reverse.tryLock(DU_200MS));
 
             assertFalse(registry.heldByCurrentThread().isEmpty());
             forward.unlock();
@@ -174,7 +179,7 @@ class EtcdLockImplIntegrationTest {
     }
 
     @Test
-    void overlappingButDifferentKeySetsShareTheSameRemoteHold() throws InterruptedException {
+    void overlappingKeySets() throws InterruptedException {
         var lockName = bytes("integration/multi-lock-overlap/" + UUID.randomUUID());
         var firstKeys = List.of(lockName + "/a", lockName + "/b");
         var secondKeys = List.of(lockName + "/a", lockName + "/c");
@@ -184,8 +189,8 @@ class EtcdLockImplIntegrationTest {
              var first = registry.lockFor(firstKeys);
              var second = registry.lockFor(secondKeys)) {
 
-            assertTrue(first.tryLock(Duration.ofSeconds(2)));
-            assertTrue(second.tryLock(Duration.ofMillis(200)));
+            assertTrue(first.tryLock(DU_2S));
+            assertTrue(second.tryLock(DU_200MS));
 
             assertFalse(registry.heldByCurrentThread().isEmpty());
             first.unlock();
@@ -196,7 +201,7 @@ class EtcdLockImplIntegrationTest {
     }
 
     @Test
-    void prefixSubsetShareTheSameRemoteHold() throws InterruptedException {
+    void prefixSubset() throws InterruptedException {
         var lockName = bytes("integration/multi-lock-prefix-subset/" + UUID.randomUUID());
         var supersetKeys = List.of(lockName + "/a", lockName + "/b", lockName + "/c");
         var subsetKeys = List.of(lockName + "/a", lockName + "/b");
@@ -206,8 +211,8 @@ class EtcdLockImplIntegrationTest {
              var superset = registry.lockFor(supersetKeys);
              var subset = registry.lockFor(subsetKeys)) {
 
-            assertTrue(superset.tryLock(Duration.ofSeconds(2)));
-            assertTrue(subset.tryLock(Duration.ofMillis(200)));
+            assertTrue(superset.tryLock(DU_2S));
+            assertTrue(subset.tryLock(DU_200MS));
 
             superset.unlock();
             assertFalse(registry.heldByCurrentThread().isEmpty());
@@ -218,14 +223,14 @@ class EtcdLockImplIntegrationTest {
     }
 
     @Test
-    void sameInstanceFailsFastOnDuplicateAcquire() throws InterruptedException {
+    void duplicateAcquireThrows() throws InterruptedException {
         var lockName = bytes("integration/multi-lock-same-instance/" + UUID.randomUUID());
         var keys = List.of(lockName + "/a", lockName + "/b");
         try (var client = newClient();
              var lock = registry(client).lockFor(keys)
         ) {
-            assertTrue(lock.tryLock(Duration.ofSeconds(2)));
-            assertThatThrownBy(() -> lock.tryLock(Duration.ofSeconds(2)))
+            assertTrue(lock.tryLock(DU_2S));
+            assertThatThrownBy(() -> lock.tryLock(DU_2S))
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessageContaining("lock has already been acquired");
             lock.unlock();
@@ -234,14 +239,15 @@ class EtcdLockImplIntegrationTest {
     }
 
     @Test
-    void unlockBeforeAcquireThrowsIllegalStateException() {
+    void unlockBeforeAcquireThrows() {
         var lockName = bytes("integration/multi-lock-unlock-before-acquire/" + UUID.randomUUID());
         var keys = List.of(lockName + "/a", lockName + "/b");
 
         try (var client = newClient();
              var lock = registry(client).lockFor(keys)) {
-            var ex = assertThrows(IllegalStateException.class, lock::unlock);
-            assertTrue(ex.getMessage().contains("lock has not been acquired"));
+            assertThatThrownBy(lock::unlock)
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessageContaining("lock has not been acquired");
             assertTrue(lock.registry().heldByCurrentThread().isEmpty());
             assertFalse(lock.isAcquired());
             assertFalse(lock.isUnlocked());
@@ -249,7 +255,7 @@ class EtcdLockImplIntegrationTest {
     }
 
     @Test
-    void isLockLostReturnsFalseWhenNotHeldLocally() throws InterruptedException {
+    void isLockLostWhenNotHeld() throws InterruptedException {
         var lockName = bytes("integration/multi-lock-is-lock-lost-when-not-held/" + UUID.randomUUID());
         var keys = List.of(lockName + "/a", lockName + "/b");
 
@@ -258,7 +264,7 @@ class EtcdLockImplIntegrationTest {
              var lock = registry.lockFor(keys)) {
             assertFalse(lock.isLockLost());
 
-            assertTrue(lock.tryLock(Duration.ofSeconds(2)));
+            assertTrue(lock.tryLock(DU_2S));
             assertFalse(lock.isLockLost());
 
             lock.unlock();
@@ -270,7 +276,7 @@ class EtcdLockImplIntegrationTest {
     }
 
     @Test
-    void unlockFromDifferentThreadFailsWithoutCorruptingOwnerState() throws Exception {
+    void crossThreadUnlockFails() throws Exception {
         var lockName = bytes("integration/multi-lock-cross-thread-unlock/" + UUID.randomUUID());
         var keys = List.of(lockName + "/a", lockName + "/b");
         var threadFailure = new AtomicReference<Throwable>();
@@ -279,7 +285,7 @@ class EtcdLockImplIntegrationTest {
              var contenderClient = newClient();
              var registry = registry(ownerClient);
              var lock = registry.lockFor(keys)) {
-            assertTrue(lock.tryLock(Duration.ofSeconds(2)));
+            assertTrue(lock.tryLock(DU_2S));
 
             var thread = new Thread(() -> {
                 try {
@@ -298,7 +304,7 @@ class EtcdLockImplIntegrationTest {
             assertFalse(registry.heldByCurrentThread().isEmpty());
 
             try (var contender = registry(contenderClient).lockFor(keys)) {
-                assertFalse(contender.tryLock(Duration.ofMillis(200)));
+                assertFalse(contender.tryLock(DU_200MS));
             }
 
             lock.unlock();
@@ -309,7 +315,7 @@ class EtcdLockImplIntegrationTest {
     }
 
     @Test
-    void multiAndSingleLocksCanBeInterleavedOnSameThreadWithoutResidualHolds() throws InterruptedException {
+    void interleavedMultiSingleLock() throws InterruptedException {
         var lockPrefix = bytes("integration/multi-single-interleave/" + UUID.randomUUID());
         var keyA = lockPrefix + "/a";
         var keyB = lockPrefix + "/b";
@@ -320,8 +326,8 @@ class EtcdLockImplIntegrationTest {
              var multi = registry.lockFor(keys);
              var single = registry.lockFor(keyA)) {
 
-            assertTrue(multi.tryLock(Duration.ofSeconds(2)));
-            assertTrue(single.tryLock(Duration.ofSeconds(2)));
+            assertTrue(multi.tryLock(DU_2S));
+            assertTrue(single.tryLock(DU_2S));
 
             assertFalse(registry.heldByCurrentThread().isEmpty());
 
@@ -337,36 +343,39 @@ class EtcdLockImplIntegrationTest {
     }
 
     @Test
-    void finalUnlockThrowsDedicatedExceptionAfterKeepAliveLoss() throws InterruptedException {
+    void unlockAfterKeepAliveLoss() throws InterruptedException {
         var lockName = bytes("integration/multi-lock-keepalive-loss-throws/" + UUID.randomUUID());
         var keys = List.of(lockName + "/a", lockName + "/b");
         try (var ownerClient = newClient();
              var observerClient = newClient();
              var registry = EtcdLockRegistry.builder()
                      .client(ownerClient)
-                     .ttl(Duration.ofSeconds(1))
+                     .ttl(DU_1S)
                      .build();
              var first = registry.lockFor(keys);
              var second = registry.lockFor(keys);
         ) {
-            assertTrue(first.tryLock(Duration.ofSeconds(2)));
-            var firstHold = registry.heldByCurrentThread().get(0);
-            assertTrue(second.tryLock(Duration.ofSeconds(2)));
+            assertTrue(first.tryLock(DU_2S));
+            var firstHold = registry.heldByCurrentThread().getFirst();
+            assertTrue(second.tryLock(DU_2S));
             ownerClient.close();
-            awaitLockKeyDeletion(observerClient, firstHold.grantedKey(), Duration.ofSeconds(5));
+            awaitLockKeyDeletion(observerClient, firstHold.grantedKey(), DU_5S);
             assertTrue(first.isLockLost());
             assertTrue(second.isLockLost());
             first.unlock();
             assertTrue(first.isUnlocked());
             assertFalse(second.registry().heldByCurrentThread().isEmpty());
-            var ex = assertThrows(EtcdLockLostException.class, second::unlock);
-            assertEquals(EtcdLockLostReason.KEEP_ALIVE_TERMINATED_AFTER_TTL, ex.reason());
+            assertThatThrownBy(second::unlock)
+                    .isInstanceOf(EtcdLockLostException.class)
+                    .asInstanceOf(type(EtcdLockLostException.class))
+                    .extracting(EtcdLockLostException::reason)
+                    .isEqualTo(EtcdLockLostReason.KEEP_ALIVE_TERMINATED_AFTER_TTL);
             assertTrue(second.registry().heldByCurrentThread().isEmpty());
         }
     }
 
     @Test
-    void finalUnlockThrowsRemoteKeyMissingExceptionAfterGrantedKeyDeletion() throws Exception {
+    void unlockAfterKeyDeletion() throws Exception {
         var lockName = bytes("integration/multi-lock-remote-key-missing/" + UUID.randomUUID());
         var keys = List.of(lockName + "/a", lockName + "/b");
 
@@ -375,12 +384,12 @@ class EtcdLockImplIntegrationTest {
              var registry = registry(ownerClient);
              var first = registry.lockFor(keys);
              var second = registry.lockFor(keys)) {
-            assertTrue(first.tryLock(Duration.ofSeconds(2)));
-            var firstHold = registry.heldByCurrentThread().get(0);
-            assertTrue(second.tryLock(Duration.ofSeconds(2)));
+            assertTrue(first.tryLock(DU_2S));
+            var firstHold = registry.heldByCurrentThread().getFirst();
+            assertTrue(second.tryLock(DU_2S));
 
             ownerClient.getKVClient().delete(firstHold.grantedKey()).get(1, TimeUnit.SECONDS);
-            awaitLockKeyDeletion(observerClient, firstHold.grantedKey(), Duration.ofSeconds(2));
+            awaitLockKeyDeletion(observerClient, firstHold.grantedKey(), DU_2S);
 
             assertTrue(first.isLockLost());
             assertTrue(second.isLockLost());
@@ -389,15 +398,18 @@ class EtcdLockImplIntegrationTest {
             assertTrue(first.isUnlocked());
             assertFalse(second.registry().heldByCurrentThread().isEmpty());
 
-            var ex = assertThrows(EtcdLockLostException.class, second::unlock);
-            assertEquals(EtcdLockLostReason.REMOTE_KEY_MISSING, ex.reason());
+            assertThatThrownBy(second::unlock)
+                    .isInstanceOf(EtcdLockLostException.class)
+                    .asInstanceOf(type(EtcdLockLostException.class))
+                    .extracting(EtcdLockLostException::reason)
+                    .isEqualTo(EtcdLockLostReason.REMOTE_KEY_MISSING);
             assertTrue(second.registry().heldByCurrentThread().isEmpty());
             assertTrue(second.isUnlocked());
         }
     }
 
     @Test
-    void acknowledgedRemoteKeyLossAllowsFinalUnlockToCompleteSilently() throws Exception {
+    void acknowledgedLossSilentUnlock() throws Exception {
         var lockName = bytes("integration/multi-lock-acknowledged-remote-key-missing/" + UUID.randomUUID());
         var keys = List.of(lockName + "/a", lockName + "/b");
 
@@ -406,12 +418,12 @@ class EtcdLockImplIntegrationTest {
              var registry = registry(ownerClient);
              var first = registry.lockFor(keys);
              var second = registry.lockFor(keys)) {
-            assertTrue(first.tryLock(Duration.ofSeconds(2)));
-            var firstHold = registry.heldByCurrentThread().get(0);
-            assertTrue(second.tryLock(Duration.ofSeconds(2)));
+            assertTrue(first.tryLock(DU_2S));
+            var firstHold = registry.heldByCurrentThread().getFirst();
+            assertTrue(second.tryLock(DU_2S));
 
             ownerClient.getKVClient().delete(firstHold.grantedKey()).get(1, TimeUnit.SECONDS);
-            awaitLockKeyDeletion(observerClient, firstHold.grantedKey(), Duration.ofSeconds(2));
+            awaitLockKeyDeletion(observerClient, firstHold.grantedKey(), DU_2S);
 
             assertTrue(first.isLockLost());
             assertTrue(second.isLockLost());
@@ -428,7 +440,7 @@ class EtcdLockImplIntegrationTest {
     }
 
     @Test
-    void closePropagatesDedicatedExceptionAfterKeepAliveLoss() throws InterruptedException {
+    void closeAfterKeepAliveLoss() throws InterruptedException {
         var lockName = bytes("integration/multi-lock-close-keepalive-loss/" + UUID.randomUUID());
         var keys = List.of(lockName + "/a", lockName + "/b");
 
@@ -436,27 +448,30 @@ class EtcdLockImplIntegrationTest {
         var observerClient = newClient();
         var registry = EtcdLockRegistry.builder()
                 .client(ownerClient)
-                .ttl(Duration.ofSeconds(1))
+                .ttl(DU_1S)
                 .build();
         var lock = registry.lockFor(keys);
         try (ownerClient; observerClient; registry; lock) {
-            assertTrue(lock.tryLock(Duration.ofSeconds(2)));
-            var hold = registry.heldByCurrentThread().get(0);
+            assertTrue(lock.tryLock(DU_2S));
+            var hold = registry.heldByCurrentThread().getFirst();
 
             ownerClient.close();
-            awaitLockKeyDeletion(observerClient, hold.grantedKey(), Duration.ofSeconds(5));
+            awaitLockKeyDeletion(observerClient, hold.grantedKey(), DU_5S);
 
             assertTrue(lock.isLockLost());
 
-            var ex = assertThrows(EtcdLockLostException.class, lock::close);
-            assertEquals(EtcdLockLostReason.KEEP_ALIVE_TERMINATED_AFTER_TTL, ex.reason());
+            assertThatThrownBy(lock::close)
+                    .isInstanceOf(EtcdLockLostException.class)
+                    .asInstanceOf(type(EtcdLockLostException.class))
+                    .extracting(EtcdLockLostException::reason)
+                    .isEqualTo(EtcdLockLostReason.KEEP_ALIVE_TERMINATED_AFTER_TTL);
             assertTrue(registry.heldByCurrentThread().isEmpty());
             assertTrue(lock.isUnlocked());
         }
     }
 
     @Test
-    void closeDoesNotThrowAfterRemoteLossWasAcknowledged() throws Exception {
+    void closeAfterAcknowledgedLoss() throws Exception {
         var lockName = bytes("integration/multi-lock-close-acknowledged-loss/" + UUID.randomUUID());
         var keys = List.of(lockName + "/a", lockName + "/b");
 
@@ -465,11 +480,11 @@ class EtcdLockImplIntegrationTest {
         var registry = registry(ownerClient);
         var lock = registry.lockFor(keys);
         try (ownerClient; observerClient; registry; lock) {
-            assertTrue(lock.tryLock(Duration.ofSeconds(2)));
-            var hold = registry.heldByCurrentThread().get(0);
+            assertTrue(lock.tryLock(DU_2S));
+            var hold = registry.heldByCurrentThread().getFirst();
 
             ownerClient.getKVClient().delete(hold.grantedKey()).get(1, TimeUnit.SECONDS);
-            awaitLockKeyDeletion(observerClient, hold.grantedKey(), Duration.ofSeconds(2));
+            awaitLockKeyDeletion(observerClient, hold.grantedKey(), DU_2S);
 
             assertTrue(lock.isLockLost());
 
@@ -482,7 +497,7 @@ class EtcdLockImplIntegrationTest {
     }
 
     @Test
-    void acknowledgedLossIsSharedAcrossSiblingInstancesEvenWhenUnlockOrderInterleaves() throws InterruptedException {
+    void acknowledgedLossSharedAcrossSiblings() throws InterruptedException {
         var lockName = bytes("integration/multi-lock-acknowledged-loss-interleave/" + UUID.randomUUID());
         var keys = List.of(lockName + "/a", lockName + "/b");
 
@@ -490,17 +505,17 @@ class EtcdLockImplIntegrationTest {
              var observerClient = newClient();
              var registry = EtcdLockRegistry.builder()
                      .client(ownerClient)
-                     .ttl(Duration.ofSeconds(1))
+                     .ttl(DU_1S)
                      .build();
              var first = registry.lockFor(keys);
              var second = registry.lockFor(keys);
         ) {
-            assertTrue(first.tryLock(Duration.ofSeconds(2)));
-            var firstHold = registry.heldByCurrentThread().get(0);
-            assertTrue(second.tryLock(Duration.ofSeconds(2)));
+            assertTrue(first.tryLock(DU_2S));
+            var firstHold = registry.heldByCurrentThread().getFirst();
+            assertTrue(second.tryLock(DU_2S));
 
             ownerClient.close();
-            awaitLockKeyDeletion(observerClient, firstHold.grantedKey(), Duration.ofSeconds(5));
+            awaitLockKeyDeletion(observerClient, firstHold.grantedKey(), DU_5S);
 
             assertTrue(first.isLockLost());
             assertTrue(second.isLockLost());
@@ -517,7 +532,7 @@ class EtcdLockImplIntegrationTest {
     }
 
     @Test
-    void repeatedUnlockRemainsIdempotentAfterSuccessfulRelease() throws InterruptedException {
+    void repeatedUnlockIdempotent() throws InterruptedException {
         var lockName = bytes("integration/multi-lock-repeated-unlock/" + UUID.randomUUID());
         var keys = List.of(lockName + "/a", lockName + "/b");
 
@@ -525,7 +540,7 @@ class EtcdLockImplIntegrationTest {
              var registry = registry(client);
              var lock = registry.lockFor(keys)
         ) {
-            assertTrue(lock.tryLock(Duration.ofSeconds(2)));
+            assertTrue(lock.tryLock(DU_2S));
             lock.unlock();
 
             assertDoesNotThrow(lock::unlock);
@@ -535,7 +550,7 @@ class EtcdLockImplIntegrationTest {
     }
 
     @Test
-    void repeatedUnlockThrowsInStrictModeAfterSuccessfulRelease() throws InterruptedException {
+    void repeatedUnlockStrict() throws InterruptedException {
         var lockName = bytes("integration/multi-lock-repeated-unlock-strict/" + UUID.randomUUID());
         var keys = List.of(lockName + "/a", lockName + "/b");
 
@@ -543,22 +558,23 @@ class EtcdLockImplIntegrationTest {
              var registry = EtcdLockRegistry.builder()
                      .client(client)
                      .strict(true)
-                     .ttl(Duration.ofSeconds(5))
+                     .ttl(DU_5S)
                      .build();
              var lock = registry.lockFor(keys)) {
-            assertTrue(lock.tryLock(Duration.ofSeconds(2)));
+            assertTrue(lock.tryLock(DU_2S));
 
             lock.unlock();
 
-            var ex = assertThrows(IllegalStateException.class, lock::unlock);
-            assertTrue(ex.getMessage().contains("already been unlocked"));
+            assertThatThrownBy(lock::unlock)
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessageContaining("already been unlocked");
             assertTrue(registry.heldByCurrentThread().isEmpty());
             assertTrue(lock.isUnlocked());
         }
     }
 
     @Test
-    void multiAndReentrantMixedSharingWithinSameThreadDifferentThreadMutualExclusion() throws InterruptedException {
+    void reentrantMixedSharing() throws InterruptedException {
         var lockPrefix = bytes("integration/multi-reentrant-mixed-sharing/" + UUID.randomUUID());
         var keyA = lockPrefix + "/a";
         var keyB = lockPrefix + "/b";
@@ -570,8 +586,8 @@ class EtcdLockImplIntegrationTest {
              var single = registry.lockFor(keyA)
         ) {
             // same thread should be able to acquire both
-            assertTrue(multi.tryLock(Duration.ofSeconds(2)));
-            assertTrue(single.tryLock(Duration.ofSeconds(2)));
+            assertTrue(multi.tryLock(DU_2S));
+            assertTrue(single.tryLock(DU_2S));
 
             assertFalse(multi.registry().heldByCurrentThread().isEmpty());
             assertFalse(single.registry().heldByCurrentThread().isEmpty());
@@ -586,8 +602,8 @@ class EtcdLockImplIntegrationTest {
                      var otherReentrant = otherRegistry.lockFor(keyA)
                 ) {
                     // different client/thread must be blocked / fail to acquire
-                    otherThreadResult.set(otherMulti.tryLock(Duration.ofMillis(200)) ||
-                            otherReentrant.tryLock(Duration.ofMillis(200)));
+                    otherThreadResult.set(otherMulti.tryLock(DU_200MS) ||
+                            otherReentrant.tryLock(DU_200MS));
                 } catch (Throwable ex) {
                     otherThreadError.set(ex);
                 }
@@ -610,8 +626,8 @@ class EtcdLockImplIntegrationTest {
                     var otherMulti = otherRegistry.lockFor(keys);
                     var otherReentrant = otherRegistry.lockFor(keyA)
             ) {
-                assertTrue(otherMulti.tryLock(Duration.ofSeconds(2)));
-                assertTrue(otherReentrant.tryLock(Duration.ofSeconds(2)));
+                assertTrue(otherMulti.tryLock(DU_2S));
+                assertTrue(otherReentrant.tryLock(DU_2S));
                 otherReentrant.unlock();
                 otherMulti.unlock();
             }
@@ -619,7 +635,7 @@ class EtcdLockImplIntegrationTest {
     }
 
     @Test
-    void tryLockTimeoutRollsBackAlreadyAcquiredPrefix() throws Exception {
+    void tryLockTimeoutRollsBack() throws Exception {
         var lockPrefix = bytes("integration/multi-lock-timeout-rollback/" + UUID.randomUUID());
         var keyA = lockPrefix + "/a";
         var keyB = lockPrefix + "/b";
@@ -633,24 +649,24 @@ class EtcdLockImplIntegrationTest {
              var owner = ownerRegistry.lockFor(keyB);
              var waiterRegistry = registry(waiterClient);
              var waiter = waiterRegistry.lockFor(List.of(keyA, keyB))) {
-            assertTrue(owner.tryLock(Duration.ofSeconds(2)));
+            assertTrue(owner.tryLock(DU_2S));
 
             var waiterThread = new Thread(() -> {
                 try {
-                    waiterResult.set(waiter.tryLock(Duration.ofMillis(300)));
+                    waiterResult.set(waiter.tryLock(DU_300MS));
                 } catch (Throwable ex) {
                     waiterFailure.set(ex);
                 }
             });
             waiterThread.start();
 
-            awaitCondition(Duration.ofSeconds(2),
+            awaitCondition(DU_2S,
                     () -> lockQueueDepth(ownerClient, bytes(keyA)) >= 1
                             && lockQueueDepth(ownerClient, bytes(keyB)) >= 2,
                     () -> "Timed out waiting for waiter to hold first key and queue on second key");
 
             try (var contender = registry(contenderClient).lockFor(keyA)) {
-                assertFalse(contender.tryLock(Duration.ofMillis(200)));
+                assertFalse(contender.tryLock(DU_200MS));
             }
 
             waiterThread.join();
@@ -662,7 +678,7 @@ class EtcdLockImplIntegrationTest {
             assertTrue(waiterRegistry.heldByCurrentThread().isEmpty());
 
             try (var contender = registry(contenderClient).lockFor(keyA)) {
-                assertTrue(contender.tryLock(Duration.ofSeconds(2)));
+                assertTrue(contender.tryLock(DU_2S));
                 contender.unlock();
             }
 
@@ -672,7 +688,7 @@ class EtcdLockImplIntegrationTest {
     }
 
     @Test
-    void interruptiblyRollsBackAlreadyAcquiredPrefixWhenInterrupted() throws Exception {
+    void lockInterruptiblyRollsBack() throws Exception {
         var lockPrefix = bytes("integration/multi-lock-interrupt-rollback/" + UUID.randomUUID());
         var keyA = lockPrefix + "/a";
         var keyB = lockPrefix + "/b";
@@ -685,7 +701,7 @@ class EtcdLockImplIntegrationTest {
              var owner = ownerRegistry.lockFor(keyB);
              var waiterRegistry = registry(waiterClient);
              var waiter = waiterRegistry.lockFor(List.of(keyA, keyB))) {
-            assertTrue(owner.tryLock(Duration.ofSeconds(2)));
+            assertTrue(owner.tryLock(DU_2S));
 
             var waiterThread = new Thread(() -> {
                 try {
@@ -696,13 +712,13 @@ class EtcdLockImplIntegrationTest {
             });
             waiterThread.start();
 
-            awaitCondition(Duration.ofSeconds(2),
+            awaitCondition(DU_2S,
                     () -> lockQueueDepth(ownerClient, bytes(keyA)) >= 1
                             && lockQueueDepth(ownerClient, bytes(keyB)) >= 2,
                     () -> "Timed out waiting for waiter to hold first key and queue on second key");
 
             try (var contender = registry(contenderClient).lockFor(keyA)) {
-                assertFalse(contender.tryLock(Duration.ofMillis(200)));
+                assertFalse(contender.tryLock(DU_200MS));
             }
 
             waiterThread.interrupt();
@@ -718,7 +734,7 @@ class EtcdLockImplIntegrationTest {
             assertFalse(waiter.isUnlocked());
 
             try (var contender = registry(contenderClient).lockFor(keyA)) {
-                assertTrue(contender.tryLock(Duration.ofSeconds(2)));
+                assertTrue(contender.tryLock(DU_2S));
                 contender.unlock();
             }
 
@@ -728,7 +744,7 @@ class EtcdLockImplIntegrationTest {
     }
 
     @Test
-    void rollsBackAlreadyAcquiredPrefixWhenLockIsInterrupted() throws Exception {
+    void lockInterruptedRollsBack() throws Exception {
         var lockPrefix = bytes("integration/multi-lock-lock-method-interrupt/" + UUID.randomUUID());
         var keyA = lockPrefix + "/a";
         var keyB = lockPrefix + "/b";
@@ -742,7 +758,7 @@ class EtcdLockImplIntegrationTest {
              var owner = ownerRegistry.lockFor(keyB);
              var waiterRegistry = registry(waiterClient);
              var waiter = waiterRegistry.lockFor(List.of(keyA, keyB))) {
-            assertTrue(owner.tryLock(Duration.ofSeconds(2)));
+            assertTrue(owner.tryLock(DU_2S));
 
             var waiterThread = new Thread(() -> {
                 try {
@@ -754,13 +770,13 @@ class EtcdLockImplIntegrationTest {
             });
             waiterThread.start();
 
-            awaitCondition(Duration.ofSeconds(2),
+            awaitCondition(DU_2S,
                     () -> lockQueueDepth(ownerClient, bytes(keyA)) >= 1
                             && lockQueueDepth(ownerClient, bytes(keyB)) >= 2,
                     () -> "Timed out waiting for waiter to hold first key and queue on second key");
 
             try (var contender = registry(contenderClient).lockFor(keyA)) {
-                assertFalse(contender.tryLock(Duration.ofMillis(200)));
+                assertFalse(contender.tryLock(DU_200MS));
             }
 
             waiterThread.interrupt();
@@ -779,7 +795,7 @@ class EtcdLockImplIntegrationTest {
             assertTrue(waiterRegistry.heldByCurrentThread().isEmpty());
 
             try (var contender = registry(contenderClient).lockFor(keyA)) {
-                assertTrue(contender.tryLock(Duration.ofSeconds(2)));
+                assertTrue(contender.tryLock(DU_2S));
                 contender.unlock();
             }
 
@@ -789,14 +805,14 @@ class EtcdLockImplIntegrationTest {
     }
 
     @Test
-    void tryLockNoArgReturnsFalseOnTimeout() throws InterruptedException {
+    void tryLockNoArgTimeout() throws InterruptedException {
         var lockName = bytes("integration/multi-lock-trylock-noarg-timeout/" + UUID.randomUUID());
         var keys = List.of(lockName + "/a", lockName + "/b");
         try (var ownerClient = newClient();
              var waiterClient = newClient();
              var owner = registry(ownerClient).lockFor(keys);
              var waiter = registry(waiterClient).lockFor(keys)) {
-            assertTrue(owner.tryLock(Duration.ofSeconds(2)));
+            assertTrue(owner.tryLock(DU_2S));
             assertFalse(waiter.tryLock());
             assertFalse(waiter.isAcquired());
             assertTrue(waiter.registry().heldByCurrentThread().isEmpty());
@@ -805,14 +821,14 @@ class EtcdLockImplIntegrationTest {
     }
 
     @Test
-    void tryLockNoArgReturnsFalseWhenInterrupted() throws Exception {
+    void tryLockNoArgInterrupted() throws Exception {
         var lockName = bytes("integration/multi-lock-trylock-noarg-interrupt/" + UUID.randomUUID());
         var keys = List.of(lockName + "/a", lockName + "/b");
         try (var ownerClient = newClient();
              var waiterClient = newClient();
              var owner = registry(ownerClient).lockFor(keys);
              var waiter = registry(waiterClient).lockFor(keys)) {
-            assertTrue(owner.tryLock(Duration.ofSeconds(2)));
+            assertTrue(owner.tryLock(DU_2S));
 
             var resultRef = new AtomicReference<Boolean>();
             var interruptedRef = new AtomicBoolean();
@@ -834,10 +850,8 @@ class EtcdLockImplIntegrationTest {
         }
     }
 
-    // ---------- tryLock(long, TimeUnit) (Lock interface) ----------
-
     @Test
-    void tryLockLongTimeUnitSucceedsWhenUncontended() throws InterruptedException {
+    void tryLockTimeUnitSucceeds() throws InterruptedException {
         var lockName = bytes("integration/multi-lock-trylock-long-timeunit/" + UUID.randomUUID());
         var keys = List.of(lockName + "/a", lockName + "/b");
         try (var client = newClient();
@@ -852,14 +866,14 @@ class EtcdLockImplIntegrationTest {
     }
 
     @Test
-    void tryLockLongTimeUnitReturnsFalseOnTimeout() throws InterruptedException {
+    void tryLockTimeUnitTimeout() throws InterruptedException {
         var lockName = bytes("integration/multi-lock-trylock-long-timeunit-timeout/" + UUID.randomUUID());
         var keys = List.of(lockName + "/a", lockName + "/b");
         try (var ownerClient = newClient();
              var waiterClient = newClient();
              var owner = registry(ownerClient).lockFor(keys);
              var waiter = registry(waiterClient).lockFor(keys)) {
-            assertTrue(owner.tryLock(Duration.ofSeconds(2)));
+            assertTrue(owner.tryLock(DU_2S));
             assertFalse(waiter.tryLock(200, TimeUnit.MILLISECONDS));
             assertFalse(waiter.isAcquired());
             owner.unlock();
@@ -867,7 +881,7 @@ class EtcdLockImplIntegrationTest {
     }
 
     @Test
-    void lockThrowsWhenWaitMaxExpires() throws Exception {
+    void lockWaitMaxExpires() throws Exception {
         var lockName = bytes("integration/multi-lock-waitmax-expires/" + UUID.randomUUID());
         var keys = List.of(lockName + "/a", lockName + "/b");
         try (var ownerClient = newClient();
@@ -875,11 +889,11 @@ class EtcdLockImplIntegrationTest {
              var owner = registry(ownerClient).lockFor(keys);
              var waiterRegistry = EtcdLockRegistry.builder()
                      .client(waiterClient)
-                     .waitMax(Duration.ofSeconds(1))
-                     .ttl(Duration.ofSeconds(5))
+                     .waitMax(DU_1S)
+                     .ttl(DU_5S)
                      .build();
              var waiter = waiterRegistry.lockFor(keys)) {
-            assertTrue(owner.tryLock(Duration.ofSeconds(2)));
+            assertTrue(owner.tryLock(DU_2S));
 
             var failureRef = new AtomicReference<Throwable>();
             var thread = new Thread(() -> {
@@ -901,7 +915,7 @@ class EtcdLockImplIntegrationTest {
     }
 
     @Test
-    void lockInterruptiblyThrowsWhenWaitMaxExpires() throws Exception {
+    void lockInterruptiblyWaitMaxExpires() throws Exception {
         var lockName = bytes("integration/multi-lock-interruptibly-waitmax/" + UUID.randomUUID());
         var keys = List.of(lockName + "/a", lockName + "/b");
         try (var ownerClient = newClient();
@@ -909,11 +923,11 @@ class EtcdLockImplIntegrationTest {
              var owner = registry(ownerClient).lockFor(keys);
              var waiterRegistry = EtcdLockRegistry.builder()
                      .client(waiterClient)
-                     .waitMax(Duration.ofSeconds(1))
-                     .ttl(Duration.ofSeconds(5))
+                     .waitMax(DU_1S)
+                     .ttl(DU_5S)
                      .build();
              var waiter = waiterRegistry.lockFor(keys)) {
-            assertTrue(owner.tryLock(Duration.ofSeconds(2)));
+            assertTrue(owner.tryLock(DU_2S));
 
             var failureRef = new AtomicReference<Throwable>();
             var thread = new Thread(() -> {
@@ -935,7 +949,7 @@ class EtcdLockImplIntegrationTest {
     }
 
     @Test
-    void lockInterruptiblyAcquiresSuccessfully() throws Exception {
+    void lockInterruptiblySucceeds() throws Exception {
         var lockName = bytes("integration/multi-lock-lock-interruptibly-success/" + UUID.randomUUID());
         var keys = List.of(lockName + "/a", lockName + "/b");
         try (var client = newClient();
@@ -950,20 +964,20 @@ class EtcdLockImplIntegrationTest {
     }
 
     @Test
-    void tryLockRetryAfterFailureSucceeds() throws InterruptedException {
+    void tryLockRetrySucceeds() throws InterruptedException {
         var lockName = bytes("integration/multi-lock-trylock-retry/" + UUID.randomUUID());
         var keys = List.of(lockName + "/a", lockName + "/b");
         try (var ownerClient = newClient();
              var waiterClient = newClient();
              var owner = registry(ownerClient).lockFor(keys);
              var waiter = registry(waiterClient).lockFor(keys)) {
-            assertTrue(owner.tryLock(Duration.ofSeconds(2)));
-            assertFalse(waiter.tryLock(Duration.ofMillis(200)));
+            assertTrue(owner.tryLock(DU_2S));
+            assertFalse(waiter.tryLock(DU_200MS));
             assertFalse(waiter.isAcquired());
 
             owner.unlock();
 
-            assertTrue(waiter.tryLock(Duration.ofSeconds(2)));
+            assertTrue(waiter.tryLock(DU_2S));
             assertTrue(waiter.isAcquired());
             waiter.unlock();
             assertTrue(waiter.registry().heldByCurrentThread().isEmpty());
@@ -971,12 +985,12 @@ class EtcdLockImplIntegrationTest {
     }
 
     @Test
-    void singleKeyLockAcquireAndRelease() throws InterruptedException {
+    void singleKeyLock() throws InterruptedException {
         var lockKey = bytes("integration/single-key-lock/" + UUID.randomUUID());
         try (var client = newClient();
              var registry = registry(client);
              var lock = registry.lockFor(lockKey)) {
-            assertTrue(lock.tryLock(Duration.ofSeconds(2)));
+            assertTrue(lock.tryLock(DU_2S));
             assertTrue(lock.isAcquired());
             assertFalse(lock.isUnlocked());
             lock.unlock();
@@ -986,7 +1000,7 @@ class EtcdLockImplIntegrationTest {
     }
 
     @Test
-    void multipleContendersEventualAcquisition() throws Exception {
+    void multipleContenders() throws Exception {
         var lockName = bytes("integration/multi-lock-multiple-contenders/" + UUID.randomUUID());
         var keys = List.of(lockName + "/a", lockName + "/b");
         int numContenders = 5;
@@ -995,7 +1009,7 @@ class EtcdLockImplIntegrationTest {
 
         try (var ownerClient = newClient();
              var owner = registry(ownerClient).lockFor(keys)) {
-            assertTrue(owner.tryLock(Duration.ofSeconds(2)));
+            assertTrue(owner.tryLock(DU_2S));
 
             var threads = new ArrayList<Thread>();
             for (int i = 0; i < numContenders; i++) {

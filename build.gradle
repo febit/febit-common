@@ -78,6 +78,12 @@ configure(subprojects.findAll {
     mustRunAfter generateModule
   }
 
+  jacocoTestReport {
+    reports {
+      xml.required.set(true)
+    }
+  }
+
   dependencies {
     if (project.name != 'febit-annotations-optional') {
       compileOnly project(':febit-annotations-optional')

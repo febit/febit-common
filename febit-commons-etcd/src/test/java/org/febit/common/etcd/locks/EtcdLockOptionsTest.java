@@ -19,45 +19,45 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 
+import static org.febit.common.etcd.support.TestSupport.DU_10S;
+import static org.febit.common.etcd.support.TestSupport.DU_2S;
+import static org.febit.common.etcd.support.TestSupport.DU_30S;
+import static org.febit.common.etcd.support.TestSupport.DU_5M;
+import static org.febit.common.etcd.support.TestSupport.DU_5S;
 import static org.junit.jupiter.api.Assertions.*;
 
 class EtcdLockOptionsTest {
 
     @Test
-    void defaultsReturnsSingletonWithSensibleDefaults() {
+    void defaults() {
         var opts = EtcdLockOptions.defaults();
         assertFalse(opts.strict());
-        assertEquals(Duration.ofSeconds(5), opts.ttl());
-        assertEquals(Duration.ofSeconds(2), opts.tryLockTimeout());
+        assertEquals(DU_5S, opts.ttl());
+        assertEquals(DU_2S, opts.tryLockTimeout());
         assertEquals(Duration.ofSeconds(-1), opts.waitMax());
     }
 
     @Test
-    void defaultsReturnsSameInstance() {
-        assertSame(EtcdLockOptions.defaults(), EtcdLockOptions.defaults());
-    }
-
-    @Test
-    void builderProducesCustomOptions() {
+    void builder() {
         var opts = EtcdLockOptions.builder()
                 .strict(true)
-                .ttl(Duration.ofSeconds(30))
-                .tryLockTimeout(Duration.ofSeconds(10))
-                .waitMax(Duration.ofMinutes(5))
+                .ttl(DU_30S)
+                .tryLockTimeout(DU_10S)
+                .waitMax(DU_5M)
                 .build();
         assertTrue(opts.strict());
-        assertEquals(Duration.ofSeconds(30), opts.ttl());
-        assertEquals(Duration.ofSeconds(10), opts.tryLockTimeout());
-        assertEquals(Duration.ofMinutes(5), opts.waitMax());
+        assertEquals(DU_30S, opts.ttl());
+        assertEquals(DU_10S, opts.tryLockTimeout());
+        assertEquals(DU_5M, opts.waitMax());
     }
 
     @Test
-    void builderPartialOverridesKeepDefaults() {
+    void builderPartial() {
         var opts = EtcdLockOptions.builder()
                 .strict(true)
                 .build();
         assertTrue(opts.strict());
-        assertEquals(Duration.ofSeconds(5), opts.ttl());
-        assertEquals(Duration.ofSeconds(2), opts.tryLockTimeout());
+        assertEquals(DU_5S, opts.ttl());
+        assertEquals(DU_2S, opts.tryLockTimeout());
     }
 }

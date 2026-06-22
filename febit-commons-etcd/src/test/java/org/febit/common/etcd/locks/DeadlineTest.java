@@ -20,6 +20,8 @@ import org.junit.jupiter.api.Test;
 import java.time.Duration;
 import java.util.concurrent.TimeoutException;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.febit.common.etcd.support.TestSupport.DU_60S;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DeadlineTest {
@@ -27,13 +29,13 @@ class DeadlineTest {
     @Test
     void remainingWhenExpired() {
         var deadline = new Deadline(System.nanoTime() - 1);
-        assertThrows(TimeoutException.class, deadline::remaining);
+        assertThatThrownBy(deadline::remaining)
+                .isInstanceOf(TimeoutException.class);
     }
 
     @Test
-    void ofWithDurationReturnsDeadlineOfAtLeastGivenDuration() throws TimeoutException {
-        var duration = Duration.ofSeconds(60);
-        var deadline = Deadline.of(duration);
+    void ofWithDuration() throws TimeoutException {
+        var deadline = Deadline.of(DU_60S);
         assertNotNull(deadline);
         assertTrue(deadline.remaining() >= 0);
     }

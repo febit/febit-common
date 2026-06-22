@@ -18,25 +18,17 @@ package org.febit.common.etcd.support;
 import io.etcd.jetcd.ByteSequence;
 import io.etcd.jetcd.Client;
 import io.etcd.jetcd.options.GetOption;
+import lombok.experimental.UtilityClass;
 
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@UtilityClass
 public final class EtcdIntegrationTestSupport {
 
-    public static final ByteSequence LOCK_KEY_DELIMITER = bytes("/");
     public static final GetOption PREFIX_GET_OPTION = GetOption.builder().isPrefix(true).build();
-
-    private EtcdIntegrationTestSupport() {
-    }
-
-    public static ByteSequence bytes(String value) {
-        return ByteSequence.from(value, StandardCharsets.UTF_8);
-    }
 
     public static void awaitQueuedContender(Client client, ByteSequence lockName, Duration timeout) throws InterruptedException {
         awaitCondition(timeout,
@@ -80,7 +72,7 @@ public final class EtcdIntegrationTestSupport {
     }
 
     public static int lockQueueDepth(Client client, ByteSequence lockName) {
-        var prefix = lockName.concat(LOCK_KEY_DELIMITER);
+        var prefix = lockName.concat(TestSupport.LOCK_KEY_DELIMITER);
         try {
             return client.getKVClient().get(prefix, PREFIX_GET_OPTION)
                     .get(1, TimeUnit.SECONDS)
@@ -104,10 +96,6 @@ public final class EtcdIntegrationTestSupport {
     public interface MessageSupplier {
 
         String get();
-    }
-
-    public static List<String> toStrings(List<ByteSequence> sequences) {
-        return sequences.stream().map(ByteSequence::toString).toList();
     }
 }
 

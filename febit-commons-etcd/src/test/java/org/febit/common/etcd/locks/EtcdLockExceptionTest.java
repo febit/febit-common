@@ -15,11 +15,9 @@
  */
 package org.febit.common.etcd.locks;
 
-import io.etcd.jetcd.ByteSequence;
 import org.junit.jupiter.api.Test;
 
-import java.nio.charset.StandardCharsets;
-
+import static org.febit.common.etcd.support.TestSupport.bytes;
 import static org.junit.jupiter.api.Assertions.*;
 
 class EtcdLockExceptionTest {
@@ -32,7 +30,7 @@ class EtcdLockExceptionTest {
     }
 
     @Test
-    void constructorWithMessageAndCause() {
+    void constructorWithCause() {
         var cause = new RuntimeException("root cause");
         var ex = new EtcdLockException("test message", cause);
         assertEquals("test message", ex.getMessage());
@@ -40,17 +38,15 @@ class EtcdLockExceptionTest {
     }
 
     @Test
-    void notOwnerExceptionConstructor() {
+    void notOwnerException() {
         var ex = new EtcdLockNotOwnerException("not owner message");
         assertEquals("not owner message", ex.getMessage());
         assertInstanceOf(EtcdLockException.class, ex);
     }
 
     @Test
-    void lostExceptionConstructor() {
-        var key = ByteSequence.from("test-key", StandardCharsets.UTF_8);
-        var grantedKey = ByteSequence.from("test-granted", StandardCharsets.UTF_8);
-        var credential = new EtcdLockCredential(42L, key, grantedKey, 100L);
+    void lostException() {
+        var credential = new EtcdLockCredential(42L, bytes("test-key"), bytes("test-granted"), 100L);
         var cause = new RuntimeException("cause");
         var ex = new EtcdLockLostException(
                 EtcdLockLostReason.REMOTE_KEY_MISSING, credential, cause);
@@ -63,10 +59,8 @@ class EtcdLockExceptionTest {
     }
 
     @Test
-    void lostExceptionWithNullCause() {
-        var key = ByteSequence.from("test-key", StandardCharsets.UTF_8);
-        var grantedKey = ByteSequence.from("test-granted", StandardCharsets.UTF_8);
-        var credential = new EtcdLockCredential(42L, key, grantedKey, 100L);
+    void lostExceptionNullCause() {
+        var credential = new EtcdLockCredential(42L, bytes("test-key"), bytes("test-granted"), 100L);
         var ex = new EtcdLockLostException(
                 EtcdLockLostReason.KEEP_ALIVE_TERMINATED_AFTER_TTL, credential, null);
 
@@ -75,7 +69,7 @@ class EtcdLockExceptionTest {
     }
 
     @Test
-    void lockLostReasonHasThreeValues() {
+    void reasonThreeValues() {
         assertEquals(3, EtcdLockLostReason.values().length);
     }
 }

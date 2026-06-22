@@ -25,13 +25,21 @@ import io.etcd.jetcd.support.CloseableClient;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.febit.common.etcd.support.TestSupport.DU_10S;
+import static org.febit.common.etcd.support.TestSupport.DU_200MS;
+import static org.febit.common.etcd.support.TestSupport.DU_20MS;
+import static org.febit.common.etcd.support.TestSupport.DU_2S;
+import static org.febit.common.etcd.support.TestSupport.DU_30S;
+import static org.febit.common.etcd.support.TestSupport.DU_50MS;
+import static org.febit.common.etcd.support.TestSupport.bytes;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Answers.RETURNS_DEEP_STUBS;
 import static org.mockito.ArgumentMatchers.any;
@@ -48,7 +56,7 @@ import static org.mockito.Mockito.when;
 class EtcdLockImplTest {
 
     @Test
-    void builderCreatesSingleKeyLockWhenOnlyOneKeyIsProvided() {
+    void singleKeyLock() {
         try (var client = mock(Client.class, RETURNS_DEEP_STUBS)) {
             var registry = EtcdLockRegistry.create(client);
 
@@ -57,7 +65,7 @@ class EtcdLockImplTest {
     }
 
     @Test
-    void builderCreatesMultiKeyLockWhenMultipleKeysAreProvided() {
+    void multiKeyLock() {
         try (var client = mock(Client.class, RETURNS_DEEP_STUBS)) {
             var registry = EtcdLockRegistry.create(client);
             assertInstanceOf(EtcdLockImpl.class, registry.lockFor(
@@ -68,7 +76,7 @@ class EtcdLockImplTest {
     }
 
     @Test
-    void acquiresInGivenOrderAndReleasesInReverseOrder() throws InterruptedException {
+    void acquireOrderReleaseReverse() throws InterruptedException {
         var specs = List.of(
                 new LockSpec("multi/order/a", "multi/order/a/holder", completedLockResponse(bytes("multi/order/a/holder"))),
                 new LockSpec("multi/order/b", "multi/order/b/holder", completedLockResponse(bytes("multi/order/b/holder"))),
@@ -77,7 +85,7 @@ class EtcdLockImplTest {
         var lock = (EtcdLockImpl) EtcdLockRegistry.create(client)
                 .lockFor(List.of("multi/order/a", "multi/order/b", "multi/order/c"));
 
-        assertTrue(lock.tryLock(Duration.ofSeconds(2)));
+        assertTrue(lock.tryLock(DU_2S));
         assertEquals(
                 List.of("multi/order/a", "multi/order/b", "multi/order/c"),
                 lock.keys().stream().map(ByteSequence::toString).toList()
@@ -103,7 +111,7 @@ class EtcdLockImplTest {
     }
 
     @Test
-    void failedAcquireRollsBackAlreadyHeldKeysInReverseOrder() throws InterruptedException {
+    void failedAcquireRollsBack() throws InterruptedException {
         var thirdLockFuture = new CompletableFuture<LockResponse>();
         var specs = List.of(
                 new LockSpec("multi/rollback/a", "multi/rollback/a/holder", completedLockResponse(bytes("multi/rollback/a/holder"))),
@@ -113,7 +121,7 @@ class EtcdLockImplTest {
         var lock = (EtcdLockImpl) EtcdLockRegistry.create(client)
                 .lockFor(List.of("multi/rollback/a", "multi/rollback/b", "multi/rollback/c"));
 
-        assertFalse(lock.tryLock(Duration.ofMillis(20)));
+        assertFalse(lock.tryLock(DU_20MS));
         assertFalse(lock.isAcquired());
 
         InOrder order = inOrder(client.getLockClient());
@@ -128,7 +136,7 @@ class EtcdLockImplTest {
     }
 
     @Test
-    void grantedKeyIsRolledBackWhenFencingTokenLookupFails() {
+    void fencingTokenLookupFails() {
         var specs = List.of(
                 new LockSpec("multi/fence/a", "multi/fence/a/holder", completedLockResponse(bytes("multi/fence/a/holder"))));
         var client = mockClient(731L, specs);
@@ -137,9 +145,9 @@ class EtcdLockImplTest {
         var lock = (EtcdLockImpl) EtcdLockRegistry.create(client)
                 .lockFor("multi/fence/a");
 
-        var timeout = Duration.ofSeconds(2);
-        var ex = assertThrows(EtcdLockException.class, () -> lock.tryLock(timeout));
-        assertTrue(ex.getMessage().contains("Failed to acquire lock for keys"));
+        assertThatThrownBy(() -> lock.tryLock(DU_2S))
+                .isInstanceOf(EtcdLockException.class)
+                .hasMessageContaining("Failed to acquire lock for keys");
         assertFalse(lock.isAcquired());
 
         verify(client.getLockClient(), times(1)).unlock(bytes("multi/fence/a/holder"));
@@ -147,8 +155,7 @@ class EtcdLockImplTest {
     }
 
     @Test
-    void siblingInstancesShareOneMultiKeyHold() {
-
+    void siblingsShareHold() {
         var specs = List.of(
                 new LockSpec("multi/shared/a", "multi/shared/a/holder", completedLockResponse(bytes("multi/shared/a/holder"))),
                 new LockSpec("multi/shared/b", "multi/shared/b/holder", completedLockResponse(bytes("multi/shared/b/holder"))));
@@ -200,34 +207,36 @@ class EtcdLockImplTest {
             keysWithNull.add("dup");
             keysWithNull.add(null);
 
-            var emptyEx = assertThrows(IllegalArgumentException.class,
-                    () -> registry.lockFor(emptyKeys));
-            assertEquals("keys must not be empty", emptyEx.getMessage());
+            assertThatThrownBy(() -> registry.lockFor(emptyKeys))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("keys must not be empty");
 
-            var duplicateEx = assertThrows(IllegalArgumentException.class,
-                    () -> registry.lockFor(duplicateKeys));
-            assertEquals("duplicated lock key: dup", duplicateEx.getMessage());
+            assertThatThrownBy(() -> registry.lockFor(duplicateKeys))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("duplicated lock key: dup");
 
-            assertThrows(NullPointerException.class,
-                    () -> registry.lockFor(keysWithNull));
+            assertThatThrownBy(() -> registry.lockFor(keysWithNull))
+                    .isInstanceOf(NullPointerException.class);
         }
     }
 
     @Test
-    void tryLockNullTimeoutThrowsNullPointerException() {
+    void nullTimeoutThrows() {
         try (var client = mock(Client.class, RETURNS_DEEP_STUBS);
              var registry = EtcdLockRegistry.create(client);
              var lock = registry.lockFor("tryLock/null-timeout")) {
-            assertThrows(NullPointerException.class, () -> lock.tryLock((Duration) null));
+            assertThatThrownBy(() -> lock.tryLock((Duration) null))
+                    .isInstanceOf(NullPointerException.class);
         }
     }
 
     @Test
-    void newConditionThrowsUnsupportedOperationException() {
+    void newConditionUnsupported() {
         try (var client = mock(Client.class, RETURNS_DEEP_STUBS);
              var registry = EtcdLockRegistry.create(client);
              var lock = registry.lockFor("newCondition/key")) {
-            assertThrows(UnsupportedOperationException.class, lock::newCondition);
+            assertThatThrownBy(lock::newCondition)
+                    .isInstanceOf(UnsupportedOperationException.class);
         }
     }
 
@@ -243,46 +252,49 @@ class EtcdLockImplTest {
     }
 
     @Test
-    void builderSupportsTryLockTimeout() {
+    void tryLockTimeoutOption() {
         try (var client = mock(Client.class, RETURNS_DEEP_STUBS)) {
-            var customTimeout = Duration.ofSeconds(10);
             var registry = EtcdLockRegistry.builder()
                     .client(client)
-                    .tryLockTimeout(customTimeout)
+                    .tryLockTimeout(DU_10S)
                     .build();
             assertNotNull(registry);
-            assertEquals(customTimeout, registry.options().tryLockTimeout());
+            assertEquals(DU_10S, registry.options().tryLockTimeout());
         }
     }
 
     @Test
-    void acquireWithZeroTtlThrowsIllegalArgumentException() {
-        try (var client = mock(Client.class, RETURNS_DEEP_STUBS)) {
-            var registry = EtcdLockRegistry.builder()
-                    .client(client)
-                    .ttl(Duration.ZERO)
-                    .build();
-            var lock = registry.lockFor("zero-ttl/key");
-            var ex = assertThrows(IllegalArgumentException.class,
-                    () -> lock.tryLock(Duration.ofSeconds(2)));
-            assertTrue(ex.getMessage().contains("ttl must be positive"));
-        }
-    }
-
-    @Test
-    void unlockBeforeAcquireFromMockRegistry() {
+    void zeroTtlThrows() {
         try (var client = mock(Client.class, RETURNS_DEEP_STUBS);
-             var registry = EtcdLockRegistry.create(client);
-             var lock = registry.lockFor("unlock/before-acquire")) {
-            var ex = assertThrows(IllegalStateException.class, lock::unlock);
-            assertTrue(ex.getMessage().contains("lock has not been acquired"));
+             var registry = EtcdLockRegistry.builder()
+                     .client(client)
+                     .ttl(Duration.ZERO)
+                     .build();
+        ) {
+            var lock = registry.lockFor("zero-ttl/key");
+            assertThatThrownBy(() -> lock.tryLock(DU_2S))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("ttl must be positive");
+        }
+    }
+
+    @Test
+    void unlockBeforeAcquireThrows() {
+        try (
+                var client = mock(Client.class, RETURNS_DEEP_STUBS);
+                var registry = EtcdLockRegistry.create(client);
+                var lock = registry.lockFor("unlock/before-acquire")
+        ) {
+            assertThatThrownBy(lock::unlock)
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessageContaining("lock has not been acquired");
             assertFalse(lock.isAcquired());
             assertFalse(lock.isUnlocked());
         }
     }
 
     @Test
-    void tryLockReacquireThrowsIllegalStateException() throws InterruptedException {
+    void tryLockReacquireThrows() throws InterruptedException {
         var specs = List.of(
                 new LockSpec("tryLock/reacquire", "tryLock/reacquire/holder",
                         completedLockResponse(bytes("tryLock/reacquire/holder"))));
@@ -290,35 +302,40 @@ class EtcdLockImplTest {
         var registry = EtcdLockRegistry.create(client);
         var lock = registry.lockFor("tryLock/reacquire");
 
-        assertTrue(lock.tryLock(Duration.ofSeconds(2)));
-        var ex = assertThrows(IllegalStateException.class, () -> lock.tryLock(Duration.ofSeconds(2)));
-        assertTrue(ex.getMessage().contains("lock has already been acquired"));
+        assertTrue(lock.tryLock(DU_2S));
+        assertThatThrownBy(() -> lock.tryLock(DU_2S))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("lock has already been acquired");
 
         lock.unlock();
     }
 
     @Test
-    void unlockAlreadyUnlockedWithStrictModeThrowsIllegalStateException() throws InterruptedException {
+    void doubleUnlockStrictThrows() throws InterruptedException {
         var specs = List.of(
                 new LockSpec("unlock/strict", "unlock/strict/holder",
                         completedLockResponse(bytes("unlock/strict/holder"))));
-        var client = mockClient(761L, specs);
-        var registry = EtcdLockRegistry.builder()
-                .client(client)
-                .strict(true)
-                .build();
-        var lock = registry.lockFor("unlock/strict");
+        try (
+                var client = mockClient(761L, specs);
+                var registry = EtcdLockRegistry.builder()
+                        .client(client)
+                        .strict(true)
+                        .build();
+        ) {
+            var lock = registry.lockFor("unlock/strict");
 
-        assertTrue(lock.tryLock(Duration.ofSeconds(2)));
-        lock.unlock();
-        assertTrue(lock.isUnlocked());
+            assertTrue(lock.tryLock(DU_2S));
+            lock.unlock();
+            assertTrue(lock.isUnlocked());
 
-        var ex = assertThrows(IllegalStateException.class, lock::unlock);
-        assertTrue(ex.getMessage().contains("lock has already been unlocked"));
+            assertThatThrownBy(lock::unlock)
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessageContaining("lock has already been unlocked");
+        }
     }
 
     @Test
-    void lockAcquiresSuccessfully() {
+    void lockSucceeds() {
         var specs = List.of(
                 new LockSpec("lock/key", "lock/key/holder",
                         completedLockResponse(bytes("lock/key/holder"))));
@@ -335,7 +352,7 @@ class EtcdLockImplTest {
     }
 
     @Test
-    void lockInterruptiblyAcquiresSuccessfully() throws InterruptedException {
+    void lockInterruptiblySucceeds() throws InterruptedException {
         var specs = List.of(
                 new LockSpec("lockInterruptibly/key", "lockInterruptibly/key/holder",
                         completedLockResponse(bytes("lockInterruptibly/key/holder"))));
@@ -350,7 +367,7 @@ class EtcdLockImplTest {
     }
 
     @Test
-    void tryLockWithoutTimeoutReturnsTrueWhenAcquired() {
+    void tryLockNoArgSucceeds() {
         var specs = List.of(
                 new LockSpec("tryLock-noarg/key", "tryLock-noarg/key/holder",
                         completedLockResponse(bytes("tryLock-noarg/key/holder"))));
@@ -365,23 +382,25 @@ class EtcdLockImplTest {
     }
 
     @Test
-    void tryLockWithoutTimeoutReturnsFalseWhenNotAcquired() {
+    void tryLockNoArgTimeout() {
         var neverComplete = new CompletableFuture<LockResponse>();
         var specs = List.of(
                 new LockSpec("tryLock-noarg/timeout", "tryLock-noarg/timeout/holder", neverComplete));
-        var client = mockClient(774L, specs);
-        var registry = EtcdLockRegistry.builder()
-                .client(client)
-                .tryLockTimeout(Duration.ofMillis(50))
-                .build();
-        var lock = registry.lockFor("tryLock-noarg/timeout");
+        try (var client = mockClient(774L, specs);
+             var registry = EtcdLockRegistry.builder()
+                     .client(client)
+                     .tryLockTimeout(DU_50MS)
+                     .build();
+        ) {
+            var lock = registry.lockFor("tryLock-noarg/timeout");
 
-        assertFalse(lock.tryLock());
-        assertFalse(lock.isAcquired());
+            assertFalse(lock.tryLock());
+            assertFalse(lock.isAcquired());
+        }
     }
 
     @Test
-    void isAcquiredReturnsFalseBeforeLock() {
+    void isAcquiredInitially() {
         try (var client = mock(Client.class, RETURNS_DEEP_STUBS);
              var registry = EtcdLockRegistry.create(client);
              var lock = registry.lockFor("isAcquired/initial")) {
@@ -390,7 +409,7 @@ class EtcdLockImplTest {
     }
 
     @Test
-    void isUnlockedReturnsFalseBeforeUnlock() {
+    void isUnlockedInitially() {
         try (var client = mock(Client.class, RETURNS_DEEP_STUBS);
              var registry = EtcdLockRegistry.create(client);
              var lock = registry.lockFor("isUnlocked/initial")) {
@@ -399,26 +418,29 @@ class EtcdLockImplTest {
     }
 
     @Test
-    void doubleUnlockWithoutStrictModeIsSilentlyIgnored() throws InterruptedException {
+    void doubleUnlockNonStrictIgnored() throws InterruptedException {
         var specs = List.of(
                 new LockSpec("unlock/nonstrict", "unlock/nonstrict/holder",
                         completedLockResponse(bytes("unlock/nonstrict/holder"))));
-        var client = mockClient(781L, specs);
-        var registry = EtcdLockRegistry.builder()
-                .client(client)
-                .strict(false)
-                .build();
-        var lock = registry.lockFor("unlock/nonstrict");
+        try (
+                var client = mockClient(781L, specs);
+                var registry = EtcdLockRegistry.builder()
+                        .client(client)
+                        .strict(false)
+                        .build()
+        ) {
+            var lock = registry.lockFor("unlock/nonstrict");
 
-        assertTrue(lock.tryLock(Duration.ofSeconds(2)));
-        lock.unlock();
-        assertTrue(lock.isUnlocked());
+            assertTrue(lock.tryLock(DU_2S));
+            lock.unlock();
+            assertTrue(lock.isUnlocked());
 
-        assertDoesNotThrow(lock::unlock);
+            assertDoesNotThrow(lock::unlock);
+        }
     }
 
     @Test
-    void unlockAfterAcknowledgeLossDoesNotThrow() throws InterruptedException {
+    void unlockAfterAcknowledgeLoss() throws InterruptedException {
         var specs = List.of(
                 new LockSpec("unlock/loss-acknowledged", "unlock/loss-acknowledged/holder",
                         completedLockResponse(bytes("unlock/loss-acknowledged/holder"))));
@@ -426,14 +448,14 @@ class EtcdLockImplTest {
         var registry = EtcdLockRegistry.create(client);
         var lock = registry.lockFor("unlock/loss-acknowledged");
 
-        assertTrue(lock.tryLock(Duration.ofSeconds(2)));
+        assertTrue(lock.tryLock(DU_2S));
         lock.acknowledgeLoss();
         lock.unlock();
         assertTrue(lock.isUnlocked());
     }
 
     @Test
-    void closeOnAcquiredLockCallsUnlock() throws InterruptedException {
+    void closeOnAcquiredReleases() throws InterruptedException {
         var specs = List.of(
                 new LockSpec("close/acquired", "close/acquired/holder",
                         completedLockResponse(bytes("close/acquired/holder"))));
@@ -441,13 +463,13 @@ class EtcdLockImplTest {
         var registry = EtcdLockRegistry.create(client);
         var lock = registry.lockFor("close/acquired");
 
-        assertTrue(lock.tryLock(Duration.ofSeconds(2)));
+        assertTrue(lock.tryLock(DU_2S));
         lock.close();
         assertTrue(lock.isUnlocked());
     }
 
     @Test
-    void closeOnAlreadyUnlockedDoesNothing() throws InterruptedException {
+    void closeOnUnlockedNoOp() throws InterruptedException {
         var specs = List.of(
                 new LockSpec("close/unlocked", "close/unlocked/holder",
                         completedLockResponse(bytes("close/unlocked/holder"))));
@@ -455,13 +477,13 @@ class EtcdLockImplTest {
         var registry = EtcdLockRegistry.create(client);
         var lock = registry.lockFor("close/unlocked");
 
-        assertTrue(lock.tryLock(Duration.ofSeconds(2)));
+        assertTrue(lock.tryLock(DU_2S));
         lock.unlock();
         assertDoesNotThrow(lock::close);
     }
 
     @Test
-    void tryLockTimeUnitForwardsToDuration() throws InterruptedException {
+    void tryLockTimeUnit() throws InterruptedException {
         var specs = List.of(
                 new LockSpec("tryLock/time-unit", "tryLock/time-unit/holder",
                         completedLockResponse(bytes("tryLock/time-unit/holder"))));
@@ -475,7 +497,7 @@ class EtcdLockImplTest {
     }
 
     @Test
-    void isLockLostReturnsFalseBeforeLock() {
+    void isLockLostInitially() {
         try (var client = mock(Client.class, RETURNS_DEEP_STUBS);
              var registry = EtcdLockRegistry.create(client);
              var lock = registry.lockFor("isLockLost/initial")) {
@@ -484,39 +506,140 @@ class EtcdLockImplTest {
     }
 
     @Test
-    void lockThrowsEtcdLockExceptionOnWaitMaxTimeout() {
+    void lockWaitMaxTimeout() {
         var neverComplete = new CompletableFuture<LockResponse>();
         var specs = List.of(
                 new LockSpec("lock/timeout", "lock/timeout/holder", neverComplete));
-        var client = mockClient(801L, specs);
-        var registry = EtcdLockRegistry.builder()
-                .client(client)
-                .waitMax(Duration.ofMillis(50))
-                .build();
-        var lock = registry.lockFor("lock/timeout");
+        try (
+                var client = mockClient(801L, specs);
+                var registry = EtcdLockRegistry.builder()
+                        .client(client)
+                        .waitMax(DU_50MS)
+                        .build();
+        ) {
+            var lock = registry.lockFor("lock/timeout");
 
-        var ex = assertThrows(EtcdLockException.class, lock::lock);
-        assertTrue(ex.getMessage().contains("Failed to acquire lock for keys"));
+            assertThatThrownBy(lock::lock)
+                    .isInstanceOf(EtcdLockException.class)
+                    .hasMessageContaining("Failed to acquire lock for keys");
+        }
     }
 
     @Test
-    void lockInterruptiblyThrowsEtcdLockExceptionOnWaitMaxTimeout() {
+    void lockInterruptiblyWaitMaxTimeout() {
         var neverComplete = new CompletableFuture<LockResponse>();
         var specs = List.of(
                 new LockSpec("lockInterruptibly/timeout", "lockInterruptibly/timeout/holder", neverComplete));
-        var client = mockClient(802L, specs);
-        var registry = EtcdLockRegistry.builder()
-                .client(client)
-                .waitMax(Duration.ofMillis(50))
-                .build();
-        var lock = registry.lockFor("lockInterruptibly/timeout");
+        try (
+                var client = mockClient(802L, specs);
+                var registry = EtcdLockRegistry.builder()
+                        .client(client)
+                        .waitMax(DU_50MS)
+                        .build()
+        ) {
+            var lock = registry.lockFor("lockInterruptibly/timeout");
 
-        var ex = assertThrows(EtcdLockException.class, () -> lock.lockInterruptibly());
-        assertTrue(ex.getMessage().contains("Failed to acquire lock for keys"));
+            assertThatThrownBy(lock::lockInterruptibly)
+                    .isInstanceOf(EtcdLockException.class)
+                    .hasMessageContaining("Failed to acquire lock for keys");
+        }
     }
 
     @Test
-    void rollbackAcquiredThrowsEtcdLockExceptionWhenUnlockFails() {
+    void lockInterrupted() {
+        var neverComplete = new CompletableFuture<LockResponse>();
+        var specs = List.of(
+                new LockSpec("lock/interrupted", "lock/interrupted/holder", neverComplete));
+        try (var client = mockClient(803L, specs);
+             var registry = EtcdLockRegistry.create(client);
+             var scheduler = Executors.newSingleThreadScheduledExecutor();
+        ) {
+            var lock = registry.lockFor("lock/interrupted");
+
+            var testThread = Thread.currentThread();
+            scheduler.schedule(testThread::interrupt, 50, TimeUnit.MILLISECONDS);
+
+            assertThatThrownBy(lock::lock)
+                    .isInstanceOf(EtcdLockException.class)
+                    .hasMessageContaining("Interrupted while acquiring lock");
+            assertTrue(Thread.interrupted());
+        }
+    }
+
+    @Test
+    void tryLockNoArgInterrupted() {
+        var neverComplete = new CompletableFuture<LockResponse>();
+        var specs = List.of(
+                new LockSpec("tryLock-noarg/interrupted", "tryLock-noarg/interrupted/holder", neverComplete));
+        try (
+                var client = mockClient(805L, specs);
+                var registry = EtcdLockRegistry.create(client);
+                var scheduler = Executors.newSingleThreadScheduledExecutor();
+        ) {
+            var lock = registry.lockFor("tryLock-noarg/interrupted");
+
+            var testThread = Thread.currentThread();
+            scheduler.schedule(testThread::interrupt, 50, TimeUnit.MILLISECONDS);
+
+            assertFalse(lock.tryLock());
+            assertFalse(lock.isAcquired());
+            assertTrue(Thread.interrupted());
+        }
+    }
+
+    @Test
+    void tryLockInterruptedRollsBack() {
+        var neverComplete = new CompletableFuture<LockResponse>();
+        var specs = List.of(
+                new LockSpec("tryLock/duration/interrupted", "tryLock/duration/interrupted/holder",
+                        neverComplete));
+        try (
+                var client = mockClient(806L, specs);
+                var registry = EtcdLockRegistry.create(client);
+                var lock = registry.lockFor("tryLock/duration/interrupted");
+                var scheduler = Executors.newSingleThreadScheduledExecutor();
+        ) {
+            var testThread = Thread.currentThread();
+            scheduler.schedule(testThread::interrupt, 50, TimeUnit.MILLISECONDS);
+            assertThatThrownBy(() -> lock.tryLock(DU_30S))
+                    .isInstanceOf(InterruptedException.class);
+            assertFalse(lock.isAcquired());
+            assertTrue(Thread.interrupted());
+        }
+    }
+
+    @Test
+    void tryLockRteRollsBack() {
+        var specs = List.of(
+                new LockSpec("tryLock/duration/rte", "tryLock/duration/rte/holder",
+                        CompletableFuture.failedFuture(new RuntimeException("acquisition failure"))));
+        var client = mockClient(807L, specs);
+        var registry = EtcdLockRegistry.create(client);
+        var lock = registry.lockFor("tryLock/duration/rte");
+
+        assertThatThrownBy(() -> lock.tryLock(DU_2S))
+                .isInstanceOf(EtcdLockException.class);
+        assertFalse(lock.isAcquired());
+        verify(client.getLeaseClient(), times(1)).revoke(807L);
+    }
+
+    @Test
+    void tryLockNullGrantedKey() throws InterruptedException {
+        var lockResponse = mock(LockResponse.class);
+        doReturn(null).when(lockResponse).getKey();
+        var specs = List.of(
+                new LockSpec("tryLock/null-granted", "tryLock/null-granted/holder",
+                        CompletableFuture.completedFuture(lockResponse)));
+        var client = mockClient(808L, specs);
+        var registry = EtcdLockRegistry.create(client);
+        var lock = registry.lockFor("tryLock/null-granted");
+
+        assertFalse(lock.tryLock(DU_2S));
+        assertFalse(lock.isAcquired());
+    }
+
+    @Test
+    void rollbackUnlockFails() {
         var grantedKeyA = bytes("rollback/unlock-fail/a/holder");
         var neverComplete = new CompletableFuture<LockResponse>();
         var specs = List.of(
@@ -535,9 +658,9 @@ class EtcdLockImplTest {
 
         var lock = (EtcdLockImpl) registry.lockFor(List.of("rollback/unlock-fail/a", "rollback/unlock-fail/b"));
 
-        var timeout = Duration.ofMillis(200);
-        var ex = assertThrows(EtcdLockException.class, () -> lock.tryLock(timeout));
-        assertTrue(ex.getMessage().contains("Failed to rollback already acquired keys"));
+        assertThatThrownBy(() -> lock.tryLock(DU_200MS))
+                .isInstanceOf(EtcdLockException.class)
+                .hasMessageContaining("Failed to rollback already acquired keys");
         assertFalse(lock.isAcquired());
         verify(client.getLockClient(), times(1)).unlock(grantedKeyA);
     }
@@ -579,10 +702,6 @@ class EtcdLockImplTest {
         doReturn(createRevision).when(keyValue).getCreateRevision();
         doReturn(List.of(keyValue)).when(getResponse).getKvs();
         return CompletableFuture.completedFuture(getResponse);
-    }
-
-    private static ByteSequence bytes(String value) {
-        return ByteSequence.from(value, StandardCharsets.UTF_8);
     }
 
     private record LockSpec(String key, String grantedKey, CompletableFuture<LockResponse> lockFuture) {
