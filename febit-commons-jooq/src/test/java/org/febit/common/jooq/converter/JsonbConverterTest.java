@@ -100,4 +100,16 @@ class JsonbConverterTest {
         );
     }
 
+    @Test
+    void forBeanMapSingleArg() {
+        var c = JsonbConverter.forBeanMap(Pojos.Foo.class);
+        assertEquals(Map.class, c.toType());
+        assertEquals(JSONB.class, c.fromType());
+
+        assertNull(c.from(null));
+        assertNull(c.to(null));
+
+        assertEquals(Map.<String, Pojos.Foo>of(), c.from(JSONB.valueOf("{}")));
+    }
+
 }

@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 class IUpdateDaoTest {
 
@@ -39,7 +40,7 @@ class IUpdateDaoTest {
 
     @Nested
     class Foo extends FooTestSupport {
-        private final FooUpdateDao dao = new FooUpdateDao(conf());
+        final FooUpdateDao dao = new FooUpdateDao(conf());
 
         @Test
         void single() {
@@ -79,14 +80,14 @@ class IUpdateDaoTest {
         }
 
         @Test
-        void multiple_emptyCollection() {
+        void multipleEmptyCollection() {
             crud().insert(foo("Alice"));
             assertThat(dao.update(List.of())).isZero();
             assertThat(crud().listAll()).hasSize(1);
         }
 
         @Test
-        void single_noMatch() {
+        void singleNoMatch() {
             var po = new FooPO();
             po.setId(-1L);
             po.setName("Ghost");
@@ -103,12 +104,14 @@ class IUpdateDaoTest {
 
             var alice = crud().findBy(dao.table().NAME.eq("Alice"));
             var bob = crud().findBy(dao.table().NAME.eq("Bob"));
+            assertNotNull(alice);
+            assertNotNull(bob);
             assertThat(alice.getDescription()).isEqualTo("partial-updated");
             assertThat(bob.getDescription()).isNotEqualTo("partial-updated");
         }
 
         @Test
-        void fieldBy_noMatch() {
+        void fieldByNoMatch() {
             crud().insert(foo("Alice"));
             var changed = dao.updateFieldBy(
                     dao.table().DESCRIPTION, "x",
@@ -126,6 +129,51 @@ class IUpdateDaoTest {
 
             var result = crud().requireFirst();
             assertThat(result.getDescription()).isEqualTo("builder-updated");
+        }
+
+        @Test
+        void collectionSingleElement() {
+            crud().insert(foo("Alice"));
+            var stored = crud().requireFirst();
+            stored.setName("Only-One");
+
+            var changed = dao.update(List.of(stored));
+            assertThat(changed).isEqualTo(1);
+            assertThat(crud().requireFirst().getName()).isEqualTo("Only-One");
+        }
+
+        @Test
+        void multipleForLoopPath() {
+            var settingsConf = conf().derive(conf().settings()
+                    .withReturnAllOnUpdatableRecord(true));
+            var loopDao = new FooUpdateDao(settingsConf);
+
+            crud().insert(foo("Alice"), foo("Bob"));
+            var all = crud().listAll();
+            all.forEach(p -> p.setDescription("loop-updated"));
+
+            var changed = loopDao.update(all);
+            assertThat(changed).isEqualTo(2);
+
+            var descriptions = crud().listFieldBy(dao.table().DESCRIPTION);
+            assertThat(descriptions).containsOnly("loop-updated");
+        }
+
+        @Test
+        void multipleBatchWhenReturnRecordToPojoDisabled() {
+            var batchConf = conf().derive(conf().settings()
+                    .withReturnRecordToPojo(false));
+            var batchDao = new FooUpdateDao(batchConf);
+
+            crud().insert(foo("Alice"), foo("Bob"));
+            var all = crud().listAll();
+            all.forEach(p -> p.setDescription("batch-updated"));
+
+            var changed = batchDao.update(all);
+            assertThat(changed).isEqualTo(2);
+
+            var descriptions = crud().listFieldBy(dao.table().DESCRIPTION);
+            assertThat(descriptions).containsOnly("batch-updated");
         }
     }
 }

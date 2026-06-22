@@ -75,7 +75,7 @@ class JsonStringConverterTest {
 
     @Test
     void forBeanMap() {
-        var c = JsonStringConverter.forBeanMap(String.class, Pojos.Foo.class);
+        var c = JsonStringConverter.forBeanMap(Pojos.Foo.class);
         assertEquals(Map.class, c.toType());
         assertEquals(String.class, c.fromType());
 

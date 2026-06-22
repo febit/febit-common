@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class InstantConverterTest {
 
     @Test
-    void test() {
+    void roundTrip() {
         var converter = new InstantConverter();
 
         assertEquals(Timestamp.class, converter.fromType());

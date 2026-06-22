@@ -117,6 +117,19 @@ class IInsertDaoTest {
             assertThat(stored.getName()).isEqualTo("Builder");
             assertThat(stored.getStatus()).isEqualTo(FooStatus.CREATED);
         }
+
+        @Test
+        void batchInsertWhenReturnRecordToPojoDisabled() {
+            var batchConf = conf().derive(conf().settings()
+                    .withReturnRecordToPojo(false));
+            var batchDao = new FooInsertDao(batchConf);
+
+            batchDao.insert(List.of(foo("Alice"), foo("Bob")));
+
+            assertThat(crud().listAll()).hasSize(2);
+            assertThat(crud().listFieldBy(dao.table().NAME))
+                    .containsExactlyInAnyOrder("Alice", "Bob");
+        }
     }
 
 }

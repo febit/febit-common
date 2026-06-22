@@ -21,6 +21,7 @@ import org.febit.common.jooq.foo.FooStatus;
 import org.febit.common.jooq.foo.FooTestSupport;
 import org.febit.common.jooq.foo.TFoo;
 import org.febit.lang.protocol.Pagination;
+import org.febit.lang.protocol.Sort;
 import org.jooq.Condition;
 import org.jooq.Configuration;
 import org.junit.jupiter.api.Nested;
@@ -275,7 +276,7 @@ class IBasicQueryDaoTest {
         }
 
         @Test
-        void findBy_eq() {
+        void findByEq() {
             crud().insert(foo("Alice"), foo("Bob"));
             var found = dao.findBy(new NameSearchForm("Alice"));
             assertThat(found).isNotNull()
@@ -284,13 +285,13 @@ class IBasicQueryDaoTest {
         }
 
         @Test
-        void findBy_eq_noMatch() {
+        void findByEqNoMatch() {
             crud().insert(foo("Alice"));
             assertThat(dao.findBy(new NameSearchForm("Nobody"))).isNull();
         }
 
         @Test
-        void findBy_contains() {
+        void findByContains() {
             crud().insert(foo("Alice"), foo("Bob"));
             var found = dao.findBy(new NameContainsForm("lic"));
             assertThat(found).isNotNull()
@@ -299,7 +300,7 @@ class IBasicQueryDaoTest {
         }
 
         @Test
-        void findBy_notContains() {
+        void findByNotContains() {
             crud().insert(foo("Alice"), foo("Bob"));
             var found = dao.findBy(new NameNotContainsForm("Ali"));
             assertThat(found).isNotNull()
@@ -308,7 +309,7 @@ class IBasicQueryDaoTest {
         }
 
         @Test
-        void findBy_startsWith() {
+        void findByStartsWith() {
             crud().insert(foo("Alice"), foo("Bob"));
             var found = dao.findBy(new NameStartsWithForm("Ali"));
             assertThat(found).isNotNull()
@@ -317,7 +318,7 @@ class IBasicQueryDaoTest {
         }
 
         @Test
-        void findBy_endsWith() {
+        void findByEndsWith() {
             crud().insert(foo("Alice"), foo("Bob"));
             var found = dao.findBy(new NameEndsWithForm("ice"));
             assertThat(found).isNotNull()
@@ -326,7 +327,7 @@ class IBasicQueryDaoTest {
         }
 
         @Test
-        void findBy_isNull() {
+        void findByIsNull() {
             crud().insert(foo("Alice"));
             assertThat(dao.findBy(new CreatedByNullForm(true)))
                     .isNotNull()
@@ -337,7 +338,7 @@ class IBasicQueryDaoTest {
         }
 
         @Test
-        void findBy_isNotNull() {
+        void findByIsNotNull() {
             crud().insert(foo("Alice"));
             var found = dao.findBy(new NameIsNotNullForm(true));
             assertThat(found).isNotNull();
@@ -351,7 +352,7 @@ class IBasicQueryDaoTest {
         }
 
         @Test
-        void findBy_notIn() {
+        void findByNotIn() {
             crud().insert(foo("Alice"), foo("Bob"));
             var found = dao.findBy(new NameNotInForm(List.of("Alice")));
             assertThat(found)
@@ -381,7 +382,7 @@ class IBasicQueryDaoTest {
         }
 
         @Test
-        void findBy_lt() {
+        void findByLt() {
             crud().insert(foo("Alice"), foo("Bob"));
             var found = dao.findBy(new NameLtForm("Bob"));
             assertThat(found).isNotNull()
@@ -390,7 +391,7 @@ class IBasicQueryDaoTest {
         }
 
         @Test
-        void findBy_le() {
+        void findByLe() {
             crud().insert(foo("Alice"), foo("Bob"));
             var found = dao.findBy(new NameLeForm("Alice"));
             assertThat(found).isNotNull()
@@ -399,7 +400,7 @@ class IBasicQueryDaoTest {
         }
 
         @Test
-        void findBy_keyword() {
+        void findByKeyword() {
             crud().insert(foo("Alice"), foo("Bob"));
             var found = dao.findBy(new NameKeywordForm("Ali"));
             assertThat(found).isNotNull()
@@ -408,13 +409,13 @@ class IBasicQueryDaoTest {
         }
 
         @Test
-        void findBy_keyword_noMatch() {
+        void findByKeywordNoMatch() {
             crud().insert(foo("Alice"));
             assertThat(dao.findBy(new NameKeywordForm("Bob"))).isNull();
         }
 
         @Test
-        void findBy_withMapper() {
+        void findByWithMapper() {
             crud().insert(foo("Alice"));
             var name = dao.findBy(new NameSearchForm("Alice"),
                     r -> r.get(TFoo.FOO.NAME));
@@ -422,14 +423,14 @@ class IBasicQueryDaoTest {
         }
 
         @Test
-        void listBy_eq() {
+        void listByEq() {
             crud().insert(foo("Alice"), foo("Bob"));
             var result = dao.listBy(new NameSearchForm("Alice"));
             assertThat(result).hasSize(1);
         }
 
         @Test
-        void listBy_contains() {
+        void listByContains() {
             crud().insert(foo("Alice"), foo("Bob"));
             var result = dao.listBy(new NameContainsForm("Bob"));
             assertThat(result).hasSize(1)
@@ -437,7 +438,7 @@ class IBasicQueryDaoTest {
         }
 
         @Test
-        void listBy_withMapper() {
+        void listByWithMapper() {
             crud().insert(foo("Alice"), foo("Bob"));
             var names = dao.listBy(new EmptySearchForm(),
                     r -> r.get(TFoo.FOO.NAME));
@@ -446,7 +447,7 @@ class IBasicQueryDaoTest {
         }
 
         @Test
-        void listFieldBy_eq() {
+        void listFieldByEq() {
             crud().insert(foo("Alice"), foo("Bob"));
             var names = dao.listFieldBy(dao.table().NAME,
                     new NameSearchForm("Alice"));
@@ -454,33 +455,33 @@ class IBasicQueryDaoTest {
         }
 
         @Test
-        void countBy_eq() {
+        void countByEq() {
             crud().insert(foo("Alice"), foo("Bob"));
             assertThat(dao.countBy(new NameSearchForm("Alice"))).isEqualTo(1L);
         }
 
         @Test
-        void countBy_contains() {
+        void countByContains() {
             crud().insert(foo("Alice"), foo("Bob"));
             assertThat(dao.countBy(new NameContainsForm("lic"))).isEqualTo(1L);
         }
 
         @Test
-        void existsBy_eq() {
+        void existsByEq() {
             crud().insert(foo("Alice"));
             assertThat(dao.existsBy(new NameSearchForm("Alice"))).isTrue();
             assertThat(dao.existsBy(new NameSearchForm("Nobody"))).isFalse();
         }
 
         @Test
-        void existsBy_contains() {
+        void existsByContains() {
             crud().insert(foo("Alice"));
             assertThat(dao.existsBy(new NameContainsForm("lic"))).isTrue();
             assertThat(dao.existsBy(new NameContainsForm("xyz"))).isFalse();
         }
 
         @Test
-        void page_filter() {
+        void pageFilter() {
             crud().insert(foo("Alice"), foo("Bob"), foo("Charlie"));
             var result = dao.page(Pagination.of(1, 10), new NameSearchForm("Alice"));
             assertThat(result.getMeta().getTotal()).isEqualTo(1L);
@@ -489,7 +490,7 @@ class IBasicQueryDaoTest {
         }
 
         @Test
-        void page_withMapper() {
+        void pageWithMapper() {
             crud().insert(foo("Alice"), foo("Bob"));
             var result = dao.page(
                     Pagination.of(1, 10),
@@ -628,6 +629,20 @@ class IBasicQueryDaoTest {
     class FooPage extends FooTestSupport {
         private final FooBasicQueryDao dao = new FooBasicQueryDao(conf());
 
+        @OrderMappingBy(PageSortMapping.class)
+        record PageSortableForm(
+                @Equals String name
+        ) implements SearchForm {
+        }
+
+        static class PageSortMapping {
+            String id;
+            @Column("created_at")
+            String createdAt;
+            @Column("updated_at")
+            String updatedAt;
+        }
+
         @Test
         void firstPage() {
             crud().insert(foo("A"), foo("B"), foo("C"), foo("D"), foo("E"));
@@ -665,6 +680,16 @@ class IBasicQueryDaoTest {
             var result = dao.page(Pagination.of(3, 2), new EmptySearchForm());
             assertThat(result.getMeta().getTotal()).isEqualTo(2L);
             assertThat(result.getRows()).isEmpty();
+        }
+
+        @Test
+        void withSortOrders() {
+            crud().insert(foo("B"), foo("A"), foo("C"));
+            var pagination = new Pagination(1, 10, List.of(Sort.asc("id")));
+            var result = dao.page(pagination, new PageSortableForm(null));
+
+            assertThat(result.getMeta().getTotal()).isEqualTo(3L);
+            assertThat(result.getRows()).hasSize(3);
         }
     }
 
