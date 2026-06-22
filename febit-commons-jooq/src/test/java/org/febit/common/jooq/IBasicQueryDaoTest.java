@@ -487,6 +487,19 @@ class IBasicQueryDaoTest {
             assertThat(result.getRows()).hasSize(1)
                     .first().extracting(FooPO::getName).isEqualTo("Alice");
         }
+
+        @Test
+        void page_withMapper() {
+            crud().insert(foo("Alice"), foo("Bob"));
+            var result = dao.page(
+                    Pagination.of(1, 10),
+                    new EmptySearchForm(),
+                    r -> r.get(TFoo.FOO.NAME)
+            );
+            assertThat(result.getMeta().getTotal()).isEqualTo(2L);
+            assertThat(result.getRows())
+                    .containsExactlyInAnyOrder("Alice", "Bob");
+        }
     }
 
     @Nested

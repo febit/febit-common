@@ -213,7 +213,6 @@ public interface IBasicQueryDao<TB extends Table<R>, PO, R extends TableRecord<R
         }
 
         var query = dsl().selectQuery(table);
-        query.addSelect(table.fields());
         query.addLimit(pagination.offset(), pagination.getSize());
         if (CollectionUtils.isNotEmpty(orders)) {
             query.addOrderBy(orders);
