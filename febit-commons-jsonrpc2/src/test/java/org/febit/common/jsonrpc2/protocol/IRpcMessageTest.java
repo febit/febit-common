@@ -13,28 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.common.jsonrpc2;
+package org.febit.common.jsonrpc2.protocol;
 
-import org.febit.common.jsonrpc2.protocol.Id;
-import org.jspecify.annotations.Nullable;
+import org.junit.jupiter.api.Test;
 
-import java.util.concurrent.ConcurrentHashMap;
+import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * A simple thread-safe request pool implementation.
- */
-public class SimpleRequestPool implements RequestPool {
+class IRpcMessageTest {
 
-    private final ConcurrentHashMap<Id, RequestPacket<?>> requests = new ConcurrentHashMap<>();
-
-    @Override
-    public void add(RequestPacket<?> requestPacket) {
-        requests.put(requestPacket.id(), requestPacket);
+    @Test
+    void jsonrpcReturns2point0() {
+        IRpcMessage msg = () -> null;
+        assertEquals("2.0", msg.jsonrpc());
     }
 
-    @Override
-    @Nullable
-    public RequestPacket<?> pop(Id id) {
-        return requests.remove(id);
+    @Test
+    void jsonrpcIsAccessibleOnAnyImplementation() {
+        IRpcMessage msg = new IRpcMessage() {
+            @Override
+            public Id id() {
+                return Id.of(1);
+            }
+        };
+        assertEquals("2.0", msg.jsonrpc());
     }
 }

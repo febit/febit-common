@@ -47,70 +47,55 @@ class JsonCodecTest {
     }
 
     @Test
-    void encode_happy() {
-        // Notification
+    void encodeNotificationEmptyParams() {
         assertThat(encodeToMap(new Notification("test", List.of())))
                 .hasSize(3)
                 .containsEntry("method", "test")
                 .containsEntry("jsonrpc", "2.0")
                 .containsEntry("params", List.of())
-                .doesNotContainKeys(
-                        "id", "result", "error"
-                )
-        ;
+                .doesNotContainKeys("id", "result", "error");
+    }
 
+    @Test
+    void encodeNotificationMapParams() {
         assertThat(encodeToMap(new Notification("test", Map.of())))
                 .hasSize(3)
                 .containsEntry("method", "test")
                 .containsEntry("jsonrpc", "2.0")
                 .containsEntry("params", Map.of())
-                .doesNotContainKeys(
-                        "id", "result", "error"
-                )
-        ;
+                .doesNotContainKeys("id", "result", "error");
 
-        assertThat(encodeToMap(new Notification("test", Map.of(
-                "foo", "bar"
-        ))))
+        assertThat(encodeToMap(new Notification("test", Map.of("foo", "bar"))))
                 .hasSize(3)
                 .containsEntry("method", "test")
                 .containsEntry("jsonrpc", "2.0")
-                .containsEntry("params", Map.of(
-                        "foo", "bar"
-                ))
-                .doesNotContainKeys(
-                        "id", "result", "error"
-                )
-        ;
+                .containsEntry("params", Map.of("foo", "bar"))
+                .doesNotContainKeys("id", "result", "error");
+    }
 
-        // Request
+    @Test
+    void encodeRequest() {
         assertThat(encodeToMap(new Request(Id.of(1), "test", List.of(1, "test"))))
                 .hasSize(4)
                 .containsEntry("id", 1)
                 .containsEntry("method", "test")
                 .containsEntry("jsonrpc", "2.0")
                 .containsEntry("params", List.of(1, "test"))
-                .doesNotContainKeys(
-                        "result", "error"
-                )
-        ;
+                .doesNotContainKeys("result", "error");
+    }
 
-        // Response
-        assertThat(encodeToMap(new Response<>(
-                Id.of("100"),
-                "test",
-                null
-        )))
+    @Test
+    void encodeResponseWithResult() {
+        assertThat(encodeToMap(new Response<>(Id.of("100"), "test", null)))
                 .hasSize(3)
                 .containsEntry("id", "100")
                 .containsEntry("jsonrpc", "2.0")
                 .containsEntry("result", "test")
-                .doesNotContainKeys(
-                        "error"
-                )
-        ;
+                .doesNotContainKeys("error");
+    }
 
-        // Response with error
+    @Test
+    void encodeResponseWithError() {
         assertThat(encodeToMap(new Response<>(
                 Id.of(1.01D),
                 null,
@@ -120,9 +105,7 @@ class JsonCodecTest {
                 .containsEntry("id", 1.01D)
                 .containsEntry("jsonrpc", "2.0")
                 .containsKey("error")
-                .doesNotContainKeys(
-                        "result"
-                )
+                .doesNotContainKeys("result")
                 .extracting("error")
                 .asInstanceOf(map(String.class, Object.class))
                 .containsEntry("code", -32601)
@@ -240,4 +223,69 @@ class JsonCodecTest {
         assertEquals(StdRpcErrors.PARSE_ERROR.code(), ex.getError().code());
     }
 
+    @Test
+    void decodeMapNull() {
+        var ex = assertThrows(RpcErrorException.class, () ->
+                JsonCodec.decode((Map<String, Object>) null));
+        assertEquals(StdRpcErrors.PARSE_ERROR.code(), ex.getError().code());
+    }
+
+    @Test
+    void decodeMapRequest() {
+        var msg = JsonCodec.decode(Map.of(
+                "jsonrpc", "2.0",
+                "id", 1,
+                "method", "test",
+                "params", List.of("a", "b")
+        ));
+        assertInstanceOf(Request.class, msg);
+        var req = (Request) msg;
+        assertEquals(Id.of(1), req.id());
+        assertEquals("test", req.method());
+        assertEquals(List.of("a", "b"), req.params());
+    }
+
+    @Test
+    void decodeMapNotification() {
+        var msg = JsonCodec.decode(Map.of(
+                "jsonrpc", "2.0",
+                "method", "event",
+                "params", Map.of("key", "value")
+        ));
+        assertInstanceOf(Notification.class, msg);
+        assertEquals("event", ((Notification) msg).method());
+    }
+
+    @Test
+    void convertNullReturnsNull() {
+        assertNull(JsonCodec.convert(null, JsonCodec.resolveType(String.class)));
+    }
+
+    @Test
+    void convertValidValue() {
+        var result = JsonCodec.convert("hello", JsonCodec.resolveType(String.class));
+        assertEquals("hello", result);
+    }
+
+    @Test
+    void convertInvalidThrows() {
+        var ex = assertThrows(RpcErrorException.class, () ->
+                JsonCodec.convert("not-an-int", JsonCodec.resolveType(Integer.class)));
+        assertInstanceOf(RpcErrorException.class, ex);
+    }
+
+    @Test
+    void resolveParameterTypes() {
+        try {
+            var method = getClass().getDeclaredMethod("sampleMethod", String.class, int.class);
+            var types = JsonCodec.resolveParameterTypes(method);
+            assertEquals(2, types.size());
+        } catch (NoSuchMethodException e) {
+            fail(e);
+        }
+    }
+
+    @SuppressWarnings("unused")
+    private void sampleMethod(String a, int b) {
+    }
 }

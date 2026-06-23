@@ -120,4 +120,110 @@ class RpcMessageDeserializerTest {
                 .hasMessageContaining("missing both 'id' and 'method' properties");
     }
 
+    @Test
+    void invalidIdBoolean() {
+        Assertions.assertThatThrownBy(() -> parse("""
+                        {
+                          "jsonrpc": "2.0",
+                          "id": true,
+                          "method": "test"
+                        }
+                        """))
+                .isInstanceOf(DatabindException.class)
+                .hasMessageContaining("rpc message id must be string or number");
+    }
+
+    @Test
+    void invalidIdArray() {
+        Assertions.assertThatThrownBy(() -> parse("""
+                        {
+                          "jsonrpc": "2.0",
+                          "id": [1, 2],
+                          "method": "test"
+                        }
+                        """))
+                .isInstanceOf(DatabindException.class)
+                .hasMessageContaining("rpc message id must be string or number");
+    }
+
+    @Test
+    void invalidIdObject() {
+        Assertions.assertThatThrownBy(() -> parse("""
+                        {
+                          "jsonrpc": "2.0",
+                          "id": {"nested": true},
+                          "method": "test"
+                        }
+                        """))
+                .isInstanceOf(DatabindException.class)
+                .hasMessageContaining("rpc message id must be string or number");
+    }
+
+    @Test
+    void notification() {
+        var msg = parse("""
+                {
+                  "jsonrpc": "2.0",
+                  "method": "update",
+                  "params": ["data"]
+                }
+                """);
+
+        assertInstanceOf(org.febit.common.jsonrpc2.internal.protocol.Notification.class, msg);
+        var notif = (org.febit.common.jsonrpc2.internal.protocol.Notification) msg;
+        assertEquals("update", notif.method());
+        assertEquals(List.of("data"), notif.params());
+    }
+
+    @Test
+    void responseWithResult() {
+        var msg = parse("""
+                {
+                  "jsonrpc": "2.0",
+                  "id": 1,
+                  "result": 42
+                }
+                """);
+
+        assertInstanceOf(org.febit.common.jsonrpc2.internal.protocol.Response.class, msg);
+        var resp = (org.febit.common.jsonrpc2.internal.protocol.Response<?>) msg;
+        assertEquals(Id.of(1), resp.id());
+        assertEquals(42, resp.result());
+        assertNull(resp.error());
+    }
+
+    @Test
+    void responseWithError() {
+        var msg = parse("""
+                {
+                  "jsonrpc": "2.0",
+                  "id": 1,
+                  "error": {
+                    "code": -32600,
+                    "message": "Invalid Request"
+                  }
+                }
+                """);
+
+        assertInstanceOf(org.febit.common.jsonrpc2.internal.protocol.Response.class, msg);
+        var resp = (org.febit.common.jsonrpc2.internal.protocol.Response<?>) msg;
+        assertEquals(Id.of(1), resp.id());
+        assertNull(resp.result());
+        assertNotNull(resp.error());
+        assertEquals(-32600, resp.error().code());
+        assertEquals("Invalid Request", resp.error().message());
+    }
+
+    @Test
+    void responseWithoutIdIsInvalid() {
+        Assertions.assertThatThrownBy(() -> parse("""
+                        {
+                          "jsonrpc": "2.0",
+                          "result": 42
+                        }
+                        """))
+                .isInstanceOf(DatabindException.class)
+                .hasMessageContaining("missing both 'id' and 'method' properties");
+    }
+
 }

@@ -18,6 +18,7 @@ package org.febit.common.jsonrpc2.protocol;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
+import org.febit.common.jsonrpc2.RpcErrors;
 
 /**
  * JSON-RPC 2.0 Reserved errors.
@@ -27,7 +28,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Accessors(fluent = true)
 @RequiredArgsConstructor
-public enum ReservedRpcErrors {
+public enum ReservedRpcErrors implements RpcErrors {
 
     //-32000 to -32099 	Server error 	Reserved for implementation-defined server-errors.
     RESERVED_00(

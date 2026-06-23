@@ -33,7 +33,7 @@ public interface RpcErrors {
     }
 
     default <T> IRpcError<T> toError(String message) {
-        return new ErrorImpl<>(code(), message(), null);
+        return new ErrorImpl<>(code(), message, null);
     }
 
     default <T> IRpcError<T> toError(String message, T data) {

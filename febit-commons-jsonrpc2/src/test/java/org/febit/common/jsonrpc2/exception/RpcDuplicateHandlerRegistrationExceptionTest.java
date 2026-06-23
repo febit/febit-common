@@ -13,28 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.common.jsonrpc2;
+package org.febit.common.jsonrpc2.exception;
 
-import org.febit.common.jsonrpc2.protocol.Id;
-import org.jspecify.annotations.Nullable;
+import org.junit.jupiter.api.Test;
 
-import java.util.concurrent.ConcurrentHashMap;
+import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * A simple thread-safe request pool implementation.
- */
-public class SimpleRequestPool implements RequestPool {
+class RpcDuplicateHandlerRegistrationExceptionTest {
 
-    private final ConcurrentHashMap<Id, RequestPacket<?>> requests = new ConcurrentHashMap<>();
-
-    @Override
-    public void add(RequestPacket<?> requestPacket) {
-        requests.put(requestPacket.id(), requestPacket);
+    @Test
+    void constructWithMessage() {
+        var ex = new RpcDuplicateHandlerRegistrationException("dup handler: calc/add");
+        assertEquals("dup handler: calc/add", ex.getMessage());
     }
 
-    @Override
-    @Nullable
-    public RequestPacket<?> pop(Id id) {
-        return requests.remove(id);
+    @Test
+    void isIllegalStateException() {
+        var ex = new RpcDuplicateHandlerRegistrationException("test");
+        assertTrue(ex instanceof IllegalStateException);
     }
 }
