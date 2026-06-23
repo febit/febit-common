@@ -25,6 +25,7 @@ class ConditionsTest {
 
     @Test
     void keywordsWithVarargs() {
+        @SuppressWarnings("unchecked")
         var condition = Conditions.keywords("hello",
                 Fields.string("name"), Fields.string("title"));
 
@@ -62,8 +63,8 @@ class ConditionsTest {
 
     @Test
     void keywordsWithSingleField() {
+        @SuppressWarnings("unchecked")
         var condition = Conditions.keywords("hello", Fields.string("name"));
-
         assertThat(condition.toString())
                 .contains("name", "hello");
     }

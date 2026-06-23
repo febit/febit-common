@@ -293,8 +293,9 @@ class AsyncPromiseTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void submit_consumer_varargs_callsInOrder() throws Exception {
-        ExecutorService exec = Executors.newSingleThreadExecutor();
+        var exec = Executors.newSingleThreadExecutor();
         try {
             var promise = AsyncPromise.promise(exec);
             var received = new ArrayList<Integer>();

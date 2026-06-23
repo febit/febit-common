@@ -182,12 +182,14 @@ public interface RestClientBuilderDecorator<B extends RestClient.Builder> extend
 
     @Override
     @Deprecated(forRemoval = true)
+    @SuppressWarnings("removal")
     default B messageConverters(Iterable<HttpMessageConverter<?>> messageConverters) {
         throw new UnsupportedOperationException("Deprecated and not supported.");
     }
 
     @Override
     @Deprecated(forRemoval = true)
+    @SuppressWarnings("removal")
     default B messageConverters(Consumer<List<HttpMessageConverter<?>>> configurer) {
         throw new UnsupportedOperationException("Deprecated and not supported.");
     }

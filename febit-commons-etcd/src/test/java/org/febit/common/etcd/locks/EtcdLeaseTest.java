@@ -198,6 +198,7 @@ class EtcdLeaseTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void keepAliveOnCompleted() throws Exception {
         try (var client = mock(Client.class, RETURNS_DEEP_STUBS)) {
             var leaseGrantResponse = mock(LeaseGrantResponse.class);
