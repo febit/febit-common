@@ -91,7 +91,7 @@ class JwtCodecTest {
             .build();
 
     @Test
-    void basic() {
+    void shouldEncodeAndDecodeJwtToken() {
         var token = assertDoesNotThrow(() -> CODEC_ALL.encode(PL_X));
         var decoded = assertDoesNotThrow(() -> CODEC_ALL.decode(token));
 
@@ -100,7 +100,7 @@ class JwtCodecTest {
     }
 
     @Test
-    void expired() throws JOSEException {
+    void shouldHandleTokenExpirationAndNotBeforeTime() throws JOSEException {
         var codec = spy(CODEC_ALL);
 
         var now = Instant.parse("2024-10-01T10:00:00Z");
@@ -148,7 +148,7 @@ class JwtCodecTest {
     }
 
     @Test
-    void invalidKey() throws JOSEException {
+    void shouldThrowForInvalidKeySpec() throws JOSEException {
         var codec = new JwtCodec(JwtCodecProps.builder()
                 .signerKeyId(ES_BAD.id())
                 .key(ES_BAD)
@@ -164,7 +164,7 @@ class JwtCodecTest {
     }
 
     @Test
-    void wrongKey() throws JOSEException {
+    void shouldFailVerifyWithMismatchedKeys() throws JOSEException {
         var codec = new JwtCodec(JwtCodecProps.builder()
                 .signerKeyId("x")
                 .key(JwtKey.builder()
@@ -183,7 +183,7 @@ class JwtCodecTest {
     }
 
     @Test
-    void invalidFormat() {
+    void shouldReturnErrorForInvalidTokenFormat() {
         var decoded = CODEC_ALL.decode("");
         assertFalse(decoded.isSuccess());
         assertEquals(STATUS_UNAUTHORIZED, decoded.getStatus());
@@ -194,7 +194,7 @@ class JwtCodecTest {
     }
 
     @Test
-    void missingSignerKey() {
+    void shouldThrowWhenSignerKeyNotFound() {
         var codec = new JwtCodec(JwtCodecProps.builder()
                 .signerKeyId(ES_1.id())
                 .keys(List.of(ES_2))
@@ -205,7 +205,7 @@ class JwtCodecTest {
     }
 
     @Test
-    void invalidPayload() throws JOSEException {
+    void shouldReturnErrorForInvalidPayloadFormat() throws JOSEException {
         var key = ES_1.resolve();
         var header = new JWSHeader.Builder(key.algorithm().getJws())
                 .keyID(key.id())
@@ -226,7 +226,7 @@ class JwtCodecTest {
     }
 
     @Test
-    void missingVerifierKey() throws JOSEException {
+    void shouldReturnErrorWhenVerifierKeyNotFound() throws JOSEException {
         var codec = new JwtCodec(JwtCodecProps.builder()
                 .signerKeyId(ES_2.id())
                 .keys(List.of(ES_2))
@@ -242,7 +242,7 @@ class JwtCodecTest {
     }
 
     @Test
-    void notVerifierKeyConfig() throws JOSEException {
+    void shouldReturnErrorWhenVerifierKeyNotConfigured() throws JOSEException {
         var codec = new JwtCodec(JwtCodecProps.builder()
                 .signerKeyId("x")
                 .key(JwtKey.builder()
@@ -260,7 +260,7 @@ class JwtCodecTest {
     }
 
     @Test
-    void diffConfig() throws JOSEException {
+    void shouldDecodeTokensAcrossDifferentCodecConfigs() throws JOSEException {
         var es1Codec = new JwtCodec(JwtCodecProps.builder()
                 .signerKeyId(ES_1.id())
                 .keys(List.of(ES_1, ES_2))
@@ -286,7 +286,7 @@ class JwtCodecTest {
     }
 
     @Test
-    void rsa() {
+    void shouldEncodeAndDecodeWithRsaKey() {
         var codec = new JwtCodec(JwtCodecProps.builder()
                 .signerKeyId(RSA_1.id())
                 .keys(List.of(RSA_1, RSA_2))
@@ -301,7 +301,7 @@ class JwtCodecTest {
     }
 
     @Test
-    void rsa512() {
+    void shouldEncodeAndDecodeWithRs512Key() {
         var key = RSA_1.toBuilder()
                 .algorithm(JwkAlgorithm.RS512)
                 .build();

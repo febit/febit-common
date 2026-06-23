@@ -48,7 +48,7 @@ class CommandsTest {
     static final Console DISCART_CONSOLE = new DefaultConsole(new PrintStream(new DiscardOutputStream()));
 
     @Test
-    void noOptions() {
+    void shouldShowUsageWhenNoOptionsGiven() {
         var out = new ByteArrayOutputStream();
         var console = new DefaultConsole(new PrintStream(out));
         var commands = Commands.create()
@@ -58,7 +58,7 @@ class CommandsTest {
     }
 
     @Test
-    void ex_add() {
+    void shouldRejectAddWithEmptyKeysOrNullOptionsSupplier() {
         var commands = Commands.create()
                 .console(DISCART_CONSOLE);
 
@@ -75,7 +75,7 @@ class CommandsTest {
     }
 
     @Test
-    void parameterException() {
+    void shouldThrowParameterExceptionForUnknownOptions() {
         var contextHolder = new AtomicReference<Context>();
         var clickhouse = spy(SpyCommand.of(
                 List.of("clickhouse", "c"),
@@ -108,7 +108,7 @@ class CommandsTest {
     }
 
     @Test
-    void help() {
+    void shouldExecuteHelpCommandWithoutException() {
         var commands = Commands.create()
                 .console(DISCART_CONSOLE)
                 .add(new HelpCommand());
@@ -116,7 +116,7 @@ class CommandsTest {
     }
 
     @Test
-    void foo() {
+    void shouldExecuteCommandByFullAndShortName() {
         var console = spy(DISCART_CONSOLE);
         var foo = spy(new FooCommand());
 
@@ -140,7 +140,7 @@ class CommandsTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    void full() {
+    void shouldExecuteCommandWithGlobalOptionsAndParseCorrectly() {
         var contextHolder = new AtomicReference<Context>();
         var clickhouse = spy(SpyCommand.of(
                 List.of("clickhouse", "c"),

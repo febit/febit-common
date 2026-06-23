@@ -22,9 +22,11 @@ import org.febit.lang.io.Lines;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -56,7 +58,7 @@ class ExecUtilsTest {
     }
 
     @Test
-    void ping_lineStream() throws ExecutionException, InterruptedException {
+    void shouldRunCountingWithPipeLineStream() throws ExecutionException, InterruptedException {
         counting(launcher -> launcher
                 .pipeLineStream(lines -> lines.forEach(line -> {
                     log.info("> {}", line);
@@ -65,7 +67,7 @@ class ExecUtilsTest {
     }
 
     @Test
-    void ping_lines() throws ExecutionException, InterruptedException {
+    void shouldRunCountingWithPipeLines() throws ExecutionException, InterruptedException {
         counting(launcher -> launcher
                 .pipeLines(line -> {
                     log.info("> {}", line);
@@ -74,7 +76,7 @@ class ExecUtilsTest {
     }
 
     @Test
-    void ping_std() throws ExecutionException, InterruptedException {
+    void shouldRunCountingWithStdoutAndStderr() throws ExecutionException, InterruptedException {
         counting(launcher -> launcher
                 .stderr(Lines.asUtf8OutputStream(line -> {
                     log.info("stderr: {}", line);
@@ -82,6 +84,161 @@ class ExecUtilsTest {
                 .stdout(Lines.asUtf8OutputStream(line -> {
                     log.info("stdout: {}", line);
                 }))
+        );
+    }
+
+    @Test
+    void shouldRunCountingWithEnvironmentVariable() throws ExecutionException, InterruptedException {
+        counting(launcher -> launcher
+                .env("TEST_VAR", "test_value")
+                .pipeLines(line -> {
+                    log.info("> {}", line);
+                })
+        );
+    }
+
+    @Test
+    void shouldAcceptWorkingDirAsPath() {
+        var launcher = ExecUtils.launcher()
+                .command(new CommandLine("echo"))
+                .workingDir(new File("/tmp").toPath());
+
+        assertNotNull(launcher);
+    }
+
+    @Test
+    void shouldAcceptWorkingDirAsFile() {
+        var launcher = ExecUtils.launcher()
+                .command(new CommandLine("echo"))
+                .workingDir(new File("/tmp"));
+
+        assertNotNull(launcher);
+    }
+
+    @Test
+    void shouldAcceptWorkingDirAsNullFile() {
+        var launcher = ExecUtils.launcher()
+                .command(new CommandLine("echo"))
+                .workingDir((File) null);
+
+        assertNotNull(launcher);
+    }
+
+    @Test
+    void shouldAcceptStdoutAsOutputStream() {
+        var launcher = ExecUtils.launcher()
+                .command(new CommandLine("echo"))
+                .stdout(Lines.asUtf8OutputStream(line -> {
+                }));
+
+        assertNotNull(launcher);
+    }
+
+    @Test
+    void shouldAcceptStdoutAsConsumer() {
+        var launcher = ExecUtils.launcher()
+                .command(new CommandLine("echo"))
+                .stdout((Consumer<String>) (line -> {
+                }));
+
+        assertNotNull(launcher);
+    }
+
+    @Test
+    void shouldAcceptStderrAsOutputStream() {
+        var launcher = ExecUtils.launcher()
+                .command(new CommandLine("echo"))
+                .stderr(Lines.asUtf8OutputStream(line -> {
+                }));
+
+        assertNotNull(launcher);
+    }
+
+    @Test
+    void shouldAcceptStderrAsConsumer() {
+        var launcher = ExecUtils.launcher()
+                .command(new CommandLine("echo"))
+                .stderr((Consumer<String>) (line -> {
+                }));
+
+        assertNotNull(launcher);
+    }
+
+    @Test
+    void shouldAcceptPipeLineStreamWithCustomBufferSize() {
+        var launcher = ExecUtils.launcher()
+                .command(new CommandLine("echo"))
+                .pipeLineStream(lines -> {
+                }, 512);
+
+        assertNotNull(launcher);
+    }
+
+    @Test
+    void shouldAcceptPipeLinesWithSink() {
+        var launcher = ExecUtils.launcher()
+                .command(new CommandLine("echo"))
+                .pipeLines(line -> {
+                });
+
+        assertNotNull(launcher);
+    }
+
+    @Test
+    void shouldAcceptPipeLineStreamWithDefaultBuffer() {
+        var launcher = ExecUtils.launcher()
+                .command(new CommandLine("echo"))
+                .pipeLineStream(lines -> {
+                });
+
+        assertNotNull(launcher);
+    }
+
+    // -- DefaultExecutor tests --
+
+    @Test
+    void shouldExecuteRunnableOnDefaultExecutor() throws InterruptedException {
+        var latch = new CountDownLatch(1);
+        var executed = new AtomicBoolean(false);
+
+        ExecUtils.DefaultExecutor.INSTANCE.execute(() -> {
+            executed.set(true);
+            latch.countDown();
+        });
+
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(executed.get());
+    }
+
+    @Test
+    void shouldRunOnSeparateThreadOnDefaultExecutor() throws InterruptedException {
+        var mainThread = Thread.currentThread();
+        var latch = new CountDownLatch(1);
+        var otherThread = new AtomicBoolean(false);
+
+        ExecUtils.DefaultExecutor.INSTANCE.execute(() -> {
+            if (Thread.currentThread() != mainThread) {
+                otherThread.set(true);
+            }
+            latch.countDown();
+        });
+
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
+        assertTrue(otherThread.get());
+    }
+
+    @Test
+    void shouldBeSingletonForDefaultExecutor() {
+        assertSame(ExecUtils.DefaultExecutor.INSTANCE, ExecUtils.DefaultExecutor.INSTANCE);
+    }
+
+    @Test
+    void shouldRunCountingWithCustomExecutor() throws ExecutionException, InterruptedException {
+        counting(launcher -> launcher
+                .executor(ExecUtils.DefaultExecutor.INSTANCE)
+                .pipeLines(line -> {
+                    log.info("> {}", line);
+                })
         );
     }
 }
