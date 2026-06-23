@@ -15,7 +15,9 @@ test {
 dependencies {
   api project(':febit-lang')
   api libs.jetcd.core
+  api libs.protobuf.java
 
   testImplementation libs.jetcd.core
   testImplementation libs.jetcd.test
+  testImplementation libs.protobuf.java
 }
