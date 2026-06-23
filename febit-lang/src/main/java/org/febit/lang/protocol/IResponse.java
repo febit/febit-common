@@ -28,48 +28,6 @@ import java.util.function.Supplier;
 @JsonDeserialize(as = Response.class)
 public interface IResponse<T extends @Nullable Object> extends Fallible {
 
-    /**
-     * @deprecated use {@link #ok()} instead
-     */
-    @Deprecated(since = "4.0.0", forRemoval = true)
-    static <T extends @Nullable Object> IResponse<T> success() {
-        return ok(200, null);
-    }
-
-    /**
-     * @deprecated use {@link #ok(Object)} instead
-     */
-    @Deprecated(since = "4.0.0", forRemoval = true)
-    static <T extends @Nullable Object> IResponse<T> success(T data) {
-        return ok(200, data);
-    }
-
-    /**
-     * @deprecated use {@link #ok(int, Object)} instead
-     */
-    @Deprecated(since = "4.0.0", forRemoval = true)
-    static <T extends @Nullable Object> IResponse<T> success(int httpStatus, T data) {
-        return ok(httpStatus, null, null, data);
-    }
-
-    /**
-     * @deprecated use {@link #ok(String, String, Object)} instead
-     */
-    @Deprecated(since = "4.0.0", forRemoval = true)
-    static <T extends @Nullable Object> IResponse<T> success(
-            @Nullable String code, @Nullable String message, T data) {
-        return ok(200, code, message, data);
-    }
-
-    /**
-     * @deprecated use {@link #ok(int, String, String, Object)} instead
-     */
-    @Deprecated(since = "4.0.0", forRemoval = true)
-    static <T extends @Nullable Object> IResponse<T> success(
-            int httpStatus, @Nullable String code, @Nullable String message, T data) {
-        return ok(httpStatus, code, message, data);
-    }
-
     static <T extends @Nullable Object> IResponse<T> ok() {
         return ok(200, null);
     }

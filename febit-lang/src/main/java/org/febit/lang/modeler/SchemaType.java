@@ -66,30 +66,6 @@ public enum SchemaType {
     @Getter
     private final boolean basicType;
 
-    /**
-     * @deprecated use {@link #javaClass()} instead.
-     */
-    @Deprecated(since = "4.0.2", forRemoval = true)
-    public Class<?> getJavaClass() {
-        return javaClass();
-    }
-
-    /**
-     * @deprecated use {@link #identifier()} instead.
-     */
-    @Deprecated(since = "4.0.2", forRemoval = true)
-    public String getTypeName() {
-        return identifier();
-    }
-
-    /**
-     * @deprecated use {@link #identifier()} instead.
-     */
-    @Deprecated(since = "4.0.2", forRemoval = true)
-    public String toTypeString() {
-        return identifier();
-    }
-
     public String toJavaTypeString() {
         if ("java.lang".equals(javaClass.getPackageName())) {
             return javaClass.getSimpleName();
