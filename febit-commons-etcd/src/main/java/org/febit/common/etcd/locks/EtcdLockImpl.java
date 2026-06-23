@@ -70,7 +70,11 @@ public final class EtcdLockImpl implements EtcdLock {
         if (keys == null || keys.isEmpty()) {
             throw new IllegalArgumentException("keys must not be empty");
         }
-        var unique = new HashSet<ByteSequence>(keys.size());
+        if (keys.size() == 1) {
+            Objects.requireNonNull(keys.getFirst(), "keys contains null");
+            return;
+        }
+        var unique = HashSet.newHashSet(keys.size());
         for (var key : keys) {
             Objects.requireNonNull(key, "keys contains null");
             if (!unique.add(key)) {
