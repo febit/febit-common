@@ -87,12 +87,13 @@ public class RpcChannelImpl implements RpcChannel {
         );
 
         var now = clock.now();
-        var future = new CompletableFuture<T>();
+        var rawFuture = new CompletableFuture<T>();
+        var chained = rawFuture;
         if (timeout != null) {
-            future = future.orTimeout(timeout.toMillis(), TimeUnit.MILLISECONDS);
+            chained = chained.orTimeout(timeout.toMillis(), TimeUnit.MILLISECONDS);
         }
 
-        future = future.whenComplete((result, error) -> {
+        chained = chained.whenComplete((result, error) -> {
             requestPool.pop(id);
         });
 
@@ -100,15 +101,21 @@ public class RpcChannelImpl implements RpcChannel {
         var packet = RequestPacket.<T>builder()
                 .id(id)
                 .request(request)
-                .future(future)
+                .future(rawFuture)
                 .resultType(JsonCodec.resolveType(resultType))
                 .postedAt(now)
                 .timeoutAt(timeoutAt)
                 .build();
 
-        requestPool.add(packet);
-        poster.post(request);
-        return future;
+        try {
+            requestPool.add(packet);
+            poster.post(request);
+        } catch (Exception e) {
+            log.error("Failed to post request: {}", method, e);
+            requestPool.pop(id);
+            rawFuture.completeExceptionally(e);
+        }
+        return chained;
     }
 
     @Override

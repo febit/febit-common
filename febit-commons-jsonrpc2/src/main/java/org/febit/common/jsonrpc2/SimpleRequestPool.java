@@ -29,7 +29,11 @@ public class SimpleRequestPool implements RequestPool {
 
     @Override
     public void add(RequestPacket<?> requestPacket) {
-        requests.put(requestPacket.id(), requestPacket);
+        var prev = requests.putIfAbsent(requestPacket.id(), requestPacket);
+        if (prev != null) {
+            throw new IllegalStateException(
+                    "Duplicate request id: " + requestPacket.id() + ", previous entry exists");
+        }
     }
 
     @Override

@@ -82,16 +82,19 @@ class SimpleRequestPoolTest {
     }
 
     @Test
-    void sameIdOverwrites() {
+    void duplicateIdThrows() {
         var pool = new SimpleRequestPool();
         var id = Id.of("same");
         var p1 = createPacket(id);
         var p2 = createPacket(id);
         pool.add(p1);
-        pool.add(p2);
 
-        var popped = pool.pop(id);
-        assertSame(p2, popped);
+        var ex = assertThrows(IllegalStateException.class, () -> pool.add(p2));
+        assertTrue(ex.getMessage().contains("Duplicate request id"), "message should mention duplicate id");
+
+        // The original entry is preserved
+        assertSame(p1, pool.pop(id));
+        assertNull(pool.pop(id));
     }
 
     @Test

@@ -21,14 +21,19 @@ import org.febit.common.jsonrpc2.annotation.RpcNotification;
 import org.febit.common.jsonrpc2.annotation.RpcParamsKind;
 import org.febit.common.jsonrpc2.annotation.RpcRequest;
 import org.febit.common.jsonrpc2.exception.RpcErrorException;
+import org.febit.common.jsonrpc2.protocol.Id;
 import org.febit.common.jsonrpc2.protocol.StdRpcErrors;
 import org.febit.lang.Tuple2;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 
+import java.time.Duration;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.LongAdder;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -248,6 +253,147 @@ class RpcChannelImplTest {
         var b = pair.v1().remoteApi(BRpc.class);
 
         assertThrows(IllegalStateException.class, () -> b.paramsOverflow("a", "b", "c"));
+    }
+
+    @Test
+    void posterFailureCleansUp() {
+        var thrown = new RuntimeException("post failed");
+        var pool = new TrackingRequestPool();
+        var channel = RpcChannelImpl.builder()
+                .poster(m -> {
+                    throw thrown;
+                })
+                .executor(DefaultRpcExecutor.create(Runnable::run))
+                .requestPool(pool)
+                .build();
+
+        var future = channel.request("test", null, null, String.class);
+
+        var ex = assertThrows(ExecutionException.class, future::get);
+        assertSame(thrown, ex.getCause());
+        assertTrue(pool.isEmpty(), "pool should be empty after failed post");
+    }
+
+    @Test
+    void posterFailureCleansUpWithTimeout() {
+        var thrown = new RuntimeException("post failed");
+        var pool = new TrackingRequestPool();
+        var channel = RpcChannelImpl.builder()
+                .poster(m -> {
+                    throw thrown;
+                })
+                .executor(DefaultRpcExecutor.create(Runnable::run))
+                .requestPool(pool)
+                .build();
+
+        var future = channel.request("test", null, java.time.Duration.ofSeconds(5), String.class);
+
+        var ex = assertThrows(ExecutionException.class, future::get);
+        assertSame(thrown, ex.getCause());
+        assertTrue(pool.isEmpty(), "pool should be empty after failed post with timeout");
+    }
+
+    @Test
+    void responseCompletesFutureAndCleansPool() throws Exception {
+        var pool = new TrackingRequestPool();
+        var pair = ChannelExchange.newSync();
+        var executor = DefaultRpcExecutor.create(Runnable::run);
+
+        var a = RpcChannelImpl.builder()
+                .executor(executor)
+                .poster(pair.posterToB())
+                .requestPool(pool)
+                .handlers(SimpleRpcHandlerManager.create()
+                        .register(new SystemService("A"))
+                )
+                .build();
+
+        var b = RpcChannelImpl.builder()
+                .executor(executor)
+                .poster(pair.posterToA())
+                .handlers(SimpleRpcHandlerManager.create()
+                        .register(new SystemService("B"))
+                )
+                .build();
+
+        pair.registerA(a);
+        pair.registerB(b);
+
+        assertTrue(pool.isEmpty());
+
+        var future = a.request("system/ping", null, null, String.class);
+        assertEquals("pong", future.get());
+        assertTrue(pool.isEmpty(), "pool should be empty after response");
+    }
+
+    @Test
+    void errorResponseCleansPool() {
+        var pool = new TrackingRequestPool();
+        var pair = ChannelExchange.newSync();
+        var executor = DefaultRpcExecutor.create(Runnable::run);
+
+        // 'a' has no handlers, acts purely as client
+        var a = RpcChannelImpl.builder()
+                .executor(executor)
+                .poster(pair.posterToB())
+                .requestPool(pool)
+                .build();
+
+        var b = RpcChannelImpl.builder()
+                .executor(executor)
+                .poster(pair.posterToA())
+                .handlers(SimpleRpcHandlerManager.create()
+                        .register(new SystemService("B"))
+                )
+                .build();
+
+        pair.registerA(a);
+        pair.registerB(b);
+
+        // method with no handler → b responds with METHOD_NOT_FOUND error
+        var future = a.request("nonexistent", null, null, String.class);
+
+        var ex = assertThrows(ExecutionException.class, future::get);
+        assertInstanceOf(RpcErrorException.class, ex.getCause());
+        assertTrue(pool.isEmpty(), "pool should be empty after error response");
+    }
+
+    @Test
+    void timeoutCleansPool() {
+        var pool = new TrackingRequestPool();
+        var executor = DefaultRpcExecutor.create(Executors.newCachedThreadPool());
+        var channel = RpcChannelImpl.builder()
+                .poster(m -> { /* never delivers — response never arrives */ })
+                .executor(executor)
+                .requestPool(pool)
+                .build();
+
+        var future = channel.request("test", null, Duration.ofMillis(100), String.class);
+
+        var ex = assertThrows(ExecutionException.class, future::get);
+        assertInstanceOf(TimeoutException.class, ex.getCause());
+        assertTrue(pool.isEmpty(), "pool should be empty after timeout");
+    }
+
+    // --- helpers ---
+
+    static class TrackingRequestPool implements RequestPool {
+
+        final ConcurrentHashMap<Id, RequestPacket<?>> requests = new ConcurrentHashMap<>();
+
+        @Override
+        public void add(RequestPacket<?> packet) {
+            requests.put(packet.id(), packet);
+        }
+
+        @Override
+        public RequestPacket<?> pop(Id id) {
+            return requests.remove(id);
+        }
+
+        boolean isEmpty() {
+            return requests.isEmpty();
+        }
     }
 
     @RpcMapping("b")
