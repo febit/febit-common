@@ -121,16 +121,76 @@ class RpcChannelImplTest {
         b.whenTouched(100);
         assertEquals(101, b.counts().touched());
 
-        // Both
+        // Both: only request handler fires, notification handler does NOT fire by default
         b.bothRequest();
         assertEquals(1, b.counts().bothRequest());
-        assertEquals(1, b.counts().bothNotification());
+        assertEquals(0, b.counts().bothNotification());
 
         for (int i = 0; i < 10; i++) {
             b.bothRequest();
         }
         assertEquals(11, b.counts().bothRequest());
+        assertEquals(0, b.counts().bothNotification());
 
+    }
+
+    @Test
+    void requestAsNotificationDisabledByDefault() {
+        var pair = syncPair();
+        var b = pair.v1().remoteApi(BRpc.class);
+
+        var counts = b.counts();
+        assertEquals(0, counts.bothRequest());
+        assertEquals(0, counts.bothNotification());
+
+        b.bothRequest();
+
+        assertEquals(1, b.counts().bothRequest());
+        assertEquals(0, b.counts().bothNotification());
+    }
+
+    @Test
+    void requestAsNotificationEnabled() {
+        var exchange = ChannelExchange.newSync();
+        var executor = DefaultRpcExecutor.create(Runnable::run);
+
+        var a = RpcChannelImpl.builder()
+                .executor(executor)
+                .poster(exchange.posterToB())
+                .requestAsNotification(true)
+                .handlers(SimpleRpcHandlerManager.create()
+                        .register(new SystemService("A"))
+                )
+                .build();
+
+        var b = RpcChannelImpl.builder()
+                .executor(executor)
+                .poster(exchange.posterToA())
+                .requestAsNotification(true)
+                .handlers(SimpleRpcHandlerManager.create()
+                        .register(new SystemService("B"))
+                        .register(new BService())
+                )
+                .build();
+
+        exchange.registerA(a);
+        exchange.registerB(b);
+
+        var proxy = a.remoteApi(BRpc.class);
+
+        assertEquals(0, proxy.counts().bothRequest());
+        assertEquals(0, proxy.counts().bothNotification());
+
+        proxy.bothRequest();
+
+        assertEquals(1, proxy.counts().bothRequest());
+        assertEquals(1, proxy.counts().bothNotification());
+
+        for (int i = 0; i < 10; i++) {
+            proxy.bothRequest();
+        }
+        assertEquals(11, proxy.counts().bothRequest());
+        assertEquals(11, proxy.counts().bothNotification());
     }
 
     @Test

@@ -46,33 +46,30 @@ import java.util.concurrent.TimeUnit;
 )
 public class RpcChannelImpl implements RpcChannel {
 
-    @SuppressWarnings("NullableProblems")
     @lombok.NonNull
     private final RpcExecutor executor;
 
-    @SuppressWarnings("NullableProblems")
     @lombok.NonNull
     private final RpcPoster poster;
 
-    @SuppressWarnings("NullableProblems")
     @lombok.NonNull
     @lombok.Builder.Default
     private final RpcHandlerManager handlers = SimpleRpcHandlerManager.create();
 
-    @SuppressWarnings("NullableProblems")
     @lombok.NonNull
     @lombok.Builder.Default
     private final IClock clock = System::currentTimeMillis;
 
-    @SuppressWarnings("NullableProblems")
     @lombok.NonNull
     @lombok.Builder.Default
     private final IdGenerator requestIdGenerator = IncrLongIdGenerator.create();
 
-    @SuppressWarnings("NullableProblems")
     @lombok.NonNull
     @lombok.Builder.Default
     private final RequestPool requestPool = new SimpleRequestPool();
+
+    @lombok.Builder.Default
+    private final boolean requestAsNotification = false;
 
     @Override
     public void notify(String method, @Nullable Object params) {
@@ -132,7 +129,9 @@ public class RpcChannelImpl implements RpcChannel {
     public void handle(IRpcMessage incoming) {
         if (incoming instanceof IRpcRequest request) {
             handle(request);
-            handle(request.asNotification());
+            if (requestAsNotification) {
+                handle(request.asNotification());
+            }
             return;
         }
         if (incoming instanceof IRpcResponse<?> response) {
