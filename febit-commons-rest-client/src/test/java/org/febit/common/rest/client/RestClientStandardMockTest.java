@@ -61,7 +61,7 @@ class RestClientStandardMockTest {
     }
 
     @Test
-    void foo() {
+    void shouldDeserializeSuccessResponsesWithData() {
         responseJson(HttpStatus.OK, """
                 {
                   "success": true,
@@ -110,7 +110,7 @@ class RestClientStandardMockTest {
     }
 
     @Test
-    void failed() {
+    void shouldDeserializeErrorResponsesWithoutData() {
         responseJson(HttpStatus.BAD_REQUEST, """
                 {
                   "success": false,
@@ -187,6 +187,111 @@ class RestClientStandardMockTest {
                 .addHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .body(json)
         );
+    }
+
+    @Test
+    void serverError500() {
+        responseJson(HttpStatus.INTERNAL_SERVER_ERROR, """
+                {
+                  "success": false,
+                  "code": "SERVER_ERROR",
+                  "message": "Internal server error"
+                }
+                """);
+
+        var rsp = client.get()
+                .uri("/test")
+                .retrieve()
+                .body(forResponse(Object.class));
+
+        assertThat(rsp)
+                .returns(500, IResponse::status)
+                .returns("SERVER_ERROR", IResponse::code)
+                .returns(false, IResponse::isSuccess);
+    }
+
+    @Test
+    void serverError503() {
+        responseJson(HttpStatus.SERVICE_UNAVAILABLE, """
+                {
+                  "success": false,
+                  "code": "UNAVAILABLE",
+                  "message": "Service unavailable"
+                }
+                """);
+
+        var rsp = client.get()
+                .uri("/test")
+                .retrieve()
+                .body(forResponse(Object.class));
+
+        assertThat(rsp)
+                .returns(503, IResponse::status)
+                .returns("UNAVAILABLE", IResponse::code)
+                .returns(false, IResponse::isSuccess);
+    }
+
+    @Test
+    void voidResponse() {
+        responseJson(HttpStatus.OK, """
+                {
+                  "success": true,
+                  "data": null
+                }
+                """);
+
+        // Void.class: response.deserializeFromResponse() returns null for void types
+        var rsp = client.get()
+                .uri("/test")
+                .retrieve()
+                .body(forResponse(Void.class));
+
+        assertThat(rsp)
+                .returns(200, IResponse::status)
+                .returns(true, IResponse::isSuccess)
+                .returns(null, IResponse::data);
+    }
+
+    @Test
+    void postWithBody() {
+        responseJson(HttpStatus.OK, """
+                {
+                  "success": true,
+                  "data": {
+                    "name": "created",
+                    "roles": ["user"]
+                  }
+                }
+                """);
+
+        var rsp = client.post()
+                .uri("/test")
+                .body(new FooVO("input", List.of("admin")))
+                .retrieve()
+                .body(forResponse(FooVO.class));
+
+        assertThat(rsp)
+                .returns(200, IResponse::status)
+                .returns(true, IResponse::isSuccess)
+                .returns(new FooVO("created", List.of("user")), IResponse::data);
+    }
+
+    @Test
+    void deleteRequest() {
+        responseJson(HttpStatus.OK, """
+                {
+                  "success": true
+                }
+                """);
+
+        var rsp = client.delete()
+                .uri("/test")
+                .retrieve()
+                .body(forResponse(Object.class));
+
+        assertThat(rsp)
+                .returns(200, IResponse::status)
+                .returns(true, IResponse::isSuccess);
     }
 
     private void responseText(HttpStatusCode status, String text) {

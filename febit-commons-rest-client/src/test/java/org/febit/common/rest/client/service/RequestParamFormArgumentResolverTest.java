@@ -51,7 +51,7 @@ class RequestParamFormArgumentResolverTest {
     private final RequestParamFormArgumentResolver resolver = RequestParamFormArgumentResolver.create(JsonMapper.builder().build());
 
     @Test
-    void foo() {
+    void shouldResolveSimpleFormFields() {
         var foo = new FooForm("Alice", 30);
         var methodParameter = new MethodParameter(METHOD_API, 0);
 
@@ -66,7 +66,7 @@ class RequestParamFormArgumentResolverTest {
     }
 
     @Test
-    void bar() {
+    void shouldResolveNestedFormWithPrefixAndCollections() {
         var bar = BarForm.builder()
                 .title("Manager")
                 .innerFooForm(new FooForm("Charlie", 28))
@@ -91,7 +91,7 @@ class RequestParamFormArgumentResolverTest {
     }
 
     @Test
-    void others() {
+    void shouldNotResolveWithoutRequestParamFormAnnotation() {
         var foo = new FooForm("Bob", 25);
         var methodParameter = new MethodParameter(METHOD_API, 2);
         var values = mock(HttpRequestValues.Builder.class);
