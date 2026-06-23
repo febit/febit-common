@@ -276,8 +276,6 @@ class PollingTest {
                 .returns(3L, Context::attempts);
     }
 
-    // ──── Builder parameter validation ────
-
     @Test
     void noTimeoutThrowsException() {
         assertThrows(IllegalArgumentException.class, () ->
@@ -380,7 +378,6 @@ class PollingTest {
         );
     }
 
-    // ──── Timeout configuration edge cases ────
 
     @Test
     void timeoutAtDirect() throws ExecutionException, InterruptedException {
@@ -471,7 +468,6 @@ class PollingTest {
         assertFalse(result.now().isAfter(after.plusSeconds(1)));
     }
 
-    // ──── CompleteIf edge cases ────
 
     @Test
     void completeIfReturnsNull() throws ExecutionException, InterruptedException {
@@ -490,7 +486,6 @@ class PollingTest {
                 .returns(2L, Context::attempts);
     }
 
-    // ──── Error handling ────
 
     @Test
     void supplierThrowsRuntimeException() throws ExecutionException, InterruptedException {
@@ -547,7 +542,6 @@ class PollingTest {
                 .returns(2L, Context::attempts);
     }
 
-    // ──── Initial delay ────
 
     @Test
     void initialDelayReflectedInLastDelay() throws ExecutionException, InterruptedException {
@@ -581,7 +575,6 @@ class PollingTest {
                 .returns(Duration.ZERO, Context::lastDelay);
     }
 
-    // ──── Runtime behavior ────
 
     @Test
     void interruptedExceptionDuringSupplierSetsCompleted() throws ExecutionException, InterruptedException {

@@ -36,7 +36,8 @@ import java.util.concurrent.locks.Lock;
  *     businessFlow();
  * } finally {
  *     lock.close();
- * }}</pre>
+ * }
+ * }</pre>
  *
  * <h3>Reentrancy</h3>
  * Locks are reentrant by key: acquiring the same key again from the
@@ -99,7 +100,8 @@ import java.util.concurrent.locks.Lock;
  *     } catch (EtcdLockLostException e) {
  *         rollbackBusinessFlow();
  *     }
- * }}</pre>
+ * }
+ * }</pre>
  *
  * <h4>With Spring {@code @Transactional}</h4>
  * Spring rolls back when an uncaught exception escapes — two options:
@@ -130,7 +132,7 @@ import java.util.concurrent.locks.Lock;
  *     } finally {
  *         lock.close();
  *     }
- * }</pre>
+ * }}</pre>
  * <h4>Try-with-resources</h4>
  * Since {@link #close()} calls {@link #unlock()} when held, you can
  * use try-with-resources for brevity. Be aware: if the {@code try}
@@ -153,11 +155,12 @@ import java.util.concurrent.locks.Lock;
  * if (!lock2.tryLock(Duration.ofSeconds(2))) return;
  * try (lock2) {
  *     businessFlow();
- * }}
+ * }
  * // If businessFlow() throws, close() still runs via try-with-resources.
  * // If close() also throws EtcdLockLostException, Java adds it to the
  * // business exception via Throwable.addSuppressed() — the lock loss is
- * // hidden unless you call exception.getSuppressed().</pre>
+ * // hidden unless you call exception.getSuppressed().
+ * }</pre>
  *
  * <b>Important:</b> Call {@link #acknowledgeLoss()} <b>only</b> when
  * the loss has been fully resolved — either manual compensation has
