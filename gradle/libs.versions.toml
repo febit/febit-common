@@ -64,6 +64,7 @@ jackson-bom = { module = 'tools.jackson:jackson-bom', version.ref = 'jackson' }
 junit-bom = { module = 'org.junit:junit-bom', version.ref = 'junit' }
 mockito-bom = { module = 'org.mockito:mockito-bom', version.ref = 'mockito' }
 mockito-core = { module = 'org.mockito:mockito-core', version.ref = 'mockito' }
+testcontainers-bom = { module = 'org.testcontainers:testcontainers-bom', version.ref = 'testcontainers' }
 
 jakarta-annotation-api = { module = 'jakarta.annotation:jakarta.annotation-api', version.ref = 'jakarta-annotation-api' }
 jakarta-persistence-api = { module = 'jakarta.persistence:jakarta.persistence-api', version.ref = 'jakarta-persistence-api' }
@@ -106,5 +107,4 @@ spring-boot-deps = { module = 'org.springframework.boot:spring-boot-dependencies
 spring-core = { module = 'org.springframework:spring-core', version.ref = 'spring' }
 spring-web = { module = 'org.springframework:spring-web', version.ref = 'spring' }
 swagger-annotations = { module = 'io.swagger.core.v3:swagger-annotations-jakarta', version.ref = 'swagger' }
-testcontainers-bom = { module = 'org.testcontainers:testcontainers-bom', version.ref = 'testcontainers' }
 uuid-generator = { module = 'com.fasterxml.uuid:java-uuid-generator', version.ref = 'uuid-generator' }

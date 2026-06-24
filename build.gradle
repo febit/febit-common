@@ -126,6 +126,15 @@ configure(subprojects.findAll {
         entry 'swagger-core'
         entry 'swagger-core-jakarta'
       }
+      dependencySet(group: 'io.etcd', version: "${libs.versions.jetcd.get()}") {
+        entry 'jetcd-grpc'
+        entry 'jetcd-api'
+        entry 'jetcd-common'
+        entry 'jetcd-launcher'
+        entry 'jetcd-test'
+        entry 'jetcd-core'
+        entry 'jetcd-ctl'
+      }
 
       dependency "${libs.jspecify.get()}"
       dependency "${libs.jsr305.get()}"
@@ -150,12 +159,14 @@ configure(subprojects.findAll {
 
       dependency "${libs.caffeine.get()}"
       dependency "${libs.disruptor.get()}"
+      dependency "${libs.h2database.get()}"
       dependency "${libs.hamcrest.get()}"
       dependency "${libs.jcommander.get()}"
       dependency "${libs.jool.get()}"
       dependency "${libs.jsonpath.get()}"
       dependency "${libs.kafka.clients.get()}"
       dependency "${libs.nimbus.jose.jwt.get()}"
+      dependency "${libs.protobuf.java.get()}"
       dependency "${libs.semver4j.get()}"
       dependency "${libs.snakeyaml.engine.get()}"
       dependency "${libs.snakeyaml2.get()}"
