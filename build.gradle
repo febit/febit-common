@@ -1,5 +1,5 @@
 //buildscript {
-//  configurations.all { resolutionStrategy.cacheChangingModulesFor 0, 'seconds' }
+//  configurations.configureEach { resolutionStrategy.cacheChangingModulesFor 0, 'seconds' }
 //}
 plugins {
   alias libs.plugins.license
@@ -10,7 +10,7 @@ plugins {
 }
 
 group = 'org.febit'
-version = '4.1.0-SNAPSHOT'
+version = '4.1.0'
 
 description = 'Febit Commons'
 
