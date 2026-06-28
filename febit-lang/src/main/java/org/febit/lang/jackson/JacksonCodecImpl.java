@@ -21,11 +21,15 @@ import lombok.experimental.Accessors;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.cfg.MapperBuilder;
 
+import java.io.Serial;
 import java.util.function.UnaryOperator;
 
 @Accessors(fluent = true)
 @RequiredArgsConstructor(staticName = "of")
 public class JacksonCodecImpl<M extends ObjectMapper> implements JacksonCodec {
+
+    @Serial
+    private static final long serialVersionUID = 2L;
 
     @Getter
     private final M mapper;

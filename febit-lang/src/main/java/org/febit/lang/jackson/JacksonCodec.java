@@ -24,6 +24,7 @@ import tools.jackson.databind.type.TypeFactory;
 import javax.annotation.WillNotClose;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.io.Serializable;
 import java.io.Writer;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public interface JacksonCodec {
+public interface JacksonCodec extends Serializable {
 
     ObjectMapper mapper();
 
