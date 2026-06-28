@@ -139,7 +139,6 @@ public class ExecUtils {
             buildMethodName = "start"
     )
     private static ProcessFuture start(
-            @SuppressWarnings("NullableProblems")
             @lombok.NonNull CommandLine command,
 
             @Singular("env") Map<String, String> environments,

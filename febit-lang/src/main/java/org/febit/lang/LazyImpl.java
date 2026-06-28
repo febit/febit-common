@@ -33,7 +33,6 @@ import java.util.Objects;
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 final class LazyImpl<T> implements Serializable, Lazy<T> {
 
-    @SuppressWarnings("NullableProblems")
     @lombok.NonNull
     private final SerializableSupplier<T> supplier;
 

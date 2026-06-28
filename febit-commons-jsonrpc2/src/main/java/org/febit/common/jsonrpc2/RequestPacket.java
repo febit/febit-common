@@ -25,7 +25,6 @@ import java.util.concurrent.CompletableFuture;
 @lombok.Builder(
         builderClassName = "Builder"
 )
-@SuppressWarnings("NullableProblems")
 public record RequestPacket<T>(
         @lombok.NonNull Id id,
         @lombok.NonNull IRpcRequest request,

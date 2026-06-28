@@ -27,13 +27,9 @@ import java.time.Duration;
         builderClassName = "Builder"
 )
 public record RpcMappingMeta(
-        @SuppressWarnings("NullableProblems")
         @lombok.NonNull String method,
-        @SuppressWarnings("NullableProblems")
         @lombok.NonNull RpcMethodType type,
-        @SuppressWarnings("NullableProblems")
         @lombok.NonNull RpcParamsKind paramsKind,
-        @SuppressWarnings("NullableProblems")
         @lombok.NonNull JavaType resultType,
 
         @Nullable
