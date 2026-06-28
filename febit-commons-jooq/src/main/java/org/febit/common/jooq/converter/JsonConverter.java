@@ -15,6 +15,7 @@
  */
 package org.febit.common.jooq.converter;
 
+import org.febit.lang.jackson.JacksonCodec;
 import org.febit.lang.jackson.JacksonTypes;
 import org.febit.lang.jackson.JacksonUtils;
 import org.jooq.JSON;
@@ -29,40 +30,58 @@ import java.util.Map;
 @SuppressWarnings({"unused"})
 public class JsonConverter<V> extends AbstractConverter<JSON, V> {
 
+    private final JacksonCodec codec;
     private final JavaType beanJsonType;
 
-    private JsonConverter(Class<V> toType, JavaType beanJsonType) {
+    private JsonConverter(JacksonCodec codec, Class<V> toType, JavaType beanJsonType) {
         super(JSON.class, toType);
+        this.codec = codec;
         this.beanJsonType = beanJsonType;
+    }
+
+    public static <V> JsonConverter<V> forBean(JacksonCodec codec, Class<V> beanType) {
+        var type = JacksonTypes.FACTORY.constructType(beanType);
+        return new JsonConverter<>(codec, beanType, type);
+    }
+
+    public static <V> JsonConverter<V> forBean(Class<V> beanType) {
+        return forBean(JacksonUtils.json(), beanType);
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public static <V> JsonConverter<V[]> forBeanArray(JacksonCodec codec, Class<V> beanType) {
+        var type = JacksonTypes.FACTORY.constructArrayType(beanType);
+        return new JsonConverter(codec, Array.newInstance(beanType, 0).getClass(), type);
+    }
+
+    public static <V> JsonConverter<V[]> forBeanArray(Class<V> beanType) {
+        return forBeanArray(JacksonUtils.json(), beanType);
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public static <V> JsonConverter<List<V>> forBeanList(JacksonCodec codec, Class<V> beanType) {
+        var type = JacksonTypes.FACTORY.constructCollectionType(
+                List.class, beanType);
+        return new JsonConverter(codec, List.class, type);
+    }
+
+    public static <V> JsonConverter<List<V>> forBeanList(Class<V> beanType) {
+        return forBeanList(JacksonUtils.json(), beanType);
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public static <K, V> JsonConverter<Map<K, V>> forBeanMap(JacksonCodec codec, Class<K> keyType, Class<V> beanType) {
+        var type = JacksonTypes.FACTORY.constructMapType(
+                Map.class, keyType, beanType);
+        return new JsonConverter(codec, Map.class, type);
     }
 
     public static <V> JsonConverter<Map<String, V>> forBeanMap(Class<V> beanType) {
         return forBeanMap(String.class, beanType);
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
     public static <K, V> JsonConverter<Map<K, V>> forBeanMap(Class<K> keyType, Class<V> beanType) {
-        var type = JacksonTypes.FACTORY.constructMapType(
-                Map.class, keyType, beanType);
-        return new JsonConverter(Map.class, type);
-    }
-
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    public static <V> JsonConverter<List<V>> forBeanList(Class<V> beanType) {
-        var type = JacksonTypes.FACTORY.constructCollectionType(
-                List.class, beanType);
-        return new JsonConverter(List.class, type);
-    }
-
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    public static <V> JsonConverter<V[]> forBeanArray(Class<V> beanType) {
-        var type = JacksonTypes.FACTORY.constructArrayType(beanType);
-        return new JsonConverter(Array.newInstance(beanType, 0).getClass(), type);
-    }
-
-    public static <V> JsonConverter<V> forBean(Class<V> beanType) {
-        var type = JacksonTypes.FACTORY.constructType(beanType);
-        return new JsonConverter<>(beanType, type);
+        return forBeanMap(JacksonUtils.json(), keyType, beanType);
     }
 
     @Nullable
@@ -71,7 +90,7 @@ public class JsonConverter<V> extends AbstractConverter<JSON, V> {
         if (dbObj == null) {
             return null;
         }
-        return JacksonUtils.parse(dbObj.data(), beanJsonType);
+        return codec.parse(dbObj.data(), beanJsonType);
     }
 
     @Nullable
@@ -80,6 +99,6 @@ public class JsonConverter<V> extends AbstractConverter<JSON, V> {
         if (customObj == null) {
             return null;
         }
-        return JSON.valueOf(JacksonUtils.toJsonString(customObj));
+        return JSON.valueOf(codec.stringify(customObj));
     }
 }

@@ -13,39 +13,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.common.jooq.converter;
+package org.febit.common.jooq.converter.support;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.UtilityClass;
+import org.jspecify.annotations.Nullable;
 
 import java.time.Instant;
 
-@UtilityClass
-public class Pojos {
+@Data
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
+@NoArgsConstructor
+@Builder(access = AccessLevel.PACKAGE)
+public class Foo {
 
-    @Data
-    @AllArgsConstructor(access = AccessLevel.PACKAGE)
-    @NoArgsConstructor
-    @Builder(access = AccessLevel.PACKAGE)
-    public static class Foo {
-        Long id;
-        String title;
-        Instant time;
-    }
-
-    public static final Foo F1 = Foo.builder()
+    public static final Foo F1 = builder()
             .id(1L)
             .title("1")
             .time(Instant.ofEpochMilli(1))
+            .createdBy("user-1")
             .build();
 
-    public static final Foo F2000 = Foo.builder()
+    public static final Foo F2000 = builder()
             .id(2000L)
             .title("2000")
             .time(Instant.ofEpochMilli(2000))
+            .createdBy("user-2000")
             .build();
+
+    @Nullable
+    Long id;
+
+    @Nullable
+    String title;
+
+    @Nullable
+    Instant time;
+
+    @Nullable
+    String createdBy;
 }

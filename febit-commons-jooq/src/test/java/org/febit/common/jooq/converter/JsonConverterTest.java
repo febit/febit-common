@@ -15,14 +15,16 @@
  */
 package org.febit.common.jooq.converter;
 
+import org.febit.common.jooq.converter.support.Foo;
 import org.jooq.JSON;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
 
-import static org.febit.common.jooq.converter.Pojos.F1;
-import static org.febit.common.jooq.converter.Pojos.F2000;
+import static org.febit.common.jooq.converter.support.Foo.F1;
+import static org.febit.common.jooq.converter.support.Foo.F2000;
+import static org.febit.common.jooq.converter.support.JacksonCodecSupport.CODEC;
 import static org.febit.lang.jackson.JacksonUtils.toJsonString;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -30,8 +32,8 @@ class JsonConverterTest {
 
     @Test
     void forBean() {
-        var c = JsonConverter.forBean(Pojos.Foo.class);
-        assertEquals(Pojos.Foo.class, c.toType());
+        var c = JsonConverter.forBean(Foo.class);
+        assertEquals(Foo.class, c.toType());
         assertEquals(JSON.class, c.fromType());
 
         assertNull(c.from(null));
@@ -44,8 +46,23 @@ class JsonConverterTest {
     }
 
     @Test
+    void forBeanWithCodec() {
+        var c = JsonConverter.forBean(CODEC, Foo.class);
+        assertEquals(Foo.class, c.toType());
+        assertEquals(JSON.class, c.fromType());
+
+        assertNull(c.from(null));
+        assertNull(c.to(null));
+
+        var json = CODEC.stringify(F2000);
+        assertTrue(json.contains("\"created_by\""));
+        assertEquals(F2000, c.from(JSON.valueOf(json)));
+        assertEquals(F1, c.from(c.to(F1)));
+    }
+
+    @Test
     void forBeanList() {
-        var c = JsonConverter.forBeanList(Pojos.Foo.class);
+        var c = JsonConverter.forBeanList(Foo.class);
         assertEquals(List.class, c.toType());
         assertEquals(JSON.class, c.fromType());
 
@@ -63,34 +80,62 @@ class JsonConverterTest {
     }
 
     @Test
-    void forBeanArray() {
-        var c = JsonConverter.forBeanArray(Pojos.Foo.class);
-        assertEquals(Pojos.Foo[].class, c.toType());
+    void forBeanListWithCodec() {
+        var c = JsonConverter.forBeanList(CODEC, Foo.class);
+        assertEquals(List.class, c.toType());
         assertEquals(JSON.class, c.fromType());
 
         assertNull(c.from(null));
         assertNull(c.to(null));
 
-        assertArrayEquals(new Pojos.Foo[0], c.from(JSON.valueOf("[]")));
+        assertIterableEquals(List.of(), c.from(JSON.valueOf("[]")));
+        assertIterableEquals(List.of(F2000), c.from(c.to(List.of(F2000))));
+    }
 
-        assertArrayEquals(new Pojos.Foo[]{F2000}, c.from(JSON.valueOf(
-                toJsonString(new Pojos.Foo[]{F2000})
+    @Test
+    void forBeanArray() {
+        var c = JsonConverter.forBeanArray(Foo.class);
+        assertEquals(Foo[].class, c.toType());
+        assertEquals(JSON.class, c.fromType());
+
+        assertNull(c.from(null));
+        assertNull(c.to(null));
+
+        assertArrayEquals(new Foo[0], c.from(JSON.valueOf("[]")));
+
+        assertArrayEquals(new Foo[]{F2000}, c.from(JSON.valueOf(
+                toJsonString(new Foo[]{F2000})
         )));
-        assertArrayEquals(new Pojos.Foo[]{F1, F2000, F2000, F1},
-                c.from(c.to(new Pojos.Foo[]{F1, F2000, F2000, F1}))
+        assertArrayEquals(new Foo[]{F1, F2000, F2000, F1},
+                c.from(c.to(new Foo[]{F1, F2000, F2000, F1}))
+        );
+    }
+
+    @Test
+    void forBeanArrayWithCodec() {
+        var c = JsonConverter.forBeanArray(CODEC, Foo.class);
+        assertEquals(Foo[].class, c.toType());
+        assertEquals(JSON.class, c.fromType());
+
+        assertNull(c.from(null));
+        assertNull(c.to(null));
+
+        assertArrayEquals(new Foo[0], c.from(JSON.valueOf("[]")));
+        assertArrayEquals(new Foo[]{F2000, F1},
+                c.from(c.to(new Foo[]{F2000, F1}))
         );
     }
 
     @Test
     void forBeanMap() {
-        var c = JsonConverter.forBeanMap(String.class, Pojos.Foo.class);
+        var c = JsonConverter.forBeanMap(String.class, Foo.class);
         assertEquals(Map.class, c.toType());
         assertEquals(JSON.class, c.fromType());
 
         assertNull(c.from(null));
         assertNull(c.to(null));
 
-        assertEquals(Map.<String, Pojos.Foo>of(), c.from(JSON.valueOf("{}")));
+        assertEquals(Map.<String, Foo>of(), c.from(JSON.valueOf("{}")));
 
         assertEquals(Map.of("2000", F2000), c.from(JSON.valueOf(
                 toJsonString(Map.of("2000", F2000))
@@ -101,15 +146,37 @@ class JsonConverterTest {
     }
 
     @Test
-    void forBeanMapSingleArg() {
-        var c = JsonConverter.forBeanMap(Pojos.Foo.class);
+    void forBeanMapWithCodec() {
+        var c = JsonConverter.forBeanMap(CODEC, String.class, Foo.class);
         assertEquals(Map.class, c.toType());
         assertEquals(JSON.class, c.fromType());
 
         assertNull(c.from(null));
         assertNull(c.to(null));
 
-        assertEquals(Map.<String, Pojos.Foo>of(), c.from(JSON.valueOf("{}")));
+        assertEquals(Map.<String, Foo>of(), c.from(JSON.valueOf("{}")));
+        assertEquals(Map.of("a", F1, "b", F2000),
+                c.from(c.to(Map.of("a", F1, "b", F2000)))
+        );
+    }
+
+    @Test
+    void forBeanMapSingleArg() {
+        var c = JsonConverter.forBeanMap(Foo.class);
+        assertEquals(Map.class, c.toType());
+        assertEquals(JSON.class, c.fromType());
+
+        assertNull(c.from(null));
+        assertNull(c.to(null));
+
+        assertEquals(Map.<String, Foo>of(), c.from(JSON.valueOf("{}")));
+
+        assertEquals(Map.of("key", F2000), c.from(JSON.valueOf(
+                toJsonString(Map.of("key", F2000))
+        )));
+        assertEquals(Map.of("x", F1, "y", F2000),
+                c.from(c.to(Map.of("x", F1, "y", F2000)))
+        );
     }
 
 }
