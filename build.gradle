@@ -64,6 +64,7 @@ configure(subprojects.findAll {
   configurations {
     mockitoAgent
   }
+
   dependencies {
     mockitoAgent(libs.mockito.core) {
       transitive = false
@@ -81,6 +82,19 @@ configure(subprojects.findAll {
   jacocoTestReport {
     reports {
       xml.required.set(true)
+    }
+  }
+
+  tasks.named('jar', Jar) {
+    doLast {
+      def amn = manifest.attributes['Automatic-Module-Name']
+      if (!amn) {
+        throw new GradleException(
+            "Project '${project.name}' jar is missing 'Automatic-Module-Name'. " +
+                "Declare it in ${project.name}/build.gradle, e.g.:\n" +
+                "jar { manifest { attributes('Automatic-Module-Name': '<module-name>') } }"
+        )
+      }
     }
   }
 

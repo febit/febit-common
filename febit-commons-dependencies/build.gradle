@@ -1,5 +1,11 @@
 description = 'Febit Commons Dependencies'
 
+jar {
+  manifest {
+    attributes('Automatic-Module-Name': 'org.febit.common.dependencies')
+  }
+}
+
 standardMavenPublish {
   importBom project(":febit-commons-bom")
 }

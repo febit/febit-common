@@ -4,6 +4,12 @@ codegenModule {
   module 'org.febit.FebitCommonsJsonrpc2'
 }
 
+jar {
+  manifest {
+    attributes('Automatic-Module-Name': 'org.febit.common.jsonrpc2')
+  }
+}
+
 dependencies {
   api project(':febit-lang')
   api libs.spring.core

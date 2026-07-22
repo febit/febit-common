@@ -4,6 +4,12 @@ configurations {
   testCompile.exclude module: 'logback-classic'
 }
 
+jar {
+  manifest {
+    attributes('Automatic-Module-Name': 'org.febit.common.jooq')
+  }
+}
+
 dependencies {
   api project(':febit-lang')
   api 'org.jooq:jooq'

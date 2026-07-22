@@ -1,5 +1,11 @@
 description = 'Febit optional annotations'
 
+jar {
+  manifest {
+    attributes('Automatic-Module-Name': 'org.febit.lang.annotation')
+  }
+}
+
 dependencies {
   api 'com.github.spotbugs:spotbugs-annotations'
   api 'com.google.code.findbugs:jsr305'

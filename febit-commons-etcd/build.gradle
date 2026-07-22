@@ -4,6 +4,12 @@ codegenModule {
   module 'org.febit.FebitCommonsEtcd'
 }
 
+jar {
+  manifest {
+    attributes('Automatic-Module-Name': 'org.febit.common.etcd')
+  }
+}
+
 test {
   def tmpDir = layout.buildDirectory.dir('tmp/test-cases')
   systemProperty 'java.io.tmpdir', tmpDir.get().asFile.absolutePath

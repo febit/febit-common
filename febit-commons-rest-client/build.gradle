@@ -4,6 +4,12 @@ codegenModule {
   module 'org.febit.FebitCommonsWebClient'
 }
 
+jar {
+  manifest {
+    attributes('Automatic-Module-Name': 'org.febit.common.rest.client')
+  }
+}
+
 configurations.named('testImplementation') {
   exclude group: 'ch.qos.logback'
 }

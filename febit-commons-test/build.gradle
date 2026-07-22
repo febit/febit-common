@@ -4,6 +4,12 @@ codegenModule {
   module 'org.febit.FebitCommonsTest'
 }
 
+jar {
+  manifest {
+    attributes('Automatic-Module-Name': 'org.febit.common.test')
+  }
+}
+
 dependencies {
   api project(':febit-lang')
 
