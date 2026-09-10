@@ -1,5 +1,7 @@
 # Changelog
 
+## [4.2.0] - not yet released
+
 ## [4.1.1] - 2026-09-10
 
 ### New Features
