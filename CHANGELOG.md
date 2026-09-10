@@ -1,5 +1,30 @@
 # Changelog
 
+## [4.1.1] - 2026-09-10
+
+### New Features
+
+- **lang**: Added `NanosClock`
+- **jackson**: `JacksonCodec` is now `Serializable`
+- **jooq**: `Json` / `JsonString` / `Jsonb` converters now accept a specified `JacksonCodec`
+- **jpms**: Added `Automatic-Module-Name` to published modules
+
+### Improvements
+
+- **lang**: `TimeDelayed` uses `instanceof` pattern matching
+- **lang**: Deprecated unused `Singleton`
+- **pubsub**: Simplified `subjectTypes` fallback
+
+### Build
+
+- Bumped dependencies and Gradle Wrapper to 9.7.1
+
+### Tests
+
+- **etcd**: Stabilized `crossThreadUnlockFails` against embedded etcd latency
+
+---
+
 ## [4.1.0] - 2026-06-24
 
 ### Breaking Changes

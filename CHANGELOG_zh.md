@@ -1,5 +1,30 @@
 # Changelog
 
+## [4.1.1] - 2026-09-10
+
+### New Features
+
+- **lang**: 新增 `NanosClock`
+- **jackson**: `JacksonCodec` 支持序列化（`Serializable`）
+- **jooq**: `Json` / `JsonString` / `Jsonb` 转换器支持指定 `JacksonCodec`
+- **jpms**: 发布模块补充 `Automatic-Module-Name`
+
+### Improvements
+
+- **lang**: `TimeDelayed` 改用 `instanceof` 模式匹配
+- **lang**: 废弃未使用的 `Singleton`
+- **pubsub**: 简化 `subjectTypes` fallback
+
+### Build
+
+- 升级依赖与 Gradle Wrapper 至 9.7.1
+
+### Tests
+
+- **etcd**: 修复 `crossThreadUnlockFails` 在嵌入式 etcd 抖动下的不稳定
+
+---
+
 ## [4.1.0] - 2026-06-24
 
 ### Breaking Changes
