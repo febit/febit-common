@@ -23,8 +23,8 @@ public interface ISubscriber<S> {
 
     default List<Class<?>> subjectTypes() {
         var eventClass = TypeParameters.resolve(getClass(), ISubscriber.class, 0);
-        return eventClass == null
-                ? List.of(Object.class)
-                : List.of(eventClass);
+        return List.of(eventClass == null
+                ? Object.class
+                : eventClass);
     }
 }
