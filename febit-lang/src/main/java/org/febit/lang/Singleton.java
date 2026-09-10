@@ -15,6 +15,12 @@
  */
 package org.febit.lang;
 
+/**
+ * Singleton marker interface.
+ *
+ * @deprecated unused
+ */
+@Deprecated(forRemoval = true)
 public interface Singleton {
 
 }
