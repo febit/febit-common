@@ -37,6 +37,8 @@ snakeyaml2 = '2.7'
 spotbugs = '4.10.4'
 spring = '7.1.0-M1'
 spring-boot = '4.2.0-M1'
+rabbitmq = '5.35.0'
+spring-amqp = '4.2.0-M1'
 swagger = '2.2.55'
 uuid-generator = '5.2.0'
 testcontainers = '2.0.5'
@@ -99,6 +101,7 @@ kafka-clients = { module = 'org.apache.kafka:kafka-clients', version.ref = 'kafk
 nimbus-jose-jwt = { module = 'com.nimbusds:nimbus-jose-jwt', version.ref = 'nimbus-jose-jwt' }
 okhttp-bom = { module = 'com.squareup.okhttp3:okhttp-bom', version.ref = 'okhttp' }
 protobuf-java = { module = 'com.google.protobuf:protobuf-java', version.ref = 'protobuf' }
+amqp-client = { module = 'com.rabbitmq:amqp-client', version.ref = 'rabbitmq' }
 semver4j = { module = 'org.semver4j:semver4j', version.ref = 'semver4j' }
 snakeyaml-engine = { module = 'org.snakeyaml:snakeyaml-engine', version.ref = 'snakeyaml-engine' }
 snakeyaml2 = { module = 'org.yaml:snakeyaml', version.ref = 'snakeyaml2' }
@@ -106,5 +109,6 @@ spotbugs-annotations = { module = 'com.github.spotbugs:spotbugs-annotations', ve
 spring-boot-deps = { module = 'org.springframework.boot:spring-boot-dependencies', version.ref = 'spring-boot' }
 spring-core = { module = 'org.springframework:spring-core', version.ref = 'spring' }
 spring-web = { module = 'org.springframework:spring-web', version.ref = 'spring' }
+spring-rabbit = { module = 'org.springframework.amqp:spring-rabbit', version.ref = 'spring-amqp' }
 swagger-annotations = { module = 'io.swagger.core.v3:swagger-annotations-jakarta', version.ref = 'swagger' }
 uuid-generator = { module = 'com.fasterxml.uuid:java-uuid-generator', version.ref = 'uuid-generator' }

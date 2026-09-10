@@ -1,0 +1,18 @@
+description = 'Febit Commons Rabbit'
+
+codegenModule {
+  module 'org.febit.FebitCommonsRabbit'
+}
+
+jar {
+  manifest {
+    attributes('Automatic-Module-Name': 'org.febit.common.rabbit')
+  }
+}
+
+dependencies {
+  api project(':febit-lang')
+  api libs.amqp.client
+  api libs.spring.rabbit
+  api 'com.fasterxml.uuid:java-uuid-generator'
+}
