@@ -23,6 +23,8 @@ import org.springframework.web.client.ResponseErrorHandler;
 import java.io.IOException;
 import java.net.URI;
 
+@SuppressWarnings("removal")
+@Deprecated(since = "4.2.0", forRemoval = true)
 public class RecallJsonResponseErrorHandler implements ResponseErrorHandler {
 
     public static final RecallJsonResponseErrorHandler INSTANCE = new RecallJsonResponseErrorHandler();

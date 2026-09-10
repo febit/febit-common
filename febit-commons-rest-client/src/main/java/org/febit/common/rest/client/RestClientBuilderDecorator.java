@@ -133,6 +133,8 @@ public interface RestClientBuilderDecorator<B extends RestClient.Builder> extend
     }
 
     @Override
+    @Deprecated(forRemoval = true)
+    @SuppressWarnings("removal")
     default B defaultStatusHandler(ResponseErrorHandler errorHandler) {
         delegate().defaultStatusHandler(errorHandler);
         return self();

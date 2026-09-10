@@ -128,6 +128,7 @@ class RestClientStandardBuilderTest {
 
     @ParameterizedTest
     @MethodSource("buildWiringScenarios")
+    @SuppressWarnings("removal")
     void buildShouldInvokeCorrectDelegateMethods(
             boolean withHeaders,
             boolean withStatusHandlers,

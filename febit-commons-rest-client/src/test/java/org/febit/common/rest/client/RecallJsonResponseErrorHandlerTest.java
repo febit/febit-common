@@ -33,6 +33,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@SuppressWarnings("removal")
+@Deprecated(since = "4.2.0", forRemoval = true)
 class RecallJsonResponseErrorHandlerTest {
 
     private final RecallJsonResponseErrorHandler handler = RecallJsonResponseErrorHandler.INSTANCE;

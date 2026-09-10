@@ -35,6 +35,8 @@ public class StandardRestClients {
                 .build();
     }
 
+    @SuppressWarnings("removal")
+    @Deprecated(since = "4.2.0", forRemoval = true)
     public static void statusHandlers(Consumer<ResponseErrorHandler> consumer) {
         consumer.accept(RecallJsonResponseErrorHandler.INSTANCE);
     }

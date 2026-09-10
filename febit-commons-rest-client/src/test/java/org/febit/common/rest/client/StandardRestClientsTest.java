@@ -55,6 +55,7 @@ class StandardRestClientsTest {
     }
 
     @Test
+    @SuppressWarnings("removal")
     void statusHandlersShouldAcceptRecallInstance() {
         var ref = new AtomicReference<@Nullable ResponseErrorHandler>();
         statusHandlers(ref::set);

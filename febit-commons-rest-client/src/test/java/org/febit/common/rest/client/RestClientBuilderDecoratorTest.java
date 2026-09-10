@@ -194,10 +194,11 @@ class RestClientBuilderDecoratorTest {
     }
 
     @Test
+    @SuppressWarnings("removal")
     void defaultStatusHandlerWithErrorHandlerShouldDelegateAndReturnSelf() {
         var delegate = mock(RestClient.Builder.class);
         var decorator = new TestBuilder(delegate);
-        ResponseErrorHandler errorHandler = mock(ResponseErrorHandler.class);
+        var errorHandler = mock(ResponseErrorHandler.class);
 
         assertSame(decorator, decorator.defaultStatusHandler(errorHandler));
         verify(delegate).defaultStatusHandler(errorHandler);
