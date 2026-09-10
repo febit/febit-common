@@ -40,8 +40,8 @@ public interface TimeDelayed extends Delayed {
         if (other == this) {
             return 0;
         }
-        if (other instanceof TimeDelayed) {
-            return Long.compare(getTimeInMillis(), ((TimeDelayed) other).getTimeInMillis());
+        if (other instanceof TimeDelayed timeDelayed) {
+            return Long.compare(getTimeInMillis(), timeDelayed.getTimeInMillis());
         }
         return Long.compare(
                 getDelay(TimeUnit.NANOSECONDS),
