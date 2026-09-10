@@ -285,7 +285,12 @@ class EtcdLockImplIntegrationTest {
              var contenderClient = newClient();
              var registry = registry(ownerClient);
              var lock = registry.lockFor(keys)) {
-            assertTrue(lock.tryLock(DU_2S));
+            // First acquire of a brand-new unique key has no contenders; a false return
+            // can only mean the embedded etcd was slower than the deadline, not a logic
+            // failure. Use a generous window and surface the lease state on failure.
+            assertTrue(lock.tryLock(DU_5S),
+                    () -> "fresh unique lock not acquired within 5s; heldByCurrentThread="
+                            + registry.heldByCurrentThread());
 
             var thread = new Thread(() -> {
                 try {
