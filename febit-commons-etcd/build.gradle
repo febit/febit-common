@@ -22,6 +22,7 @@ dependencies {
   api project(':febit-lang')
   api libs.jetcd.core
   api libs.protobuf.java
+  api libs.micrometer.core
 
   testImplementation libs.jetcd.core
   testImplementation libs.jetcd.test

@@ -49,4 +49,12 @@ class DeadlineTest {
     void ofNegativeDurationReturnsNull() {
         assertNull(Deadline.of(Duration.ofSeconds(-1)));
     }
+
+    @Test
+    void remainingReturnsPositiveForFutureDeadline() throws TimeoutException {
+        var deadline = Deadline.of(Duration.ofMillis(100));
+        var remaining = deadline.remaining();
+        assertTrue(remaining > 0);
+        assertTrue(remaining <= Duration.ofMillis(100).toNanos());
+    }
 }

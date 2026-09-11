@@ -15,18 +15,17 @@
  */
 package org.febit.common.etcd.locks;
 
-import io.etcd.jetcd.ByteSequence;
 import org.junit.jupiter.api.Test;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.febit.common.etcd.support.TestSupport.bytes;
 import static org.junit.jupiter.api.Assertions.*;
 
 class EtcdLockCredentialTest {
 
     @Test
     void componentsAccessible() {
-        var key = ByteSequence.from("key", UTF_8);
-        var grantedKey = ByteSequence.from("granted", UTF_8);
+        var key = bytes("key");
+        var grantedKey = bytes("granted");
         var credential = new EtcdLockCredential(123L, key, grantedKey, 456L);
 
         assertEquals(123L, credential.leaseId());
@@ -37,8 +36,8 @@ class EtcdLockCredentialTest {
 
     @Test
     void toStringContainsComponents() {
-        var key = ByteSequence.from("key", UTF_8);
-        var grantedKey = ByteSequence.from("granted", UTF_8);
+        var key = bytes("key");
+        var grantedKey = bytes("granted");
         var credential = new EtcdLockCredential(123L, key, grantedKey, 456L);
 
         var str = credential.toString();
@@ -48,8 +47,8 @@ class EtcdLockCredentialTest {
 
     @Test
     void equalsAndHashCode() {
-        var key = ByteSequence.from("key", UTF_8);
-        var grantedKey = ByteSequence.from("granted", UTF_8);
+        var key = bytes("key");
+        var grantedKey = bytes("granted");
         var a = new EtcdLockCredential(1L, key, grantedKey, 10L);
         var b = new EtcdLockCredential(1L, key, grantedKey, 10L);
 
@@ -59,8 +58,8 @@ class EtcdLockCredentialTest {
 
     @Test
     void notEquals() {
-        var key = ByteSequence.from("key", UTF_8);
-        var grantedKey = ByteSequence.from("granted", UTF_8);
+        var key = bytes("key");
+        var grantedKey = bytes("granted");
         var a = new EtcdLockCredential(1L, key, grantedKey, 10L);
         var b = new EtcdLockCredential(2L, key, grantedKey, 10L);
 

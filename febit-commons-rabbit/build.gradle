@@ -12,7 +12,9 @@ jar {
 
 dependencies {
   api project(':febit-lang')
+
   api libs.amqp.client
   api libs.spring.rabbit
+
   api 'com.fasterxml.uuid:java-uuid-generator'
 }

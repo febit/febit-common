@@ -25,6 +25,7 @@ import org.mockito.ArgumentCaptor;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.febit.common.etcd.support.TestSupport.DU_10S;
@@ -43,6 +44,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class EtcdLeaseTest {
+
+    @SuppressWarnings({"unchecked", "SameParameterValue"})
+    private static void setTerminatedAtBack(EtcdLease lease, Duration back) throws Exception {
+        var observerField = EtcdLease.class.getDeclaredField("keepAliveObserver");
+        observerField.setAccessible(true);
+        var observer = observerField.get(lease);
+        var terminatedField = observer.getClass().getDeclaredField("terminatedAt");
+        terminatedField.setAccessible(true);
+        ((AtomicLong) terminatedField.get(observer)).set(System.nanoTime() - back.toNanos());
+    }
 
     @Test
     void zeroTtlThrows() {
@@ -199,7 +210,7 @@ class EtcdLeaseTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    void keepAliveOnCompleted() throws Exception {
+    void keepAliveOnCompletedRecordsTermination() throws Exception {
         try (var client = mock(Client.class, RETURNS_DEEP_STUBS)) {
             var leaseGrantResponse = mock(LeaseGrantResponse.class);
             when(leaseGrantResponse.getID()).thenReturn(500L);
@@ -218,10 +229,38 @@ class EtcdLeaseTest {
             assertFalse(lease.isDefinitelyLost());
 
             observerCaptor.getValue().onCompleted();
+            // just terminated — not enough time elapsed to exceed TTL * 1.5 (5s * 1.5 = 7.5s)
+            assertFalse(lease.isDefinitelyLost());
 
-            // After onCompleted with very short TTL, should become definitely lost quickly
-            // but we use a longer TTL here so just verify state changed
-            assertNotNull(lease);
+            // push termination far into the past beyond the loss threshold
+            setTerminatedAtBack(lease, DU_10S);
+            assertTrue(lease.isDefinitelyLost());
+        }
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void keepAliveOnErrorRecordsTermination() throws Exception {
+        try (var client = mock(Client.class, RETURNS_DEEP_STUBS)) {
+            var leaseGrantResponse = mock(LeaseGrantResponse.class);
+            when(leaseGrantResponse.getID()).thenReturn(501L);
+            when(client.getLeaseClient().grant(eq(5L), anyLong(), any()))
+                    .thenReturn(CompletableFuture.completedFuture(leaseGrantResponse));
+            var keepAlive = mock(CloseableClient.class);
+            var observerCaptor = ArgumentCaptor.forClass(StreamObserver.class);
+            when(client.getLeaseClient().keepAlive(eq(501L), observerCaptor.capture()))
+                    .thenReturn(keepAlive);
+            when(client.getLeaseClient().revoke(501L))
+                    .thenReturn(CompletableFuture.completedFuture(null));
+
+            var deadline = Deadline.of(DU_10S);
+            var lease = EtcdLease.grant(client, DU_5S, deadline);
+
+            observerCaptor.getValue().onError(new RuntimeException("keep-alive lost"));
+            assertFalse(lease.isDefinitelyLost());
+
+            setTerminatedAtBack(lease, DU_10S);
+            assertTrue(lease.isDefinitelyLost());
         }
     }
 }

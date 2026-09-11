@@ -242,15 +242,15 @@ public interface EtcdLock extends Lock, AutoCloseable {
     }
 
     @Override
+    default Condition newCondition() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     default void close() {
         if (isAcquired() && !isUnlocked()) {
             unlock();
         }
-    }
-
-    @Override
-    default Condition newCondition() {
-        throw new UnsupportedOperationException();
     }
 
 }

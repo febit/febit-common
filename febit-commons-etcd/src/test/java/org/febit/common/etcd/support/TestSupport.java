@@ -15,7 +15,9 @@
  */
 package org.febit.common.etcd.support;
 
+import com.google.protobuf.ByteString;
 import io.etcd.jetcd.ByteSequence;
+import io.etcd.jetcd.KeyValue;
 import lombok.experimental.UtilityClass;
 
 import java.nio.charset.StandardCharsets;
@@ -44,5 +46,17 @@ public class TestSupport {
 
     public static ByteSequence bytes(String value) {
         return ByteSequence.from(value, StandardCharsets.UTF_8);
+    }
+
+    public static KeyValue kvOf(String key) {
+        return kvOf(key, "", 0L);
+    }
+
+    public static KeyValue kvOf(String key, String value, long revision) {
+        return new KeyValue(io.etcd.jetcd.api.KeyValue.newBuilder()
+                .setKey(ByteString.copyFromUtf8(key))
+                .setValue(ByteString.copyFromUtf8(value))
+                .setModRevision(revision)
+                .build(), ByteSequence.EMPTY);
     }
 }

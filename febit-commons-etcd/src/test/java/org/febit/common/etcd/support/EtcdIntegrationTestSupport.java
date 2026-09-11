@@ -30,6 +30,18 @@ public final class EtcdIntegrationTestSupport {
 
     public static final GetOption PREFIX_GET_OPTION = GetOption.builder().isPrefix(true).build();
 
+    @FunctionalInterface
+    public interface CheckedBooleanSupplier {
+
+        boolean getAsBoolean() throws InterruptedException;
+    }
+
+    @FunctionalInterface
+    public interface MessageSupplier {
+
+        String get();
+    }
+
     public static void awaitQueuedContender(Client client, ByteSequence lockName, Duration timeout) throws InterruptedException {
         awaitCondition(timeout,
                 () -> lockQueueDepth(client, lockName) >= 2,
@@ -84,18 +96,6 @@ public final class EtcdIntegrationTestSupport {
         } catch (Exception e) {
             throw new AssertionError("Failed to query queued locks for key: " + lockName, e);
         }
-    }
-
-    @FunctionalInterface
-    public interface CheckedBooleanSupplier {
-
-        boolean getAsBoolean() throws InterruptedException;
-    }
-
-    @FunctionalInterface
-    public interface MessageSupplier {
-
-        String get();
     }
 }
 

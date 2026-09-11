@@ -87,6 +87,16 @@ class EtcdLockRegistryTest {
     }
 
     @Test
+    void lockForSingleString() {
+        try (var client = mock(Client.class, RETURNS_DEEP_STUBS);
+             var registry = EtcdLockRegistry.create(client)) {
+            var lock = (EtcdLockImpl) registry.lockFor("single");
+            assertEquals(1, lock.keys().size());
+            assertEquals("single", lock.keys().getFirst().toString());
+        }
+    }
+
+    @Test
     void closeDoesNotThrow() {
         try (var client = mock(Client.class, RETURNS_DEEP_STUBS);
              var registry = EtcdLockRegistry.create(client)) {

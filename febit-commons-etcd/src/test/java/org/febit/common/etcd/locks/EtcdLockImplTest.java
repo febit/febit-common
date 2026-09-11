@@ -55,6 +55,45 @@ import static org.mockito.Mockito.when;
 
 class EtcdLockImplTest {
 
+    private static Client mockClient(long leaseId, List<LockSpec> specs) {
+        var client = mock(Client.class, RETURNS_DEEP_STUBS);
+        var keepAlive = mock(CloseableClient.class);
+        var leaseGrantResponse = mock(LeaseGrantResponse.class);
+        when(leaseGrantResponse.getID()).thenReturn(leaseId);
+        when(client.getLeaseClient().keepAlive(eq(leaseId), any())).thenReturn(keepAlive);
+        when(client.getLeaseClient().revoke(leaseId)).thenReturn(CompletableFuture.completedFuture(null));
+        for (var spec : specs) {
+            var keyBytes = spec.keyBytes();
+            var grantedKeyBytes = spec.grantedKeyBytes();
+            var getResponse = completedGetResponse(grantedKeyBytes, leaseId * 10);
+
+            when(client.getLockClient().lock(keyBytes, leaseId)).thenReturn(spec.lockFuture());
+            when(client.getLockClient().unlock(grantedKeyBytes)).thenReturn(CompletableFuture.completedFuture(null));
+            when(client.getKVClient().get(grantedKeyBytes)).thenReturn(getResponse);
+        }
+
+        when(client.getLeaseClient().grant(eq(5L), anyLong(), eq(TimeUnit.NANOSECONDS)))
+                .thenReturn(CompletableFuture.completedFuture(leaseGrantResponse));
+        when(client.getLeaseClient().grant(5L))
+                .thenReturn(CompletableFuture.completedFuture(leaseGrantResponse));
+        return client;
+    }
+
+    private static CompletableFuture<LockResponse> completedLockResponse(ByteSequence lockKey) {
+        var lockResponse = mock(LockResponse.class);
+        doReturn(lockKey).when(lockResponse).getKey();
+        return CompletableFuture.completedFuture(lockResponse);
+    }
+
+    private static CompletableFuture<GetResponse> completedGetResponse(ByteSequence lockKey, long createRevision) {
+        var getResponse = mock(GetResponse.class);
+        var keyValue = mock(KeyValue.class);
+        doReturn(lockKey).when(keyValue).getKey();
+        doReturn(createRevision).when(keyValue).getCreateRevision();
+        doReturn(List.of(keyValue)).when(getResponse).getKvs();
+        return CompletableFuture.completedFuture(getResponse);
+    }
+
     @Test
     void singleKeyLock() {
         try (var client = mock(Client.class, RETURNS_DEEP_STUBS)) {
@@ -82,8 +121,8 @@ class EtcdLockImplTest {
                 new LockSpec("multi/order/b", "multi/order/b/holder", completedLockResponse(bytes("multi/order/b/holder"))),
                 new LockSpec("multi/order/c", "multi/order/c/holder", completedLockResponse(bytes("multi/order/c/holder"))));
         var client = mockClient(701L, specs);
-        var lock = (EtcdLockImpl) EtcdLockRegistry.create(client)
-                .lockFor(List.of("multi/order/a", "multi/order/b", "multi/order/c"));
+        var registry = EtcdLockRegistry.create(client);
+        var lock = (EtcdLockImpl) registry.lockFor(List.of("multi/order/a", "multi/order/b", "multi/order/c"));
 
         assertTrue(lock.tryLock(DU_2S));
         assertEquals(
@@ -118,8 +157,8 @@ class EtcdLockImplTest {
                 new LockSpec("multi/rollback/b", "multi/rollback/b/holder", completedLockResponse(bytes("multi/rollback/b/holder"))),
                 new LockSpec("multi/rollback/c", "multi/rollback/c/holder", thirdLockFuture));
         var client = mockClient(711L, specs);
-        var lock = (EtcdLockImpl) EtcdLockRegistry.create(client)
-                .lockFor(List.of("multi/rollback/a", "multi/rollback/b", "multi/rollback/c"));
+        var registry = EtcdLockRegistry.create(client);
+        var lock = (EtcdLockImpl) registry.lockFor(List.of("multi/rollback/a", "multi/rollback/b", "multi/rollback/c"));
 
         assertFalse(lock.tryLock(DU_20MS));
         assertFalse(lock.isAcquired());
@@ -142,8 +181,8 @@ class EtcdLockImplTest {
         var client = mockClient(731L, specs);
         when(client.getKVClient().get(bytes("multi/fence/a/holder"))).thenReturn(
                 CompletableFuture.failedFuture(new RuntimeException("fencing lookup failed")));
-        var lock = (EtcdLockImpl) EtcdLockRegistry.create(client)
-                .lockFor("multi/fence/a");
+        var registry = EtcdLockRegistry.create(client);
+        var lock = (EtcdLockImpl) registry.lockFor("multi/fence/a");
 
         assertThatThrownBy(() -> lock.tryLock(DU_2S))
                 .isInstanceOf(EtcdLockException.class)
@@ -663,45 +702,6 @@ class EtcdLockImplTest {
                 .hasMessageContaining("Failed to rollback already acquired keys");
         assertFalse(lock.isAcquired());
         verify(client.getLockClient(), times(1)).unlock(grantedKeyA);
-    }
-
-    private static Client mockClient(long leaseId, List<LockSpec> specs) {
-        var client = mock(Client.class, RETURNS_DEEP_STUBS);
-        var keepAlive = mock(CloseableClient.class);
-        var leaseGrantResponse = mock(LeaseGrantResponse.class);
-        when(leaseGrantResponse.getID()).thenReturn(leaseId);
-        when(client.getLeaseClient().keepAlive(eq(leaseId), any())).thenReturn(keepAlive);
-        when(client.getLeaseClient().revoke(leaseId)).thenReturn(CompletableFuture.completedFuture(null));
-        for (var spec : specs) {
-            var keyBytes = spec.keyBytes();
-            var grantedKeyBytes = spec.grantedKeyBytes();
-            var getResponse = completedGetResponse(grantedKeyBytes, leaseId * 10);
-
-            when(client.getLockClient().lock(keyBytes, leaseId)).thenReturn(spec.lockFuture());
-            when(client.getLockClient().unlock(grantedKeyBytes)).thenReturn(CompletableFuture.completedFuture(null));
-            when(client.getKVClient().get(grantedKeyBytes)).thenReturn(getResponse);
-        }
-
-        when(client.getLeaseClient().grant(eq(5L), anyLong(), eq(TimeUnit.NANOSECONDS)))
-                .thenReturn(CompletableFuture.completedFuture(leaseGrantResponse));
-        when(client.getLeaseClient().grant(5L))
-                .thenReturn(CompletableFuture.completedFuture(leaseGrantResponse));
-        return client;
-    }
-
-    private static CompletableFuture<LockResponse> completedLockResponse(ByteSequence lockKey) {
-        var lockResponse = mock(LockResponse.class);
-        doReturn(lockKey).when(lockResponse).getKey();
-        return CompletableFuture.completedFuture(lockResponse);
-    }
-
-    private static CompletableFuture<GetResponse> completedGetResponse(ByteSequence lockKey, long createRevision) {
-        var getResponse = mock(GetResponse.class);
-        var keyValue = mock(KeyValue.class);
-        doReturn(lockKey).when(keyValue).getKey();
-        doReturn(createRevision).when(keyValue).getCreateRevision();
-        doReturn(List.of(keyValue)).when(getResponse).getKvs();
-        return CompletableFuture.completedFuture(getResponse);
     }
 
     private record LockSpec(String key, String grantedKey, CompletableFuture<LockResponse> lockFuture) {

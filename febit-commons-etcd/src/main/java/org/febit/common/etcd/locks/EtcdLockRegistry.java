@@ -81,10 +81,6 @@ public class EtcdLockRegistry implements AutoCloseable {
         this.options = options;
     }
 
-    EtcdLockLocalGuard localGuard() {
-        return guards.get();
-    }
-
     public static EtcdLockRegistry create(Client client) {
         return create(client, EtcdLockOptions.defaults());
     }
@@ -121,6 +117,10 @@ public class EtcdLockRegistry implements AutoCloseable {
 
     private static ByteSequence normalizeKey(String key) {
         return ByteSequence.from(key, StandardCharsets.UTF_8);
+    }
+
+    EtcdLockLocalGuard localGuard() {
+        return guards.get();
     }
 
     public List<EtcdLockCredential> heldByCurrentThread() {

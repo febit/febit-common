@@ -16,7 +16,9 @@
 package org.febit.common.etcd.locks;
 
 import io.etcd.jetcd.Client;
+import io.etcd.jetcd.KeyValue;
 import io.etcd.jetcd.kv.GetResponse;
+import io.etcd.jetcd.lease.LeaseGrantResponse;
 import io.etcd.jetcd.support.CloseableClient;
 import org.junit.jupiter.api.Test;
 
@@ -36,9 +38,26 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class EtcdLockSupportTest {
+
+    private static EtcdLease createLease(Client client, long leaseId) throws Exception {
+        var leaseGrantResponse = mock(LeaseGrantResponse.class);
+        when(leaseGrantResponse.getID()).thenReturn(leaseId);
+        when(client.getLeaseClient().grant(eq(5L), anyLong(), any()))
+                .thenReturn(CompletableFuture.completedFuture(leaseGrantResponse));
+        when(client.getLeaseClient().grant(5L))
+                .thenReturn(CompletableFuture.completedFuture(leaseGrantResponse));
+        var keepAlive = mock(CloseableClient.class);
+        when(client.getLeaseClient().keepAlive(eq(leaseId), any())).thenReturn(keepAlive);
+        when(client.getLeaseClient().revoke(leaseId))
+                .thenReturn(CompletableFuture.completedFuture(null));
+        var deadline = Deadline.of(DU_10S);
+        return EtcdLease.grant(client, DU_5S, deadline);
+    }
 
     @Test
     void notOwner() {
@@ -92,7 +111,7 @@ class EtcdLockSupportTest {
 
             // lock lost check passes (lease not definitely lost + key exists)
             var getResponse = mock(GetResponse.class);
-            when(getResponse.getKvs()).thenReturn(List.of(mock(io.etcd.jetcd.KeyValue.class)));
+            when(getResponse.getKvs()).thenReturn(List.of(mock(KeyValue.class)));
             when(client.getKVClient().get(grantedKey))
                     .thenReturn(CompletableFuture.completedFuture(getResponse));
 
@@ -120,7 +139,7 @@ class EtcdLockSupportTest {
             // first detectLockLoss: key exists → no loss → proceed to unlock
             // second detectLockLoss (post-check): key missing → UNLOCK_POST_CHECK_LOST
             var getResponse = mock(GetResponse.class);
-            when(getResponse.getKvs()).thenReturn(List.of(mock(io.etcd.jetcd.KeyValue.class)));
+            when(getResponse.getKvs()).thenReturn(List.of(mock(KeyValue.class)));
             var emptyGetResponse = mock(GetResponse.class);
             when(emptyGetResponse.getKvs()).thenReturn(List.of());
             when(client.getKVClient().get(grantedKey))
@@ -268,18 +287,87 @@ class EtcdLockSupportTest {
         }
     }
 
-    private static EtcdLease createLease(Client client, long leaseId) throws Exception {
-        var leaseGrantResponse = mock(io.etcd.jetcd.lease.LeaseGrantResponse.class);
-        when(leaseGrantResponse.getID()).thenReturn(leaseId);
-        when(client.getLeaseClient().grant(eq(5L), anyLong(), any()))
-                .thenReturn(CompletableFuture.completedFuture(leaseGrantResponse));
-        when(client.getLeaseClient().grant(5L))
-                .thenReturn(CompletableFuture.completedFuture(leaseGrantResponse));
-        var keepAlive = mock(CloseableClient.class);
-        when(client.getLeaseClient().keepAlive(eq(leaseId), any())).thenReturn(keepAlive);
-        when(client.getLeaseClient().revoke(leaseId))
-                .thenReturn(CompletableFuture.completedFuture(null));
-        var deadline = Deadline.of(DU_10S);
-        return EtcdLease.grant(client, DU_5S, deadline);
+    @Test
+    void unlockSucceeds() throws Exception {
+        try (var client = mock(Client.class, RETURNS_DEEP_STUBS)) {
+            var key = bytes("key");
+            var grantedKey = bytes("granted");
+            var credential = new EtcdLockCredential(1L, key, grantedKey, 10L);
+
+            // remote key present → no loss → unlock completes
+            var getResponse = mock(GetResponse.class);
+            when(getResponse.getKvs()).thenReturn(List.of(mock(KeyValue.class)));
+            when(client.getKVClient().get(grantedKey))
+                    .thenReturn(CompletableFuture.completedFuture(getResponse));
+            when(client.getLockClient().unlock(grantedKey))
+                    .thenReturn(CompletableFuture.completedFuture(null));
+
+            var lease = createLease(client, 110L);
+            assertDoesNotThrow(() -> EtcdLockSupport.unlock(lease, credential));
+        }
+    }
+
+    @Test
+    void unlockPreCheckLoss() throws Exception {
+        try (var client = mock(Client.class, RETURNS_DEEP_STUBS)) {
+            var key = bytes("key");
+            var grantedKey = bytes("granted");
+            var credential = new EtcdLockCredential(1L, key, grantedKey, 10L);
+
+            // remote key missing → pre-check detects loss, unlock must NOT be attempted
+            var emptyGetResponse = mock(GetResponse.class);
+            when(emptyGetResponse.getKvs()).thenReturn(List.of());
+            when(client.getKVClient().get(grantedKey))
+                    .thenReturn(CompletableFuture.completedFuture(emptyGetResponse));
+
+            var lease = createLease(client, 111L);
+            assertFalse(lease.isDefinitelyLost());
+
+            assertThatThrownBy(() -> EtcdLockSupport.unlock(lease, credential))
+                    .isInstanceOf(EtcdLockLostException.class)
+                    .asInstanceOf(type(EtcdLockLostException.class))
+                    .returns(EtcdLockLostReason.REMOTE_KEY_MISSING, EtcdLockLostException::reason);
+            verify(client.getLockClient(), never()).unlock(any());
+        }
+    }
+
+    @Test
+    void detectRemoteKeyMissing() throws Exception {
+        try (var client = mock(Client.class, RETURNS_DEEP_STUBS)) {
+            var key = bytes("key");
+            var grantedKey = bytes("granted");
+            var credential = new EtcdLockCredential(1L, key, grantedKey, 10L);
+
+            var emptyGetResponse = mock(GetResponse.class);
+            when(emptyGetResponse.getKvs()).thenReturn(List.of());
+            when(client.getKVClient().get(grantedKey))
+                    .thenReturn(CompletableFuture.completedFuture(emptyGetResponse));
+
+            var lease = createLease(client, 108L);
+            assertFalse(lease.isDefinitelyLost());
+
+            var result = EtcdLockSupport.detectLockLoss(lease, List.of(credential));
+            assertTrue(result.isPresent());
+            assertEquals(EtcdLockLostReason.REMOTE_KEY_MISSING, result.get());
+        }
+    }
+
+    @Test
+    void detectDefinitelyLostShortCircuits() throws Exception {
+        try (var client = mock(Client.class, RETURNS_DEEP_STUBS)) {
+            var key = bytes("key");
+            var grantedKey = bytes("granted");
+            var credential = new EtcdLockCredential(1L, key, grantedKey, 10L);
+
+            var lease = createLease(client, 109L);
+            lease.cleanup();
+            assertTrue(lease.isDefinitelyLost());
+
+            var result = EtcdLockSupport.detectLockLoss(lease, List.of(credential));
+            assertTrue(result.isPresent());
+            assertEquals(EtcdLockLostReason.KEEP_ALIVE_TERMINATED_AFTER_TTL, result.get());
+            // short-circuits before any remote key check
+            verify(client.getKVClient(), never()).get(any());
+        }
     }
 }

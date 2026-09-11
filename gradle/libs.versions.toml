@@ -43,6 +43,7 @@ swagger = '2.2.55'
 uuid-generator = '5.2.0'
 testcontainers = '2.0.5'
 protobuf = '4.36.1'
+micrometer = '1.17.1'
 
 h2database = '2.5.250'
 
@@ -102,6 +103,7 @@ nimbus-jose-jwt = { module = 'com.nimbusds:nimbus-jose-jwt', version.ref = 'nimb
 okhttp-bom = { module = 'com.squareup.okhttp3:okhttp-bom', version.ref = 'okhttp' }
 protobuf-java = { module = 'com.google.protobuf:protobuf-java', version.ref = 'protobuf' }
 amqp-client = { module = 'com.rabbitmq:amqp-client', version.ref = 'rabbitmq' }
+micrometer-core = { module = 'io.micrometer:micrometer-core', version.ref = 'micrometer' }
 semver4j = { module = 'org.semver4j:semver4j', version.ref = 'semver4j' }
 snakeyaml-engine = { module = 'org.snakeyaml:snakeyaml-engine', version.ref = 'snakeyaml-engine' }
 snakeyaml2 = { module = 'org.yaml:snakeyaml', version.ref = 'snakeyaml2' }

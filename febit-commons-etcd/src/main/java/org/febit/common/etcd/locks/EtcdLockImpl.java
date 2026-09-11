@@ -84,14 +84,14 @@ public final class EtcdLockImpl implements EtcdLock {
     }
 
     @Override
-    public boolean isLockLost() {
-        return registry.localGuard()
-                .isLockLost(keys);
+    public boolean isAcquired() {
+        return acquired.get();
     }
 
     @Override
-    public boolean isAcquired() {
-        return acquired.get();
+    public boolean isLockLost() {
+        return registry.localGuard()
+                .isLockLost(keys);
     }
 
     @Override
@@ -102,36 +102,6 @@ public final class EtcdLockImpl implements EtcdLock {
     @Override
     public void acknowledgeLoss() {
         lossAcknowledged.set(true);
-    }
-
-    @Override
-    public void lock() {
-        try {
-            if (!tryLock(registry.options().waitMax())) {
-                throw new EtcdLockException("Failed to acquire lock for keys: " + keys);
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            log.debug("Interrupted while acquiring lock for keys {}", keys, e);
-            throw new EtcdLockException("Interrupted while acquiring lock for keys: " + keys, e);
-        }
-    }
-
-    @Override
-    public void lockInterruptibly() throws InterruptedException {
-        if (!tryLock(registry.options().waitMax())) {
-            throw new EtcdLockException("Failed to acquire lock for keys: " + keys);
-        }
-    }
-
-    @Override
-    public boolean tryLock() {
-        try {
-            return tryLock(registry.options().tryLockTimeout());
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return false;
-        }
     }
 
     @Override
@@ -174,6 +144,36 @@ public final class EtcdLockImpl implements EtcdLock {
         log.debug("Failed to acquire lock for keys {}, only acquired keys {}, timeout {}", keys, acquiredKeys, timeout);
         rollbackAcquired(acquiredKeys);
         return false;
+    }
+
+    @Override
+    public void lock() {
+        try {
+            if (!tryLock(registry.options().waitMax())) {
+                throw new EtcdLockException("Failed to acquire lock for keys: " + keys);
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.debug("Interrupted while acquiring lock for keys {}", keys, e);
+            throw new EtcdLockException("Interrupted while acquiring lock for keys: " + keys, e);
+        }
+    }
+
+    @Override
+    public void lockInterruptibly() throws InterruptedException {
+        if (!tryLock(registry.options().waitMax())) {
+            throw new EtcdLockException("Failed to acquire lock for keys: " + keys);
+        }
+    }
+
+    @Override
+    public boolean tryLock() {
+        try {
+            return tryLock(registry.options().tryLockTimeout());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return false;
+        }
     }
 
     @Override

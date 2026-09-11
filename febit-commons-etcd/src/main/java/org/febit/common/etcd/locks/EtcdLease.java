@@ -83,31 +83,6 @@ final class EtcdLease {
         return new EtcdLease(leaseId, client, ttl, keepAliveClient, keepAliveObserver);
     }
 
-    void cleanup() {
-        if (!cleaned.compareAndSet(false, true)) {
-            return;
-        }
-        try {
-            keepAlive.close();
-            log.trace("Closed keep-alive for lease {} ", id);
-        } catch (RuntimeException e) {
-            log.warn("Failed to close keep-alive for lease {} ", id, e);
-        }
-        revokeLeaseQuietly(client, id());
-    }
-
-    public boolean isDefinitelyLost() {
-        if (cleaned.get()) {
-            return true;
-        }
-        long terminatedAt = keepAliveObserver.terminatedAt.get();
-        if (terminatedAt == Long.MIN_VALUE) {
-            return false;
-        }
-        long elapsedNanos = System.nanoTime() - terminatedAt;
-        return elapsedNanos >= (long) (ttl.toNanos() * LOST_THRESHOLD_RATIO);
-    }
-
     private static void revokeLeaseQuietly(Client client, long id) {
         try {
             client.getLeaseClient()
@@ -133,6 +108,31 @@ final class EtcdLease {
         return seconds != Long.MAX_VALUE
                 ? seconds + 1
                 : Long.MAX_VALUE;
+    }
+
+    void cleanup() {
+        if (!cleaned.compareAndSet(false, true)) {
+            return;
+        }
+        try {
+            keepAlive.close();
+            log.trace("Closed keep-alive for lease {} ", id);
+        } catch (RuntimeException e) {
+            log.warn("Failed to close keep-alive for lease {} ", id, e);
+        }
+        revokeLeaseQuietly(client, id());
+    }
+
+    public boolean isDefinitelyLost() {
+        if (cleaned.get()) {
+            return true;
+        }
+        long terminatedAt = keepAliveObserver.terminatedAt.get();
+        if (terminatedAt == Long.MIN_VALUE) {
+            return false;
+        }
+        long elapsedNanos = System.nanoTime() - terminatedAt;
+        return elapsedNanos >= (long) (ttl.toNanos() * LOST_THRESHOLD_RATIO);
     }
 
     @RequiredArgsConstructor
