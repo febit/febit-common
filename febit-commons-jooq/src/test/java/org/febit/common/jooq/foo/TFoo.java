@@ -15,11 +15,6 @@
  */
 package org.febit.common.jooq.foo;
 
-import org.febit.common.jooq.ITable;
-import org.febit.common.jooq.converter.JsonConverter;
-import org.febit.common.jooq.converter.JsonStringConverter;
-import org.febit.common.jooq.converter.LocalDateTimeToInstantConverter;
-import org.febit.common.jooq.converter.OffsetDateTimeToInstantConverter;
 import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.Name;
@@ -37,6 +32,13 @@ import org.jooq.impl.DSL;
 import org.jooq.impl.Internal;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
+
+import org.febit.common.jooq.ITable;
+import org.febit.common.jooq.converter.JsonConverter;
+import org.febit.common.jooq.converter.JsonStringConverter;
+import org.febit.common.jooq.converter.LocalDateTimeToInstantConverter;
+import org.febit.common.jooq.converter.OffsetDateTimeToInstantConverter;
+import org.febit.common.jooq.converter.ValuedEnumConverter;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -60,7 +62,7 @@ public class TFoo extends TableImpl<FooRecord> implements ITable<FooRecord, Long
     public final TableField<FooRecord, Long> ID = createField(DSL.name("id"), SQLDataType.BIGINT.nullable(false), this, "");
     public final TableField<FooRecord, Boolean> ENABLED = createField(DSL.name("enabled"), SQLDataType.BOOLEAN, this, "");
     public final TableField<FooRecord, String> NAME = createField(DSL.name("name"), SQLDataType.VARCHAR(128).nullable(false), this, "");
-    public final TableField<FooRecord, FooStatus> STATUS = createField(DSL.name("status"), SQLDataType.VARCHAR(32).nullable(false), this, "", org.febit.common.jooq.converter.ValuedEnumConverter.forEnum(FooStatus.class));
+    public final TableField<FooRecord, FooStatus> STATUS = createField(DSL.name("status"), SQLDataType.VARCHAR(32).nullable(false), this, "", ValuedEnumConverter.forEnum(FooStatus.class));
     public final TableField<FooRecord, String> DESCRIPTION = createField(DSL.name("description"), SQLDataType.VARCHAR(255), this, "");
     public final TableField<FooRecord, LocalDate> DATE = createField(DSL.name("date"), SQLDataType.LOCALDATE, this, "");
     public final TableField<FooRecord, LocalTime> TIME = createField(DSL.name("time"), SQLDataType.LOCALTIME(6), this, "");

@@ -15,12 +15,13 @@
  */
 package org.febit.common.rest.client;
 
+import org.springframework.web.client.RestClient;
+import tools.jackson.databind.json.JsonMapper;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 import org.jspecify.annotations.Nullable;
-import org.springframework.web.client.RestClient;
-import tools.jackson.databind.json.JsonMapper;
 
 @Accessors(fluent = true)
 @RequiredArgsConstructor(staticName = "wrap")

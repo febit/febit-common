@@ -19,13 +19,15 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.internal.Console;
 import com.beust.jcommander.internal.DefaultConsole;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import org.febit.common.jcommander.converter.DurationConverter;
-import org.febit.lang.io.DiscardOutputStream;
-import org.jspecify.annotations.NullMarked;
 import org.junit.jupiter.api.Test;
 import org.slf4j.event.Level;
+
+import org.febit.common.jcommander.converter.DurationConverter;
+import org.febit.lang.io.DiscardOutputStream;
+
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NullMarked;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;

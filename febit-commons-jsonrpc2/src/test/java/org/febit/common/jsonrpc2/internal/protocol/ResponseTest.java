@@ -15,9 +15,10 @@
  */
 package org.febit.common.jsonrpc2.internal.protocol;
 
+import org.junit.jupiter.api.Test;
+
 import org.febit.common.jsonrpc2.protocol.Id;
 import org.febit.common.jsonrpc2.protocol.StdRpcErrors;
-import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 

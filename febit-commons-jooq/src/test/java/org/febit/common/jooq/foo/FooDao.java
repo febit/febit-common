@@ -15,8 +15,9 @@
  */
 package org.febit.common.jooq.foo;
 
-import org.febit.common.jooq.BaseCrudDao;
 import org.jooq.Configuration;
+
+import org.febit.common.jooq.BaseCrudDao;
 
 import java.util.Objects;
 

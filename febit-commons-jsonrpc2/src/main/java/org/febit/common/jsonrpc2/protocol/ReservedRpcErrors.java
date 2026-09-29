@@ -15,10 +15,11 @@
  */
 package org.febit.common.jsonrpc2.protocol;
 
+import org.febit.common.jsonrpc2.RpcErrors;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
-import org.febit.common.jsonrpc2.RpcErrors;
 
 /**
  * JSON-RPC 2.0 Reserved errors.
@@ -32,11 +33,11 @@ public enum ReservedRpcErrors implements RpcErrors {
 
     //-32000 to -32099 	Server error 	Reserved for implementation-defined server-errors.
     RESERVED_00(
-            -32000, "Server error 32000",
+            -32_000, "Server error 32000",
             "Reserved for implementation-defined server-errors"
     ),
     RESERVED_99(
-            -32099, "Server error 32099",
+            -32_099, "Server error 32099",
             "Reserved for implementation-defined server-errors"
     ),
     ;

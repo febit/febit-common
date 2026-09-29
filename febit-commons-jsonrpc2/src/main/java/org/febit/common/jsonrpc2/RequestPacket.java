@@ -15,10 +15,12 @@
  */
 package org.febit.common.jsonrpc2;
 
+import tools.jackson.databind.JavaType;
+
 import org.febit.common.jsonrpc2.protocol.IRpcRequest;
 import org.febit.common.jsonrpc2.protocol.Id;
+
 import org.jspecify.annotations.Nullable;
-import tools.jackson.databind.JavaType;
 
 import java.util.concurrent.CompletableFuture;
 

@@ -15,9 +15,10 @@
  */
 package org.febit.lang.protocol;
 
+import org.junit.jupiter.api.Test;
+
 import org.febit.lang.jackson.JacksonTypes;
 import org.febit.lang.jackson.JacksonUtils;
-import org.junit.jupiter.api.Test;
 
 import java.util.List;
 

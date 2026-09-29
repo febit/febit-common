@@ -17,6 +17,7 @@ package org.febit.common.etcd.locks;
 
 import io.etcd.jetcd.ByteSequence;
 import io.etcd.jetcd.Client;
+
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.jspecify.annotations.Nullable;

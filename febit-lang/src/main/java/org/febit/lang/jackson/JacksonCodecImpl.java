@@ -15,11 +15,12 @@
  */
 package org.febit.lang.jackson;
 
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.cfg.MapperBuilder;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
-import tools.jackson.databind.ObjectMapper;
-import tools.jackson.databind.cfg.MapperBuilder;
 
 import java.io.Serial;
 import java.util.function.UnaryOperator;

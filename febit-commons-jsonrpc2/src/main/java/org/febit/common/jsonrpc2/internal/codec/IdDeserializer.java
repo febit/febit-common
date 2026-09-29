@@ -15,11 +15,13 @@
  */
 package org.febit.common.jsonrpc2.internal.codec;
 
-import org.febit.common.jsonrpc2.protocol.Id;
-import org.jspecify.annotations.Nullable;
 import tools.jackson.core.JsonParser;
 import tools.jackson.databind.DeserializationContext;
 import tools.jackson.databind.deser.std.StdDeserializer;
+
+import org.febit.common.jsonrpc2.protocol.Id;
+
+import org.jspecify.annotations.Nullable;
 
 public class IdDeserializer extends StdDeserializer<Id> {
 

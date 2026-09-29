@@ -18,6 +18,7 @@ package org.febit.common.rabbit.delay;
 import lombok.experimental.UtilityClass;
 import org.jspecify.annotations.Nullable;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -73,7 +74,7 @@ public class Headers {
                 || value instanceof Byte
                 || value instanceof Double
                 || value instanceof Float
-                || value instanceof java.math.BigDecimal) {
+                || value instanceof BigDecimal) {
             return;
         }
         if (value instanceof List<?> list) {

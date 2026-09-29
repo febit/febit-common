@@ -15,10 +15,11 @@
  */
 package org.febit.lang.util;
 
+import org.junit.jupiter.api.Test;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 

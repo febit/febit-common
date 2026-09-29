@@ -16,12 +16,15 @@
 package org.febit.common.jsonrpc2.internal.codec;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
+import tools.jackson.databind.DatabindException;
+
+import org.febit.common.jsonrpc2.internal.protocol.Notification;
 import org.febit.common.jsonrpc2.internal.protocol.Request;
+import org.febit.common.jsonrpc2.internal.protocol.Response;
 import org.febit.common.jsonrpc2.protocol.IRpcMessage;
 import org.febit.common.jsonrpc2.protocol.Id;
 import org.febit.lang.jackson.JacksonUtils;
-import org.junit.jupiter.api.Test;
-import tools.jackson.databind.DatabindException;
 
 import java.util.List;
 
@@ -169,8 +172,8 @@ class RpcMessageDeserializerTest {
                 }
                 """);
 
-        assertInstanceOf(org.febit.common.jsonrpc2.internal.protocol.Notification.class, msg);
-        var notif = (org.febit.common.jsonrpc2.internal.protocol.Notification) msg;
+        assertInstanceOf(Notification.class, msg);
+        var notif = (Notification) msg;
         assertEquals("update", notif.method());
         assertEquals(List.of("data"), notif.params());
     }
@@ -185,8 +188,8 @@ class RpcMessageDeserializerTest {
                 }
                 """);
 
-        assertInstanceOf(org.febit.common.jsonrpc2.internal.protocol.Response.class, msg);
-        var resp = (org.febit.common.jsonrpc2.internal.protocol.Response<?>) msg;
+        assertInstanceOf(Response.class, msg);
+        var resp = (Response<?>) msg;
         assertEquals(Id.of(1), resp.id());
         assertEquals(42, resp.result());
         assertNull(resp.error());
@@ -205,12 +208,12 @@ class RpcMessageDeserializerTest {
                 }
                 """);
 
-        assertInstanceOf(org.febit.common.jsonrpc2.internal.protocol.Response.class, msg);
-        var resp = (org.febit.common.jsonrpc2.internal.protocol.Response<?>) msg;
+        assertInstanceOf(Response.class, msg);
+        var resp = (Response<?>) msg;
         assertEquals(Id.of(1), resp.id());
         assertNull(resp.result());
         assertNotNull(resp.error());
-        assertEquals(-32600, resp.error().code());
+        assertEquals(-32_600, resp.error().code());
         assertEquals("Invalid Request", resp.error().message());
     }
 

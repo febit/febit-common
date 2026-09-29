@@ -15,15 +15,16 @@
  */
 package org.febit.lang;
 
+import org.junit.jupiter.api.Test;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 class TimeDelayedTest {
@@ -57,7 +58,7 @@ class TimeDelayedTest {
         assertEquals(-999, Impl.of(1).getDelay(TimeUnit.MILLISECONDS));
         assertEquals(0, Impl.of(1).getDelay(TimeUnit.SECONDS));
 
-        assertEquals(1000_000_000, Impl.of(2000).getDelay(TimeUnit.NANOSECONDS));
+        assertEquals(1_000_000_000, Impl.of(2000).getDelay(TimeUnit.NANOSECONDS));
         assertEquals(1000, Impl.of(2000).getDelay(TimeUnit.MILLISECONDS));
         assertEquals(1, Impl.of(2000).getDelay(TimeUnit.SECONDS));
     }

@@ -16,6 +16,7 @@
 package org.febit.common.jsonrpc2.internal.protocol;
 
 import org.febit.common.jsonrpc2.protocol.IRpcError;
+
 import org.jspecify.annotations.Nullable;
 
 public record ErrorImpl<E>(

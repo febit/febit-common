@@ -15,11 +15,12 @@
  */
 package org.febit.common.jsonrpc2.internal;
 
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+
 import org.febit.common.jsonrpc2.RpcChannel;
 import org.febit.common.jsonrpc2.annotation.RpcNotification;
 import org.febit.common.jsonrpc2.annotation.RpcRequest;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;

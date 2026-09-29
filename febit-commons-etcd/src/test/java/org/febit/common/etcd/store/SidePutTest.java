@@ -18,9 +18,10 @@ package org.febit.common.etcd.store;
 import io.etcd.jetcd.KV;
 import io.etcd.jetcd.Watch;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import org.junit.jupiter.api.Test;
+
 import org.febit.common.etcd.store.codec.KVCodec;
 import org.febit.common.etcd.support.TestCodecs;
-import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 

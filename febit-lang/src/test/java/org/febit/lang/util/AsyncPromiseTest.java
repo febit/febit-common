@@ -15,6 +15,7 @@
  */
 package org.febit.lang.util;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -26,12 +27,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class AsyncPromiseTest {
 
-    private static void runWithSingleExecutor(java.util.function.Consumer<ExecutorService> body) {
+    private static void runWithSingleExecutor(Consumer<ExecutorService> body) {
         ExecutorService exec = Executors.newSingleThreadExecutor();
         try {
             body.accept(exec);
@@ -70,7 +73,7 @@ class AsyncPromiseTest {
             var promise = AsyncPromise.promise(exec);
             var received = new ArrayList<String>();
             BiConsumer<String, String> consumer = (orig, res) -> received.add(orig + "->" + res);
-            promise.submit(List.of("a", "b"), (java.util.function.Function<String, String>) String::toUpperCase, consumer);
+            promise.submit(List.of("a", "b"), (Function<String, String>) String::toUpperCase, consumer);
             promise.done();
             assertEquals(List.of("a->A", "b->B"), received);
         } finally {
@@ -84,8 +87,8 @@ class AsyncPromiseTest {
         try {
             var promise = AsyncPromise.promise(exec);
             var received = new ArrayList<String>();
-            java.util.function.Function<String, String> upper = String::toUpperCase;
-            java.util.function.Consumer<String> sink = received::add;
+            Function<String, String> upper = String::toUpperCase;
+            Consumer<String> sink = received::add;
             // Use explicit type parameters to disambiguate from BiConsumer overload
             promise.<String, String>submit(List.of("a", "b"), upper, sink);
             promise.done();
@@ -102,7 +105,7 @@ class AsyncPromiseTest {
             var promise = AsyncPromise.promise(exec);
             var received = new ArrayList<String>();
             BiConsumer<Integer, String> consumer = (orig, res) -> received.add(orig + "=" + res);
-            java.util.function.Function<Integer, String> toStr = i -> "v" + i;
+            Function<Integer, String> toStr = i -> "v" + i;
             promise.<Integer, String>submit(List.of(1, 2).iterator(), toStr, consumer);
             promise.done();
             assertEquals(List.of("1=v1", "2=v2"), received);
@@ -117,8 +120,8 @@ class AsyncPromiseTest {
         try {
             var promise = AsyncPromise.promise(exec);
             var received = new ArrayList<String>();
-            java.util.function.Function<String, String> upper = String::toUpperCase;
-            java.util.function.Consumer<String> sink = received::add;
+            Function<String, String> upper = String::toUpperCase;
+            Consumer<String> sink = received::add;
             promise.<String, String>submit(List.of("x", "y").iterator(), upper, sink);
             promise.done();
             assertEquals(List.of("X", "Y"), received);
@@ -133,7 +136,7 @@ class AsyncPromiseTest {
         try {
             var promise = AsyncPromise.promise(exec);
             var received = new ArrayList<String>();
-            java.util.function.Consumer<String> sink = received::add;
+            Consumer<String> sink = received::add;
             // Use Collection overload (delegates to iterator overload)
             promise.submit(List.of("a", "b"), sink);
             promise.done();
@@ -149,7 +152,7 @@ class AsyncPromiseTest {
         try {
             var promise = AsyncPromise.promise(exec);
             var received = new ArrayList<String>();
-            java.util.function.Consumer<String> sink = received::add;
+            Consumer<String> sink = received::add;
             promise.submit(List.of("a", "b"), sink);
             promise.done();
             assertEquals(List.of("a", "b"), received);
@@ -164,8 +167,8 @@ class AsyncPromiseTest {
         try {
             var promise = AsyncPromise.promise(exec);
             var received = new ArrayList<String>();
-            java.util.function.Function<String, String> upper = String::toUpperCase;
-            java.util.function.Consumer<String> sink = received::add;
+            Function<String, String> upper = String::toUpperCase;
+            Consumer<String> sink = received::add;
             promise.<String, String>submit(List.<String>of(), upper, sink);
             promise.done();
             assertTrue(received.isEmpty());
@@ -179,12 +182,12 @@ class AsyncPromiseTest {
         ExecutorService exec = Executors.newSingleThreadExecutor();
         try {
             var promise = AsyncPromise.promise(exec);
-            java.util.function.Consumer<String> noop = s -> {
+            Consumer<String> noop = s -> {
             };
             promise.submit((Callable<String>) () -> {
                 throw new RuntimeException("boom");
             }, noop);
-            ExecutionException ex = org.junit.jupiter.api.Assertions.assertThrows(
+            ExecutionException ex = Assertions.assertThrows(
                     ExecutionException.class, promise::done);
             assertInstanceOf(RuntimeException.class, ex.getCause());
         } finally {
@@ -213,7 +216,7 @@ class AsyncPromiseTest {
         try {
             var counter = new AtomicInteger();
             var promise = AsyncPromise.promise(exec);
-            java.util.function.Consumer<Integer> noop = i -> {
+            Consumer<Integer> noop = i -> {
             };
             promise.submit(incrementer(counter), noop);
             promise.submit(incrementer(counter), noop);
@@ -247,8 +250,8 @@ class AsyncPromiseTest {
         try {
             var promise = AsyncPromise.promise(exec);
             var received = new ArrayList<String>();
-            java.util.function.Function<Integer, String> toStr = i -> "v" + i;
-            java.util.function.Consumer<String> sink = received::add;
+            Function<Integer, String> toStr = i -> "v" + i;
+            Consumer<String> sink = received::add;
             Callable<Collection<Integer>> first = (Callable<Collection<Integer>>) () -> List.of(1, 2, 3);
             promise.<Integer, String>chain(first, toStr, sink);
             promise.done();
@@ -264,7 +267,7 @@ class AsyncPromiseTest {
         try {
             var promise = AsyncPromise.promise(exec);
             var received = new ArrayList<String>();
-            java.util.function.Function<Integer, String> toStr = i -> "v" + i;
+            Function<Integer, String> toStr = i -> "v" + i;
             BiConsumer<Integer, String> consumer = (orig, res) -> received.add(orig + "->" + res);
             Callable<Collection<Integer>> first = (Callable<Collection<Integer>>) () -> List.of(1, 2, 3);
             promise.<Integer, String>chain(first, toStr, consumer);
@@ -281,8 +284,8 @@ class AsyncPromiseTest {
         try {
             var promise = AsyncPromise.promise(exec);
             var received = new ArrayList<String>();
-            java.util.function.Function<Integer, String> toStr = i -> "v" + i;
-            java.util.function.Consumer<String> sink = received::add;
+            Function<Integer, String> toStr = i -> "v" + i;
+            Consumer<String> sink = received::add;
             Callable<Collection<Integer>> first = List::of;
             promise.chain(first, toStr, sink);
             promise.done();
@@ -299,7 +302,7 @@ class AsyncPromiseTest {
         try {
             var promise = AsyncPromise.promise(exec);
             var received = new ArrayList<Integer>();
-            java.util.function.Consumer<Integer> sink = received::add;
+            Consumer<Integer> sink = received::add;
             // submit(Consumer<T> consumer, Callable<T>... calls)
             promise.submit(sink, callable(10), callable(20), callable(30));
             promise.done();

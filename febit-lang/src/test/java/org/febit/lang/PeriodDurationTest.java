@@ -25,10 +25,11 @@ import java.time.chrono.JapaneseDate;
 import java.time.temporal.UnsupportedTemporalTypeException;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.MONTHS;
 import static java.time.temporal.ChronoUnit.SECONDS;
-import static org.junit.jupiter.api.Assertions.*;
 
 class PeriodDurationTest {
 

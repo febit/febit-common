@@ -15,10 +15,6 @@
  */
 package org.febit.lang.jackson;
 
-import lombok.Builder;
-import lombok.RequiredArgsConstructor;
-import lombok.Singular;
-import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JavaType;
 import tools.jackson.databind.cfg.MapperConfig;
 import tools.jackson.databind.introspect.AnnotatedClass;
@@ -26,12 +22,16 @@ import tools.jackson.databind.introspect.AnnotatedMember;
 import tools.jackson.databind.jsontype.NamedType;
 import tools.jackson.databind.jsontype.impl.StdSubtypeResolver;
 
+import lombok.RequiredArgsConstructor;
+import lombok.Singular;
+import org.jspecify.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-@Builder(builderClassName = "Builder")
+@lombok.Builder(builderClassName = "Builder")
 @RequiredArgsConstructor
 public class CustomSubtypeResolver extends StdSubtypeResolver {
 

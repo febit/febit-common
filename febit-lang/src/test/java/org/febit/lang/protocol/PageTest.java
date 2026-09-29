@@ -15,6 +15,7 @@
  */
 package org.febit.lang.protocol;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -265,7 +266,7 @@ class PageTest {
     @Test
     void empty_doesNotReturnNullMeta() {
         var page = Page.empty();
-        org.junit.jupiter.api.Assertions.assertNotNull(page.getMeta());
+        Assertions.assertNotNull(page.getMeta());
     }
 
     @Test
@@ -324,6 +325,6 @@ class PageTest {
     @Test
     void meta_toString_doesNotThrow() {
         var str = Page.Meta.of(1, 10, 100).toString();
-        org.junit.jupiter.api.Assertions.assertNotEquals("", str);
+        Assertions.assertNotEquals("", str);
     }
 }

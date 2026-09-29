@@ -15,8 +15,9 @@
  */
 package org.febit.lang.protocol;
 
-import org.febit.lang.Valued;
 import org.junit.jupiter.api.Test;
+
+import org.febit.lang.Valued;
 
 import static org.junit.jupiter.api.Assertions.*;
 

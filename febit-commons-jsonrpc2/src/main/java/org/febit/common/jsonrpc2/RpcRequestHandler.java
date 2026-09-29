@@ -16,6 +16,7 @@
 package org.febit.common.jsonrpc2;
 
 import edu.umd.cs.findbugs.annotations.Nullable;
+
 import org.febit.common.jsonrpc2.protocol.IRpcRequest;
 
 @FunctionalInterface

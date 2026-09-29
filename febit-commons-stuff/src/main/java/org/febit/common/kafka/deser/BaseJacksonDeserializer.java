@@ -15,11 +15,13 @@
  */
 package org.febit.common.kafka.deser;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.serialization.Deserializer;
-import org.febit.lang.jackson.JacksonCodec;
-import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JavaType;
+
+import org.febit.lang.jackson.JacksonCodec;
+
+import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
 

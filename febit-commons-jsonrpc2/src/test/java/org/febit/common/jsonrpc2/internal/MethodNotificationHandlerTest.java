@@ -15,11 +15,14 @@
  */
 package org.febit.common.jsonrpc2.internal;
 
+import org.junit.jupiter.api.Test;
+
 import org.febit.common.jsonrpc2.JsonCodec;
+import org.febit.common.jsonrpc2.RpcNotificationHandler;
 import org.febit.common.jsonrpc2.annotation.RpcMethodType;
 import org.febit.common.jsonrpc2.annotation.RpcParamsKind;
+import org.febit.common.jsonrpc2.exception.UncheckedRpcException;
 import org.febit.common.jsonrpc2.internal.protocol.Notification;
-import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -111,7 +114,7 @@ class MethodNotificationHandlerTest {
         var meta = createMeta(target, "onEvent", RpcMethodType.NOTIFICATION);
         var handler = MethodNotificationHandler.create(target, meta);
 
-        assertInstanceOf(org.febit.common.jsonrpc2.RpcNotificationHandler.class, handler);
+        assertInstanceOf(RpcNotificationHandler.class, handler);
         assertInstanceOf(BaseMethodHandler.class, handler);
     }
 
@@ -129,7 +132,7 @@ class MethodNotificationHandlerTest {
 
         var notification = new Notification("test/onEvent", "fail-msg");
         // Checked exceptions are wrapped as UncheckedRpcException
-        var ex = assertThrows(org.febit.common.jsonrpc2.exception.UncheckedRpcException.class, () ->
+        var ex = assertThrows(UncheckedRpcException.class, () ->
                 handler.handle(notification));
         assertTrue(ex.getTargetException() instanceof Exception);
         assertEquals("fail-msg", ex.getTargetException().getMessage());

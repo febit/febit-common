@@ -15,8 +15,9 @@
  */
 package org.febit.lang.security;
 
-import lombok.RequiredArgsConstructor;
 import org.febit.lang.UncheckedException;
+
+import lombok.RequiredArgsConstructor;
 
 import java.security.Key;
 import java.security.KeyFactory;

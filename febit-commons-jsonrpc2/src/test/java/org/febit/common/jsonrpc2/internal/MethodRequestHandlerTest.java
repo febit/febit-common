@@ -15,13 +15,15 @@
  */
 package org.febit.common.jsonrpc2.internal;
 
+import org.junit.jupiter.api.Test;
+
 import org.febit.common.jsonrpc2.JsonCodec;
+import org.febit.common.jsonrpc2.RpcRequestHandler;
 import org.febit.common.jsonrpc2.annotation.RpcMethodType;
 import org.febit.common.jsonrpc2.annotation.RpcParamsKind;
 import org.febit.common.jsonrpc2.exception.UncheckedRpcException;
 import org.febit.common.jsonrpc2.internal.protocol.Request;
 import org.febit.common.jsonrpc2.protocol.Id;
-import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -128,7 +130,7 @@ class MethodRequestHandlerTest {
         var meta = createMeta(target, "echo", RpcMethodType.REQUEST);
         var handler = MethodRequestHandler.create(meta, target);
 
-        assertInstanceOf(org.febit.common.jsonrpc2.RpcRequestHandler.class, handler);
+        assertInstanceOf(RpcRequestHandler.class, handler);
         assertInstanceOf(BaseMethodHandler.class, handler);
     }
 }

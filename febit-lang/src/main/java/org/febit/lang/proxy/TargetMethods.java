@@ -27,19 +27,19 @@ public class TargetMethods {
     }
 
     public static boolean isToString(Method method) {
-        return method.getName().equals("toString")
+        return "toString".equals(method.getName())
                 && method.getParameterCount() == 0
                 && method.getReturnType() == String.class;
     }
 
     public static boolean isHashCode(Method method) {
-        return method.getName().equals("hashCode")
+        return "hashCode".equals(method.getName())
                 && method.getParameterCount() == 0
                 && method.getReturnType() == int.class;
     }
 
     public static boolean isEquals(Method method) {
-        return method.getName().equals("equals")
+        return "equals".equals(method.getName())
                 && method.getParameterCount() == 1
                 && method.getReturnType() == boolean.class;
     }

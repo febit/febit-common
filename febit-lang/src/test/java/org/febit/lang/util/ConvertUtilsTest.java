@@ -406,7 +406,7 @@ class ConvertUtilsTest {
     @Test
     void toDateNumber() {
         assertNull(ConvertUtils.toDateNumber(null));
-        assertEquals(19700101, ConvertUtils.toDateNumber(LocalDate.EPOCH));
+        assertEquals(19_700_101, ConvertUtils.toDateNumber(LocalDate.EPOCH));
 
         Stream.of(
                 INSTANT.toEpochMilli(),
@@ -416,7 +416,7 @@ class ConvertUtilsTest {
                 DT_ZONED_UTC.toLocalDate(),
                 DT_ZONED_UTC.toString()
         ).forEach(
-                raw -> assertEquals(20231001, ConvertUtils.toDateNumber(raw))
+                raw -> assertEquals(20_231_001, ConvertUtils.toDateNumber(raw))
         );
 
         Stream.of(
@@ -425,7 +425,7 @@ class ConvertUtilsTest {
                 DT_ZONED_8.toLocalDateTime(),
                 DT_ZONED_8.toLocalDate()
         ).forEach(
-                raw -> assertEquals(20231002, ConvertUtils.toDateNumber(raw))
+                raw -> assertEquals(20_231_002, ConvertUtils.toDateNumber(raw))
         );
     }
 
@@ -528,7 +528,7 @@ class ConvertUtilsTest {
                 DT_ZONED_8,
                 DT_ZONED_8.toString()
         ).forEach(
-                raw -> assertEquals(20231001, ConvertUtils.toUtcDateNumber(raw))
+                raw -> assertEquals(20_231_001, ConvertUtils.toUtcDateNumber(raw))
         );
     }
 }

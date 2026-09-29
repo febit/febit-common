@@ -15,9 +15,6 @@
  */
 package org.febit.common.rabbit.delay.internal;
 
-import org.febit.common.rabbit.delay.DelayQueueMetrics;
-import org.febit.common.rabbit.delay.DelayQueueOptions;
-import org.febit.common.rabbit.delay.Headers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,6 +24,10 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
+
+import org.febit.common.rabbit.delay.DelayQueueMetrics;
+import org.febit.common.rabbit.delay.DelayQueueOptions;
+import org.febit.common.rabbit.delay.Headers;
 
 import java.io.IOException;
 import java.time.Instant;

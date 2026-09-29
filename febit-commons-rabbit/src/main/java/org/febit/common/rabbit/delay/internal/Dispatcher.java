@@ -16,9 +16,11 @@
 package org.febit.common.rabbit.delay.internal;
 
 import com.rabbitmq.client.AMQP;
-import lombok.extern.slf4j.Slf4j;
+
 import org.febit.common.rabbit.delay.DelayContext;
 import org.febit.common.rabbit.delay.DelayQueueOptions;
+
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -44,9 +46,9 @@ final class Dispatcher {
             new DelayTier(900, 11),
             new DelayTier(1800, 10),
             new DelayTier(3600, 9),
-            new DelayTier(10800, 8),
-            new DelayTier(21600, 7),
-            new DelayTier(43200, 6)
+            new DelayTier(10_800, 8),
+            new DelayTier(21_600, 7),
+            new DelayTier(43_200, 6)
     );
 
     private final DelayQueueOptions options;

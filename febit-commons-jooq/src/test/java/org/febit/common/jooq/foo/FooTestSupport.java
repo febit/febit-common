@@ -15,8 +15,6 @@
  */
 package org.febit.common.jooq.foo;
 
-import lombok.Getter;
-import lombok.experimental.Accessors;
 import org.h2.jdbcx.JdbcDataSource;
 import org.jooq.Configuration;
 import org.jooq.SQLDialect;
@@ -24,6 +22,9 @@ import org.jooq.impl.DefaultConfiguration;
 import org.jooq.jpa.extensions.DefaultAnnotatedPojoMemberProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+
+import lombok.Getter;
+import lombok.experimental.Accessors;
 
 import java.time.Instant;
 import java.time.LocalDate;

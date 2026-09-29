@@ -15,11 +15,12 @@
  */
 package org.febit.common.kafka.deser;
 
-import lombok.Getter;
-import org.febit.lang.jackson.JacksonCodec;
-import org.febit.lang.jackson.JacksonCodecImpl;
-import org.febit.lang.jackson.JacksonUtils;
 import tools.jackson.databind.JavaType;
+
+import org.febit.lang.jackson.JacksonCodec;
+import org.febit.lang.jackson.JacksonUtils;
+
+import lombok.Getter;
 
 import java.util.Map;
 import java.util.function.BiConsumer;

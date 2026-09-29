@@ -15,9 +15,10 @@
  */
 package org.febit.lang;
 
+import org.febit.lang.func.SerializableSupplier;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.febit.lang.func.SerializableSupplier;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 

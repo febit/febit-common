@@ -15,7 +15,6 @@
  */
 package org.febit.common.rest.client.service;
 
-import org.febit.common.rest.client.service.annotation.ExchangeIgnored;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -23,6 +22,8 @@ import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.service.invoker.HttpRequestValues;
+
+import org.febit.common.rest.client.service.annotation.ExchangeIgnored;
 
 import java.lang.reflect.Method;
 import java.util.stream.Stream;

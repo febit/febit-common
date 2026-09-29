@@ -15,8 +15,9 @@
  */
 package org.febit.common.etcd.store;
 
-import org.febit.lang.UncheckedException;
 import org.junit.jupiter.api.Test;
+
+import org.febit.lang.UncheckedException;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;

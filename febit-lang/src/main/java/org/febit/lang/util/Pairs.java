@@ -15,8 +15,9 @@
  */
 package org.febit.lang.util;
 
-import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.tuple.Pair;
+
+import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class Pairs {

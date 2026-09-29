@@ -18,6 +18,8 @@ package org.febit.common.jooq;
 import org.jooq.impl.DSL;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Field;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class UtilsTest {
@@ -66,7 +68,7 @@ class UtilsTest {
         var fields = Utils.declaredFields(WithStatic.class).toList();
 
         assertThat(fields)
-                .extracting(java.lang.reflect.Field::getName)
+                .extracting(Field::getName)
                 .contains("name")
                 .doesNotContain("CONSTANT");
     }

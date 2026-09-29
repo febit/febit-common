@@ -15,13 +15,13 @@
  */
 package org.febit.lang.jackson;
 
-import org.jspecify.annotations.Nullable;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JavaType;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.type.TypeFactory;
 
-import javax.annotation.WillNotClose;
+import org.jspecify.annotations.Nullable;
+
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Serializable;
@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.WillNotClose;
 
 public interface JacksonCodec extends Serializable {
 

@@ -15,8 +15,9 @@
  */
 package org.febit.lang.modeler;
 
-import org.febit.lang.util.TimeUtils;
 import org.junit.jupiter.api.Test;
+
+import org.febit.lang.util.TimeUtils;
 
 import java.time.ZonedDateTime;
 import java.util.Arrays;

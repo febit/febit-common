@@ -15,7 +15,10 @@
  */
 package org.febit.common.jsonrpc2;
 
-import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
+
 import org.febit.common.jsonrpc2.annotation.RpcMapping;
 import org.febit.common.jsonrpc2.annotation.RpcNotification;
 import org.febit.common.jsonrpc2.annotation.RpcParamsKind;
@@ -24,9 +27,8 @@ import org.febit.common.jsonrpc2.exception.RpcErrorException;
 import org.febit.common.jsonrpc2.protocol.Id;
 import org.febit.common.jsonrpc2.protocol.StdRpcErrors;
 import org.febit.lang.Tuple2;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
+
+import lombok.RequiredArgsConstructor;
 
 import java.time.Duration;
 import java.util.List;
@@ -286,7 +288,7 @@ class RpcChannelImplTest {
                 .requestPool(pool)
                 .build();
 
-        var future = channel.request("test", null, java.time.Duration.ofSeconds(5), String.class);
+        var future = channel.request("test", null, Duration.ofSeconds(5), String.class);
 
         var ex = assertThrows(ExecutionException.class, future::get);
         assertSame(thrown, ex.getCause());

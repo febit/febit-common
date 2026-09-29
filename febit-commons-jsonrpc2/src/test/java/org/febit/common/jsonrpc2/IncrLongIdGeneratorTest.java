@@ -15,8 +15,9 @@
  */
 package org.febit.common.jsonrpc2;
 
-import org.febit.common.jsonrpc2.protocol.Id;
 import org.junit.jupiter.api.Test;
+
+import org.febit.common.jsonrpc2.protocol.Id;
 
 import java.util.HashSet;
 import java.util.stream.IntStream;

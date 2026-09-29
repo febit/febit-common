@@ -15,11 +15,13 @@
  */
 package org.febit.common.jooq.converter.support;
 
-import lombok.experimental.UtilityClass;
-import org.febit.lang.jackson.JacksonCodec;
-import org.febit.lang.jackson.JacksonCodecImpl;
 import tools.jackson.databind.PropertyNamingStrategies;
 import tools.jackson.databind.json.JsonMapper;
+
+import org.febit.lang.jackson.JacksonCodec;
+import org.febit.lang.jackson.JacksonCodecImpl;
+
+import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class JacksonCodecSupport {

@@ -15,8 +15,9 @@
  */
 package org.febit.lang.modeler;
 
-import org.febit.lang.util.TimeUtils;
 import org.junit.jupiter.api.Test;
+
+import org.febit.lang.util.TimeUtils;
 
 import java.math.BigDecimal;
 import java.util.Arrays;

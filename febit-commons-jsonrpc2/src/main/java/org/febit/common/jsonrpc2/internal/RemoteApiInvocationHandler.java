@@ -15,16 +15,17 @@
  */
 package org.febit.common.jsonrpc2.internal;
 
-import lombok.Builder;
-import lombok.RequiredArgsConstructor;
+import tools.jackson.databind.JavaType;
+
 import org.febit.common.jsonrpc2.RpcChannel;
 import org.febit.common.jsonrpc2.exception.UncheckedRpcException;
 import org.febit.common.jsonrpc2.protocol.StdRpcErrors;
 import org.febit.lang.proxy.BaseInvocationHandler;
 import org.febit.lang.proxy.Invoker;
 import org.febit.lang.proxy.Invokers;
+
+import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
-import tools.jackson.databind.JavaType;
 
 import java.lang.reflect.Method;
 import java.time.Duration;
@@ -75,7 +76,7 @@ public class RemoteApiInvocationHandler extends BaseInvocationHandler<Object> {
         Invoker<Object> create(RpcChannel channel);
     }
 
-    @Builder(
+    @lombok.Builder(
             builderClassName = "Builder"
     )
     private static class NotifyInvokerFactory implements InvokerFactory {
@@ -96,7 +97,7 @@ public class RemoteApiInvocationHandler extends BaseInvocationHandler<Object> {
         }
     }
 
-    @Builder(
+    @lombok.Builder(
             builderClassName = "Builder"
     )
     private static class RequestInvokerFactory implements InvokerFactory {

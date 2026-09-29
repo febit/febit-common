@@ -15,9 +15,12 @@
  */
 package org.febit.common.etcd.store.codec;
 
+import org.junit.jupiter.api.Test;
+
 import org.febit.common.etcd.support.TestCodecs;
 import org.febit.lang.util.PatternFormatter;
-import org.junit.jupiter.api.Test;
+
+import java.nio.charset.StandardCharsets;
 
 import static org.febit.common.etcd.support.TestSupport.kvOf;
 import static org.junit.jupiter.api.Assertions.*;
@@ -82,7 +85,7 @@ class GenericKVCodecTest {
     void encodeRoundTripsThroughCodecs() {
         var codec = TestCodecs.stringKVCodec();
         var encodedKey = codec.key().encode("k");
-        assertEquals("k", new String(encodedKey.getBytes(), java.nio.charset.StandardCharsets.UTF_8));
+        assertEquals("k", new String(encodedKey.getBytes(), StandardCharsets.UTF_8));
     }
 
     record IdKey(String id) {

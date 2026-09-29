@@ -15,13 +15,15 @@
  */
 package org.febit.common.rabbit.delay;
 
-import lombok.AccessLevel;
-import lombok.experimental.Accessors;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+
 import org.febit.common.rabbit.delay.internal.DelayQueueFactory;
 import org.febit.common.rabbit.delay.internal.FixedRoundingDelayPolicy;
 import org.febit.common.rabbit.delay.internal.UuidIdGenerator;
+
+import lombok.AccessLevel;
+import lombok.experimental.Accessors;
 import org.jspecify.annotations.Nullable;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 
 import java.time.Clock;
 import java.time.Duration;

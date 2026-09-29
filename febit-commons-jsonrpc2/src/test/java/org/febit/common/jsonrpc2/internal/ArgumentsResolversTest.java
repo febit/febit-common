@@ -15,10 +15,14 @@
  */
 package org.febit.common.jsonrpc2.internal;
 
-import org.febit.common.jsonrpc2.JsonCodec;
 import org.junit.jupiter.api.Test;
 
+import org.febit.common.jsonrpc2.JsonCodec;
+import org.febit.common.jsonrpc2.annotation.RpcMethodType;
+import org.febit.common.jsonrpc2.annotation.RpcParamsKind;
+
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -136,7 +140,7 @@ class ArgumentsResolversTest {
                 List.of("name", "age"),
                 List.of(JsonCodec.resolveType(String.class), JsonCodec.resolveType(Integer.class))
         );
-        var args = resolver.resolve(java.util.Map.of("name", "Alice", "age", 30));
+        var args = resolver.resolve(Map.of("name", "Alice", "age", 30));
         assertEquals(2, args.length);
         assertEquals("Alice", args[0]);
         assertEquals(30, args[1]);
@@ -148,7 +152,7 @@ class ArgumentsResolversTest {
                 List.of("name", "age"),
                 List.of(JsonCodec.resolveType(String.class), JsonCodec.resolveType(Integer.class))
         );
-        var args = resolver.resolve(java.util.Map.of("name", "Bob"));
+        var args = resolver.resolve(Map.of("name", "Bob"));
         assertEquals(2, args.length);
         assertEquals("Bob", args[0]);
         assertNull(args[1]);
@@ -168,8 +172,8 @@ class ArgumentsResolversTest {
         var method = ResolveApi.class.getMethod("noArgs");
         var meta = RpcMappingMeta.builder()
                 .method("test")
-                .type(org.febit.common.jsonrpc2.annotation.RpcMethodType.REQUEST)
-                .paramsKind(org.febit.common.jsonrpc2.annotation.RpcParamsKind.FIRST_ARGUMENT)
+                .type(RpcMethodType.REQUEST)
+                .paramsKind(RpcParamsKind.FIRST_ARGUMENT)
                 .resultType(JsonCodec.resolveType(Void.class))
                 .targetMethod(method)
                 .build();
@@ -183,8 +187,8 @@ class ArgumentsResolversTest {
         var method = ResolveApi.class.getMethod("twoArgs", String.class, int.class);
         var meta = RpcMappingMeta.builder()
                 .method("test")
-                .type(org.febit.common.jsonrpc2.annotation.RpcMethodType.REQUEST)
-                .paramsKind(org.febit.common.jsonrpc2.annotation.RpcParamsKind.FIRST_ARGUMENT)
+                .type(RpcMethodType.REQUEST)
+                .paramsKind(RpcParamsKind.FIRST_ARGUMENT)
                 .resultType(JsonCodec.resolveType(Void.class))
                 .targetMethod(method)
                 .build();
@@ -197,8 +201,8 @@ class ArgumentsResolversTest {
         var method = ResolveApi.class.getMethod("oneArg", String.class);
         var meta = RpcMappingMeta.builder()
                 .method("test")
-                .type(org.febit.common.jsonrpc2.annotation.RpcMethodType.REQUEST)
-                .paramsKind(org.febit.common.jsonrpc2.annotation.RpcParamsKind.FIRST_ARGUMENT)
+                .type(RpcMethodType.REQUEST)
+                .paramsKind(RpcParamsKind.FIRST_ARGUMENT)
                 .resultType(JsonCodec.resolveType(String.class))
                 .targetMethod(method)
                 .build();
@@ -213,8 +217,8 @@ class ArgumentsResolversTest {
         var method = ResolveApi.class.getMethod("twoArgs", String.class, int.class);
         var meta = RpcMappingMeta.builder()
                 .method("test")
-                .type(org.febit.common.jsonrpc2.annotation.RpcMethodType.REQUEST)
-                .paramsKind(org.febit.common.jsonrpc2.annotation.RpcParamsKind.FLATTEN_LIST)
+                .type(RpcMethodType.REQUEST)
+                .paramsKind(RpcParamsKind.FLATTEN_LIST)
                 .resultType(JsonCodec.resolveType(Void.class))
                 .targetMethod(method)
                 .build();
@@ -230,13 +234,13 @@ class ArgumentsResolversTest {
         var method = ResolveApi.class.getMethod("twoArgs", String.class, int.class);
         var meta = RpcMappingMeta.builder()
                 .method("test")
-                .type(org.febit.common.jsonrpc2.annotation.RpcMethodType.REQUEST)
-                .paramsKind(org.febit.common.jsonrpc2.annotation.RpcParamsKind.FLATTEN_OBJECT)
+                .type(RpcMethodType.REQUEST)
+                .paramsKind(RpcParamsKind.FLATTEN_OBJECT)
                 .resultType(JsonCodec.resolveType(Void.class))
                 .targetMethod(method)
                 .build();
         var resolver = ArgumentsResolvers.resolve(meta);
-        var args = resolver.resolve(java.util.Map.of("arg0", "hello", "arg1", 42));
+        var args = resolver.resolve(Map.of("arg0", "hello", "arg1", 42));
         assertEquals(2, args.length);
         assertEquals("hello", args[0]);
         assertEquals(42, args[1]);

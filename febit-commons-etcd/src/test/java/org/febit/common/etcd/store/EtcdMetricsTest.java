@@ -22,9 +22,10 @@ import io.grpc.StatusRuntimeException;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import org.febit.lang.UncheckedException;
 import org.junit.jupiter.api.Test;
 import tools.jackson.core.JacksonException;
+
+import org.febit.lang.UncheckedException;
 
 import java.util.concurrent.TimeoutException;
 

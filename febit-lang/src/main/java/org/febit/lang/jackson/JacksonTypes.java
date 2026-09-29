@@ -15,9 +15,10 @@
  */
 package org.febit.lang.jackson;
 
-import lombok.experimental.UtilityClass;
 import tools.jackson.databind.JavaType;
 import tools.jackson.databind.type.TypeFactory;
+
+import lombok.experimental.UtilityClass;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

@@ -41,6 +41,26 @@ allprojects { subproject ->
     java {
       target 'src/*/java/**/*.java'
       licenseHeaderFile rootProject.file('etc/license-header.txt')
+
+      endWithNewline()
+      trimTrailingWhitespace()
+
+      shortenFullyQualifiedTypes()
+
+      cleanthat()
+          .addMutator('SafeAndConsensual')
+          .addMutator('PMD')
+          .addMutator('Stream')
+          .addMutator('SpotBugs')
+
+      removeUnusedImports()
+      importOrder(
+          '',
+          'org.febit',
+          'jakarta.persistence|jakarta.validation|lombok|org.jspecify',
+          'jakarta|java|javax',
+          '\\#', '\\#jakarta|\\#java|\\#javax'
+      )
     }
   }
 

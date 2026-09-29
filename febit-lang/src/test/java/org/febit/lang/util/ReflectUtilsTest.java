@@ -29,7 +29,7 @@ class ReflectUtilsTest {
         public static String PUBLIC_STATIC_FIELD = "value";
         private final int PRIVATE_FINAL_INSTANCE = 42;
         private final String PRIVATE_FINAL_STRING = "x";
-        protected volatile transient String instanceField;
+        protected transient volatile String instanceField;
 
         private synchronized void instanceMethod() {
         }

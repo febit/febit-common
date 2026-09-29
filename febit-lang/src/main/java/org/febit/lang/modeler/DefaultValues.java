@@ -15,8 +15,9 @@
  */
 package org.febit.lang.modeler;
 
-import lombok.experimental.UtilityClass;
 import org.febit.lang.util.TimeUtils;
+
+import lombok.experimental.UtilityClass;
 import org.jspecify.annotations.Nullable;
 
 import java.math.BigDecimal;

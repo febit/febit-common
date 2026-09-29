@@ -15,16 +15,18 @@
  */
 package org.febit.lang.jackson.ser;
 
-import org.febit.lang.jackson.JacksonUtils;
-import org.febit.lang.jackson.JacksonCodec;
-import org.febit.lang.modeler.ModeledValue;
-import org.febit.lang.modeler.Schema;
-import org.febit.lang.modeler.StructSpec;
-import org.jspecify.annotations.Nullable;
 import tools.jackson.core.JacksonException;
 import tools.jackson.core.JsonGenerator;
 import tools.jackson.databind.SerializationContext;
 import tools.jackson.databind.ser.std.StdSerializer;
+
+import org.febit.lang.jackson.JacksonCodec;
+import org.febit.lang.jackson.JacksonUtils;
+import org.febit.lang.modeler.ModeledValue;
+import org.febit.lang.modeler.Schema;
+import org.febit.lang.modeler.StructSpec;
+
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;

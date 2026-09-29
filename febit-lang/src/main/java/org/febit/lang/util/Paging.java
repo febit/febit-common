@@ -15,11 +15,13 @@
  */
 package org.febit.lang.util;
 
-import lombok.experimental.UtilityClass;
-import lombok.val;
 import org.apache.commons.collections4.IteratorUtils;
+
 import org.febit.lang.protocol.Page;
 import org.febit.lang.protocol.Pagination;
+
+import lombok.experimental.UtilityClass;
+import lombok.val;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Collections;

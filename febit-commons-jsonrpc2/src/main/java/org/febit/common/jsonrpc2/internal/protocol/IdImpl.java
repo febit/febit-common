@@ -16,8 +16,10 @@
 package org.febit.common.jsonrpc2.internal.protocol;
 
 import com.fasterxml.jackson.annotation.JsonValue;
-import lombok.EqualsAndHashCode;
+
 import org.febit.common.jsonrpc2.protocol.Id;
+
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.util.Objects;

@@ -15,10 +15,11 @@
  */
 package org.febit.common.kafka.deser;
 
-import org.febit.lang.jackson.JacksonCodec;
-import org.febit.lang.jackson.JacksonUtils;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.JavaType;
+
+import org.febit.lang.jackson.JacksonCodec;
+import org.febit.lang.jackson.JacksonUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;

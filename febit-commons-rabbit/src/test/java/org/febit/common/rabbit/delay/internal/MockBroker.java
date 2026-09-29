@@ -17,14 +17,16 @@ package org.febit.common.rabbit.delay.internal;
 
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
-import org.febit.common.rabbit.delay.DelayQueueTopology;
-import org.febit.common.rabbit.delay.Headers;
-import org.jspecify.annotations.Nullable;
 import org.mockito.stubbing.Answer;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.connection.Connection;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+
+import org.febit.common.rabbit.delay.DelayQueueTopology;
+import org.febit.common.rabbit.delay.Headers;
+
+import org.jspecify.annotations.Nullable;
 
 import java.time.Clock;
 import java.time.Duration;

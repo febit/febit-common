@@ -24,6 +24,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.web.client.RestClient;
 
+import org.febit.lang.protocol.IResponse;
+
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -150,11 +152,11 @@ class ExtraJacksonHttpMessageConverterRealTest {
                 .body(TypeRefs.forResponse(SimpleVO.class));
 
         assertThat(response)
-                .returns(201, org.febit.lang.protocol.IResponse::status)
-                .returns(true, org.febit.lang.protocol.IResponse::isSuccess)
-                .returns("OK", org.febit.lang.protocol.IResponse::code)
-                .returns("All good", org.febit.lang.protocol.IResponse::message)
-                .extracting(org.febit.lang.protocol.IResponse::data)
+                .returns(201, IResponse::status)
+                .returns(true, IResponse::isSuccess)
+                .returns("OK", IResponse::code)
+                .returns("All good", IResponse::message)
+                .extracting(IResponse::data)
                 .isNotNull();
     }
 

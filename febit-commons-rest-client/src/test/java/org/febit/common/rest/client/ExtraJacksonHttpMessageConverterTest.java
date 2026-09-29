@@ -15,13 +15,17 @@
  */
 package org.febit.common.rest.client;
 
-import org.febit.lang.protocol.HttpStatusAware;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.ResolvableType;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.converter.AbstractJacksonHttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverters.ClientBuilder;
+
+import org.febit.lang.protocol.HttpStatusAware;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -123,7 +127,7 @@ class ExtraJacksonHttpMessageConverterTest {
         var mockDelegate = mock(AbstractJacksonHttpMessageConverter.class);
         var converter = ExtraJacksonHttpMessageConverter.wrap(mockDelegate);
 
-        var builder = mock(org.springframework.http.converter.HttpMessageConverters.ClientBuilder.class);
+        var builder = mock(ClientBuilder.class);
         when(builder.withJsonConverter(any())).thenReturn(builder);
         when(builder.addCustomConverter(any())).thenReturn(builder);
 
@@ -162,9 +166,9 @@ class ExtraJacksonHttpMessageConverterTest {
         var converter = ExtraJacksonHttpMessageConverter.wrap(mockDelegate);
 
         var type = ResolvableType.forClass(Object.class);
-        when(mockDelegate.canRead(type, org.springframework.http.MediaType.APPLICATION_JSON)).thenReturn(true);
+        when(mockDelegate.canRead(type, MediaType.APPLICATION_JSON)).thenReturn(true);
 
-        assertTrue(converter.canRead(type, org.springframework.http.MediaType.APPLICATION_JSON));
+        assertTrue(converter.canRead(type, MediaType.APPLICATION_JSON));
     }
 
     static class TestHttpStatusAware implements HttpStatusAware {
@@ -176,7 +180,7 @@ class ExtraJacksonHttpMessageConverterTest {
         }
     }
 
-    static class HttpInputMessageStub implements org.springframework.http.HttpInputMessage {
+    static class HttpInputMessageStub implements HttpInputMessage {
 
         @Override
         public InputStream getBody() {

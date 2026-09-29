@@ -40,5 +40,3 @@ public class EtcdLockLostException extends EtcdLockException {
         this.reason = reason;
     }
 }
-
-

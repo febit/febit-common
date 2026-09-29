@@ -16,6 +16,7 @@
 package org.febit.common.etcd.store.codec;
 
 import io.etcd.jetcd.ByteSequence;
+
 import lombok.experimental.UtilityClass;
 
 import java.nio.charset.StandardCharsets;

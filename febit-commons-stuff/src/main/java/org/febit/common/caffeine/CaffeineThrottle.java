@@ -17,10 +17,12 @@ package org.febit.common.caffeine;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import lombok.AccessLevel;
+
 import org.febit.lang.NanosClock;
 import org.febit.lang.func.ThrowingRunnable;
 import org.febit.lang.func.ThrowingSupplier;
+
+import lombok.AccessLevel;
 import org.jspecify.annotations.Nullable;
 
 import java.time.Duration;

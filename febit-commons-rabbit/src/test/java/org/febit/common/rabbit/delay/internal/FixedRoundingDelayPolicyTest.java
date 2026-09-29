@@ -15,10 +15,11 @@
  */
 package org.febit.common.rabbit.delay.internal;
 
-import org.febit.common.rabbit.delay.DelayContext;
-import org.febit.common.rabbit.delay.DelayQueueOptions;
 import org.junit.jupiter.api.Test;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+
+import org.febit.common.rabbit.delay.DelayContext;
+import org.febit.common.rabbit.delay.DelayQueueOptions;
 
 import java.time.Clock;
 import java.time.Duration;

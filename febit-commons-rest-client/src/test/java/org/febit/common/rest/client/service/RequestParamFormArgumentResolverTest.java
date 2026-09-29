@@ -16,14 +16,16 @@
 package org.febit.common.rest.client.service;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.Singular;
-import org.febit.common.rest.client.service.annotation.RequestParamForm;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.service.invoker.HttpRequestValues;
 import tools.jackson.databind.json.JsonMapper;
+
+import org.febit.common.rest.client.service.annotation.RequestParamForm;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Singular;
 
 import java.lang.reflect.Method;
 import java.util.List;

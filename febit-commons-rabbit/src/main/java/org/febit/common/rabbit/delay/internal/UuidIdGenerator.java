@@ -17,6 +17,7 @@ package org.febit.common.rabbit.delay.internal;
 
 import com.fasterxml.uuid.Generators;
 import com.fasterxml.uuid.NoArgGenerator;
+
 import org.febit.common.rabbit.delay.DelayMessage;
 import org.febit.common.rabbit.delay.MessageIdGenerator;
 

@@ -15,6 +15,8 @@
  */
 package org.febit.common.jsonrpc2;
 
+import org.junit.jupiter.api.Test;
+
 import org.febit.common.jsonrpc2.exception.RpcErrorException;
 import org.febit.common.jsonrpc2.internal.protocol.ErrorImpl;
 import org.febit.common.jsonrpc2.internal.protocol.Notification;
@@ -25,7 +27,6 @@ import org.febit.common.jsonrpc2.protocol.IRpcMessage;
 import org.febit.common.jsonrpc2.protocol.Id;
 import org.febit.common.jsonrpc2.protocol.StdRpcErrors;
 import org.febit.lang.jackson.JacksonUtils;
-import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
@@ -99,7 +100,7 @@ class JsonCodecTest {
         assertThat(encodeToMap(new Response<>(
                 Id.of(1.01D),
                 null,
-                new ErrorImpl<>(-32601, "Method not found", null)
+                new ErrorImpl<>(-32_601, "Method not found", null)
         )))
                 .hasSize(3)
                 .containsEntry("id", 1.01D)
@@ -108,7 +109,7 @@ class JsonCodecTest {
                 .doesNotContainKeys("result")
                 .extracting("error")
                 .asInstanceOf(map(String.class, Object.class))
-                .containsEntry("code", -32601)
+                .containsEntry("code", -32_601)
                 .containsEntry("message", "Method not found")
                 .doesNotContainKey("data");
     }
@@ -181,7 +182,7 @@ class JsonCodecTest {
                 .returns(null, Response::result)
                 .extracting(Response::error)
                 .isNotNull()
-                .returns(-32601, IRpcError::code)
+                .returns(-32_601, IRpcError::code)
                 .returns("Method not found", IRpcError::message)
                 .returns(null, IRpcError::data);
     }

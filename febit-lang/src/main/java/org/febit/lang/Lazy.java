@@ -16,6 +16,7 @@
 package org.febit.lang;
 
 import org.febit.lang.func.SerializableSupplier;
+
 import org.jspecify.annotations.NullMarked;
 
 /**

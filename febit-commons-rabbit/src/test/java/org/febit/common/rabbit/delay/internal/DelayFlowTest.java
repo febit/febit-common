@@ -15,10 +15,6 @@
  */
 package org.febit.common.rabbit.delay.internal;
 
-import org.febit.common.rabbit.delay.DelayContext;
-import org.febit.common.rabbit.delay.DelayQueueMetrics;
-import org.febit.common.rabbit.delay.DelayQueueOptions;
-import org.febit.common.rabbit.delay.Headers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +22,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+
+import org.febit.common.rabbit.delay.DelayContext;
+import org.febit.common.rabbit.delay.DelayQueueMetrics;
+import org.febit.common.rabbit.delay.DelayQueueOptions;
+import org.febit.common.rabbit.delay.Headers;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -86,7 +87,7 @@ class DelayFlowTest {
 
     @Test
     void hopsThroughTiersAndLandsExactlyOnDeadline() throws Exception {
-        var deadline = NOW.plusSeconds(5_000);
+        var deadline = NOW.plusSeconds(5000);
         broker.consumeWith(rehopListener);
 
         assertThat(dispatcher.dispatch(context(deadline, 0))).isTrue();
@@ -106,12 +107,12 @@ class DelayFlowTest {
 
     @Test
     void lateConsumptionTakesFewerHopsButStillLandsOnDeadline() throws Exception {
-        var deadline = NOW.plusSeconds(5_000);
+        var deadline = NOW.plusSeconds(5000);
         broker.consumeWith(rehopListener);
         assertThat(dispatcher.dispatch(context(deadline, 0))).isTrue();
 
         // the first park only expires long after its TTL — a stalled consumer
-        broker.stall(Duration.ofSeconds(4_990));
+        broker.stall(Duration.ofSeconds(4990));
         int hops = broker.runUntil(deadline);
 
         // each hop re-computes from the deadline, so waking up late just skips tiers
@@ -124,11 +125,11 @@ class DelayFlowTest {
 
     @Test
     void stalledPastDeadlineGoesStraightToReady() throws Exception {
-        var deadline = NOW.plusSeconds(5_000);
+        var deadline = NOW.plusSeconds(5000);
         broker.consumeWith(rehopListener);
         assertThat(dispatcher.dispatch(context(deadline, 0))).isTrue();
 
-        broker.stall(Duration.ofSeconds(6_000));
+        broker.stall(Duration.ofSeconds(6000));
         int hops = broker.runUntil(deadline);
 
         // woken up after the deadline: due immediately, no further parking
@@ -140,11 +141,11 @@ class DelayFlowTest {
 
     @Test
     void clockRollbackStillConvergesOnDeadline() throws Exception {
-        var deadline = NOW.plusSeconds(5_000);
+        var deadline = NOW.plusSeconds(5000);
         broker.consumeWith(rehopListener);
         assertThat(dispatcher.dispatch(context(deadline, 0))).isTrue();
 
-        broker.rewind(Duration.ofSeconds(1_000));
+        broker.rewind(Duration.ofSeconds(1000));
         int hops = broker.runUntil(deadline);
 
         // park availability is absolute, so a rollback cannot add hops or overshoot

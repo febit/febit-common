@@ -15,21 +15,22 @@
  */
 package org.febit.lang.jackson;
 
-import lombok.experimental.UtilityClass;
-import org.jspecify.annotations.Nullable;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JavaType;
 import tools.jackson.databind.SerializationFeature;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.dataformat.yaml.YAMLMapper;
 
-import javax.annotation.WillNotClose;
+import lombok.experimental.UtilityClass;
+import org.jspecify.annotations.Nullable;
+
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.WillNotClose;
 
 /**
  * Jackson Utils.

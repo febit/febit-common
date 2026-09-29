@@ -15,10 +15,11 @@
  */
 package org.febit.lang.io;
 
+import org.febit.lang.func.ClosableConsumer;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.febit.lang.func.ClosableConsumer;
 
 import java.util.Iterator;
 import java.util.Set;

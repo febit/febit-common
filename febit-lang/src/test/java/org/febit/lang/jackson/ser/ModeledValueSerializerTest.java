@@ -15,20 +15,22 @@
  */
 package org.febit.lang.jackson.ser;
 
+import org.junit.jupiter.api.Test;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
+
+import org.febit.lang.jackson.JacksonCodec;
 import org.febit.lang.jackson.JacksonCodecImpl;
 import org.febit.lang.jackson.JacksonUtils;
-import org.febit.lang.jackson.JacksonCodec;
 import org.febit.lang.modeler.ModeledValue;
 import org.febit.lang.modeler.Modeler;
 import org.febit.lang.modeler.Schema;
 import org.febit.lang.modeler.SchemaType;
 import org.febit.lang.modeler.Schemas;
 import org.febit.lang.modeler.StructSpecs;
+
 import org.jspecify.annotations.Nullable;
-import org.junit.jupiter.api.Test;
-import tools.jackson.databind.SerializationFeature;
-import tools.jackson.databind.json.JsonMapper;
-import tools.jackson.databind.module.SimpleModule;
 
 import java.math.BigDecimal;
 import java.time.Instant;

@@ -15,11 +15,12 @@
  */
 package org.febit.lang.util;
 
+import org.junit.jupiter.api.Test;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.jspecify.annotations.Nullable;
-import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -35,12 +36,13 @@ import java.time.temporal.TemporalQueries;
 import java.util.Arrays;
 import java.util.List;
 
-import static java.time.temporal.ChronoField.INSTANT_SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
+
+import static java.time.temporal.ChronoField.INSTANT_SECONDS;
 
 class TimeUtilsTest {
 

@@ -20,6 +20,7 @@ import io.etcd.jetcd.Client;
 import io.etcd.jetcd.KeyValue;
 import io.etcd.jetcd.kv.GetResponse;
 import io.etcd.jetcd.options.GetOption;
+
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
 
@@ -34,8 +35,9 @@ import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static java.lang.Thread.currentThread;
 import static org.febit.common.etcd.store.codec.CodecUtils.bytes;
+
+import static java.lang.Thread.currentThread;
 
 /**
  * Auto-paginating scanner over a key range in etcd.

@@ -16,9 +16,11 @@
 package org.febit.common.rabbit.delay;
 
 import com.rabbitmq.client.AMQP;
-import org.febit.common.rabbit.delay.internal.DelayTier;
-import org.jspecify.annotations.Nullable;
 import org.springframework.amqp.core.Message;
+
+import org.febit.common.rabbit.delay.internal.DelayTier;
+
+import org.jspecify.annotations.Nullable;
 
 import java.time.Duration;
 import java.time.Instant;

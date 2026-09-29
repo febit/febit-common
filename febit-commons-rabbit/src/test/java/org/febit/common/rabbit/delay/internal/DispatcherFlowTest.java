@@ -15,9 +15,6 @@
  */
 package org.febit.common.rabbit.delay.internal;
 
-import org.febit.common.rabbit.delay.DelayContext;
-import org.febit.common.rabbit.delay.DelayQueueMetrics;
-import org.febit.common.rabbit.delay.DelayQueueOptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -26,6 +23,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+
+import org.febit.common.rabbit.delay.DelayContext;
+import org.febit.common.rabbit.delay.DelayQueueMetrics;
+import org.febit.common.rabbit.delay.DelayQueueOptions;
 
 import java.io.IOException;
 import java.time.Duration;

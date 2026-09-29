@@ -16,7 +16,9 @@
 package org.febit.common.etcd.store.codec;
 
 import io.etcd.jetcd.ByteSequence;
+
 import org.febit.lang.util.PatternFormatter;
+
 import org.jspecify.annotations.Nullable;
 
 /**

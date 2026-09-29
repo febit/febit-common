@@ -15,10 +15,11 @@
  */
 package org.febit.lang.util;
 
+import org.junit.jupiter.api.Test;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
@@ -27,7 +28,7 @@ import static org.assertj.core.api.InstanceOfAssertFactories.map;
 import static org.assertj.core.api.InstanceOfAssertFactories.type;
 import static org.febit.lang.util.PatternRules.Result;
 import static org.febit.lang.util.PatternRules.builder;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class PatternRulesTest {
 

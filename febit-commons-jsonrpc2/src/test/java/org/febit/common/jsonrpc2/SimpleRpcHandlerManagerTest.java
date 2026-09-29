@@ -15,12 +15,15 @@
  */
 package org.febit.common.jsonrpc2;
 
+import org.junit.jupiter.api.Test;
+
 import org.febit.common.jsonrpc2.annotation.RpcMapping;
 import org.febit.common.jsonrpc2.annotation.RpcNotification;
 import org.febit.common.jsonrpc2.annotation.RpcRequest;
 import org.febit.common.jsonrpc2.exception.RpcDuplicateHandlerRegistrationException;
 import org.febit.common.jsonrpc2.protocol.IRpcRequest;
-import org.junit.jupiter.api.Test;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -68,7 +71,7 @@ class SimpleRpcHandlerManagerTest {
     @Test
     void registerDirectNotificationHandler() {
         var mgr = SimpleRpcHandlerManager.create();
-        var results = new java.util.concurrent.atomic.AtomicInteger();
+        var results = new AtomicInteger();
         RpcNotificationHandler handler = notification -> results.incrementAndGet();
 
         mgr.register("events/foo", handler);

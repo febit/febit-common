@@ -15,10 +15,12 @@
  */
 package org.febit.lang.protocol;
 
-import org.febit.lang.jackson.JacksonUtils;
 import org.junit.jupiter.api.Test;
 
+import org.febit.lang.jackson.JacksonUtils;
+
 import java.time.Instant;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -148,7 +150,7 @@ class IResponseTest {
 
     @Test
     void ok_dataIsEmptyList_isPresent() {
-        var r = IResponse.ok(java.util.List.of());
+        var r = IResponse.ok(List.of());
         assertTrue(r.isPresent());
         assertFalse(r.isEmpty());
     }

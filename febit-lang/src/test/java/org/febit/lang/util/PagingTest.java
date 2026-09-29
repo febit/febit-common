@@ -15,14 +15,16 @@
  */
 package org.febit.lang.util;
 
+import org.junit.jupiter.api.Test;
+
 import org.febit.lang.protocol.Page;
 import org.febit.lang.protocol.Pagination;
-import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -107,7 +109,7 @@ class PagingTest {
     @Test
     void iterable_returnsNewIterator() {
         var calls = new AtomicInteger();
-        var api = (java.util.function.Function<Pagination, Page<String>>) p -> {
+        var api = (Function<Pagination, Page<String>>) p -> {
             calls.incrementAndGet();
             return Page.<String>of(1, 10, 0, List.of());
         };
@@ -126,7 +128,7 @@ class PagingTest {
 
     @Test
     void iterable_isIterable() {
-        var api = (java.util.function.Function<Pagination, Page<String>>) p -> Page.<String>of(1, 10, 0, List.of());
+        var api = (Function<Pagination, Page<String>>) p -> Page.<String>of(1, 10, 0, List.of());
         var iterable = Paging.iterable(10, api);
         // Can be used in for-each
         var count = 0;

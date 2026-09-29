@@ -15,8 +15,9 @@
  */
 package org.febit.common.kafka;
 
-import org.febit.common.kafka.deser.StringDeserializer;
 import org.junit.jupiter.api.Test;
+
+import org.febit.common.kafka.deser.StringDeserializer;
 
 import java.util.List;
 

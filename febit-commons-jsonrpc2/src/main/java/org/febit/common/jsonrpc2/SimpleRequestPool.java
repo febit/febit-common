@@ -16,6 +16,7 @@
 package org.febit.common.jsonrpc2;
 
 import org.febit.common.jsonrpc2.protocol.Id;
+
 import org.jspecify.annotations.Nullable;
 
 import java.util.concurrent.ConcurrentHashMap;

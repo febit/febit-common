@@ -18,9 +18,11 @@ package org.febit.common.caffeine;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.RemovalListener;
+
+import org.febit.lang.NanosClock;
+
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import org.febit.lang.NanosClock;
 import org.jspecify.annotations.Nullable;
 
 import java.time.Duration;

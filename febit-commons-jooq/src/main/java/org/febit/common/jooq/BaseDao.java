@@ -16,12 +16,13 @@
 package org.febit.common.jooq;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.febit.lang.UncheckedException;
-import org.febit.lang.util.TypeParameters;
 import org.jooq.Configuration;
 import org.jooq.RecordMapper;
 import org.jooq.Table;
 import org.jooq.TableRecord;
+
+import org.febit.lang.UncheckedException;
+import org.febit.lang.util.TypeParameters;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;

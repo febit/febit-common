@@ -15,13 +15,15 @@
  */
 package org.febit.common.jooq;
 
-import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
-import org.febit.lang.protocol.Sort;
 import org.jooq.OrderField;
 import org.jooq.impl.DSL;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.util.ConcurrentReferenceHashMap;
+
+import org.febit.lang.protocol.Sort;
+
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

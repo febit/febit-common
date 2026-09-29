@@ -15,9 +15,10 @@
  */
 package org.febit.lang.util;
 
+import org.febit.lang.jackson.JacksonUtils;
+
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
-import org.febit.lang.jackson.JacksonUtils;
 import org.jspecify.annotations.Nullable;
 
 import java.util.function.Supplier;

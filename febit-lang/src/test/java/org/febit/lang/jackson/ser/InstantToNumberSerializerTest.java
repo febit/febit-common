@@ -15,11 +15,12 @@
  */
 package org.febit.lang.jackson.ser;
 
-import org.febit.lang.jackson.JacksonCodec;
-import org.febit.lang.jackson.JacksonCodecImpl;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.module.SimpleModule;
+
+import org.febit.lang.jackson.JacksonCodec;
+import org.febit.lang.jackson.JacksonCodecImpl;
 
 import java.time.Instant;
 

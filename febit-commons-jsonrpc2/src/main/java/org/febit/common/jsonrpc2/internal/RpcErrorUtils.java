@@ -15,11 +15,12 @@
  */
 package org.febit.common.jsonrpc2.internal;
 
-import lombok.experimental.UtilityClass;
 import org.febit.common.jsonrpc2.exception.RpcErrorException;
 import org.febit.common.jsonrpc2.exception.UncheckedRpcException;
 import org.febit.common.jsonrpc2.protocol.IRpcError;
 import org.febit.common.jsonrpc2.protocol.StdRpcErrors;
+
+import lombok.experimental.UtilityClass;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;

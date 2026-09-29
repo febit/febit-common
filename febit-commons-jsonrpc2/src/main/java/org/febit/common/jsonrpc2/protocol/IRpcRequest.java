@@ -16,6 +16,7 @@
 package org.febit.common.jsonrpc2.protocol;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 

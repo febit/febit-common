@@ -18,15 +18,16 @@ package org.febit.common.kafka;
 import com.beust.jcommander.DynamicParameter;
 import com.beust.jcommander.Parameter;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.Singular;
 import org.apache.kafka.common.serialization.Deserializer;
+
 import org.febit.common.jcommander.IOptions;
 import org.febit.common.kafka.deser.StringDeserializer;
 import org.febit.lang.jackson.JacksonUtils;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.Singular;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,7 +60,7 @@ import static org.apache.kafka.common.config.SslConfigs.SSL_TRUSTSTORE_PASSWORD_
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(builderClassName = "Builder")
+@lombok.Builder(builderClassName = "Builder")
 public class KafkaOptions implements IOptions {
 
     @Parameter(

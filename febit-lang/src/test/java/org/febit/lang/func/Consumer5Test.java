@@ -15,8 +15,9 @@
  */
 package org.febit.lang.func;
 
-import org.febit.lang.Tuples;
 import org.junit.jupiter.api.Test;
+
+import org.febit.lang.Tuples;
 
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;

@@ -16,6 +16,7 @@
 package org.febit.common.jooq.converter;
 
 import org.jooq.Converter;
+
 import org.jspecify.annotations.Nullable;
 
 import java.sql.Timestamp;

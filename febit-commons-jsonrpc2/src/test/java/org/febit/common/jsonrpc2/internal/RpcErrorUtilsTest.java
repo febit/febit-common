@@ -15,9 +15,10 @@
  */
 package org.febit.common.jsonrpc2.internal;
 
+import org.junit.jupiter.api.Test;
+
 import org.febit.common.jsonrpc2.exception.UncheckedRpcException;
 import org.febit.common.jsonrpc2.protocol.StdRpcErrors;
-import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;

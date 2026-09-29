@@ -16,6 +16,7 @@
 package org.febit.common.kafka.deser;
 
 import org.apache.kafka.common.serialization.Deserializer;
+
 import org.jspecify.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;

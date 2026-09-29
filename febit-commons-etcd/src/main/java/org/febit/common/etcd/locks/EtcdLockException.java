@@ -32,4 +32,3 @@ public class EtcdLockException extends RuntimeException {
     }
 
 }
-

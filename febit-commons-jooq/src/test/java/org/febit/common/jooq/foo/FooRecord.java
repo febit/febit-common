@@ -15,14 +15,15 @@
  */
 package org.febit.common.jooq.foo;
 
+import org.jooq.Record1;
+import org.jooq.impl.UpdatableRecordImpl;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import org.jooq.Record1;
-import org.jooq.impl.UpdatableRecordImpl;
 
 import java.time.Instant;
 import java.time.LocalDate;

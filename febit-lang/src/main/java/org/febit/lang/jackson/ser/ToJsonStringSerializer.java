@@ -15,10 +15,11 @@
  */
 package org.febit.lang.jackson.ser;
 
-import org.febit.lang.jackson.JacksonUtils;
-import org.febit.lang.jackson.JacksonCodec;
 import tools.jackson.databind.SerializationContext;
 import tools.jackson.databind.ser.std.ToStringSerializerBase;
+
+import org.febit.lang.jackson.JacksonCodec;
+import org.febit.lang.jackson.JacksonUtils;
 
 public class ToJsonStringSerializer extends ToStringSerializerBase {
 

@@ -16,6 +16,7 @@
 package org.febit.lang;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
+
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 

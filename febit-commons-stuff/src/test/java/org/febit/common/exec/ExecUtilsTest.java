@@ -15,11 +15,13 @@
  */
 package org.febit.common.exec;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.lang3.SystemUtils;
-import org.febit.lang.io.Lines;
 import org.junit.jupiter.api.Test;
+
+import org.febit.lang.io.Lines;
+
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.util.concurrent.CountDownLatch;

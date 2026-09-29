@@ -15,9 +15,11 @@
  */
 package org.febit.common.kafka.ser;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.serialization.Serializer;
+
 import org.febit.lang.jackson.JacksonCodec;
+
+import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;

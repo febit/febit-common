@@ -20,9 +20,12 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
@@ -169,19 +172,19 @@ public class MapCollectors {
         }
 
         public static <K, U, M extends Map<K, U>> Supplier<M> linkedHashMapFactory() {
-            return () -> (M) new java.util.LinkedHashMap<K, U>();
+            return () -> (M) new LinkedHashMap<K, U>();
         }
 
         public static <K, U, M extends Map<K, U>> Supplier<M> treeMapFactory() {
-            return () -> (M) new java.util.TreeMap<K, U>();
+            return () -> (M) new TreeMap<K, U>();
         }
 
         public static <K, U, M extends Map<K, U>> Supplier<M> treeMapFactory(Comparator<? super K> comparator) {
-            return () -> (M) new java.util.TreeMap<K, U>(comparator);
+            return () -> (M) new TreeMap<K, U>(comparator);
         }
 
         public static <K, U, M extends Map<K, U>> Supplier<M> concurrentMapFactory() {
-            return () -> (M) new java.util.concurrent.ConcurrentHashMap<K, U>();
+            return () -> (M) new ConcurrentHashMap<K, U>();
         }
     }
 

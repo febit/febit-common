@@ -16,6 +16,7 @@
 package org.febit.lang.func;
 
 import org.febit.lang.Tuple3;
+
 import org.jspecify.annotations.NonNull;
 
 import java.util.Objects;

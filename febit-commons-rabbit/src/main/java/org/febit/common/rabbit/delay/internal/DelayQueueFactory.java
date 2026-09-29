@@ -15,10 +15,6 @@
  */
 package org.febit.common.rabbit.delay.internal;
 
-import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
-import org.febit.common.rabbit.delay.DelayQueueOptions;
-import org.febit.common.rabbit.delay.RabbitDelayQueue;
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
@@ -31,6 +27,12 @@ import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
+
+import org.febit.common.rabbit.delay.DelayQueueOptions;
+import org.febit.common.rabbit.delay.RabbitDelayQueue;
+
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -15,8 +15,9 @@
  */
 package org.febit.common.jooq;
 
-import lombok.experimental.UtilityClass;
 import org.jooq.Field;
+
+import lombok.experimental.UtilityClass;
 
 @UtilityClass
 class Fields {

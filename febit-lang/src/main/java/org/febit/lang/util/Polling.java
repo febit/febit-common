@@ -15,11 +15,12 @@
  */
 package org.febit.lang.util;
 
+import org.febit.lang.func.ThrowingSupplier;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.experimental.UtilityClass;
-import org.febit.lang.func.ThrowingSupplier;
 import org.jspecify.annotations.Nullable;
 
 import java.time.Duration;

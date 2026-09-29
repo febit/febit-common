@@ -15,8 +15,9 @@
  */
 package org.febit.lang.io;
 
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.ArrayList;

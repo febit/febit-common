@@ -15,7 +15,6 @@
  */
 package org.febit.common.jsonrpc2;
 
-import lombok.extern.slf4j.Slf4j;
 import org.febit.common.jsonrpc2.exception.RpcErrorException;
 import org.febit.common.jsonrpc2.internal.RemoteApiInvocationHandler;
 import org.febit.common.jsonrpc2.internal.RpcErrorUtils;
@@ -27,6 +26,8 @@ import org.febit.common.jsonrpc2.protocol.IRpcNotification;
 import org.febit.common.jsonrpc2.protocol.IRpcRequest;
 import org.febit.common.jsonrpc2.protocol.IRpcResponse;
 import org.febit.common.jsonrpc2.protocol.StdRpcErrors;
+
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.Proxy;

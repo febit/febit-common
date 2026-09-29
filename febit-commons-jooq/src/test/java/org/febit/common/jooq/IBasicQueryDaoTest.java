@@ -15,6 +15,11 @@
  */
 package org.febit.common.jooq;
 
+import org.jooq.Condition;
+import org.jooq.Configuration;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+
 import org.febit.common.jooq.foo.FooPO;
 import org.febit.common.jooq.foo.FooRecord;
 import org.febit.common.jooq.foo.FooStatus;
@@ -22,10 +27,6 @@ import org.febit.common.jooq.foo.FooTestSupport;
 import org.febit.common.jooq.foo.TFoo;
 import org.febit.lang.protocol.Pagination;
 import org.febit.lang.protocol.Sort;
-import org.jooq.Condition;
-import org.jooq.Configuration;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
 
 import java.util.List;
 

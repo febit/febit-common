@@ -15,18 +15,20 @@
  */
 package org.febit.common.jooq;
 
-import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
+import org.jooq.Condition;
+import org.jooq.DSLContext;
+import org.jooq.impl.DSL;
+import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.util.ConcurrentReferenceHashMap;
+
 import org.febit.lang.UncheckedException;
 import org.febit.lang.util.ConvertUtils;
 import org.febit.lang.util.Lists;
 import org.febit.lang.util.TypeParameters;
-import org.jooq.Condition;
-import org.jooq.DSLContext;
-import org.jooq.impl.DSL;
+
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
-import org.springframework.core.annotation.AnnotatedElementUtils;
-import org.springframework.util.ConcurrentReferenceHashMap;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;

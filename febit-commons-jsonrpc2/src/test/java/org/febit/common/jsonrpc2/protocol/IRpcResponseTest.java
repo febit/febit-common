@@ -15,9 +15,10 @@
  */
 package org.febit.common.jsonrpc2.protocol;
 
+import org.junit.jupiter.api.Test;
+
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
-import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 

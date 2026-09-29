@@ -15,9 +15,10 @@
  */
 package org.febit.common.kafka.ser;
 
+import org.junit.jupiter.api.Test;
+
 import org.febit.lang.jackson.JacksonCodec;
 import org.febit.lang.jackson.JacksonUtils;
-import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 

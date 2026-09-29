@@ -15,14 +15,16 @@
  */
 package org.febit.common.jsonrpc2.internal;
 
+import org.junit.jupiter.api.Test;
+
 import org.febit.common.jsonrpc2.annotation.RpcMapping;
 import org.febit.common.jsonrpc2.annotation.RpcMethodType;
 import org.febit.common.jsonrpc2.annotation.RpcNotification;
 import org.febit.common.jsonrpc2.annotation.RpcParamsKind;
 import org.febit.common.jsonrpc2.annotation.RpcRequest;
-import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.Future;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -165,7 +167,7 @@ class RpcMappingsTest {
     @RpcMapping("future")
     static class FutureApi {
         @RpcRequest("asyncEcho")
-        public java.util.concurrent.Future<String> asyncEcho(String msg) {
+        public Future<String> asyncEcho(String msg) {
             return null;
         }
     }

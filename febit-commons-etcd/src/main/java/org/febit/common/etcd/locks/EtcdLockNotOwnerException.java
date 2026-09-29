@@ -28,4 +28,3 @@ public class EtcdLockNotOwnerException extends EtcdLockException {
     }
 
 }
-

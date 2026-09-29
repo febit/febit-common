@@ -15,13 +15,6 @@
  */
 package org.febit.common.rest.client.service.mvc;
 
-import org.febit.common.rest.client.RestClientStandardBuilder;
-import org.febit.common.rest.client.service.ApiGroups;
-import org.febit.common.rest.client.service.ExchangeIgnoredArgumentResolver;
-import org.febit.common.rest.client.service.RequestParamFormArgumentResolver;
-import org.febit.common.rest.client.service.apix.DemoApi;
-import org.febit.common.rest.client.service.apiy.UsersApi;
-import org.febit.common.rest.client.service.mvc.controller.MockController;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,6 +24,14 @@ import org.springframework.web.client.support.RestClientHttpServiceGroupConfigur
 import org.springframework.web.service.registry.HttpServiceGroup;
 import org.springframework.web.service.registry.ImportHttpServices;
 import tools.jackson.databind.json.JsonMapper;
+
+import org.febit.common.rest.client.RestClientStandardBuilder;
+import org.febit.common.rest.client.service.ApiGroups;
+import org.febit.common.rest.client.service.ExchangeIgnoredArgumentResolver;
+import org.febit.common.rest.client.service.RequestParamFormArgumentResolver;
+import org.febit.common.rest.client.service.apix.DemoApi;
+import org.febit.common.rest.client.service.apiy.UsersApi;
+import org.febit.common.rest.client.service.mvc.controller.MockController;
 
 @ImportHttpServices(
         group = ApiGroups.X,

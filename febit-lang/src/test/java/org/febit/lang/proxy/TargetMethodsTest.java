@@ -601,7 +601,7 @@ class TargetMethodsTest {
         // Synthetic methods (e.g., generic bridges) typically do not match
         // No simple interface can directly expose synthetic toString for testing,
         // but the principle is captured by the strict name+params+returnType check
-        Predicate<Method> isLikeToString = m -> m.getName().equals("toString")
+        Predicate<Method> isLikeToString = m -> "toString".equals(m.getName())
                 && m.getParameterCount() == 0
                 && m.getReturnType() == String.class;
         assertNotNull(isLikeToString);

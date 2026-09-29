@@ -17,7 +17,6 @@ package org.febit.common.rest.client;
 
 import mockwebserver3.MockResponse;
 import mockwebserver3.MockWebServer;
-import org.febit.lang.protocol.IResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,6 +25,8 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.UnknownContentTypeException;
+
+import org.febit.lang.protocol.IResponse;
 
 import java.io.IOException;
 import java.util.List;

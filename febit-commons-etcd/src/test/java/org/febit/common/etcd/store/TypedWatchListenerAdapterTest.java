@@ -19,11 +19,12 @@ import io.etcd.jetcd.ByteSequence;
 import io.etcd.jetcd.watch.WatchEvent;
 import io.etcd.jetcd.watch.WatchResponse;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import org.junit.jupiter.api.Test;
+
 import org.febit.common.etcd.store.codec.Codec;
 import org.febit.common.etcd.store.codec.GenericKVCodec;
 import org.febit.common.etcd.support.TestCodecs;
 import org.febit.common.etcd.support.TestSupport;
-import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;

@@ -17,13 +17,15 @@ package org.febit.common.rest.client.service;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.febit.common.rest.client.service.annotation.RequestParamForm;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.service.invoker.HttpRequestValues;
 import tools.jackson.databind.json.JsonMapper;
 
+import org.febit.common.rest.client.service.annotation.RequestParamForm;
+
 import java.lang.reflect.Method;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -116,7 +118,7 @@ class RequestParamFormArgumentResolverEdgeCaseTest {
 
     @Test
     void shouldHandleDirectMapWithNullValuesInMap() {
-        var map = new java.util.LinkedHashMap<String, Object>();
+        var map = new LinkedHashMap<String, Object>();
         map.put("a", "visible");
         map.put("b", null);
         map.put("c", "also-visible");

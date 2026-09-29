@@ -17,6 +17,7 @@ package org.febit.common.rabbit.delay;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -62,7 +63,7 @@ class HeadersTest {
 
     @Test
     void nullValueAllowed() {
-        var headers = new java.util.HashMap<String, Object>();
+        var headers = new HashMap<String, Object>();
         headers.put("k", null);
         assertThatCode(() -> Headers.validateUserHeaders(headers))
                 .doesNotThrowAnyException();

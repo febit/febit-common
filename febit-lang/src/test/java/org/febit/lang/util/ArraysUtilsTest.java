@@ -74,7 +74,7 @@ class ArraysUtilsTest {
 
     @Test
     void findIntervalInt_largeArray() {
-        int[] array = {0, 2, 6, 9, 123, 10000};
+        int[] array = {0, 2, 6, 9, 123, 10_000};
         assertEquals(0, ArraysUtils.findInterval(array, -1));
         assertEquals(0, ArraysUtils.findInterval(array, 0));
         assertEquals(1, ArraysUtils.findInterval(array, 1));
@@ -86,8 +86,8 @@ class ArraysUtilsTest {
         assertEquals(4, ArraysUtils.findInterval(array, 122));
         assertEquals(4, ArraysUtils.findInterval(array, 123));
         assertEquals(5, ArraysUtils.findInterval(array, 124));
-        assertEquals(5, ArraysUtils.findInterval(array, 10000));
-        assertEquals(6, ArraysUtils.findInterval(array, 100000));
+        assertEquals(5, ArraysUtils.findInterval(array, 10_000));
+        assertEquals(6, ArraysUtils.findInterval(array, 100_000));
     }
 
     @Test

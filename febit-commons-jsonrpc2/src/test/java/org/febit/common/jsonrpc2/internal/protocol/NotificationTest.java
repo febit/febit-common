@@ -15,8 +15,9 @@
  */
 package org.febit.common.jsonrpc2.internal.protocol;
 
-import org.febit.common.jsonrpc2.protocol.IRpcNotification;
 import org.junit.jupiter.api.Test;
+
+import org.febit.common.jsonrpc2.protocol.IRpcNotification;
 
 import static org.junit.jupiter.api.Assertions.*;
 

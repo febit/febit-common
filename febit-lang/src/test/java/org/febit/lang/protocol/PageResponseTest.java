@@ -15,11 +15,13 @@
  */
 package org.febit.lang.protocol;
 
-import org.febit.lang.jackson.JacksonTypes;
-import org.febit.lang.jackson.JacksonUtils;
 import org.junit.jupiter.api.Test;
 
+import org.febit.lang.jackson.JacksonTypes;
+import org.febit.lang.jackson.JacksonUtils;
+
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -114,10 +116,10 @@ class PageResponseTest {
         assertEquals(true, map.get("success"));
         assertEquals(200, map.get("status"));
         @SuppressWarnings("unchecked")
-        var data = (java.util.Map<String, Object>) map.get("data");
+        var data = (Map<String, Object>) map.get("data");
         assertNotNull(data);
         @SuppressWarnings("unchecked")
-        var meta = (java.util.Map<String, Object>) data.get("meta");
+        var meta = (Map<String, Object>) data.get("meta");
         assertEquals(2, meta.get("page"));
         assertEquals(5, meta.get("size"));
         assertEquals(8, ((Number) meta.get("total")).longValue());

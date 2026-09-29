@@ -15,10 +15,12 @@
  */
 package org.febit.common.rest.client;
 
-import lombok.experimental.UtilityClass;
+import org.springframework.core.ParameterizedTypeReference;
+
 import org.febit.lang.jackson.JacksonTypes;
 import org.febit.lang.protocol.IResponse;
-import org.springframework.core.ParameterizedTypeReference;
+
+import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class TypeRefs {

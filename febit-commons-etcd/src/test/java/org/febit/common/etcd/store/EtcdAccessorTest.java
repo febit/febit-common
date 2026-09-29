@@ -28,9 +28,10 @@ import io.etcd.jetcd.kv.TxnResponse;
 import io.etcd.jetcd.options.GetOption;
 import io.etcd.jetcd.options.WatchOption;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import org.junit.jupiter.api.Test;
+
 import org.febit.common.etcd.support.TestCodecs;
 import org.febit.common.etcd.support.TestSupport;
-import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;

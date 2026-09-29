@@ -15,9 +15,10 @@
  */
 package org.febit.common.jooq;
 
-import org.febit.lang.util.Lists;
 import org.jooq.Condition;
 import org.jooq.TableRecord;
+
+import org.febit.lang.util.Lists;
 
 import java.util.Collection;
 

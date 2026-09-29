@@ -15,11 +15,12 @@
  */
 package org.febit.lang.util;
 
-import lombok.experimental.UtilityClass;
-import org.jspecify.annotations.Nullable;
 import tools.jackson.databind.JavaType;
 import tools.jackson.databind.type.TypeFactory;
 import tools.jackson.databind.util.SimpleLookupCache;
+
+import lombok.experimental.UtilityClass;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

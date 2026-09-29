@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -57,7 +58,7 @@ class JsonDeserializerTest {
         var data = json.getBytes(StandardCharsets.UTF_8);
 
         @SuppressWarnings("unchecked")
-        var result = (java.util.List<Object>) deserializer.deserialize("topic", data);
+        var result = (List<Object>) deserializer.deserialize("topic", data);
 
         assertThat(result).containsExactly(1, 2, 3);
     }

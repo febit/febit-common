@@ -318,7 +318,7 @@ public class ConvertUtils {
         if (time == null) {
             return null;
         }
-        return time.getYear() * 10000
+        return time.getYear() * 10_000
                 + time.getMonth().getValue() * 100
                 + time.getDayOfMonth();
     }

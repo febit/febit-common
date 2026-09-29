@@ -17,6 +17,7 @@ package org.febit.lang.proxy;
 
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -26,7 +27,7 @@ class InvokersTest {
 
     @FunctionalInterface
     interface Greeter {
-        String greet(String name) throws java.io.IOException;
+        String greet(String name) throws IOException;
     }
 
     interface Sample {
@@ -68,7 +69,7 @@ class InvokersTest {
     @Test
     void passthrough_propagatesCheckedException() throws Throwable {
         Greeter throwing = name -> {
-            throw new java.io.IOException("io-error");
+            throw new IOException("io-error");
         };
         var invoker = Invokers.passthrough(greeterMethodOf("greet", String.class));
 

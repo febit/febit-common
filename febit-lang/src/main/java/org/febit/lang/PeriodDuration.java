@@ -16,6 +16,7 @@
 package org.febit.lang;
 
 import com.fasterxml.jackson.annotation.JsonValue;
+
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

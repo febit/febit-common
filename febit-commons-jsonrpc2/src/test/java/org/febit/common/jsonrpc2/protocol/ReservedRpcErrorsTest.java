@@ -27,7 +27,7 @@ class ReservedRpcErrorsTest {
 
         @Test
         void reserved00Code() {
-            assertEquals(-32000, ReservedRpcErrors.RESERVED_00.code());
+            assertEquals(-32_000, ReservedRpcErrors.RESERVED_00.code());
         }
 
         @Test
@@ -43,7 +43,7 @@ class ReservedRpcErrorsTest {
 
         @Test
         void reserved99Code() {
-            assertEquals(-32099, ReservedRpcErrors.RESERVED_99.code());
+            assertEquals(-32_099, ReservedRpcErrors.RESERVED_99.code());
         }
 
         @Test
@@ -64,7 +64,7 @@ class ReservedRpcErrorsTest {
         @Test
         void toErrorDefault() {
             var error = ReservedRpcErrors.RESERVED_00.toError();
-            assertEquals(-32000, error.code());
+            assertEquals(-32_000, error.code());
             assertEquals("Server error 32000", error.message());
             assertNull(error.data());
         }
@@ -72,7 +72,7 @@ class ReservedRpcErrorsTest {
         @Test
         void toErrorWithMessage() {
             var error = ReservedRpcErrors.RESERVED_99.toError("custom");
-            assertEquals(-32099, error.code());
+            assertEquals(-32_099, error.code());
             assertEquals("custom", error.message());
         }
     }
@@ -83,13 +83,13 @@ class ReservedRpcErrorsTest {
         @Test
         void toExceptionDefault() {
             var ex = ReservedRpcErrors.RESERVED_00.toException();
-            assertEquals(-32000, ex.getError().code());
+            assertEquals(-32_000, ex.getError().code());
         }
 
         @Test
         void toExceptionWithMessage() {
             var ex = ReservedRpcErrors.RESERVED_99.toException("server error");
-            assertEquals(-32099, ex.getError().code());
+            assertEquals(-32_099, ex.getError().code());
             assertEquals("server error", ex.getError().message());
         }
 

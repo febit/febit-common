@@ -15,8 +15,9 @@
  */
 package org.febit.lang.protocol;
 
-import org.febit.lang.util.Lists;
 import tools.jackson.databind.annotation.JsonDeserialize;
+
+import org.febit.lang.util.Lists;
 
 import java.util.List;
 import java.util.function.Function;

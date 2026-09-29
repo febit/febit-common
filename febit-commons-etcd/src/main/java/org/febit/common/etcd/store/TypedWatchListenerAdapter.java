@@ -18,8 +18,10 @@ package org.febit.common.etcd.store;
 import io.etcd.jetcd.ByteSequence;
 import io.etcd.jetcd.Watch;
 import io.etcd.jetcd.watch.WatchResponse;
-import lombok.extern.slf4j.Slf4j;
+
 import org.febit.common.etcd.store.codec.KVCodec;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @lombok.RequiredArgsConstructor(staticName = "of")

@@ -18,6 +18,7 @@ package org.febit.common.etcd.support;
 import io.etcd.jetcd.ByteSequence;
 import io.etcd.jetcd.Client;
 import io.etcd.jetcd.options.GetOption;
+
 import lombok.experimental.UtilityClass;
 
 import java.time.Duration;
@@ -98,4 +99,3 @@ public final class EtcdIntegrationTestSupport {
         }
     }
 }
-

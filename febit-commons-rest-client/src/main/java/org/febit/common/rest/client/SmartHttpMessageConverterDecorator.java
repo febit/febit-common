@@ -15,7 +15,6 @@
  */
 package org.febit.common.rest.client;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.core.ResolvableType;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
@@ -23,6 +22,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.http.converter.SmartHttpMessageConverter;
+
+import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.List;

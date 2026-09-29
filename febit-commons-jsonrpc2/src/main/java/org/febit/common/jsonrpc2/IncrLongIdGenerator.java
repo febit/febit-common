@@ -15,8 +15,9 @@
  */
 package org.febit.common.jsonrpc2;
 
-import lombok.RequiredArgsConstructor;
 import org.febit.common.jsonrpc2.protocol.Id;
+
+import lombok.RequiredArgsConstructor;
 
 import java.util.concurrent.atomic.AtomicLong;
 

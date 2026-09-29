@@ -15,10 +15,12 @@
  */
 package org.febit.common.jsonrpc2.internal;
 
+import tools.jackson.databind.JavaType;
+
 import org.febit.common.jsonrpc2.annotation.RpcMethodType;
 import org.febit.common.jsonrpc2.annotation.RpcParamsKind;
+
 import org.jspecify.annotations.Nullable;
-import tools.jackson.databind.JavaType;
 
 import java.lang.reflect.Method;
 import java.time.Duration;

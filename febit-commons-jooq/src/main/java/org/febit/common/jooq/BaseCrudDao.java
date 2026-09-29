@@ -16,9 +16,10 @@
 package org.febit.common.jooq;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.febit.lang.util.TypeParameters;
 import org.jooq.Configuration;
 import org.jooq.UpdatableRecord;
+
+import org.febit.lang.util.TypeParameters;
 
 import java.util.Objects;
 

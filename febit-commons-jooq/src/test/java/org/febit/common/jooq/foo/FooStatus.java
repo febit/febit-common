@@ -16,9 +16,11 @@
 package org.febit.common.jooq.foo;
 
 import com.fasterxml.jackson.annotation.JsonValue;
+
+import org.febit.lang.Valued;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.febit.lang.Valued;
 
 @Getter
 @RequiredArgsConstructor

@@ -17,6 +17,7 @@ package org.febit.common.etcd.locks;
 
 import edu.umd.cs.findbugs.annotations.CheckReturnValue;
 import io.etcd.jetcd.ByteSequence;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;

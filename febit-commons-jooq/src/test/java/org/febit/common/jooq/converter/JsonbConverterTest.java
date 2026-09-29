@@ -15,9 +15,10 @@
  */
 package org.febit.common.jooq.converter;
 
-import org.febit.common.jooq.converter.support.Foo;
 import org.jooq.JSONB;
 import org.junit.jupiter.api.Test;
+
+import org.febit.common.jooq.converter.support.Foo;
 
 import java.util.List;
 import java.util.Map;

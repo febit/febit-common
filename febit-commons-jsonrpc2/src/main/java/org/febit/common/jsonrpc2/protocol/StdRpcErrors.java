@@ -15,10 +15,11 @@
  */
 package org.febit.common.jsonrpc2.protocol;
 
+import org.febit.common.jsonrpc2.RpcErrors;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
-import org.febit.common.jsonrpc2.RpcErrors;
 
 /**
  * JSON-RPC 2.0 Specification errors.
@@ -29,23 +30,23 @@ import org.febit.common.jsonrpc2.RpcErrors;
 public enum StdRpcErrors implements RpcErrors {
 
     INVALID_REQUEST(
-            -32600, "Invalid Request",
+            -32_600, "Invalid Request",
             "The JSON sent is not a valid Request object."
     ),
     METHOD_NOT_FOUND(
-            -32601, "Method not found",
+            -32_601, "Method not found",
             "The method does not exist / is not available."
     ),
     INVALID_PARAMS(
-            -32602, "Invalid params",
+            -32_602, "Invalid params",
             "Invalid method parameter(s)."
     ),
     INTERNAL_ERROR(
-            -32603, "Internal error",
+            -32_603, "Internal error",
             "Internal JSON-RPC error."
     ),
     PARSE_ERROR(
-            -32700, "Parse error",
+            -32_700, "Parse error",
             "Invalid JSON was received by the server. An error occurred on the server while parsing the JSON text."
     ),
     ;

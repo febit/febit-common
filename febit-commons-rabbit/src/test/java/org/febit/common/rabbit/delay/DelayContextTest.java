@@ -15,13 +15,15 @@
  */
 package org.febit.common.rabbit.delay;
 
-import org.febit.common.rabbit.delay.internal.DelayTier;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 
+import org.febit.common.rabbit.delay.internal.DelayTier;
+
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
@@ -111,7 +113,7 @@ class DelayContextTest {
             props.setHeader(Headers.ID, "id1"); // control header must be filtered out
             props.setContentType("application/json");
             props.setContentEncoding("UTF-8");
-            var body = "payload".getBytes(java.nio.charset.StandardCharsets.UTF_8);
+            var body = "payload".getBytes(StandardCharsets.UTF_8);
             var msg = new Message(body, props);
 
             var envelope = DelayContext.Envelope.from(msg);

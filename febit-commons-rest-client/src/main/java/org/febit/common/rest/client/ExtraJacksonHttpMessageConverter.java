@@ -15,11 +15,6 @@
  */
 package org.febit.common.rest.client;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.Accessors;
-import org.febit.lang.protocol.HttpStatusAware;
-import org.jspecify.annotations.Nullable;
 import org.springframework.core.ResolvableType;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpStatusCode;
@@ -27,6 +22,13 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.converter.AbstractJacksonHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverters;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+
+import org.febit.lang.protocol.HttpStatusAware;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
+import org.jspecify.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.Map;

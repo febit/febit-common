@@ -15,14 +15,15 @@
  */
 package org.febit.common.rabbit.delay;
 
-import org.febit.common.rabbit.delay.internal.FixedRoundingDelayPolicy;
-import org.febit.common.rabbit.delay.internal.UuidIdGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+
+import org.febit.common.rabbit.delay.internal.FixedRoundingDelayPolicy;
+import org.febit.common.rabbit.delay.internal.UuidIdGenerator;
 
 import java.time.Clock;
 import java.time.Duration;

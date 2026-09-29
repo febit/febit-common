@@ -16,6 +16,11 @@
 package org.febit.common.rest.client.service;
 
 import org.assertj.core.api.InstanceOfAssertFactories;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+
 import org.febit.common.rest.client.service.apix.DemoApi;
 import org.febit.common.rest.client.service.apiy.UsersApi;
 import org.febit.common.rest.client.service.mvc.TestApplication;
@@ -25,10 +30,6 @@ import org.febit.common.rest.client.service.mvc.model.demo.DemoSearchForm;
 import org.febit.common.rest.client.service.mvc.model.demo.DemoVO;
 import org.febit.common.rest.client.service.mvc.model.user.UserVO;
 import org.febit.lang.protocol.IResponse;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 import java.util.Map;

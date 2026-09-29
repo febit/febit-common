@@ -15,8 +15,9 @@
  */
 package org.febit.common.jsonrpc2.exception;
 
-import lombok.Getter;
 import org.febit.common.jsonrpc2.protocol.IRpcError;
+
+import lombok.Getter;
 import org.jspecify.annotations.Nullable;
 
 @Getter

@@ -15,11 +15,12 @@
  */
 package org.febit.common.jsonrpc2.internal;
 
-import org.febit.common.jsonrpc2.annotation.RpcMethodType;
-import org.febit.common.jsonrpc2.annotation.RpcParamsKind;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.JavaType;
 import tools.jackson.databind.type.SimpleType;
+
+import org.febit.common.jsonrpc2.annotation.RpcMethodType;
+import org.febit.common.jsonrpc2.annotation.RpcParamsKind;
 
 import java.time.Duration;
 

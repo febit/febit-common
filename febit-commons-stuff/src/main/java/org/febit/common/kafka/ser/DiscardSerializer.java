@@ -15,9 +15,10 @@
  */
 package org.febit.common.kafka.ser;
 
+import org.apache.kafka.common.serialization.Serializer;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.apache.kafka.common.serialization.Serializer;
 import org.jspecify.annotations.Nullable;
 
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)

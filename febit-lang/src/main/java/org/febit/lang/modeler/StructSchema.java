@@ -15,11 +15,13 @@
  */
 package org.febit.lang.modeler;
 
+import org.apache.commons.lang3.StringUtils;
+
+import org.febit.lang.util.Maps;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import org.apache.commons.lang3.StringUtils;
-import org.febit.lang.util.Maps;
 import org.jspecify.annotations.Nullable;
 
 import java.io.Serial;

@@ -17,6 +17,7 @@ package org.febit.lang.security;
 
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Modifier;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -318,7 +319,7 @@ class SecurityAlgorithmTest {
     @Test
     void algorithms_classIsFinalAndUtility() {
         // @UtilityClass generates a private no-arg constructor; class must be final
-        assertTrue(java.lang.reflect.Modifier.isFinal(Algorithms.class.getModifiers()));
+        assertTrue(Modifier.isFinal(Algorithms.class.getModifiers()));
     }
 
     @Test

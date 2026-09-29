@@ -209,7 +209,7 @@ class SetsTest {
     @Test
     void collect_collection_withCreator_usesCreator() {
         Set<Integer> s = Sets.collect(List.of(1, 2, 3),
-                Function.identity(), size -> new java.util.LinkedHashSet<>());
+                Function.identity(), size -> new LinkedHashSet<>());
         assertInstanceOf(LinkedHashSet.class, s);
         assertEquals(3, s.size());
     }
@@ -241,7 +241,7 @@ class SetsTest {
     @Test
     void collect_array_withCreator() {
         Set<Integer> s = Sets.collect(new Integer[]{1, 2, 3},
-                Function.identity(), size -> new java.util.LinkedHashSet<>());
+                Function.identity(), size -> new LinkedHashSet<>());
         assertInstanceOf(LinkedHashSet.class, s);
         assertEquals(3, s.size());
     }

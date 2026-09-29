@@ -15,10 +15,11 @@
  */
 package org.febit.common.jsonrpc2;
 
-import org.febit.common.jsonrpc2.internal.protocol.Request;
-import org.febit.common.jsonrpc2.protocol.Id;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.JavaType;
+
+import org.febit.common.jsonrpc2.internal.protocol.Request;
+import org.febit.common.jsonrpc2.protocol.Id;
 
 import java.util.concurrent.CompletableFuture;
 

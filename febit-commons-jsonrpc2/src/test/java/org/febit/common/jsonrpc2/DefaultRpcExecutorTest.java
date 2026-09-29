@@ -15,10 +15,11 @@
  */
 package org.febit.common.jsonrpc2;
 
+import org.junit.jupiter.api.Test;
+
 import org.febit.common.jsonrpc2.internal.protocol.Notification;
 import org.febit.common.jsonrpc2.internal.protocol.Request;
 import org.febit.common.jsonrpc2.protocol.Id;
-import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;

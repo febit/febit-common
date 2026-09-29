@@ -15,8 +15,9 @@
  */
 package org.febit.common.jooq.converter;
 
-import lombok.RequiredArgsConstructor;
 import org.jooq.Converter;
+
+import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 
 import java.time.Instant;

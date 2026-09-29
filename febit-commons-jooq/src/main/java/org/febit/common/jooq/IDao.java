@@ -15,8 +15,13 @@
  */
 package org.febit.common.jooq;
 
+import org.jooq.Configuration;
+import org.jooq.DSLContext;
 import org.jooq.Record;
-import org.jooq.*;
+import org.jooq.RecordMapper;
+import org.jooq.RecordType;
+import org.jooq.Table;
+import org.jooq.TableRecord;
 
 public interface IDao<TB extends Table<R>, PO, R extends TableRecord<R>> {
 

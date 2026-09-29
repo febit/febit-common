@@ -15,8 +15,9 @@
  */
 package org.febit.lang.util;
 
-import org.febit.lang.func.ThrowingSupplier;
 import org.junit.jupiter.api.Test;
+
+import org.febit.lang.func.ThrowingSupplier;
 
 import java.time.Duration;
 import java.time.Instant;

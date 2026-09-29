@@ -211,7 +211,7 @@ public class TimeUtils {
                     : 0);
             long seconds = temporal.getLong(ChronoField.INSTANT_SECONDS) % SECONDS_PER_DAY;
             if (seconds < 0) {
-                seconds = SECONDS_PER_DAY + seconds;
+                seconds += SECONDS_PER_DAY;
             }
             return LocalTime.ofNanoOfDay(seconds * NANO_PER_SECOND + nano);
         }

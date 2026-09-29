@@ -19,6 +19,8 @@ import io.etcd.jetcd.Client;
 import io.etcd.jetcd.lease.LeaseKeepAliveResponse;
 import io.etcd.jetcd.support.CloseableClient;
 import io.grpc.stub.StreamObserver;
+
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
@@ -40,7 +42,7 @@ import static org.febit.common.etcd.locks.EtcdLockSupport.unwrap;
  */
 @Slf4j
 @Accessors(fluent = true)
-@RequiredArgsConstructor(access = lombok.AccessLevel.PRIVATE)
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 final class EtcdLease {
 
     private static final double LOST_THRESHOLD_RATIO = 1.5d;

@@ -15,11 +15,12 @@
  */
 package org.febit.common.etcd.support;
 
-import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.extension.ConditionEvaluationResult;
 import org.junit.jupiter.api.extension.ExecutionCondition;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.testcontainers.DockerClientFactory;
+
+import org.jspecify.annotations.NonNull;
 
 public final class DockerAvailableCondition implements ExecutionCondition {
 

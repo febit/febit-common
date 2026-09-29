@@ -15,9 +15,10 @@
  */
 package org.febit.lang.io;
 
-import org.febit.lang.func.ClosableConsumer;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+
+import org.febit.lang.func.ClosableConsumer;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;

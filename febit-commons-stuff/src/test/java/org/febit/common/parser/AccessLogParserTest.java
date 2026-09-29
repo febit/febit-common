@@ -15,8 +15,9 @@
  */
 package org.febit.common.parser;
 
-import lombok.Data;
 import org.junit.jupiter.api.Test;
+
+import lombok.Data;
 
 import java.util.List;
 

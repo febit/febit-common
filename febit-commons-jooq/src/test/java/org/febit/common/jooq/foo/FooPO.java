@@ -15,6 +15,8 @@
  */
 package org.febit.common.jooq.foo;
 
+import org.febit.common.jooq.IEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -25,7 +27,6 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.febit.common.jooq.IEntity;
 
 import java.io.Serializable;
 import java.time.Instant;

@@ -15,8 +15,9 @@
  */
 package org.febit.common.etcd.store;
 
-import lombok.experimental.UtilityClass;
 import org.febit.lang.UncheckedException;
+
+import lombok.experimental.UtilityClass;
 
 import java.util.concurrent.ExecutionException;
 

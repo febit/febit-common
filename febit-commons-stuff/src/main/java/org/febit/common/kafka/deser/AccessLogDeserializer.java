@@ -16,10 +16,12 @@
 package org.febit.common.kafka.deser;
 
 import org.apache.kafka.common.serialization.Deserializer;
+import tools.jackson.databind.JavaType;
+
 import org.febit.common.parser.AccessLogParser;
 import org.febit.lang.jackson.JacksonUtils;
+
 import org.jspecify.annotations.Nullable;
-import tools.jackson.databind.JavaType;
 
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;

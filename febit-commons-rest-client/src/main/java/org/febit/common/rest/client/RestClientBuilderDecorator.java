@@ -16,7 +16,6 @@
 package org.febit.common.rest.client;
 
 import io.micrometer.observation.ObservationRegistry;
-import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatusCode;
@@ -31,6 +30,8 @@ import org.springframework.web.client.ApiVersionInserter;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriBuilderFactory;
+
+import org.jspecify.annotations.Nullable;
 
 import java.net.URI;
 import java.util.List;

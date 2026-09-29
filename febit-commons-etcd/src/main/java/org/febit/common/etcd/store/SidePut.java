@@ -16,6 +16,7 @@
 package org.febit.common.etcd.store;
 
 import io.etcd.jetcd.ByteSequence;
+
 import org.febit.common.etcd.store.codec.KVCodec;
 
 /**

@@ -15,10 +15,11 @@
  */
 package org.febit.lang.jackson;
 
+import org.junit.jupiter.api.Test;
+
 import org.febit.lang.util.ArraysUtils;
 import org.febit.lang.util.Lists;
 import org.febit.lang.util.Maps;
-import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

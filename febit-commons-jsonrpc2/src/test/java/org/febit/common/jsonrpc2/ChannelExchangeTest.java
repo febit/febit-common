@@ -15,9 +15,10 @@
  */
 package org.febit.common.jsonrpc2;
 
+import org.junit.jupiter.api.Test;
+
 import org.febit.common.jsonrpc2.internal.protocol.Notification;
 import org.febit.common.jsonrpc2.protocol.IRpcMessage;
-import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Type;
 import java.time.Duration;

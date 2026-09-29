@@ -15,13 +15,15 @@
  */
 package org.febit.common.parser;
 
-import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+
 import org.febit.lang.jackson.JacksonUtils;
 import org.febit.lang.util.Lists;
 import org.febit.lang.util.Pairs;
 import org.febit.lang.util.StringWalker;
+
+import lombok.experimental.UtilityClass;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -66,7 +68,7 @@ public class AccessLogParser {
     @Nullable
     private static String fixValue(@Nullable String value) {
         if (value == null
-                || value.equals("-")) {
+                || "-".equals(value)) {
             return null;
         }
         return value;

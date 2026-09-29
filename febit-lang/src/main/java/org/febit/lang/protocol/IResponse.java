@@ -16,9 +16,10 @@
 package org.febit.lang.protocol;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import tools.jackson.databind.annotation.JsonDeserialize;
+
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
-import tools.jackson.databind.annotation.JsonDeserialize;
 
 import java.time.Instant;
 import java.util.Objects;

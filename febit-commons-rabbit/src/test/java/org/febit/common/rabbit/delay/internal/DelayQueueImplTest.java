@@ -15,11 +15,6 @@
  */
 package org.febit.common.rabbit.delay.internal;
 
-import org.febit.common.rabbit.delay.DelayMessage;
-import org.febit.common.rabbit.delay.DelayQueueMetrics;
-import org.febit.common.rabbit.delay.DelayQueueOptions;
-import org.febit.common.rabbit.delay.DelayQueuePublishException;
-import org.febit.common.rabbit.delay.Headers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -29,6 +24,12 @@ import org.mockito.quality.Strictness;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 
+import org.febit.common.rabbit.delay.DelayMessage;
+import org.febit.common.rabbit.delay.DelayQueueMetrics;
+import org.febit.common.rabbit.delay.DelayQueueOptions;
+import org.febit.common.rabbit.delay.DelayQueuePublishException;
+import org.febit.common.rabbit.delay.Headers;
+
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.time.Clock;
@@ -36,6 +37,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -124,7 +126,7 @@ class DelayQueueImplTest {
 
     @Test
     void offerInvokesMetricsOnOffer() throws Exception {
-        var offered = new java.util.concurrent.atomic.AtomicReference<String>();
+        var offered = new AtomicReference<String>();
         var metrics = new DelayQueueMetrics() {
             @Override
             public void onOffer(String id, String routingKey) {

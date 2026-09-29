@@ -15,14 +15,16 @@
  */
 package org.febit.common.rest.client;
 
-import lombok.experimental.UtilityClass;
-import org.febit.lang.jackson.JacksonStandard;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverters;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.web.client.ResponseErrorHandler;
 import tools.jackson.databind.json.JsonMapper;
+
+import org.febit.lang.jackson.JacksonStandard;
+
+import lombok.experimental.UtilityClass;
 
 import java.util.List;
 import java.util.function.Consumer;

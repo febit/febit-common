@@ -15,9 +15,10 @@
  */
 package org.febit.common.jooq.converter;
 
+import org.junit.jupiter.api.Test;
+
 import org.febit.common.jooq.foo.FooStatus;
 import org.febit.lang.Valued;
-import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 

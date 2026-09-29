@@ -15,11 +15,13 @@
  */
 package org.febit.common.jooq;
 
-import lombok.experimental.UtilityClass;
-import org.febit.lang.util.Lists;
 import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.impl.DSL;
+
+import org.febit.lang.util.Lists;
+
+import lombok.experimental.UtilityClass;
 
 import java.util.Collection;
 

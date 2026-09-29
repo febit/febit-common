@@ -16,6 +16,7 @@
 package org.febit.common.jooq;
 
 import org.jooq.UpdatableRecord;
+
 import org.jspecify.annotations.Nullable;
 
 @SuppressWarnings({

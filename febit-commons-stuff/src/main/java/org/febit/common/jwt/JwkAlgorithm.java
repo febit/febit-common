@@ -20,9 +20,11 @@ import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.crypto.ECDSASigner;
 import com.nimbusds.jose.crypto.RSASSASigner;
+
+import org.febit.lang.security.SecurityAlgorithm;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.febit.lang.security.SecurityAlgorithm;
 
 import java.security.Key;
 import java.security.PrivateKey;

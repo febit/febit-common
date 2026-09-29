@@ -31,8 +31,8 @@ class ErrorImplTest {
 
     @Test
     void withData() {
-        var error = new ErrorImpl<>(-32603, "Internal error", "details");
-        assertEquals(-32603, error.code());
+        var error = new ErrorImpl<>(-32_603, "Internal error", "details");
+        assertEquals(-32_603, error.code());
         assertEquals("Internal error", error.message());
         assertEquals("details", error.data());
     }
@@ -61,7 +61,7 @@ class ErrorImplTest {
 
     @Test
     void toStringContainsFields() {
-        var error = new ErrorImpl<>(-32600, "Invalid Request", null);
+        var error = new ErrorImpl<>(-32_600, "Invalid Request", null);
         var str = error.toString();
         assertTrue(str.contains("-32600"));
         assertTrue(str.contains("Invalid Request"));

@@ -15,14 +15,16 @@
  */
 package org.febit.lang.protocol;
 
+import tools.jackson.databind.annotation.JsonDeserialize;
+
+import org.febit.lang.jackson.deser.InstantLooseDeserializer;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.febit.lang.jackson.deser.InstantLooseDeserializer;
 import org.jspecify.annotations.Nullable;
-import tools.jackson.databind.annotation.JsonDeserialize;
 
 import java.time.Instant;
 import java.util.function.Function;

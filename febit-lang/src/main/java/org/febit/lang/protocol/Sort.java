@@ -16,11 +16,13 @@
 package org.febit.lang.protocol;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import org.febit.lang.Valued;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.febit.lang.Valued;
 import org.jspecify.annotations.Nullable;
 
 @Data

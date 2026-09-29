@@ -17,6 +17,7 @@ package org.febit.lang;
 
 import org.febit.lang.util.CharUtils;
 import org.febit.lang.util.StringWalker;
+
 import org.jspecify.annotations.Nullable;
 
 import java.time.Duration;

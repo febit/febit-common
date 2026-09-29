@@ -15,14 +15,16 @@
  */
 package org.febit.common.exec;
 
-import lombok.Singular;
-import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.launcher.CommandLauncherFactory;
 import org.apache.commons.io.IOUtils;
+
 import org.febit.lang.io.Lines;
 import org.febit.lang.io.MpscPipeImpl;
+
+import lombok.Singular;
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.Nullable;
 
 import java.io.File;

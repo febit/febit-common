@@ -15,6 +15,7 @@
  */
 package org.febit.lang.protocol;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -82,7 +83,7 @@ class BusinessExceptionTest {
 
     @Test
     void canBeThrownAndCaught() {
-        var caught = org.junit.jupiter.api.Assertions.assertThrows(
+        var caught = Assertions.assertThrows(
                 BusinessException.class,
                 () -> {
                     throw new BusinessException("CODE", "message");

@@ -15,7 +15,6 @@
  */
 package org.febit.lang.jackson;
 
-import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import tools.jackson.databind.JavaType;
 import tools.jackson.databind.MapperFeature;
@@ -25,6 +24,8 @@ import tools.jackson.databind.introspect.AnnotatedClassResolver;
 import tools.jackson.databind.introspect.AnnotatedMember;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.jsontype.NamedType;
+
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 

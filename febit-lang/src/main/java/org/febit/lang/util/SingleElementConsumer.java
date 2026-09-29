@@ -16,6 +16,7 @@
 package org.febit.lang.util;
 
 import org.febit.lang.func.Consumer1;
+
 import org.jspecify.annotations.Nullable;
 
 import java.util.Optional;

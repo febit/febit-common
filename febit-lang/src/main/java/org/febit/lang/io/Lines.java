@@ -15,8 +15,9 @@
  */
 package org.febit.lang.io;
 
-import lombok.experimental.UtilityClass;
 import org.apache.commons.io.output.WriterOutputStream;
+
+import lombok.experimental.UtilityClass;
 
 import java.io.IOException;
 import java.io.OutputStream;

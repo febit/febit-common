@@ -15,10 +15,12 @@
  */
 package org.febit.lang.protocol;
 
-import org.febit.lang.jackson.JacksonUtils;
 import org.junit.jupiter.api.Test;
 
+import org.febit.lang.jackson.JacksonUtils;
+
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -153,9 +155,9 @@ class ResponseTest {
         assertNotNull(r.getTimestamp());
         // Response.now() uses System.currentTimeMillis() which has millisecond
         // precision. Truncate both bounds to millis for stable comparison.
-        var ts = r.getTimestamp().truncatedTo(java.time.temporal.ChronoUnit.MILLIS);
-        assertFalse(ts.isBefore(before.truncatedTo(java.time.temporal.ChronoUnit.MILLIS)));
-        assertFalse(ts.isAfter(after.plusMillis(1).truncatedTo(java.time.temporal.ChronoUnit.MILLIS)));
+        var ts = r.getTimestamp().truncatedTo(ChronoUnit.MILLIS);
+        assertFalse(ts.isBefore(before.truncatedTo(ChronoUnit.MILLIS)));
+        assertFalse(ts.isAfter(after.plusMillis(1).truncatedTo(ChronoUnit.MILLIS)));
     }
 
     @Test
@@ -205,9 +207,9 @@ class ResponseTest {
         assertEquals(500, r.getStatus());
         assertFalse(r.isSuccess());
         assertNotNull(r.getTimestamp());
-        var ts = r.getTimestamp().truncatedTo(java.time.temporal.ChronoUnit.MILLIS);
-        assertFalse(ts.isBefore(before.truncatedTo(java.time.temporal.ChronoUnit.MILLIS)));
-        assertFalse(ts.isAfter(after.plusMillis(1).truncatedTo(java.time.temporal.ChronoUnit.MILLIS)));
+        var ts = r.getTimestamp().truncatedTo(ChronoUnit.MILLIS);
+        assertFalse(ts.isBefore(before.truncatedTo(ChronoUnit.MILLIS)));
+        assertFalse(ts.isAfter(after.plusMillis(1).truncatedTo(ChronoUnit.MILLIS)));
     }
 
     @Test

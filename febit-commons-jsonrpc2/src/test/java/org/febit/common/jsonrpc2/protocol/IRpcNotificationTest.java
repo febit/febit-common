@@ -15,9 +15,10 @@
  */
 package org.febit.common.jsonrpc2.protocol;
 
-import org.febit.common.jsonrpc2.internal.protocol.Notification;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+
+import org.febit.common.jsonrpc2.internal.protocol.Notification;
 
 import java.util.List;
 

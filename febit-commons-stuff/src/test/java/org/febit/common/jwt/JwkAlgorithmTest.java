@@ -16,8 +16,9 @@
 package org.febit.common.jwt;
 
 import com.nimbusds.jose.JWSAlgorithm;
-import org.febit.lang.security.SecurityAlgorithm;
 import org.junit.jupiter.api.Test;
+
+import org.febit.lang.security.SecurityAlgorithm;
 
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;

@@ -16,8 +16,9 @@
 package org.febit.common.rabbit.delay.internal;
 
 import com.fasterxml.uuid.Generators;
-import org.febit.common.rabbit.delay.DelayMessage;
 import org.junit.jupiter.api.Test;
+
+import org.febit.common.rabbit.delay.DelayMessage;
 
 import java.time.Instant;
 import java.util.UUID;

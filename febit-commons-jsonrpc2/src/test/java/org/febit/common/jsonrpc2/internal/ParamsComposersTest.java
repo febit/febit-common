@@ -17,6 +17,10 @@ package org.febit.common.jsonrpc2.internal;
 
 import org.junit.jupiter.api.Test;
 
+import org.febit.common.jsonrpc2.JsonCodec;
+import org.febit.common.jsonrpc2.annotation.RpcMethodType;
+import org.febit.common.jsonrpc2.annotation.RpcParamsKind;
+
 import java.util.List;
 import java.util.Map;
 
@@ -118,9 +122,9 @@ class ParamsComposersTest {
         var method = ResolveTarget.class.getMethod("noArgs");
         var meta = RpcMappingMeta.builder()
                 .method("test")
-                .type(org.febit.common.jsonrpc2.annotation.RpcMethodType.REQUEST)
-                .paramsKind(org.febit.common.jsonrpc2.annotation.RpcParamsKind.FIRST_ARGUMENT)
-                .resultType(org.febit.common.jsonrpc2.JsonCodec.resolveType(Void.class))
+                .type(RpcMethodType.REQUEST)
+                .paramsKind(RpcParamsKind.FIRST_ARGUMENT)
+                .resultType(JsonCodec.resolveType(Void.class))
                 .targetMethod(method)
                 .build();
         var composer = ParamsComposers.resolve(meta);
@@ -132,9 +136,9 @@ class ParamsComposersTest {
         var method = ResolveTarget.class.getMethod("oneArg", String.class);
         var meta = RpcMappingMeta.builder()
                 .method("test")
-                .type(org.febit.common.jsonrpc2.annotation.RpcMethodType.REQUEST)
-                .paramsKind(org.febit.common.jsonrpc2.annotation.RpcParamsKind.FIRST_ARGUMENT)
-                .resultType(org.febit.common.jsonrpc2.JsonCodec.resolveType(String.class))
+                .type(RpcMethodType.REQUEST)
+                .paramsKind(RpcParamsKind.FIRST_ARGUMENT)
+                .resultType(JsonCodec.resolveType(String.class))
                 .targetMethod(method)
                 .build();
         var composer = ParamsComposers.resolve(meta);
@@ -146,9 +150,9 @@ class ParamsComposersTest {
         var method = ResolveTarget.class.getMethod("twoArgs", String.class, int.class);
         var meta = RpcMappingMeta.builder()
                 .method("test")
-                .type(org.febit.common.jsonrpc2.annotation.RpcMethodType.REQUEST)
-                .paramsKind(org.febit.common.jsonrpc2.annotation.RpcParamsKind.FIRST_ARGUMENT)
-                .resultType(org.febit.common.jsonrpc2.JsonCodec.resolveType(Void.class))
+                .type(RpcMethodType.REQUEST)
+                .paramsKind(RpcParamsKind.FIRST_ARGUMENT)
+                .resultType(JsonCodec.resolveType(Void.class))
                 .targetMethod(method)
                 .build();
         assertThrows(IllegalStateException.class, () ->
@@ -160,9 +164,9 @@ class ParamsComposersTest {
         var method = ResolveTarget.class.getMethod("twoArgs", String.class, int.class);
         var meta = RpcMappingMeta.builder()
                 .method("test")
-                .type(org.febit.common.jsonrpc2.annotation.RpcMethodType.REQUEST)
-                .paramsKind(org.febit.common.jsonrpc2.annotation.RpcParamsKind.FLATTEN_LIST)
-                .resultType(org.febit.common.jsonrpc2.JsonCodec.resolveType(Void.class))
+                .type(RpcMethodType.REQUEST)
+                .paramsKind(RpcParamsKind.FLATTEN_LIST)
+                .resultType(JsonCodec.resolveType(Void.class))
                 .targetMethod(method)
                 .build();
         var composer = ParamsComposers.resolve(meta);
@@ -175,9 +179,9 @@ class ParamsComposersTest {
         var method = ResolveTarget.class.getMethod("twoArgs", String.class, int.class);
         var meta = RpcMappingMeta.builder()
                 .method("test")
-                .type(org.febit.common.jsonrpc2.annotation.RpcMethodType.REQUEST)
-                .paramsKind(org.febit.common.jsonrpc2.annotation.RpcParamsKind.FLATTEN_OBJECT)
-                .resultType(org.febit.common.jsonrpc2.JsonCodec.resolveType(Void.class))
+                .type(RpcMethodType.REQUEST)
+                .paramsKind(RpcParamsKind.FLATTEN_OBJECT)
+                .resultType(JsonCodec.resolveType(Void.class))
                 .targetMethod(method)
                 .build();
         var composer = ParamsComposers.resolve(meta);

@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -86,7 +87,7 @@ class ListsTest {
 
     @Test
     void collect_enumeration_null_returnsEmptyList() {
-        var result = Lists.collect((java.util.Enumeration<String>) null);
+        var result = Lists.collect((Enumeration<String>) null);
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }
@@ -229,7 +230,7 @@ class ListsTest {
 
     @Test
     void collect_enumerationNull_withMapping() {
-        var result = Lists.collect((java.util.Enumeration<String>) null, String::length);
+        var result = Lists.collect((Enumeration<String>) null, String::length);
         assertTrue(result.isEmpty());
     }
 

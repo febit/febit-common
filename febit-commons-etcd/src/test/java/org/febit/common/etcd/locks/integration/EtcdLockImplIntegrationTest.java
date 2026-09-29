@@ -17,14 +17,15 @@ package org.febit.common.etcd.locks.integration;
 
 import io.etcd.jetcd.Client;
 import io.etcd.jetcd.test.EtcdClusterExtension;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
 import org.febit.common.etcd.locks.EtcdLockException;
 import org.febit.common.etcd.locks.EtcdLockLostException;
 import org.febit.common.etcd.locks.EtcdLockLostReason;
 import org.febit.common.etcd.locks.EtcdLockRegistry;
 import org.febit.common.etcd.support.EnabledIfDockerAvailable;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Timeout;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.ArrayList;
 import java.util.List;

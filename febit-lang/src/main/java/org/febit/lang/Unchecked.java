@@ -15,7 +15,6 @@
  */
 package org.febit.lang;
 
-import lombok.experimental.UtilityClass;
 import org.febit.lang.func.Consumer0;
 import org.febit.lang.func.Consumer1;
 import org.febit.lang.func.Consumer2;
@@ -44,6 +43,8 @@ import org.febit.lang.func.ThrowingFunction5;
 import org.febit.lang.func.ThrowingRunnable;
 import org.febit.lang.func.ThrowingSupplier;
 import org.febit.lang.func.VoidFunction;
+
+import lombok.experimental.UtilityClass;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;

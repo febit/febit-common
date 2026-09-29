@@ -15,13 +15,15 @@
  */
 package org.febit.common.jooq.converter;
 
+import org.jooq.JSONB;
+import org.jooq.impl.AbstractConverter;
+import tools.jackson.databind.JavaType;
+
 import org.febit.lang.jackson.JacksonCodec;
 import org.febit.lang.jackson.JacksonTypes;
 import org.febit.lang.jackson.JacksonUtils;
-import org.jooq.JSONB;
-import org.jooq.impl.AbstractConverter;
+
 import org.jspecify.annotations.Nullable;
-import tools.jackson.databind.JavaType;
 
 import java.lang.reflect.Array;
 import java.util.List;

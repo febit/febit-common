@@ -15,9 +15,10 @@
  */
 package org.febit.common.jooq;
 
-import org.febit.lang.protocol.Sort;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+
+import org.febit.lang.protocol.Sort;
 
 import java.util.List;
 

@@ -15,8 +15,9 @@
  */
 package org.febit.common.etcd.locks;
 
-import org.febit.common.etcd.support.TestSupport;
 import org.junit.jupiter.api.Test;
+
+import org.febit.common.etcd.support.TestSupport;
 
 import static org.junit.jupiter.api.Assertions.*;
 
