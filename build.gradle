@@ -2,7 +2,7 @@
 //  configurations.configureEach { resolutionStrategy.cacheChangingModulesFor 0, 'seconds' }
 //}
 plugins {
-  alias libs.plugins.license
+  alias libs.plugins.spotless apply false
 
   alias libs.plugins.febit.java
   alias libs.plugins.febit.maven.publish
@@ -18,7 +18,7 @@ ext {
 }
 
 allprojects { subproject ->
-  apply plugin: 'com.github.hierynomus.license'
+  apply plugin: 'com.diffplug.spotless'
 
   group = rootProject.group
   version = rootProject.version
@@ -37,15 +37,14 @@ allprojects { subproject ->
     defaultTemplate = fromFile("$rootDir/etc/module.java.tmpl")
   }
 
-  license {
-    mapping {
-      java = 'SLASHSTAR_STYLE'
+  spotless {
+    java {
+      target 'src/*/java/**/*.java'
+      licenseHeaderFile rootProject.file('etc/license-header.txt')
     }
-    include '**/*.java'
-    strictCheck = false
-    skipExistingHeaders = false
-    header = rootProject.file('etc/license-header.txt')
   }
+
+  tasks.check.dependsOn tasks.named('spotlessCheck')
 }
 
 configure(subprojects.findAll {
@@ -73,10 +72,6 @@ configure(subprojects.findAll {
   test {
     jvmArgs += "-javaagent:${configurations.mockitoAgent.asPath}"
     useJUnitPlatform()
-  }
-
-  licenseMain {
-    mustRunAfter generateModule
   }
 
   jacocoTestReport {
