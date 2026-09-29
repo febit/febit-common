@@ -16,6 +16,7 @@
 package org.febit.lang;
 
 import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
 import java.time.DateTimeException;
 import java.time.Duration;
@@ -91,17 +92,19 @@ class PeriodDurationTest {
         assertThrows(DateTimeException.class, () -> PeriodDuration.parse("1mon 2min").addTo(base));
     }
 
-    @Test
-    void temporal() {
+    @TableTest("""
+            input               | expected            | op
+            0s                  | 2020-01-01T00:00:00 | add
+            0s                  | 2020-01-01T00:00:00 | sub
+            1mon 2min           | 2020-02-01T00:02:00 | add
+            2mon 2min           | 2020-03-01T00:02:00 | add
+            10year 2mon 2day 2s | 2030-03-03T00:00:02 | add
+            10year 2mon 2day 2s | 2009-10-29T23:59:58 | sub
+            """)
+    void temporal(String input, String expected, String op) {
         var base = LocalDateTime.parse("2020-01-01T00:00:00");
-
-        assertEquals(base, PeriodDuration.ZERO.addTo(base));
-        assertEquals(base, PeriodDuration.ZERO.subtractFrom(base));
-
-        assertEquals(LocalDateTime.parse("2020-02-01T00:02:00"), PeriodDuration.parse("1mon 2min").addTo(base));
-        assertEquals(LocalDateTime.parse("2020-03-01T00:02:00"), PeriodDuration.parse("2mon 2min").addTo(base));
-        assertEquals(LocalDateTime.parse("2030-03-03T00:00:02"), PeriodDuration.parse("10year 2mon 2day 2s").addTo(base));
-
-        assertEquals(LocalDateTime.parse("2009-10-29T23:59:58"), PeriodDuration.parse("10year 2mon 2day 2s").subtractFrom(base));
+        var duration = PeriodDuration.parse(input);
+        var result = "add".equals(op) ? duration.addTo(base) : duration.subtractFrom(base);
+        assertEquals(LocalDateTime.parse(expected), result);
     }
 }

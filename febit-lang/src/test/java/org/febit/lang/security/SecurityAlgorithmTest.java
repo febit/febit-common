@@ -16,12 +16,13 @@
 package org.febit.lang.security;
 
 import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
 import java.lang.reflect.Modifier;
+import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
@@ -52,18 +53,39 @@ class SecurityAlgorithmTest {
         return gen.generateKeyPair();
     }
 
-    @Test
-    void enum_hasExpectedValues() {
-        var values = SecurityAlgorithm.values();
-        assertEquals(2, values.length);
-        assertEquals(SecurityAlgorithm.EC, values[0]);
-        assertEquals(SecurityAlgorithm.RSA, values[1]);
+    private static KeyPair pairFor(SecurityAlgorithm algorithm) throws NoSuchAlgorithmException {
+        return algorithm == SecurityAlgorithm.RSA ? generateRsa() : generateEc();
     }
 
-    @Test
-    void valueOf_resolvesByName() {
-        assertEquals(SecurityAlgorithm.EC, SecurityAlgorithm.valueOf("EC"));
-        assertEquals(SecurityAlgorithm.RSA, SecurityAlgorithm.valueOf("RSA"));
+    private static Object decodeKey(KeyType keyType, SecurityAlgorithm algorithm, String encoded) throws Exception {
+        return keyType == KeyType.PUBLIC
+                ? algorithm.decodePublicKey(encoded)
+                : algorithm.decodePrivateKey(encoded);
+    }
+
+    private static Key genericKey(KeyType keyType, String algorithm, String encoded) throws Exception {
+        return keyType == KeyType.PUBLIC
+                ? SecurityAlgorithm.genericPublicKey(algorithm, encoded)
+                : SecurityAlgorithm.genericPrivateKey(algorithm, encoded);
+    }
+
+    @TableTest("""
+            index | expected
+            0     | EC
+            1     | RSA
+            """)
+    void enum_hasExpectedValues(int index, SecurityAlgorithm expected) {
+        assertEquals(2, SecurityAlgorithm.values().length);
+        assertEquals(expected, SecurityAlgorithm.values()[index]);
+    }
+
+    @TableTest("""
+            name | expected
+            EC   | EC
+            RSA  | RSA
+            """)
+    void valueOf_resolvesByName(String name, SecurityAlgorithm expected) {
+        assertEquals(expected, SecurityAlgorithm.valueOf(name));
     }
 
     @Test
@@ -72,204 +94,125 @@ class SecurityAlgorithmTest {
         assertNotNull(SecurityAlgorithm.RSA);
     }
 
-    @Test
-    void decodePublicKey_rsa_roundTrips() throws Exception {
-        var pair = generateRsa();
-        var encoded = base64Public(pair);
-
-        var decoded = SecurityAlgorithm.RSA.decodePublicKey(encoded);
-
-        assertNotNull(decoded);
-        assertEquals("RSA", decoded.getAlgorithm());
+    @TableTest("""
+            algorithm
+            RSA
+            EC
+            """)
+    void decodePublicKey_roundTrips(SecurityAlgorithm algorithm) throws Exception {
+        var pair = pairFor(algorithm);
+        var decoded = algorithm.decodePublicKey(base64Public(pair));
+        assertEquals(algorithm.name(), decoded.getAlgorithm());
         assertEquals(pair.getPublic(), decoded);
     }
 
-    @Test
-    void decodePrivateKey_rsa_roundTrips() throws Exception {
-        var pair = generateRsa();
-        var encoded = base64Private(pair);
-
-        var decoded = SecurityAlgorithm.RSA.decodePrivateKey(encoded);
-
-        assertNotNull(decoded);
-        assertEquals("RSA", decoded.getAlgorithm());
+    @TableTest("""
+            algorithm
+            RSA
+            EC
+            """)
+    void decodePrivateKey_roundTrips(SecurityAlgorithm algorithm) throws Exception {
+        var pair = pairFor(algorithm);
+        var decoded = algorithm.decodePrivateKey(base64Private(pair));
+        assertEquals(algorithm.name(), decoded.getAlgorithm());
         assertEquals(pair.getPrivate(), decoded);
     }
 
-    @Test
-    void decodePublicKey_ec_roundTrips() throws Exception {
-        var pair = generateEc();
-        var encoded = base64Public(pair);
-
-        var decoded = SecurityAlgorithm.EC.decodePublicKey(encoded);
-
-        assertNotNull(decoded);
-        assertEquals("EC", decoded.getAlgorithm());
-        assertEquals(pair.getPublic(), decoded);
-    }
-
-    @Test
-    void decodePrivateKey_ec_roundTrips() throws Exception {
-        var pair = generateEc();
-        var encoded = base64Private(pair);
-
-        var decoded = SecurityAlgorithm.EC.decodePrivateKey(encoded);
-
-        assertNotNull(decoded);
-        assertEquals("EC", decoded.getAlgorithm());
-        assertEquals(pair.getPrivate(), decoded);
-    }
-
-    @Test
-    void decodePublicKey_invalidBase64_throwsIllegalArgumentException() {
-        // IllegalArgumentException bubbles up from Base64.getDecoder().decode
+    @TableTest("""
+            keyType
+            PUBLIC
+            PRIVATE
+            """)
+    void decode_invalidBase64_throwsIllegalArgumentException(KeyType keyType) {
         assertThrows(IllegalArgumentException.class,
-                () -> SecurityAlgorithm.RSA.decodePublicKey("!!!not-base64!!!"));
+                () -> decodeKey(keyType, SecurityAlgorithm.RSA, "!!!not-base64!!!"));
     }
 
-    @Test
-    void decodePrivateKey_invalidBase64_throwsIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class,
-                () -> SecurityAlgorithm.RSA.decodePrivateKey("!!!not-base64!!!"));
-    }
-
-    @Test
-    void decodePublicKey_validBase64ButNotAKey_throwsInvalidKeySpecException() {
-        // Arbitrary valid base64 that is not a valid X.509 key spec
+    @TableTest("""
+            keyType
+            PUBLIC
+            PRIVATE
+            """)
+    void decode_validBase64NotAKey_throwsInvalidKeySpecException(KeyType keyType) {
         var notAKey = Base64.getEncoder().encodeToString(new byte[]{1, 2, 3, 4, 5});
-        assertThrows(InvalidKeySpecException.class,
-                () -> SecurityAlgorithm.RSA.decodePublicKey(notAKey));
+        assertThrows(InvalidKeySpecException.class, () -> decodeKey(keyType, SecurityAlgorithm.RSA, notAKey));
     }
 
-    @Test
-    void decodePrivateKey_validBase64ButNotAKey_throwsInvalidKeySpecException() {
-        var notAKey = Base64.getEncoder().encodeToString(new byte[]{1, 2, 3, 4, 5});
-        assertThrows(InvalidKeySpecException.class,
-                () -> SecurityAlgorithm.RSA.decodePrivateKey(notAKey));
-    }
-
-    @Test
-    void decodePublicKey_ecWithRsaFormat_throwsInvalidKeySpecException() throws Exception {
-        // A valid RSA key fed to EC decoder: name matches but spec format is wrong
+    @TableTest("""
+            keyType
+            PUBLIC
+            PRIVATE
+            """)
+    void decode_ecFormatWithRsaKey_throwsInvalidKeySpecException(KeyType keyType) throws Exception {
         var rsaPair = generateRsa();
-        assertThrows(InvalidKeySpecException.class,
-                () -> SecurityAlgorithm.EC.decodePublicKey(base64Public(rsaPair)));
+        var encoded = keyType == KeyType.PUBLIC ? base64Public(rsaPair) : base64Private(rsaPair);
+        assertThrows(InvalidKeySpecException.class, () -> decodeKey(keyType, SecurityAlgorithm.EC, encoded));
     }
 
-    @Test
-    void decodePrivateKey_ecWithRsaFormat_throwsInvalidKeySpecException() throws Exception {
-        var rsaPair = generateRsa();
-        assertThrows(InvalidKeySpecException.class,
-                () -> SecurityAlgorithm.EC.decodePrivateKey(base64Private(rsaPair)));
-    }
-
-    @Test
-    void genericPublicKey_unknownAlgorithm_throwsNoSuchAlgorithmException() {
-        // KeyFactory.getInstance throws NoSuchAlgorithmException directly
-        // for unknown algorithms; the public static method does not wrap it.
-        // The UncheckedException wrapping only applies to enum decodePublicKey/decodePrivateKey.
-        var encoded = Base64.getEncoder().encodeToString(new byte[]{0});
-        assertThrows(NoSuchAlgorithmException.class,
-                () -> SecurityAlgorithm.genericPublicKey(UNKNOWN_ALGORITHM, encoded));
-    }
-
-    @Test
-    void genericPrivateKey_unknownAlgorithm_throwsNoSuchAlgorithmException() {
-        var encoded = Base64.getEncoder().encodeToString(new byte[]{0});
-        assertThrows(NoSuchAlgorithmException.class,
-                () -> SecurityAlgorithm.genericPrivateKey(UNKNOWN_ALGORITHM, encoded));
-    }
-
-    @Test
-    void genericPublicKey_invalidBase64_throwsIllegalArgumentException() {
-        // Standard algorithm + bad base64: the Base64 error is raised before KeyFactory
-        assertThrows(IllegalArgumentException.class,
-                () -> SecurityAlgorithm.genericPublicKey("RSA", "!!!not-base64!!!"));
-    }
-
-    @Test
-    void genericPrivateKey_invalidBase64_throwsIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class,
-                () -> SecurityAlgorithm.genericPrivateKey("RSA", "!!!not-base64!!!"));
-    }
-
-    @Test
-    void genericPublicKey_rsa_roundTrips() throws Exception {
-        var pair = generateRsa();
-        var encoded = base64Public(pair);
-
-        PublicKey decoded = SecurityAlgorithm.genericPublicKey("RSA", encoded);
-
-        assertEquals("RSA", decoded.getAlgorithm());
+    @TableTest("""
+            algorithm
+            RSA
+            EC
+            """)
+    void genericPublicKey_roundTrips(SecurityAlgorithm algorithm) throws Exception {
+        var pair = pairFor(algorithm);
+        var decoded = SecurityAlgorithm.genericPublicKey(algorithm.name(), base64Public(pair));
+        assertEquals(algorithm.name(), decoded.getAlgorithm());
         assertEquals(pair.getPublic(), decoded);
     }
 
-    @Test
-    void genericPrivateKey_rsa_roundTrips() throws Exception {
-        var pair = generateRsa();
-        var encoded = base64Private(pair);
-
-        PrivateKey decoded = SecurityAlgorithm.genericPrivateKey("RSA", encoded);
-
-        assertEquals("RSA", decoded.getAlgorithm());
+    @TableTest("""
+            algorithm
+            RSA
+            EC
+            """)
+    void genericPrivateKey_roundTrips(SecurityAlgorithm algorithm) throws Exception {
+        var pair = pairFor(algorithm);
+        var decoded = SecurityAlgorithm.genericPrivateKey(algorithm.name(), base64Private(pair));
+        assertEquals(algorithm.name(), decoded.getAlgorithm());
         assertEquals(pair.getPrivate(), decoded);
     }
 
-    @Test
-    void genericPublicKey_ec_roundTrips() throws Exception {
-        var pair = generateEc();
-        var encoded = base64Public(pair);
-
-        PublicKey decoded = SecurityAlgorithm.genericPublicKey("EC", encoded);
-
-        assertEquals("EC", decoded.getAlgorithm());
-        assertEquals(pair.getPublic(), decoded);
+    @TableTest("""
+            keyType
+            PUBLIC
+            PRIVATE
+            """)
+    void generic_invalidBase64_throwsIllegalArgumentException(KeyType keyType) {
+        assertThrows(IllegalArgumentException.class, () -> genericKey(keyType, "RSA", "!!!not-base64!!!"));
     }
 
-    @Test
-    void genericPrivateKey_ec_roundTrips() throws Exception {
-        var pair = generateEc();
-        var encoded = base64Private(pair);
-
-        PrivateKey decoded = SecurityAlgorithm.genericPrivateKey("EC", encoded);
-
-        assertEquals("EC", decoded.getAlgorithm());
-        assertEquals(pair.getPrivate(), decoded);
-    }
-
-    @Test
-    void genericPublicKey_validBase64NotAKey_throwsInvalidKeySpecException() {
+    @TableTest("""
+            keyType
+            PUBLIC
+            PRIVATE
+            """)
+    void generic_validBase64NotAKey_throwsInvalidKeySpecException(KeyType keyType) {
         var notAKey = Base64.getEncoder().encodeToString(new byte[]{1, 2, 3, 4, 5});
-        assertThrows(InvalidKeySpecException.class,
-                () -> SecurityAlgorithm.genericPublicKey("RSA", notAKey));
+        assertThrows(InvalidKeySpecException.class, () -> genericKey(keyType, "RSA", notAKey));
     }
 
-    @Test
-    void genericPrivateKey_validBase64NotAKey_throwsInvalidKeySpecException() {
-        var notAKey = Base64.getEncoder().encodeToString(new byte[]{1, 2, 3, 4, 5});
-        assertThrows(InvalidKeySpecException.class,
-                () -> SecurityAlgorithm.genericPrivateKey("RSA", notAKey));
+    @TableTest("""
+            keyType
+            PUBLIC
+            PRIVATE
+            """)
+    void generic_unknownAlgorithm_throwsNoSuchAlgorithmException(KeyType keyType) {
+        var encoded = Base64.getEncoder().encodeToString(new byte[]{0});
+        assertThrows(NoSuchAlgorithmException.class, () -> genericKey(keyType, UNKNOWN_ALGORITHM, encoded));
     }
 
-    @Test
-    void enumDecoders_noSuchAlgorithmPath_isUnreachableForKnownAlgorithms() throws Exception {
-        // The catch-NoSuchAlgorithmException-into-UncheckedException branch in
-        // decodePublicKey/decodePrivateKey is theoretically unreachable because
-        // SecurityAlgorithm.EC uses "EC" and SecurityAlgorithm.RSA uses "RSA",
-        // both always available in standard JDK JCE providers.
-        // The wrapping is defensive code; this test simply confirms the success
-        // path runs without throwing UncheckedException.
-        var pair = generateRsa();
-        var rsaPub = SecurityAlgorithm.RSA.decodePublicKey(base64Public(pair));
-        var rsaPriv = SecurityAlgorithm.RSA.decodePrivateKey(base64Private(pair));
-        assertNotNull(rsaPub);
-        assertNotNull(rsaPriv);
+    @TableTest("""
+            keyType
+            PUBLIC
+            PRIVATE
+            """)
+    void emptyStringBase64_throwsInvalidKeySpecException(KeyType keyType) {
+        assertThrows(InvalidKeySpecException.class, () -> decodeKey(keyType, SecurityAlgorithm.RSA, ""));
     }
 
     @Test
     void ecDecoders_consistentAcrossInvocations() throws Exception {
-        // The decoder lambdas capture the algorithm string but produce a fresh KeyFactory
-        // each time; multiple calls should all succeed
         var pair = generateEc();
         var encoded = base64Public(pair);
 
@@ -295,19 +238,16 @@ class SecurityAlgorithmTest {
     }
 
     @Test
-    void emptyStringBase64_throws() {
-        // Empty string is a valid base64 input (decodes to empty bytes) but is not a key
-        assertThrows(InvalidKeySpecException.class,
-                () -> SecurityAlgorithm.RSA.decodePublicKey(""));
-        assertThrows(InvalidKeySpecException.class,
-                () -> SecurityAlgorithm.RSA.decodePrivateKey(""));
+    void enumDecoders_noSuchAlgorithmPath_isUnreachableForKnownAlgorithms() throws Exception {
+        var pair = generateRsa();
+        var rsaPub = SecurityAlgorithm.RSA.decodePublicKey(base64Public(pair));
+        var rsaPriv = SecurityAlgorithm.RSA.decodePrivateKey(base64Private(pair));
+        assertNotNull(rsaPub);
+        assertNotNull(rsaPriv);
     }
 
     @Test
     void algorithms_classIsPackagePrivateAndHoldsExpectedConstants() throws Exception {
-        // White-box: the Algorithms utility class exposes the algorithm strings.
-        // EC and RSA enum entries must use these constants (verified indirectly:
-        // decoding works, so the constant strings must be recognized by KeyFactory).
         var ecConst = Algorithms.class.getDeclaredField("EC");
         var rsaConst = Algorithms.class.getDeclaredField("RSA");
         ecConst.setAccessible(true);
@@ -318,7 +258,6 @@ class SecurityAlgorithmTest {
 
     @Test
     void algorithms_classIsFinalAndUtility() {
-        // @UtilityClass generates a private no-arg constructor; class must be final
         assertTrue(Modifier.isFinal(Algorithms.class.getModifiers()));
     }
 
@@ -326,5 +265,9 @@ class SecurityAlgorithmTest {
     void keyDecoderInterface_isFunctional() {
         SecurityAlgorithm.KeyDecoder<PublicKey> decoder = encoded -> null;
         assertNotNull(decoder);
+    }
+
+    enum KeyType {
+        PUBLIC, PRIVATE
     }
 }

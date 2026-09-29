@@ -16,6 +16,7 @@
 package org.febit.lang.util;
 
 import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,242 +30,113 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ListsTest {
 
-    @Test
-    void collect_iterator_null_returnsEmptyList() {
-        List<String> result = Lists.collect((Iterator<String>) null);
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
+    @TableTest("""
+            kind     | mapper | input
+            null     | none   |
+            null     | len    |
+            nullIter | none   |
+            nullIter | len    |
+            nullEnum | none   |
+            nullEnum | len    |
+            nullArr  | none   |
+            nullArr  | len    |
+            iter     | none   | a,b,c
+            iter     | len    | a,bb,ccc
+            iter     | none   |
+            iter     | len    |
+            iterList | none   | a,b
+            iterList | len    | a,bb
+            iterList | none   |
+            enum     | none   | a,b,c
+            enum     | len    | a,bb
+            enum     | none   |
+            array    | none   | a,b,c
+            array    | len    | a,bb
+            array    | none   |
+            """)
+    void collect(String kind, String mapper, String input) {
+        List<String> elements = input == null || input.isBlank() ? List.of() : Arrays.asList(input.split(","));
+        List<?> expected = "len".equals(mapper)
+                ? elements.stream().map(String::length).toList()
+                : new ArrayList<>(elements);
+        List<?> result = switch (kind + ("len".equals(mapper) ? "_m" : "")) {
+            case "null" -> Lists.collect((Iterable<String>) null);
+            case "null_m" -> Lists.collect((Iterable<String>) null, String::length);
+            case "nullIter" -> Lists.collect((Iterator<String>) null);
+            case "nullIter_m" -> Lists.collect((Iterator<String>) null, String::length);
+            case "nullEnum" -> Lists.collect((Enumeration<String>) null);
+            case "nullEnum_m" -> Lists.collect((Enumeration<String>) null, String::length);
+            case "nullArr" -> Lists.collect((String[]) null);
+            case "nullArr_m" -> Lists.collect((String[]) null, String::length);
+            case "iter" -> Lists.collect(elements.iterator());
+            case "iter_m" -> Lists.collect(elements.iterator(), String::length);
+            case "iterList" -> Lists.collect(elements);
+            case "iterList_m" -> Lists.collect(elements, String::length);
+            case "enum" -> Lists.collect(Collections.enumeration(elements));
+            case "enum_m" -> Lists.collect(Collections.enumeration(elements), String::length);
+            case "array" -> Lists.collect(elements.toArray(String[]::new));
+            case "array_m" -> Lists.collect(elements.toArray(String[]::new), String::length);
+            default -> throw new IllegalStateException("unexpected kind: " + kind);
+        };
+        assertEquals(expected, result);
     }
 
-    @Test
-    void collect_iterator_populates() {
-        List<String> result = Lists.collect(List.of("a", "b", "c").iterator());
-        assertEquals(List.of("a", "b", "c"), result);
+    @TableTest("""
+            kind     | mapper | input
+            nullColl | none   |
+            nullColl | len    |
+            nullArr  | none   |
+            nullArr  | len    |
+            coll     | none   | a,b,a
+            coll     | len    | a,bb
+            coll     | none   |
+            arr      | none   | a,b,a
+            arr      | len    | a,bb
+            arr      | none   |
+            """)
+    void transfer(String kind, String mapper, String input) {
+        List<String> elements = input == null || input.isBlank() ? List.of() : Arrays.asList(input.split(","));
+        List<?> expected = "len".equals(mapper)
+                ? elements.stream().map(String::length).toList()
+                : new ArrayList<>(elements);
+        List<?> result = switch (kind + ("len".equals(mapper) ? "_m" : "")) {
+            case "nullColl" -> Lists.transfer((List<String>) null);
+            case "nullColl_m" -> Lists.transfer((List<String>) null, String::length);
+            case "nullArr" -> Lists.transfer((String[]) null);
+            case "nullArr_m" -> Lists.transfer((String[]) null, String::length);
+            case "coll" -> Lists.transfer(elements);
+            case "coll_m" -> Lists.transfer(elements, String::length);
+            case "arr" -> Lists.transfer(elements.toArray(String[]::new));
+            case "arr_m" -> Lists.transfer(elements.toArray(String[]::new), String::length);
+            default -> throw new IllegalStateException("unexpected kind: " + kind);
+        };
+        if (kind.startsWith("null")) {
+            assertNull(result);
+        } else {
+            assertEquals(expected, result);
+        }
     }
 
-    @Test
-    void collect_iterator_emptyIterator_returnsEmpty() {
-        List<String> result = Lists.collect(Collections.<String>emptyIterator());
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void collect_iterable_null_returnsEmptyList() {
-        List<String> result = Lists.collect((Iterable<String>) null);
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void collect_iterable_populates() {
-        List<String> result = Lists.collect(List.of("a", "b"));
-        assertEquals(List.of("a", "b"), result);
-    }
-
-    @Test
-    void collect_iterator_withMapping_null_returnsEmpty() {
-        List<Integer> result = Lists.collect((Iterator<String>) null, String::length);
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void collect_iterator_withMapping_populates() {
-        List<Integer> result = Lists.collect(List.of("a", "bb", "ccc").iterator(), String::length);
-        assertEquals(List.of(1, 2, 3), result);
-    }
-
-    @Test
-    void collect_iterable_withMapping_null_returnsEmpty() {
-        List<Integer> result = Lists.collect((Iterable<String>) null, String::length);
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void collect_iterable_withMapping_populates() {
-        List<Integer> result = Lists.collect(List.of("a", "bb"), String::length);
-        assertEquals(List.of(1, 2), result);
-    }
-
-    @Test
-    void collect_enumeration_null_returnsEmptyList() {
-        var result = Lists.collect((Enumeration<String>) null);
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void collect_enumeration_populates() {
-        var result = Lists.collect(Collections.enumeration(List.of("a", "b", "c")));
-        assertEquals(List.of("a", "b", "c"), result);
-    }
-
-    @Test
-    void collect_enumeration_empty() {
-        var result = Lists.collect(Collections.emptyEnumeration());
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void collect_enumeration_withMapping() {
-        var result = Lists.collect(Collections.enumeration(List.of("a", "bb")), String::length);
-        assertEquals(List.of(1, 2), result);
-    }
-
-    @Test
-    void collect_array_null_returnsEmpty() {
-        var result = Lists.collect((String[]) null);
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void collect_array_populates() {
-        var result = Lists.collect(new String[]{"a", "b", "c"});
-        assertEquals(List.of("a", "b", "c"), result);
-    }
-
-    @Test
-    void collect_array_emptyArray_returnsEmpty() {
-        var result = Lists.collect(new String[0]);
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void collect_array_withMapping_null() {
-        var result = Lists.collect((String[]) null, String::length);
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void collect_array_withMapping_populates() {
-        var result = Lists.collect(new String[]{"a", "bb"}, String::length);
-        assertEquals(List.of(1, 2), result);
-    }
-
-    @Test
-    void collect_array_withMapping_emptyArray() {
-        var result = Lists.collect(new String[0], String::length);
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void transfer_collection_null_returnsNull() {
-        assertNull(Lists.transfer((List<String>) null));
-    }
-
-    @Test
-    void transfer_collection_populates() {
-        var result = Lists.transfer(List.of("a", "b", "a"));
-        assertEquals(List.of("a", "b", "a"), result);
-    }
-
-    @Test
-    void transfer_collection_withMapping_nullReturnsNull() {
-        assertNull(Lists.transfer((List<String>) null, String::length));
-    }
-
-    @Test
-    void transfer_collection_withMapping_populates() {
-        var result = Lists.transfer(List.of("a", "bb"), String::length);
-        assertEquals(List.of(1, 2), result);
-    }
-
-    @Test
-    void transfer_array_null_returnsNull() {
-        assertNull(Lists.transfer((String[]) null));
-    }
-
-    @Test
-    void transfer_array_populates() {
-        var result = Lists.transfer(new String[]{"a", "b", "a"});
-        assertEquals(List.of("a", "b", "a"), result);
-    }
-
-    @Test
-    void transfer_array_withMapping_nullReturnsNull() {
-        assertNull(Lists.transfer((String[]) null, String::length));
-    }
-
-    @Test
-    void transfer_array_withMapping_populates() {
-        var result = Lists.transfer(new String[]{"a", "bb"}, String::length);
-        assertEquals(List.of(1, 2), result);
-    }
-
-    @Test
-    void ofArrayList_empty() {
-        var list = Lists.ofArrayList();
-        assertNotNull(list);
-        assertTrue(list.isEmpty());
-        assertInstanceOf(ArrayList.class, list);
-    }
-
-    @Test
-    void ofArrayList_withElements() {
-        var list = Lists.ofArrayList("a", "b", "c");
-        assertEquals(List.of("a", "b", "c"), list);
-    }
-
-    @Test
-    void collect_preservesOrder() {
-        var result = Lists.collect(List.of(3, 1, 4, 1, 5, 9, 2, 6));
-        assertEquals(List.of(3, 1, 4, 1, 5, 9, 2, 6), result);
+    @TableTest("""
+            elements
+            ""
+            a,b,c
+            """)
+    void ofArrayList(String elements) {
+        String[] args = elements.isBlank() ? new String[0] : elements.split(",");
+        List<String> result = Lists.ofArrayList(args);
+        assertInstanceOf(ArrayList.class, result);
+        assertEquals(Arrays.asList(args), result);
     }
 
     @Test
     void collect_withMapping_handlesNullElements() {
-        // Lists.collect passes each element to mapping; null element + non-null-safe mapping throws
+        // null element + non-null-safe mapping: must not throw, element mapped explicitly
         var result = Lists.collect(Arrays.asList("a", null, "b"), s -> s == null ? "<null>" : s);
         assertEquals(3, result.size());
         assertEquals("a", result.get(0));
         assertEquals("<null>", result.get(1));
         assertEquals("b", result.get(2));
-    }
-
-    @Test
-    void collect_enumerationEmpty_withMapping() {
-        var result = Lists.collect(Collections.<String>emptyEnumeration(), String::length);
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void collect_enumerationNull_withMapping() {
-        var result = Lists.collect((Enumeration<String>) null, String::length);
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void transfer_collection_preservesDuplicates() {
-        var result = Lists.transfer(List.of("a", "b", "a"));
-        assertNotNull(result);
-        assertEquals(3, result.size());
-    }
-
-    @Test
-    void collect_singleElement() {
-        var result = Lists.collect(List.of(42));
-        assertEquals(List.of(42), result);
-    }
-
-    @Test
-    void collect_iterator_singleElement() {
-        var result = Lists.collect(List.of("only").iterator());
-        assertEquals(List.of("only"), result);
-    }
-
-    @Test
-    void transfer_collection_empty_returnsEmpty() {
-        var result = Lists.transfer(List.<String>of());
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void transfer_array_empty_returnsEmpty() {
-        var result = Lists.transfer(new String[0]);
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
     }
 
     @Test

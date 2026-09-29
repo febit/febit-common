@@ -16,43 +16,55 @@
 package org.febit.lang.util;
 
 import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class UriUtilsTest {
 
-    @Test
-    void encode() {
-        assertEquals("", UriUtils.encode(""));
-        assertEquals("abc", UriUtils.encode("abc"));
-        assertEquals("abc%2F", UriUtils.encode("abc/"));
-        assertEquals("abc%2Fdef", UriUtils.encode("abc/def"));
-        assertEquals("abc%2Fdef%2F", UriUtils.encode("abc/def/"));
+    @TableTest("""
+            input    | expected
+            ""       | ""
+            abc      | abc
+            abc/     | abc%2F
+            abc/def  | abc%2Fdef
+            abc/def/ | abc%2Fdef%2F
+            """)
+    void encode(String input, String expected) {
+        assertEquals(expected, UriUtils.encode(input));
+    }
+
+    @TableTest("""
+            input        | expected
+            ""           | ""
+            abc          | abc
+            abc%2F       | abc/
+            abc%2Fdef    | abc/def
+            abc%2Fdef%2F | abc/def/
+            """)
+    void decode(String input, String expected) {
+        assertEquals(expected, UriUtils.decode(input));
+    }
+
+    @TableTest("""
+            base          | appends              | expected
+            abc           | []                   | abc
+            abc           | ["def"]              | abc/def
+            abc/          | ["def", "ghi"]       | abc/def/ghi
+            abc           | ["/def", "ghi"]      | abc/def/ghi
+            abc/          | ["/def/", "ghi"]     | abc/def/ghi
+            abc           | ["/def//", "/ghi/"]  | abc/def//ghi/
+            abc           | ["/def/", "/ghi//"]  | abc/def/ghi//
+            abc           | ["/def/", "/ghi///"] | abc/def/ghi///
+            "https://abc" | ["/def/", "/ghi"]    | https://abc/def/ghi
+            """)
+    void concat(String base, String[] appends, String expected) {
+        assertEquals(expected, UriUtils.concat(base, appends));
     }
 
     @Test
-    void decode() {
-        assertEquals("", UriUtils.decode(""));
-        assertEquals("abc", UriUtils.decode("abc"));
-        assertEquals("abc/", UriUtils.decode("abc%2F"));
-        assertEquals("abc/def", UriUtils.decode("abc%2Fdef"));
-        assertEquals("abc/def/", UriUtils.decode("abc%2Fdef%2F"));
-    }
-
-    @Test
-    void concat() {
-        assertEquals("abc", UriUtils.concat("abc"));
+    void concat_emptySegments() {
         assertEquals("abc/", UriUtils.concat("abc", ""));
         assertEquals("abc/", UriUtils.concat("abc", "", "", ""));
-
-        assertEquals("abc/def", UriUtils.concat("abc", "def"));
-        assertEquals("abc/def/ghi", UriUtils.concat("abc/", "def", "ghi"));
-        assertEquals("abc/def/ghi", UriUtils.concat("abc", "/def", "ghi"));
-        assertEquals("abc/def/ghi", UriUtils.concat("abc/", "/def/", "ghi"));
-        assertEquals("abc/def//ghi/", UriUtils.concat("abc", "/def//", "/ghi/"));
-        assertEquals("abc/def/ghi//", UriUtils.concat("abc", "/def/", "/ghi//"));
-        assertEquals("abc/def/ghi///", UriUtils.concat("abc", "/def/", "/ghi///"));
-
-        assertEquals("https://abc/def/ghi", UriUtils.concat("https://abc", "/def/", "/ghi"));
     }
 }

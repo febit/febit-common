@@ -61,6 +61,8 @@ allprojects { subproject ->
           'jakarta|java|javax',
           '\\#', '\\#jakarta|\\#java|\\#javax'
       )
+
+      // tableTestFormatter()
     }
   }
 
@@ -121,8 +123,10 @@ configure(subprojects.findAll {
 
     testImplementation 'org.slf4j:slf4j-simple'
     testImplementation 'org.assertj:assertj-core'
+    testImplementation 'org.tabletest:tabletest-junit'
     testImplementation 'org.mockito:mockito-junit-jupiter'
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
   }
@@ -199,6 +203,7 @@ configure(subprojects.findAll {
       dependency "${libs.semver4j.get()}"
       dependency "${libs.snakeyaml.engine.get()}"
       dependency "${libs.snakeyaml2.get()}"
+      dependency "${libs.tabletest.junit.get()}"
       dependency "${libs.uuid.generator.get()}"
     }
   }

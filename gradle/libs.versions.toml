@@ -43,6 +43,7 @@ spring = '7.1.0-M2'
 spring-amqp = '4.2.0-M2'
 spring-boot = '4.2.0-M2'
 swagger = '2.2.55'
+tabletest-junit = '1.2.2'
 testcontainers = '2.0.5'
 uuid-generator = '5.2.0'
 
@@ -68,6 +69,7 @@ jackson-bom = { module = 'tools.jackson:jackson-bom', version.ref = 'jackson' }
 junit-bom = { module = 'org.junit:junit-bom', version.ref = 'junit' }
 mockito-bom = { module = 'org.mockito:mockito-bom', version.ref = 'mockito' }
 mockito-core = { module = 'org.mockito:mockito-core', version.ref = 'mockito' }
+tabletest-junit = { module = 'org.tabletest:tabletest-junit', version.ref = 'tabletest-junit' }
 testcontainers-bom = { module = 'org.testcontainers:testcontainers-bom', version.ref = 'testcontainers' }
 
 jakarta-annotation-api = { module = 'jakarta.annotation:jakarta.annotation-api', version.ref = 'jakarta-annotation-api' }

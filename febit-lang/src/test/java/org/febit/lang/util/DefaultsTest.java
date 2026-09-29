@@ -16,21 +16,48 @@
 package org.febit.lang.util;
 
 import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class DefaultsTest {
 
-    @Test
-    void nvl_object_returnsObjectWhenNonNull() {
-        assertEquals("a", Defaults.nvl("a", "b"));
+    @TableTest("""
+            object | default | expected
+            a      | b       | a
+                   | b       | b
+            0      | 99      | 0
+            ""     | fb      | ""
+            """)
+    void nvl(String object, String def, String expected) {
+        assertEquals(expected, Defaults.nvl(object, def));
+    }
+
+    @TableTest("""
+            object | defaults     | expected
+            a      | b,c          | a
+                   | null,b,c     | b
+                   | null,null    |
+                   | first,second | first
+            a      | b,c,d        | a
+            a      |              | a
+                   |              |
+            """)
+    void collapse(String object, String defaults, String expected) {
+        String[] defs = defaults == null
+                ? new String[0]
+                : Arrays.stream(defaults.split(","))
+                .map(t -> "null".equals(t) ? null : t)
+                .toArray(String[]::new);
+        assertEquals(expected, Defaults.collapse(object, defs));
     }
 
     @Test
-    void nvl_object_returnsDefaultWhenNull() {
-        assertEquals("b", Defaults.nvl(null, "b"));
+    void collapse_nullDefaultsArray_returnsNull() {
+        assertNull(Defaults.collapse(null, (String[]) null));
     }
 
     @Test
@@ -57,57 +84,5 @@ class DefaultsTest {
             return "x";
         });
         assertEquals(1, counter.get());
-    }
-
-    @Test
-    void collapse_returnsObjectWhenNonNull() {
-        assertEquals("a", Defaults.collapse("a", "b", "c"));
-    }
-
-    @Test
-    void collapse_returnsFirstNonNullDefault() {
-        assertEquals("b", Defaults.collapse(null, null, "b", "c"));
-    }
-
-    @Test
-    void collapse_allNull_returnsNull() {
-        assertNull(Defaults.collapse(null, null, null));
-    }
-
-    @Test
-    void collapse_objectIsNull_noDefaults() {
-        assertNull(Defaults.collapse(null, (String[]) null));
-    }
-
-    @Test
-    void collapse_emptyDefaults_returnsNull() {
-        assertNull(Defaults.collapse(null));
-    }
-
-    @Test
-    void collapse_emptyDefaultsAndNonNullObject_returnsObject() {
-        assertEquals("a", Defaults.collapse("a"));
-    }
-
-    @Test
-    void collapse_firstDefaultWins() {
-        assertEquals("first", Defaults.collapse(null, "first", "second"));
-    }
-
-    @Test
-    void collapse_objectBeatsAnyDefault() {
-        assertEquals("a", Defaults.collapse("a", "b", "c", "d"));
-    }
-
-    @Test
-    void nvl_zeroIsNotNull() {
-        // 0 is not null; nvl should return 0
-        Integer zero = 0;
-        assertEquals(zero, Defaults.nvl(zero, 99));
-    }
-
-    @Test
-    void nvl_emptyStringIsNotNull() {
-        assertEquals("", Defaults.nvl("", "fb"));
     }
 }

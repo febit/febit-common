@@ -16,6 +16,7 @@
 package org.febit.common.jcommander.converter;
 
 import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
 import java.time.Duration;
 
@@ -31,64 +32,24 @@ class PeriodDurationConverterTest {
         assertNull(converter.convert(null));
     }
 
-    @Test
-    void shouldConvertDurationOnly() {
-        var result = converter.convert("PT5M");
-        assertNotNull(result);
-        assertThat(result.toDuration()).isEqualTo(Duration.ofMinutes(5));
-    }
-
-    @Test
-    void shouldConvertSimpleFormat() {
-        var result = converter.convert("1h30m");
-        assertNotNull(result);
-        assertThat(result.toDuration()).isEqualTo(Duration.ofMinutes(90));
-    }
-
-    @Test
-    void shouldConvertDaysFormat() {
-        var result = converter.convert("1d");
-        assertNotNull(result);
-        assertThat(result.toDuration()).isEqualTo(Duration.ofDays(1));
-    }
-
-    @Test
-    void shouldConvertSecondsFormat() {
-        var result = converter.convert("10s");
-        assertNotNull(result);
-        assertThat(result.toDuration()).isEqualTo(Duration.ofSeconds(10));
-    }
-
-    @Test
-    void shouldConvertMinutesFormat() {
-        var result = converter.convert("5m");
-        assertNotNull(result);
-        assertThat(result.toDuration()).isEqualTo(Duration.ofMinutes(5));
-    }
-
-    @Test
-    void shouldConvertHoursFormat() {
-        var result = converter.convert("2h");
-        assertNotNull(result);
-        assertThat(result.toDuration()).isEqualTo(Duration.ofHours(2));
-    }
-
-    @Test
-    void shouldConvertCombinedFormat() {
-        var result = converter.convert("1h30m10s");
-        assertNotNull(result);
-        assertThat(result.toDuration())
-                .isEqualTo(Duration.ofHours(1)
-                        .plusMinutes(30)
-                        .plusSeconds(10)
-                );
+    @TableTest("""
+            input    | expectedSeconds
+            PT5M     | 300
+            1h30m    | 5400
+            1d       | 86400
+            10s      | 10
+            5m       | 300
+            2h       | 7200
+            1h30m10s | 5410
+            """)
+    void converts(String input, long expectedSeconds) {
+        assertEquals(Duration.ofSeconds(expectedSeconds), converter.convert(input).toDuration());
     }
 
     @Test
     void shouldConvertIsoPeriodFormat() {
         var result = converter.convert("P2DT3H4M");
         assertThat(result).isNotNull();
-        assertNotNull(result);
         assertThat(result.toSeconds()).isGreaterThan(0);
     }
 }

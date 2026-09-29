@@ -16,6 +16,7 @@
 package org.febit.lang.protocol;
 
 import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
 import java.util.List;
 
@@ -79,28 +80,27 @@ class PaginationTest {
         assertTrue(p.getSorts().isEmpty());
     }
 
-    @Test
-    void hasPrevious_trueWhenPageGreaterThanOne() {
-        assertTrue(Pagination.of(2, 10).hasPrevious());
-        assertTrue(Pagination.of(100, 10).hasPrevious());
+    @TableTest("""
+            page | expected
+            2    | true
+            100  | true
+            1    | false
+            0    | false
+            -1   | false
+            """)
+    void hasPrevious(int page, boolean expected) {
+        assertEquals(expected, Pagination.of(page, 10).hasPrevious());
     }
 
-    @Test
-    void hasPrevious_falseWhenPageIsOne() {
-        assertFalse(Pagination.of(1, 10).hasPrevious());
-    }
-
-    @Test
-    void hasPrevious_falseWhenPageIsZeroOrNegative() {
-        assertFalse(Pagination.of(0, 10).hasPrevious());
-        assertFalse(Pagination.of(-1, 10).hasPrevious());
-    }
-
-    @Test
-    void previous_returnsPageMinusOneWhenPageGreaterThanOne() {
-        var p = Pagination.of(5, 10).previous();
-        assertEquals(4, p.getPage());
-        assertEquals(10, p.getSize());
+    @TableTest("""
+            page | size | expectedPage
+            5    | 10   | 4
+            2    | 1    | 1
+            """)
+    void previous(int page, int size, int expectedPage) {
+        var p = Pagination.of(page, size).previous();
+        assertEquals(expectedPage, p.getPage());
+        assertEquals(size, p.getSize());
     }
 
     @Test
@@ -109,55 +109,40 @@ class PaginationTest {
         assertSame(p, p.previous());
     }
 
-    @Test
-    void next_returnsPagePlusOne() {
-        var p = Pagination.of(5, 10).next();
-        assertEquals(6, p.getPage());
-        assertEquals(10, p.getSize());
+    @TableTest("""
+            page | size | expectedPage
+            5    | 10   | 6
+            1    | 10   | 2
+            """)
+    void next(int page, int size, int expectedPage) {
+        var p = Pagination.of(page, size).next();
+        assertEquals(expectedPage, p.getPage());
+        assertEquals(size, p.getSize());
     }
 
-    @Test
-    void next_canGoPastOne() {
-        var p = Pagination.of(1, 10).next();
-        assertEquals(2, p.getPage());
+    @TableTest("""
+            page | size | expectedPage | expectedSize
+            7    | 25   | 1            | 25
+            1    | 15   | 1            | 15
+            """)
+    void first(int page, int size, int expectedPage, int expectedSize) {
+        var p = Pagination.of(page, size).first();
+        assertEquals(expectedPage, p.getPage());
+        assertEquals(expectedSize, p.getSize());
     }
 
-    @Test
-    void first_setsPageToOne() {
-        var p = Pagination.of(7, 25).first();
-        assertEquals(1, p.getPage());
-        assertEquals(25, p.getSize());
-    }
-
-    @Test
-    void first_fromPageOne_keepsSize() {
-        var p = Pagination.of(1, 15).first();
-        assertEquals(1, p.getPage());
-        assertEquals(15, p.getSize());
-    }
-
-    @Test
-    void offset_zeroForPageOne() {
-        assertEquals(0L, Pagination.of(1, 20).offset());
-    }
-
-    @Test
-    void offset_formulaForHigherPages() {
-        // (page - 1) * size
-        assertEquals(20L, Pagination.of(2, 20).offset());
-        assertEquals(100L, Pagination.of(6, 20).offset());
-    }
-
-    @Test
-    void offset_usesLongArithmetic() {
-        // page=1000, size=1_000_000 → offset 999_000_000 (fits in int, but method returns long)
-        assertEquals(999_000_000L, Pagination.of(1000, 1_000_000).offset());
-    }
-
-    @Test
-    void offset_negativeOrZeroPageProducesNegativeOffset() {
-        // page=0 → -1*size; documented as best-effort, not necessarily defensive
-        assertEquals(-10L, Pagination.of(0, 10).offset());
+    @TableTest("""
+            page       | size    | expected
+            1          | 20      | 0
+            2          | 20      | 20
+            6          | 20      | 100
+            1000       | 1000000 | 999000000
+            0          | 10      | -10
+            2          | 1       | 1
+            2147483647 | 2       | 4294967292
+            """)
+    void offset(int page, int size, long expected) {
+        assertEquals(expected, Pagination.of(page, size).offset());
     }
 
     @Test
@@ -247,17 +232,15 @@ class PaginationTest {
         assertNotEquals("", str);
     }
 
-    @Test
-    void to_negativePageAccepted() {
-        // No defensive guards; method is straightforward delegation
-        var p = Pagination.of(1, 10).to(-5);
-        assertEquals(-5, p.getPage());
-    }
-
-    @Test
-    void to_zeroSizeAccepted() {
-        var p = Pagination.of(5, 0).to(1);
-        assertEquals(0, p.getSize());
+    @TableTest("""
+            fromPage | fromSize | toPage | expectedPage | expectedSize
+            1        | 10       | -5     | -5           | 10
+            5        | 0        | 1      | 1            | 0
+            """)
+    void to_acceptsAnyPageOrSize(int fromPage, int fromSize, int toPage, int expectedPage, int expectedSize) {
+        var p = Pagination.of(fromPage, fromSize).to(toPage);
+        assertEquals(expectedPage, p.getPage());
+        assertEquals(expectedSize, p.getSize());
     }
 
     @Test
@@ -348,15 +331,4 @@ class PaginationTest {
         assertEquals(1, p.getSorts().size());
     }
 
-    @Test
-    void offset_oneForPageTwoSizeOne() {
-        assertEquals(1L, Pagination.of(2, 1).offset());
-    }
-
-    @Test
-    void offset_maxIntPageProducesLongArithmetic() {
-        // page=Integer.MAX_VALUE, size=2 → offset would overflow int but fits in long
-        long expected = (long) (Integer.MAX_VALUE - 1) * 2;
-        assertEquals(expected, Pagination.of(Integer.MAX_VALUE, 2).offset());
-    }
 }

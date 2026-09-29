@@ -15,25 +15,19 @@
  */
 package org.febit.common.etcd.store.codec;
 
-import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 class CodecUtilsTest {
 
-    @Test
-    void bytesThenUtf8Roundtrip() {
-        assertThat(CodecUtils.utf8(CodecUtils.bytes("hello/world"))).isEqualTo("hello/world");
-    }
-
-    @Test
-    void preservesUnicode() {
-        var s = "项目-环境_🔐";
-        assertThat(CodecUtils.utf8(CodecUtils.bytes(s))).isEqualTo(s);
-    }
-
-    @Test
-    void emptyString() {
-        assertThat(CodecUtils.utf8(CodecUtils.bytes(""))).isEmpty();
+    @TableTest("""
+            text
+            hello/world
+            项目-环境_🔐
+            ""
+            """)
+    void roundTrip(String text) {
+        assertEquals(text, CodecUtils.utf8(CodecUtils.bytes(text)));
     }
 }

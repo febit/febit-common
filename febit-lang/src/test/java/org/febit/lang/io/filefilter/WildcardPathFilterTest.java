@@ -16,6 +16,7 @@
 package org.febit.lang.io.filefilter;
 
 import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
 import java.io.File;
 
@@ -44,57 +45,64 @@ class WildcardPathFilterTest {
         assertThrows(IllegalArgumentException.class, () -> WildcardPathFilter.create(new File("/.."), ""));
     }
 
-    @Test
-    void accept() {
-        var baseDir = new File("/a/b");
-        var filter = WildcardPathFilter.create(baseDir, "*");
+    @TableTest("""
+            pattern | sensitive | path        | expected
+            *       | true      | /a/b/c      | true
+            *       | true      | /a/b/C      | true
+            *       | true      | /a/b/c/d    | true
+            *       | true      | /a/b/../b/c | true
+            *       | true      | /../a/b/c   | false
+            *       | true      | /A/B/C      | false
+            *       | true      | /a          | false
+            *       | true      | /a/b/../c   | false
+            *       | false     | /a/b/c      | true
+            *       | false     | /a/b/C      | true
+            *       | false     | /A/B/C      | false
+            *       | false     | /a          | false
+            *       | false     | /a/b/../c   | false
+            c       | true      | /a/b/c      | true
+            c       | true      | /a/b/C      | false
+            c       | true      | /a/b/d      | false
+            c       | false     | /a/b/c      | true
+            c       | false     | /a/b/C      | true
+            c       | false     | /a/b/d      | false
+            """)
+    void accept(String pattern, boolean sensitive, String path, boolean expected) {
+        var filter = WildcardPathFilter.create(new File("/a/b"), pattern, sensitive);
+        assertEquals(expected, filter.accept(new File(path)));
+    }
 
-        assertTrue(filter.accept(new File("/a/b/c")));
-        assertTrue(filter.accept(new File("/a/b/C")));
-        assertTrue(filter.accept(new File("/a/b/c/d")));
-        assertTrue(filter.accept(new File("/a/b/../b/c")));
-
-        assertFalse(filter.accept(null));
-
-        assertFalse(filter.accept(new File("/../a/b/c")));
-        assertFalse(filter.accept(new File("/A/B/C")));
-        assertFalse(filter.accept(new File("/a")));
-        assertFalse(filter.accept(new File("/a/b/../c")));
-
-        assertTrue(filter.accept(new File("/a/b/c"), ""));
-        assertTrue(filter.accept(new File("/a/b"), "c"));
-        assertTrue(filter.accept(new File("/a/b/"), "c"));
-        assertTrue(filter.accept(new File("/d"), "/a/b/c"));
-        assertFalse(filter.accept(new File("/a/b/"), "/c"));
-
-        filter = WildcardPathFilter.create(baseDir, "*", false);
-        assertTrue(filter.accept(new File("/a/b/c")));
-        assertTrue(filter.accept(new File("/a/b/C")));
-        assertFalse(filter.accept(new File("/A/B/C")));
-        assertFalse(filter.accept(new File("/a")));
-        assertFalse(filter.accept(new File("/a/b/../c")));
-
-        filter = WildcardPathFilter.create(baseDir, "c");
-        assertTrue(filter.accept(new File("/a/b/c")));
-        assertFalse(filter.accept(new File("/a/b/C")));
-        assertFalse(filter.accept(new File("/a/b/d")));
-
-        filter = WildcardPathFilter.create(baseDir, "c", false);
-        assertTrue(filter.accept(new File("/a/b/c")));
-        assertTrue(filter.accept(new File("/a/b/C")));
-        assertFalse(filter.accept(new File("/a/b/d")));
+    @TableTest("""
+            baseFile | relative | expected
+            /a/b/c   | ""       | true
+            /a/b     | c        | true
+            /a/b/    | c        | true
+            /d       | /a/b/c   | true
+            /a/b/    | /c       | false
+            """)
+    void accept_withRelative(String baseFile, String relative, boolean expected) {
+        var filter = WildcardPathFilter.create(new File("/a/b"), "*");
+        assertEquals(expected, filter.accept(new File(baseFile), relative));
     }
 
     @Test
-    void getAbsolutePath() {
-        assertNull(WildcardPathFilter.getAbsolutePath(new File("/..")));
-        assertNull(WildcardPathFilter.getAbsolutePath(new File("/../")));
-        assertNull(WildcardPathFilter.getAbsolutePath(new File("/../..")));
-        assertNull(WildcardPathFilter.getAbsolutePath(new File("/../abc")));
-        assertNull(WildcardPathFilter.getAbsolutePath(new File("/a/b/../../../abc")));
+    void accept_nullPath() {
+        var filter = WildcardPathFilter.create(new File("/a/b"), "*");
+        assertFalse(filter.accept(null));
+    }
 
-        assertEquals("/", WildcardPathFilter.getAbsolutePath(new File("/")));
-        assertEquals("/", WildcardPathFilter.getAbsolutePath(new File("/.")));
-        assertEquals("/a/d", WildcardPathFilter.getAbsolutePath(new File("/a/b/c/../../d")));
+    @TableTest("""
+            input             | expected
+            /..               |
+            /../              |
+            /../..            |
+            /../abc           |
+            /a/b/../../../abc |
+            /                 | /
+            /.                | /
+            /a/b/c/../../d    | /a/d
+            """)
+    void getAbsolutePath(String input, String expected) {
+        assertEquals(expected, WildcardPathFilter.getAbsolutePath(new File(input)));
     }
 }

@@ -16,6 +16,7 @@
 package org.febit.common.kafka.deser;
 
 import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
 import java.nio.charset.StandardCharsets;
 
@@ -26,24 +27,17 @@ class StringDeserializerTest {
     private final StringDeserializer deserializer = new StringDeserializer();
 
     @Test
-    void shouldDeserializeUtf8Bytes() {
-        var data = "hello world".getBytes(StandardCharsets.UTF_8);
-        assertEquals("hello world", deserializer.deserialize("topic", data));
-    }
-
-    @Test
     void shouldReturnNullForNullData() {
         assertNull(deserializer.deserialize("topic", null));
     }
 
-    @Test
-    void shouldHandleEmptyBytes() {
-        assertEquals("", deserializer.deserialize("topic", new byte[0]));
-    }
-
-    @Test
-    void shouldHandleSpecialCharacters() {
-        var data = "你好, 世界! 🚀".getBytes(StandardCharsets.UTF_8);
-        assertEquals("你好, 世界! 🚀", deserializer.deserialize("topic", data));
+    @TableTest("""
+            text
+            hello world
+            你好, 世界! 🚀
+            ""
+            """)
+    void deserialize(String text) {
+        assertEquals(text, deserializer.deserialize("topic", text.getBytes(StandardCharsets.UTF_8)));
     }
 }

@@ -16,6 +16,7 @@
 package org.febit.lang;
 
 import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
 import java.util.List;
 
@@ -58,25 +59,30 @@ class Tuple5Test {
         assertNull(tuple.v5());
     }
 
-    @Test
-    void testCompareTo() {
+    @TableTest("""
+            v1 | v2 | v3 | v4 | v5 | expected
+            0  | 2  | 3  | 4  | 5  | 1
+            1  | 1  | 3  | 4  | 5  | 1
+            1  | 2  | 2  | 4  | 5  | 1
+            1  | 2  | 3  | 3  | 5  | 1
+            1  | 2  | 3  | 4  | 4  | 1
+            2  | 2  | 3  | 4  | 5  | -1
+            1  | 3  | 3  | 4  | 5  | -1
+            1  | 2  | 4  | 4  | 5  | -1
+            1  | 2  | 3  | 5  | 5  | -1
+            1  | 2  | 3  | 4  | 6  | -1
+            """)
+    void testCompareTo(int v1, int v2, int v3, int v4, int v5, int expected) {
         var numbers = Tuple5.of(1, 2, 3, 4, 5);
+        assertEquals(expected, numbers.compareTo(Tuple5.of(v1, v2, v3, v4, v5)));
+    }
 
-        //noinspection EqualsWithItself
+    @Test
+    @SuppressWarnings("EqualsWithItself")
+    void testCompareTo_edge() {
+        var numbers = Tuple5.of(1, 2, 3, 4, 5);
         assertEquals(0, numbers.compareTo(numbers));
         assertEquals(1, numbers.compareTo(null));
-
-        assertEquals(1, numbers.compareTo(Tuple5.of(0, 2, 3, 4, 5)));
-        assertEquals(1, numbers.compareTo(Tuple5.of(1, 1, 3, 4, 5)));
-        assertEquals(1, numbers.compareTo(Tuple5.of(1, 2, 2, 4, 5)));
-        assertEquals(1, numbers.compareTo(Tuple5.of(1, 2, 3, 3, 5)));
-        assertEquals(1, numbers.compareTo(Tuple5.of(1, 2, 3, 4, 4)));
-
-        assertEquals(-1, numbers.compareTo(Tuple5.of(2, 2, 3, 4, 5)));
-        assertEquals(-1, numbers.compareTo(Tuple5.of(1, 3, 3, 4, 5)));
-        assertEquals(-1, numbers.compareTo(Tuple5.of(1, 2, 4, 4, 5)));
-        assertEquals(-1, numbers.compareTo(Tuple5.of(1, 2, 3, 5, 5)));
-        assertEquals(-1, numbers.compareTo(Tuple5.of(1, 2, 3, 4, 6)));
     }
 
 }

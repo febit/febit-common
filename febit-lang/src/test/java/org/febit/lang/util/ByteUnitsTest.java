@@ -15,28 +15,30 @@
  */
 package org.febit.lang.util;
 
-import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ByteUnitsTest {
 
-    @Test
-    void testByteUnits() {
-        assertEquals(1L, ByteUnits.B);
-        assertEquals(1024L, ByteUnits.KiB);
-        assertEquals(1048576L, ByteUnits.MiB);
-        assertEquals(1073741824L, ByteUnits.GiB);
-        assertEquals(1099511627776L, ByteUnits.TiB);
-        assertEquals(1125899906842624L, ByteUnits.PiB);
-        assertEquals(1152921504606846976L, ByteUnits.EiB);
-
-        assertEquals(1000L, ByteUnits.KB);
-        assertEquals(1000000L, ByteUnits.MB);
-        assertEquals(1000000000L, ByteUnits.GB);
-        assertEquals(1000000000000L, ByteUnits.TB);
-        assertEquals(1000000000000000L, ByteUnits.PB);
-        assertEquals(1000000000000000000L, ByteUnits.EB);
+    @TableTest("""
+            name | expected
+            B    | 1
+            KiB  | 1024
+            MiB  | 1048576
+            GiB  | 1073741824
+            TiB  | 1099511627776
+            PiB  | 1125899906842624
+            EiB  | 1152921504606846976
+            KB   | 1000
+            MB   | 1000000
+            GB   | 1000000000
+            TB   | 1000000000000
+            PB   | 1000000000000000
+            EB   | 1000000000000000000
+            """)
+    void testByteUnits(String name, long expected) throws Exception {
+        assertEquals(expected, ByteUnits.class.getDeclaredField(name).getLong(null));
     }
 
 }

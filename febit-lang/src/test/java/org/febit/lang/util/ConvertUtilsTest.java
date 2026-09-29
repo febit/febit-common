@@ -16,6 +16,7 @@
 package org.febit.lang.util;
 
 import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -43,171 +44,255 @@ class ConvertUtilsTest {
     final ZonedDateTime DT_ZONED_UTC = ZonedDateTime.ofInstant(INSTANT, ZONE_UTC);
     final ZonedDateTime DT_ZONED_8 = ZonedDateTime.ofInstant(INSTANT, ZONE_8);
 
-    @Test
-    void testToString() {
-        assertNull(ConvertUtils.toString(null));
-        assertEquals("1", ConvertUtils.toString(1));
-        assertEquals("", ConvertUtils.toString(""));
-        assertEquals("a", ConvertUtils.toString('a'));
-        assertEquals("abc", ConvertUtils.toString("abc"));
-    }
-
-    @Test
-    void toBoolean() {
-        assertFalse(ConvertUtils.toBoolean(null));
-
-        Stream.of(false, "false", "FALSE", "False", "FaLse",
-                        0, 0L, 0.0, 0.0F, (short) 0, "0",
-                        "1.1", 1.1D, 1.1F, "2",
-                        "off", "OFF",
-                        "no", "NO",
-                        'n', "n", "N",
-
-                        "abc", "true1", "1true"
-                )
-                .forEach(
-                        value -> assertFalse(ConvertUtils.toBoolean(value))
-                );
-
-        Stream.of(true, "true", "TRUE", "True", "TrUe",
-                        1, 1L, 1.0D, 1.0F, "1", (short) 1,
-                        "on", "ON", "On", "oN",
-                        "yes", "YES", "YeS",
-                        'y', "y", "Y"
-                )
-                .forEach(
-                        value -> assertTrue(ConvertUtils.toBoolean(value))
-                );
-    }
-
-    @Test
-    void toLong() {
-        assertNull(ConvertUtils.toLong(null));
-        assertEquals(1L, ConvertUtils.toLong(1));
-        assertEquals(1L, ConvertUtils.toLong(1L));
-        assertEquals(1L, ConvertUtils.toLong(1.0D));
-        assertEquals(1L, ConvertUtils.toLong(1.0F));
-        assertEquals(1L, ConvertUtils.toLong(BigInteger.valueOf(1)));
-        assertEquals(1L, ConvertUtils.toLong(BigDecimal.valueOf(1D)));
-        assertEquals(1L, ConvertUtils.toLong("1"));
-        assertEquals(1L, ConvertUtils.toLong("1.0"));
-    }
-
-    @Test
-    void toInteger() {
-        assertNull(ConvertUtils.toInteger(null));
-        assertEquals(1, ConvertUtils.toInteger(1));
-        assertEquals(1, ConvertUtils.toInteger(1L));
-        assertEquals(1, ConvertUtils.toInteger(1.0D));
-        assertEquals(1, ConvertUtils.toInteger(1.0F));
-        assertEquals(1, ConvertUtils.toInteger(BigInteger.valueOf(1)));
-        assertEquals(1, ConvertUtils.toInteger("1"));
-        assertEquals(1, ConvertUtils.toInteger("1.0"));
-    }
-
-    @Test
-    void toByte() {
-        assertNull(ConvertUtils.toByte(null));
-        assertEquals((byte) 1, ConvertUtils.toByte((byte) 1));
-        assertEquals((byte) 1, ConvertUtils.toByte((short) 1));
-        assertEquals((byte) 1, ConvertUtils.toByte(1));
-        assertEquals((byte) 1, ConvertUtils.toByte(1L));
-        assertEquals((byte) 1, ConvertUtils.toByte(1.0D));
-        assertEquals((byte) 1, ConvertUtils.toByte(1.0F));
-        assertEquals((byte) 1, ConvertUtils.toByte(BigInteger.valueOf(1)));
-        assertEquals((byte) 1, ConvertUtils.toByte(BigDecimal.valueOf(1)));
-        assertEquals((byte) 1, ConvertUtils.toByte("1"));
-        assertEquals((byte) 1, ConvertUtils.toByte("1.0"));
-        assertEquals((byte) 65, ConvertUtils.toByte('A'));
-        assertEquals((byte) 127, ConvertUtils.toByte((byte) 127));
-        assertEquals((byte) -128, ConvertUtils.toByte((byte) -128));
-    }
-
-    @Test
-    void toDouble() {
-        assertNull(ConvertUtils.toDouble(null));
-        assertEquals(1D, ConvertUtils.toDouble(1));
-        assertEquals(1D, ConvertUtils.toDouble(1L));
-        assertEquals(1D, ConvertUtils.toDouble(1.0D));
-        assertEquals(1D, ConvertUtils.toDouble(1.0F));
-        assertEquals(1D, ConvertUtils.toDouble(BigInteger.valueOf(1)));
-        assertEquals(1D, ConvertUtils.toDouble("1"));
-        assertEquals(1D, ConvertUtils.toDouble("1.0"));
-    }
-
-    @Test
-    void toFloat() {
-        assertNull(ConvertUtils.toFloat(null));
-        assertEquals(1F, ConvertUtils.toFloat(1));
-        assertEquals(1F, ConvertUtils.toFloat(1L));
-        assertEquals(1F, ConvertUtils.toFloat(1.0D));
-        assertEquals(1F, ConvertUtils.toFloat(1.0F));
-        assertEquals(1F, ConvertUtils.toFloat(BigInteger.valueOf(1)));
-        assertEquals(1F, ConvertUtils.toFloat("1"));
-        assertEquals(1F, ConvertUtils.toFloat("1.0"));
-    }
-
-    @Test
-    void toShort() {
-        assertNull(ConvertUtils.toShort(null));
-        assertEquals((short) 1, ConvertUtils.toShort((short) 1));
-        assertEquals((short) 1, ConvertUtils.toShort((byte) 1));
-        assertEquals((short) 1, ConvertUtils.toShort(1));
-        assertEquals((short) 1, ConvertUtils.toShort(1L));
-        assertEquals((short) 1, ConvertUtils.toShort(1.0D));
-        assertEquals((short) 1, ConvertUtils.toShort(1.0F));
-        assertEquals((short) 1, ConvertUtils.toShort(BigInteger.valueOf(1)));
-        assertEquals((short) 1, ConvertUtils.toShort(BigDecimal.valueOf(1)));
-        assertEquals((short) 1, ConvertUtils.toShort("1"));
-        assertEquals((short) 1, ConvertUtils.toShort("1.0"));
-        assertEquals((short) 65, ConvertUtils.toShort('A'));
-        assertEquals(Short.MAX_VALUE, ConvertUtils.toShort(Short.MAX_VALUE));
-        assertEquals(Short.MIN_VALUE, ConvertUtils.toShort(Short.MIN_VALUE));
-    }
-
-    @Test
-    void toNumber() {
-        assertNull(ConvertUtils.toNumber(null));
-        assertNull(ConvertUtils.toNumber(""));
-
-        assertEquals(97, ConvertUtils.toNumber('a'));
-
-        assertEquals((short) 1, ConvertUtils.toNumber((short) 1));
-        assertEquals(1, ConvertUtils.toNumber(1));
-        assertEquals(1L, ConvertUtils.toNumber(1L));
-    }
-
-    @Test
-    void toBigDecimal() {
-        assertNull(ConvertUtils.toBigDecimal(null));
-        assertEquals(BigDecimal.valueOf(1), ConvertUtils.toBigDecimal((byte) 1));
-        assertEquals(BigDecimal.valueOf(1), ConvertUtils.toBigDecimal((short) 1));
-        assertEquals(BigDecimal.valueOf(1), ConvertUtils.toBigDecimal(1));
-        assertEquals(BigDecimal.valueOf(1), ConvertUtils.toBigDecimal(1L));
-        assertEquals(BigDecimal.valueOf(1.0D), ConvertUtils.toBigDecimal(1.0D));
-        assertEquals(BigDecimal.valueOf(1.0F), ConvertUtils.toBigDecimal(1.0F));
-        assertEquals(BigDecimal.valueOf(1), ConvertUtils.toBigDecimal(BigInteger.valueOf(1)));
-        assertEquals(BigDecimal.valueOf(1), ConvertUtils.toBigDecimal(BigDecimal.valueOf(1L)));
-        assertEquals(BigDecimal.valueOf(1), ConvertUtils.toBigDecimal("1"));
-        assertEquals(BigDecimal.valueOf(1.0D), ConvertUtils.toBigDecimal("1.0"));
-        assertEquals(BigDecimal.valueOf(97), ConvertUtils.toBigDecimal('a'));
-
-        // AtomicInteger, AtomicLong, LongAdder, LongAccumulator
-        assertEquals(BigDecimal.valueOf(42), ConvertUtils.toBigDecimal(new AtomicInteger(42)));
-        assertEquals(BigDecimal.valueOf(99), ConvertUtils.toBigDecimal(new AtomicLong(99)));
-        var adder = new LongAdder();
-        adder.add(100);
-        assertEquals(BigDecimal.valueOf(100), ConvertUtils.toBigDecimal(adder));
-        var accumulator = new LongAccumulator(Long::sum, 55);
-        assertEquals(BigDecimal.valueOf(55), ConvertUtils.toBigDecimal(accumulator));
-
-        // default branch: arbitrary Object.toString()
-        assertEquals(new BigDecimal("123"), ConvertUtils.toBigDecimal(new Object() {
-            @Override
-            public String toString() {
-                return "123";
+    /**
+     * Builds a scalar input of the given {@code kind} from its textual {@code value}, so a single
+     * table can exercise the many runtime types accepted by the {@code ConvertUtils.toXxx} family.
+     */
+    static Object inputOf(String kind, String value) {
+        return switch (kind) {
+            case "null" -> null;
+            case "bool" -> Boolean.parseBoolean(value);
+            case "int" -> Integer.parseInt(value);
+            case "long" -> Long.parseLong(value);
+            case "double" -> Double.parseDouble(value);
+            case "float" -> Float.parseFloat(value);
+            case "short" -> Short.parseShort(value);
+            case "byte" -> Byte.parseByte(value);
+            case "char" -> value.charAt(0);
+            case "bigint" -> new BigInteger(value);
+            case "bigdec" -> new BigDecimal(value);
+            case "string" -> value;
+            case "atomicInt" -> new AtomicInteger(Integer.parseInt(value));
+            case "atomicLong" -> new AtomicLong(Long.parseLong(value));
+            case "longAdder" -> {
+                var adder = new LongAdder();
+                adder.add(Long.parseLong(value));
+                yield adder;
             }
-        }));
+            case "longAccumulator" -> new LongAccumulator(Long::sum, Long.parseLong(value));
+            case "object" -> new Object() {
+                @Override
+                public String toString() {
+                    return value;
+                }
+            };
+            default -> throw new IllegalStateException("unexpected kind: " + kind);
+        };
+    }
+
+    @TableTest("""
+            kind   | value | expected
+            null   |       |
+            int    | 1     | 1
+            string | ""    | ""
+            char   | a     | a
+            string | abc   | abc
+            """)
+    void testToString(String kind, String value, String expected) {
+        assertEquals(expected, ConvertUtils.toString(inputOf(kind, value)));
+    }
+
+    @TableTest("""
+            kind   | value | expected
+            null   |       | false
+            bool   | false | false
+            string | false | false
+            string | FALSE | false
+            string | False | false
+            string | FaLse | false
+            int    | 0     | false
+            long   | 0     | false
+            double | 0.0   | false
+            float  | 0.0   | false
+            short  | 0     | false
+            string | 0     | false
+            string | 1.1   | false
+            double | 1.1   | false
+            float  | 1.1   | false
+            string | 2     | false
+            string | off   | false
+            string | OFF   | false
+            string | no    | false
+            string | NO    | false
+            char   | n     | false
+            string | n     | false
+            string | N     | false
+            string | abc   | false
+            string | true1 | false
+            string | 1true | false
+            bool   | true  | true
+            string | true  | true
+            string | TRUE  | true
+            string | True  | true
+            string | TrUe  | true
+            int    | 1     | true
+            long   | 1     | true
+            double | 1.0   | true
+            float  | 1.0   | true
+            string | 1     | true
+            short  | 1     | true
+            string | on    | true
+            string | ON    | true
+            string | On    | true
+            string | oN    | true
+            string | yes   | true
+            string | YES   | true
+            string | YeS   | true
+            char   | y     | true
+            string | y     | true
+            string | Y     | true
+            """)
+    void toBoolean(String kind, String value, Boolean expected) {
+        assertEquals(expected, ConvertUtils.toBoolean(inputOf(kind, value)));
+    }
+
+    @TableTest("""
+            kind   | value | expected
+            null   |       |
+            int    | 1     | 1
+            long   | 1     | 1
+            double | 1.0   | 1
+            float  | 1.0   | 1
+            bigint | 1     | 1
+            bigdec | 1.0   | 1
+            string | 1     | 1
+            string | 1.0   | 1
+            """)
+    void toLong(String kind, String value, Long expected) {
+        assertEquals(expected, ConvertUtils.toLong(inputOf(kind, value)));
+    }
+
+    @TableTest("""
+            kind   | value | expected
+            null   |       |
+            int    | 1     | 1
+            long   | 1     | 1
+            double | 1.0   | 1
+            float  | 1.0   | 1
+            bigint | 1     | 1
+            string | 1     | 1
+            string | 1.0   | 1
+            """)
+    void toInteger(String kind, String value, Integer expected) {
+        assertEquals(expected, ConvertUtils.toInteger(inputOf(kind, value)));
+    }
+
+    @TableTest("""
+            kind   | value | expected
+            null   |       |
+            byte   | 1     | 1
+            short  | 1     | 1
+            int    | 1     | 1
+            long   | 1     | 1
+            double | 1.0   | 1
+            float  | 1.0   | 1
+            bigint | 1     | 1
+            bigdec | 1     | 1
+            string | 1     | 1
+            string | 1.0   | 1
+            char   | A     | 65
+            byte   | 127   | 127
+            byte   | -128  | -128
+            """)
+    void toByte(String kind, String value, Byte expected) {
+        assertEquals(expected, ConvertUtils.toByte(inputOf(kind, value)));
+    }
+
+    @TableTest("""
+            kind   | value | expected
+            null   |       |
+            int    | 1     | 1.0
+            long   | 1     | 1.0
+            double | 1.0   | 1.0
+            float  | 1.0   | 1.0
+            bigint | 1     | 1.0
+            string | 1     | 1.0
+            string | 1.0   | 1.0
+            """)
+    void toDouble(String kind, String value, Double expected) {
+        assertEquals(expected, ConvertUtils.toDouble(inputOf(kind, value)));
+    }
+
+    @TableTest("""
+            kind   | value | expected
+            null   |       |
+            int    | 1     | 1.0
+            long   | 1     | 1.0
+            double | 1.0   | 1.0
+            float  | 1.0   | 1.0
+            bigint | 1     | 1.0
+            string | 1     | 1.0
+            string | 1.0   | 1.0
+            """)
+    void toFloat(String kind, String value, Float expected) {
+        assertEquals(expected, ConvertUtils.toFloat(inputOf(kind, value)));
+    }
+
+    @TableTest("""
+            kind   | value  | expected
+            null   |        |
+            short  | 1      | 1
+            byte   | 1      | 1
+            int    | 1      | 1
+            long   | 1      | 1
+            double | 1.0    | 1
+            float  | 1.0    | 1
+            bigint | 1      | 1
+            bigdec | 1      | 1
+            string | 1      | 1
+            string | 1.0    | 1
+            char   | A      | 65
+            short  | 32767  | 32767
+            short  | -32768 | -32768
+            """)
+    void toShort(String kind, String value, Short expected) {
+        assertEquals(expected, ConvertUtils.toShort(inputOf(kind, value)));
+    }
+
+    @TableTest("""
+            kind   | value
+            null   |
+            string | ""
+            char   | a
+            short  | 1
+            int    | 1
+            long   | 1
+            """)
+    void toNumber(String kind, String value) {
+        Object expected = switch (kind) {
+            case "null", "string" -> null;
+            case "char" -> 97;
+            case "short" -> (short) 1;
+            case "int" -> 1;
+            case "long" -> 1L;
+            default -> throw new IllegalStateException("unexpected kind: " + kind);
+        };
+        assertEquals(expected, ConvertUtils.toNumber(inputOf(kind, value)));
+    }
+
+    @TableTest("""
+            kind            | value | expected
+            null            |       |
+            byte            | 1     | 1
+            short           | 1     | 1
+            int             | 1     | 1
+            long            | 1     | 1
+            double          | 1.0   | 1.0
+            float           | 1.0   | 1.0
+            bigint          | 1     | 1
+            bigdec          | 1     | 1
+            string          | 1     | 1
+            string          | 1.0   | 1.0
+            char            | a     | 97
+            atomicInt       | 42    | 42
+            atomicLong      | 99    | 99
+            longAdder       | 100   | 100
+            longAccumulator | 55    | 55
+            object          | 123   | 123
+            """)
+    void toBigDecimal(String kind, String value, String expected) {
+        assertEquals(expected == null ? null : new BigDecimal(expected),
+                ConvertUtils.toBigDecimal(inputOf(kind, value)));
     }
 
     @Test

@@ -16,6 +16,7 @@
 package org.febit.lang;
 
 import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -53,14 +54,16 @@ class TimeDelayedTest {
         assertEquals(1, Impl.of(1001).compareTo(mock));
     }
 
-    @Test
-    void getDelay() {
-        assertEquals(-999, Impl.of(1).getDelay(TimeUnit.MILLISECONDS));
-        assertEquals(0, Impl.of(1).getDelay(TimeUnit.SECONDS));
-
-        assertEquals(1_000_000_000, Impl.of(2000).getDelay(TimeUnit.NANOSECONDS));
-        assertEquals(1000, Impl.of(2000).getDelay(TimeUnit.MILLISECONDS));
-        assertEquals(1, Impl.of(2000).getDelay(TimeUnit.SECONDS));
+    @TableTest("""
+            time | unit         | expected
+            1    | MILLISECONDS | -999
+            1    | SECONDS      | 0
+            2000 | NANOSECONDS  | 1000000000
+            2000 | MILLISECONDS | 1000
+            2000 | SECONDS      | 1
+            """)
+    void getDelay(long time, TimeUnit unit, long expected) {
+        assertEquals(expected, Impl.of(time).getDelay(unit));
     }
 
     @Getter

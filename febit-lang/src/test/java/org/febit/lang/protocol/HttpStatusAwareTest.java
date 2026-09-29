@@ -16,6 +16,7 @@
 package org.febit.lang.protocol;
 
 import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -30,25 +31,16 @@ class HttpStatusAwareTest {
         }
     }
 
-    @Test
-    void setStatus_writesValue() {
+    @TableTest("""
+            status | expected
+            404    | 404
+            0      | 0
+            -1     | -1
+            """)
+    void setStatus_writesValue(int status, int expected) {
         var h = new Holder();
-        h.setStatus(404);
-        assertEquals(404, h.status);
-    }
-
-    @Test
-    void setStatus_acceptsZero() {
-        var h = new Holder();
-        h.setStatus(0);
-        assertEquals(0, h.status);
-    }
-
-    @Test
-    void setStatus_acceptsNegative() {
-        var h = new Holder();
-        h.setStatus(-1);
-        assertEquals(-1, h.status);
+        h.setStatus(status);
+        assertEquals(expected, h.status);
     }
 
     @Test

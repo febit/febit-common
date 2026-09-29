@@ -16,18 +16,15 @@
 package org.febit.common.rest.client;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpResponse;
+import org.tabletest.junit.TableTest;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -39,58 +36,31 @@ class RecallJsonResponseErrorHandlerTest {
 
     private final RecallJsonResponseErrorHandler handler = RecallJsonResponseErrorHandler.INSTANCE;
 
-    @ParameterizedTest
-    @MethodSource("nonErrorStatusScenarios")
-    void shouldNotHaveErrorForNonErrorStatus(HttpStatus status, MediaType contentType) throws IOException {
-        var response = mockResponse(status, contentType);
-        assertFalse(handler.hasError(response));
-    }
-
-    static Stream<Arguments> nonErrorStatusScenarios() {
-        return Stream.of(
-                Arguments.of(HttpStatus.OK, MediaType.APPLICATION_JSON),
-                Arguments.of(HttpStatus.CREATED, MediaType.APPLICATION_JSON),
-                Arguments.of(HttpStatus.NO_CONTENT, MediaType.parseMediaType("application/problem+json"))
-        );
-    }
-
-    @ParameterizedTest
-    @MethodSource("errorStatusWithJsonContentTypeScenarios")
-    void shouldHaveErrorForErrorStatusWithJsonContentType(HttpStatus status, MediaType contentType) throws IOException {
-        var response = mockResponse(status, contentType);
-        assertTrue(handler.hasError(response));
-    }
-
-    static Stream<Arguments> errorStatusWithJsonContentTypeScenarios() {
-        return Stream.of(
-                Arguments.of(HttpStatus.BAD_REQUEST, MediaType.APPLICATION_JSON),
-                Arguments.of(HttpStatus.INTERNAL_SERVER_ERROR, MediaType.APPLICATION_JSON),
-                Arguments.of(HttpStatus.BAD_REQUEST, MediaType.parseMediaType("application/json;charset=UTF-8")),
-                Arguments.of(HttpStatus.BAD_REQUEST, MediaType.parseMediaType("application/json;charset=utf-8;version=1.0")),
-                Arguments.of(HttpStatus.BAD_REQUEST, MediaType.parseMediaType("application/vnd.api+json")),
-                Arguments.of(HttpStatus.BAD_REQUEST, MediaType.parseMediaType("application/vnd.custom+json;charset=utf-8")),
-                Arguments.of(HttpStatus.BAD_REQUEST, MediaType.parseMediaType("application/graphql-response+json")),
-                Arguments.of(HttpStatus.BAD_REQUEST, MediaType.parseMediaType("application/problem+json")),
-                Arguments.of(HttpStatus.BAD_REQUEST, MediaType.parseMediaType("application/ld+json")),
-                Arguments.of(HttpStatus.BAD_REQUEST, MediaType.parseMediaType("application/hal+json"))
-        );
-    }
-
-    @ParameterizedTest
-    @MethodSource("errorStatusWithNonJsonContentTypeScenarios")
-    void shouldNotHaveErrorForErrorStatusWithNonJsonContentType(HttpStatus status, MediaType contentType) throws IOException {
-        var response = mockResponse(status, contentType);
-        assertFalse(handler.hasError(response));
-    }
-
-    static Stream<Arguments> errorStatusWithNonJsonContentTypeScenarios() {
-        return Stream.of(
-                Arguments.of(HttpStatus.BAD_REQUEST, null),
-                Arguments.of(HttpStatus.BAD_REQUEST, MediaType.TEXT_PLAIN),
-                Arguments.of(HttpStatus.BAD_REQUEST, MediaType.APPLICATION_XML),
-                Arguments.of(HttpStatus.BAD_REQUEST, MediaType.TEXT_HTML),
-                Arguments.of(HttpStatus.INTERNAL_SERVER_ERROR, MediaType.APPLICATION_OCTET_STREAM)
-        );
+    @TableTest("""
+            status                | contentType                                  | expectError
+            OK                    | application/json                             | false
+            CREATED               | application/json                             | false
+            NO_CONTENT            | "application/problem+json"                   | false
+            BAD_REQUEST           | application/json                             | true
+            INTERNAL_SERVER_ERROR | application/json                             | true
+            BAD_REQUEST           | "application/json;charset=UTF-8"             | true
+            BAD_REQUEST           | "application/json;charset=utf-8;version=1.0" | true
+            BAD_REQUEST           | "application/vnd.api+json"                   | true
+            BAD_REQUEST           | "application/vnd.custom+json;charset=utf-8"  | true
+            BAD_REQUEST           | "application/graphql-response+json"          | true
+            BAD_REQUEST           | "application/problem+json"                   | true
+            BAD_REQUEST           | "application/ld+json"                        | true
+            BAD_REQUEST           | "application/hal+json"                       | true
+            BAD_REQUEST           | "null"                                       | false
+            BAD_REQUEST           | text/plain                                   | false
+            BAD_REQUEST           | application/xml                              | false
+            BAD_REQUEST           | text/html                                    | false
+            INTERNAL_SERVER_ERROR | application/octet-stream                     | false
+            """)
+    void hasError(HttpStatus status, String contentType, boolean expectError) throws IOException {
+        var ct = "null".equals(contentType) ? null : MediaType.parseMediaType(contentType);
+        var response = mockResponse(status, ct);
+        assertEquals(expectError, handler.hasError(response));
     }
 
     @Test

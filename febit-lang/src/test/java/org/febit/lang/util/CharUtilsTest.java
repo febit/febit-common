@@ -16,52 +16,119 @@
 package org.febit.lang.util;
 
 import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class CharUtilsTest {
 
-    @Test
-    void toUpperAscii() {
-        assertEquals('A', CharUtils.toUpperAscii('a'));
-        assertEquals('A', CharUtils.toUpperAscii('A'));
-        assertEquals('Z', CharUtils.toUpperAscii('z'));
-        assertEquals('Z', CharUtils.toUpperAscii('Z'));
-        assertEquals('1', CharUtils.toUpperAscii('1'));
-        assertEquals('~', CharUtils.toUpperAscii('~'));
+    @TableTest("""
+            input | expected
+            a     | A
+            A     | A
+            z     | Z
+            Z     | Z
+            1     | 1
+            ~     | ~
+            """)
+    void toUpperAscii(char input, char expected) {
+        assertEquals(expected, CharUtils.toUpperAscii(input));
+    }
+
+    @TableTest("""
+            input | expected
+            a     | a
+            A     | a
+            z     | z
+            Z     | z
+            1     | 1
+            ~     | ~
+            """)
+    void toLowerAscii(char input, char expected) {
+        assertEquals(expected, CharUtils.toLowerAscii(input));
+    }
+
+    @TableTest("""
+            input | expected
+            a     | true
+            z     | true
+            A     | false
+            Z     | false
+            1     | false
+            ~     | false
+            """)
+    void isLowerAlpha(char input, boolean expected) {
+        assertEquals(expected, CharUtils.isLowerAlpha(input));
+    }
+
+    @TableTest("""
+            input | expected
+            A     | true
+            Z     | true
+            a     | false
+            z     | false
+            1     | false
+            ~     | false
+            """)
+    void isUppercaseAlpha(char input, boolean expected) {
+        assertEquals(expected, CharUtils.isUpperAlpha(input));
+    }
+
+    @TableTest("""
+            input | expected
+            a     | true
+            z     | true
+            A     | true
+            Z     | true
+            1     | false
+            ~     | false
+            """)
+    void isAlpha(char input, boolean expected) {
+        assertEquals(expected, CharUtils.isAlpha(input));
+    }
+
+    @TableTest("""
+            input | expected
+            0     | 0
+            9     | 9
+            a     | 10
+            f     | 15
+            A     | 10
+            F     | 15
+            """)
+    void hexToDigit(char input, int expected) {
+        assertEquals(expected, CharUtils.hexToDigit(input));
     }
 
     @Test
-    void toLowerAscii() {
-        assertEquals('a', CharUtils.toLowerAscii('a'));
-        assertEquals('a', CharUtils.toLowerAscii('A'));
-        assertEquals('z', CharUtils.toLowerAscii('z'));
-        assertEquals('z', CharUtils.toLowerAscii('Z'));
-        assertEquals('1', CharUtils.toLowerAscii('1'));
-        assertEquals('~', CharUtils.toLowerAscii('~'));
+    void hexToDigit_invalid() {
+        assertThrows(IllegalArgumentException.class, () -> CharUtils.hexToDigit('g'));
     }
 
-    @Test
-    void isLowerAlpha() {
-        assertTrue(CharUtils.isLowerAlpha('a'));
-        assertTrue(CharUtils.isLowerAlpha('z'));
-
-        assertFalse(CharUtils.isLowerAlpha('A'));
-        assertFalse(CharUtils.isLowerAlpha('Z'));
-        assertFalse(CharUtils.isLowerAlpha('1'));
-        assertFalse(CharUtils.isLowerAlpha('~'));
-
+    @TableTest("""
+            input | expected
+            a     | false
+            z     | false
+            A     | true
+            Z     | true
+            1     | true
+            ~     | true
+            """)
+    void isNotLowerAlpha(char input, boolean expected) {
+        assertEquals(expected, CharUtils.isNotLowerAlpha(input));
     }
 
-    @Test
-    void isUppercaseAlpha() {
-        assertTrue(CharUtils.isUpperAlpha('A'));
-        assertTrue(CharUtils.isUpperAlpha('Z'));
-
-        assertFalse(CharUtils.isUpperAlpha('a'));
-        assertFalse(CharUtils.isUpperAlpha('z'));
-        assertFalse(CharUtils.isUpperAlpha('1'));
-        assertFalse(CharUtils.isUpperAlpha('~'));
+    @TableTest("""
+            input | expected
+            A     | false
+            Z     | false
+            a     | true
+            z     | true
+            1     | true
+            ~     | true
+            """)
+    void isNotUpperAlpha(char input, boolean expected) {
+        assertEquals(expected, CharUtils.isNotUpperAlpha(input));
     }
 
     @Test
@@ -78,76 +145,36 @@ class CharUtilsTest {
         assertFalse(CharUtils.isWhitespace('~'));
     }
 
-    @Test
-    void isAlpha() {
-        assertTrue(CharUtils.isAlpha('a'));
-        assertTrue(CharUtils.isAlpha('z'));
-        assertTrue(CharUtils.isAlpha('A'));
-        assertTrue(CharUtils.isAlpha('Z'));
-
-        assertFalse(CharUtils.isAlpha('1'));
-        assertFalse(CharUtils.isAlpha('~'));
+    @TableTest("""
+            input | expected
+            0     | true
+            9     | true
+            a     | false
+            A     | false
+            z     | false
+            Z     | false
+            " "   | false
+            ~     | false
+            """)
+    void isDigit(char input, boolean expected) {
+        assertEquals(expected, CharUtils.isDigit(input));
     }
 
-    @Test
-    void isDigit() {
-        assertTrue(CharUtils.isDigit('0'));
-        assertTrue(CharUtils.isDigit('9'));
-
-        assertFalse(CharUtils.isDigit('a'));
-        assertFalse(CharUtils.isDigit('A'));
-        assertFalse(CharUtils.isDigit('z'));
-        assertFalse(CharUtils.isDigit('Z'));
-        assertFalse(CharUtils.isDigit(' '));
-        assertFalse(CharUtils.isDigit('~'));
-
-    }
-
-    @Test
-    void isHexDigit() {
-        assertTrue(CharUtils.isHexDigit('0'));
-        assertTrue(CharUtils.isHexDigit('9'));
-        assertTrue(CharUtils.isHexDigit('a'));
-        assertTrue(CharUtils.isHexDigit('f'));
-        assertTrue(CharUtils.isHexDigit('A'));
-        assertTrue(CharUtils.isHexDigit('F'));
-
-        assertFalse(CharUtils.isHexDigit('g'));
-        assertFalse(CharUtils.isHexDigit('G'));
-        assertFalse(CharUtils.isHexDigit(' '));
-        assertFalse(CharUtils.isHexDigit('~'));
-    }
-
-    @Test
-    void hexToDigit() {
-        assertEquals(0, CharUtils.hexToDigit('0'));
-        assertEquals(9, CharUtils.hexToDigit('9'));
-        assertEquals(10, CharUtils.hexToDigit('a'));
-        assertEquals(15, CharUtils.hexToDigit('f'));
-        assertEquals(10, CharUtils.hexToDigit('A'));
-        assertEquals(15, CharUtils.hexToDigit('F'));
-
-        assertThrows(IllegalArgumentException.class, () -> CharUtils.hexToDigit('g'));
-    }
-
-    @Test
-    void isNotLowerAlpha() {
-        assertFalse(CharUtils.isNotLowerAlpha('a'));
-        assertFalse(CharUtils.isNotLowerAlpha('z'));
-
-        assertTrue(CharUtils.isNotLowerAlpha('A'));
-        assertTrue(CharUtils.isNotLowerAlpha('Z'));
-        assertTrue(CharUtils.isNotLowerAlpha('1'));
-    }
-
-    @Test
-    void isNotUpperAlpha() {
-        assertFalse(CharUtils.isNotUpperAlpha('A'));
-        assertFalse(CharUtils.isNotUpperAlpha('Z'));
-
-        assertTrue(CharUtils.isNotUpperAlpha('a'));
-        assertTrue(CharUtils.isNotUpperAlpha('z'));
-        assertTrue(CharUtils.isNotUpperAlpha('1'));
+    @TableTest("""
+            input | expected
+            0     | true
+            9     | true
+            a     | true
+            f     | true
+            A     | true
+            F     | true
+            g     | false
+            G     | false
+            " "   | false
+            ~     | false
+            """)
+    void isHexDigit(char input, boolean expected) {
+        assertEquals(expected, CharUtils.isHexDigit(input));
     }
 
     @Test
@@ -164,42 +191,48 @@ class CharUtilsTest {
         assertTrue(CharUtils.isNotWhitespace('~'));
     }
 
-    @Test
-    void isNotAlpha() {
-        assertFalse(CharUtils.isNotAlpha('a'));
-        assertFalse(CharUtils.isNotAlpha('z'));
-        assertFalse(CharUtils.isNotAlpha('A'));
-        assertFalse(CharUtils.isNotAlpha('Z'));
-
-        assertTrue(CharUtils.isNotAlpha('1'));
-        assertTrue(CharUtils.isNotAlpha('~'));
+    @TableTest("""
+            input | expected
+            a     | false
+            z     | false
+            A     | false
+            Z     | false
+            1     | true
+            ~     | true
+            """)
+    void isNotAlpha(char input, boolean expected) {
+        assertEquals(expected, CharUtils.isNotAlpha(input));
     }
 
-    @Test
-    void isNotDigit() {
-        assertFalse(CharUtils.isNotDigit('0'));
-        assertFalse(CharUtils.isNotDigit('9'));
-
-        assertTrue(CharUtils.isNotDigit('a'));
-        assertTrue(CharUtils.isNotDigit('A'));
-        assertTrue(CharUtils.isNotDigit('z'));
-        assertTrue(CharUtils.isNotDigit('Z'));
-        assertTrue(CharUtils.isNotDigit(' '));
-        assertTrue(CharUtils.isNotDigit('~'));
+    @TableTest("""
+            input | expected
+            0     | false
+            9     | false
+            a     | true
+            A     | true
+            z     | true
+            Z     | true
+            " "   | true
+            ~     | true
+            """)
+    void isNotDigit(char input, boolean expected) {
+        assertEquals(expected, CharUtils.isNotDigit(input));
     }
 
-    @Test
-    void isNotHexDigit() {
-        assertFalse(CharUtils.isNotHexDigit('0'));
-        assertFalse(CharUtils.isNotHexDigit('9'));
-        assertFalse(CharUtils.isNotHexDigit('a'));
-        assertFalse(CharUtils.isNotHexDigit('f'));
-        assertFalse(CharUtils.isNotHexDigit('A'));
-        assertFalse(CharUtils.isNotHexDigit('F'));
-
-        assertTrue(CharUtils.isNotHexDigit('g'));
-        assertTrue(CharUtils.isNotHexDigit('G'));
-        assertTrue(CharUtils.isNotHexDigit(' '));
-        assertTrue(CharUtils.isNotHexDigit('~'));
+    @TableTest("""
+            input | expected
+            0     | false
+            9     | false
+            a     | false
+            f     | false
+            A     | false
+            F     | false
+            g     | true
+            G     | true
+            " "   | true
+            ~     | true
+            """)
+    void isNotHexDigit(char input, boolean expected) {
+        assertEquals(expected, CharUtils.isNotHexDigit(input));
     }
 }

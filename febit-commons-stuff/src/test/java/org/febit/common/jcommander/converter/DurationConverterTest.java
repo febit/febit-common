@@ -16,10 +16,10 @@
 package org.febit.common.jcommander.converter;
 
 import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
 import java.time.Duration;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DurationConverterTest {
@@ -31,36 +31,19 @@ class DurationConverterTest {
         assertNull(converter.convert(null));
     }
 
-    @Test
-    void shouldConvertIsoFormat() {
-        assertThat(converter.convert("PT5M")).isEqualTo(Duration.ofMinutes(5));
-        assertThat(converter.convert("PT1H")).isEqualTo(Duration.ofHours(1));
-        assertThat(converter.convert("PT30S")).isEqualTo(Duration.ofSeconds(30));
-    }
-
-    @Test
-    void shouldConvertSecondsFormat() {
-        assertThat(converter.convert("10s")).isEqualTo(Duration.ofSeconds(10));
-    }
-
-    @Test
-    void shouldConvertMinutesFormat() {
-        assertThat(converter.convert("5m")).isEqualTo(Duration.ofMinutes(5));
-    }
-
-    @Test
-    void shouldConvertHoursFormat() {
-        assertThat(converter.convert("2h")).isEqualTo(Duration.ofHours(2));
-    }
-
-    @Test
-    void shouldConvertDaysFormatAsDuration() {
-        assertThat(converter.convert("1d")).isEqualTo(Duration.ofDays(1));
-    }
-
-    @Test
-    void shouldConvertCombinedFormat() {
-        assertThat(converter.convert("1h30m")).isEqualTo(Duration.ofMinutes(90));
-        assertThat(converter.convert("2h30m10s")).isEqualTo(Duration.ofSeconds(9010));
+    @TableTest("""
+            input    | expectedSeconds
+            PT5M     | 300
+            PT1H     | 3600
+            PT30S    | 30
+            10s      | 10
+            5m       | 300
+            2h       | 7200
+            1d       | 86400
+            1h30m    | 5400
+            2h30m10s | 9010
+            """)
+    void converts(String input, long expectedSeconds) {
+        assertEquals(Duration.ofSeconds(expectedSeconds), converter.convert(input));
     }
 }

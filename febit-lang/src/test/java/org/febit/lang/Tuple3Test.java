@@ -16,6 +16,7 @@
 package org.febit.lang;
 
 import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
 import java.util.List;
 
@@ -48,20 +49,25 @@ class Tuple3Test {
         assertEquals(mixed.hashCode(), mixed.clone().hashCode());
     }
 
-    @Test
-    void testCompareTo() {
+    @TableTest("""
+            v1 | v2 | v3 | expected
+            0  | 2  | 3  | 1
+            1  | 1  | 3  | 1
+            1  | 2  | 2  | 1
+            2  | 2  | 3  | -1
+            1  | 3  | 3  | -1
+            1  | 2  | 4  | -1
+            """)
+    void testCompareTo(int v1, int v2, int v3, int expected) {
         var numbers = Tuple3.of(1, 2, 3);
+        assertEquals(expected, numbers.compareTo(Tuple3.of(v1, v2, v3)));
+    }
 
-        //noinspection EqualsWithItself
+    @Test
+    @SuppressWarnings("EqualsWithItself")
+    void testCompareTo_edge() {
+        var numbers = Tuple3.of(1, 2, 3);
         assertEquals(0, numbers.compareTo(numbers));
         assertEquals(1, numbers.compareTo(null));
-
-        assertEquals(1, numbers.compareTo(Tuple3.of(0, 2, 3)));
-        assertEquals(1, numbers.compareTo(Tuple3.of(1, 1, 3)));
-        assertEquals(1, numbers.compareTo(Tuple3.of(1, 2, 2)));
-
-        assertEquals(-1, numbers.compareTo(Tuple3.of(2, 2, 3)));
-        assertEquals(-1, numbers.compareTo(Tuple3.of(1, 3, 3)));
-        assertEquals(-1, numbers.compareTo(Tuple3.of(1, 2, 4)));
     }
 }

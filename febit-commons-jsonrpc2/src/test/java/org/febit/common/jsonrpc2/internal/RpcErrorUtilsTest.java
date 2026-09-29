@@ -15,7 +15,7 @@
  */
 package org.febit.common.jsonrpc2.internal;
 
-import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
 import org.febit.common.jsonrpc2.exception.UncheckedRpcException;
 import org.febit.common.jsonrpc2.protocol.StdRpcErrors;
@@ -27,137 +27,53 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class RpcErrorUtilsTest {
 
-    @Test
-    void resolveRpcErrorExceptionDirectly() {
-        var cause = StdRpcErrors.METHOD_NOT_FOUND.toException();
-        var error = RpcErrorUtils.resolveRpcError(cause);
-        assertEquals(StdRpcErrors.METHOD_NOT_FOUND.code(), error.code());
-        assertEquals(StdRpcErrors.METHOD_NOT_FOUND.message(), error.message());
+    @TableTest("""
+            kind                  | code             | message
+            directRpc             | METHOD_NOT_FOUND | Method not found
+            execWrappingRpc       | INVALID_PARAMS   |
+            execNullCause         | INTERNAL_ERROR   | no cause
+            uncheckedRpc          | METHOD_NOT_FOUND |
+            interrupted           | INTERNAL_ERROR   | Interrupted
+            timeout               | INTERNAL_ERROR   | Timeout
+            runtimeWithRpcCause   | INVALID_PARAMS   |
+            genericRuntime        | INTERNAL_ERROR   | something went wrong
+            execUncheckedRpc      | METHOD_NOT_FOUND |
+            rpcCustomMessage      | INTERNAL_ERROR   | custom message
+            execRuntimeCause      | INTERNAL_ERROR   |
+            execTimeout           | INTERNAL_ERROR   | Timeout
+            execInterrupted       | INTERNAL_ERROR   | Interrupted
+            rpcNullMessage        | INTERNAL_ERROR   |
+            uncheckedRuntime      | INTERNAL_ERROR   | plain error
+            uncheckedIllegalState | INTERNAL_ERROR   | inner state
+            """)
+    void resolveRpcError(String kind, String code, String message) {
+        var error = RpcErrorUtils.resolveRpcError(exceptionOf(kind));
+        assertEquals(StdRpcErrors.valueOf(code).code(), error.code());
+        if (message != null) {
+            assertEquals(message, error.message());
+        }
     }
 
-    @Test
-    void resolveExecutionExceptionWrappingRpcError() {
-        var inner = StdRpcErrors.INVALID_PARAMS.toException();
-        var ex = new ExecutionException(inner);
-        var error = RpcErrorUtils.resolveRpcError(ex);
-        assertEquals(StdRpcErrors.INVALID_PARAMS.code(), error.code());
-    }
-
-    @Test
-    void resolveExecutionExceptionNullCause() {
-        var ex = new ExecutionException("no cause", null);
-        var error = RpcErrorUtils.resolveRpcError(ex);
-        assertEquals(StdRpcErrors.INTERNAL_ERROR.code(), error.code());
-        assertEquals(ex.getMessage(), error.message());
-    }
-
-    @Test
-    void resolveUncheckedRpcException() {
-        var inner = StdRpcErrors.METHOD_NOT_FOUND.toException();
-        var ex = new UncheckedRpcException(inner);
-        var error = RpcErrorUtils.resolveRpcError(ex);
-        assertEquals(StdRpcErrors.METHOD_NOT_FOUND.code(), error.code());
-    }
-
-    @Test
-    void resolveInterruptedException() {
-        var ex = new InterruptedException();
-        var error = RpcErrorUtils.resolveRpcError(ex);
-        assertEquals(StdRpcErrors.INTERNAL_ERROR.code(), error.code());
-        assertEquals("Interrupted", error.message());
-    }
-
-    @Test
-    void resolveTimeoutException() {
-        var ex = new TimeoutException();
-        var error = RpcErrorUtils.resolveRpcError(ex);
-        assertEquals(StdRpcErrors.INTERNAL_ERROR.code(), error.code());
-        assertEquals("Timeout", error.message());
-    }
-
-    @Test
-    void resolveRpcErrorExceptionAsCause() {
-        var inner = StdRpcErrors.INVALID_PARAMS.toException();
-        var outer = new RuntimeException("wrapper", inner);
-        var error = RpcErrorUtils.resolveRpcError(outer);
-        assertEquals(StdRpcErrors.INVALID_PARAMS.code(), error.code());
-    }
-
-    @Test
-    void resolveGenericException() {
-        var ex = new RuntimeException("something went wrong");
-        var error = RpcErrorUtils.resolveRpcError(ex);
-        assertEquals(StdRpcErrors.INTERNAL_ERROR.code(), error.code());
-        assertEquals(ex.getMessage(), error.message());
-    }
-
-    @Test
-    void resolveExecutionExceptionWithRpcErrorCauseDeep() {
-        var rpcEx = StdRpcErrors.METHOD_NOT_FOUND.toException();
-        var unchecked = new UncheckedRpcException(rpcEx);
-        var execution = new ExecutionException(unchecked);
-        var error = RpcErrorUtils.resolveRpcError(execution);
-        assertEquals(StdRpcErrors.METHOD_NOT_FOUND.code(), error.code());
-    }
-
-    @Test
-    void resolveRpcErrorExceptionWithData() {
-        var ex = StdRpcErrors.INTERNAL_ERROR.toException("custom message", "extra data");
-        var error = RpcErrorUtils.resolveRpcError(ex);
-        assertEquals(StdRpcErrors.INTERNAL_ERROR.code(), error.code());
-        assertEquals("custom message", error.message());
-    }
-
-    @Test
-    void resolveExecutionExceptionWrappingNullCause() {
-        // ExecutionException wrapping RuntimeException (cause is not RpcError)
-        var ex = new ExecutionException("execution failed", new RuntimeException());
-        var error = RpcErrorUtils.resolveRpcError(ex);
-        assertEquals(StdRpcErrors.INTERNAL_ERROR.code(), error.code());
-    }
-
-    @Test
-    void resolveExecutionExceptionWrappingTimeoutException() {
-        var timeout = new TimeoutException("timed out");
-        var ex = new ExecutionException(timeout);
-        var error = RpcErrorUtils.resolveRpcError(ex);
-        assertEquals(StdRpcErrors.INTERNAL_ERROR.code(), error.code());
-        assertEquals("Timeout", error.message());
-    }
-
-    @Test
-    void resolveExecutionExceptionWrappingInterruptedException() {
-        var interrupted = new InterruptedException("interrupted");
-        var ex = new ExecutionException(interrupted);
-        var error = RpcErrorUtils.resolveRpcError(ex);
-        assertEquals(StdRpcErrors.INTERNAL_ERROR.code(), error.code());
-        assertEquals("Interrupted", error.message());
-    }
-
-    @Test
-    void resolveRpcErrorExceptionWithNullMessage() {
-        var ex = StdRpcErrors.INTERNAL_ERROR.toException(null);
-        var error = RpcErrorUtils.resolveRpcError(ex);
-        assertEquals(StdRpcErrors.INTERNAL_ERROR.code(), error.code());
-    }
-
-    @Test
-    void resolveRpcErrorWrappedInUncheckedRpcExceptionWithoutCause() {
-        // UncheckedRpcException with a target exception that is not RpcErrorException
-        var target = new RuntimeException("plain error");
-        var ex = new UncheckedRpcException(target);
-        var error = RpcErrorUtils.resolveRpcError(ex);
-        assertEquals(StdRpcErrors.INTERNAL_ERROR.code(), error.code());
-        assertEquals("plain error", error.message());
-    }
-
-    @Test
-    void resolveRpcErrorWrappedInUncheckedRpcExceptionWithGenericCause() {
-        // UncheckedRpcException wrapping a generic Exception (not RpcErrorException)
-        var inner = new IllegalStateException("inner state");
-        var ex = new UncheckedRpcException(inner);
-        var error = RpcErrorUtils.resolveRpcError(ex);
-        assertEquals(StdRpcErrors.INTERNAL_ERROR.code(), error.code());
-        assertEquals("inner state", error.message());
+    private static Throwable exceptionOf(String kind) {
+        return switch (kind) {
+            case "directRpc" -> StdRpcErrors.METHOD_NOT_FOUND.toException();
+            case "execWrappingRpc" -> new ExecutionException(StdRpcErrors.INVALID_PARAMS.toException());
+            case "execNullCause" -> new ExecutionException("no cause", null);
+            case "uncheckedRpc" -> new UncheckedRpcException(StdRpcErrors.METHOD_NOT_FOUND.toException());
+            case "interrupted" -> new InterruptedException();
+            case "timeout" -> new TimeoutException();
+            case "runtimeWithRpcCause" -> new RuntimeException("wrapper", StdRpcErrors.INVALID_PARAMS.toException());
+            case "genericRuntime" -> new RuntimeException("something went wrong");
+            case "execUncheckedRpc" -> new ExecutionException(new UncheckedRpcException(
+                    StdRpcErrors.METHOD_NOT_FOUND.toException()));
+            case "rpcCustomMessage" -> StdRpcErrors.INTERNAL_ERROR.toException("custom message", "extra data");
+            case "execRuntimeCause" -> new ExecutionException("execution failed", new RuntimeException());
+            case "execTimeout" -> new ExecutionException(new TimeoutException("timed out"));
+            case "execInterrupted" -> new ExecutionException(new InterruptedException("interrupted"));
+            case "rpcNullMessage" -> StdRpcErrors.INTERNAL_ERROR.toException(null);
+            case "uncheckedRuntime" -> new UncheckedRpcException(new RuntimeException("plain error"));
+            case "uncheckedIllegalState" -> new UncheckedRpcException(new IllegalStateException("inner state"));
+            default -> throw new IllegalStateException("unexpected kind: " + kind);
+        };
     }
 }

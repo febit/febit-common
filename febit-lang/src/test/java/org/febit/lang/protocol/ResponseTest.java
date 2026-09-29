@@ -16,6 +16,7 @@
 package org.febit.lang.protocol;
 
 import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
 import org.febit.lang.jackson.JacksonUtils;
 
@@ -160,29 +161,17 @@ class ResponseTest {
         assertFalse(ts.isAfter(after.plusMillis(1).truncatedTo(ChronoUnit.MILLIS)));
     }
 
-    @Test
-    void ok_withNon2xxStatus_stillSuccessAndLogs() {
-        // 4xx/5xx is a "success" response (caller signaled business-OK),
-        // but ok() will log a debug message. We just verify the field.
-        var r = Response.ok(500, "C", "m", "d");
-        assertTrue(r.isSuccess());
-        assertEquals(500, r.getStatus());
-    }
-
-    @Test
-    void ok_withZeroStatus_stillSuccess() {
-        var r = Response.ok(0, "C", "m", "d");
-        assertEquals(0, r.getStatus());
-        assertTrue(r.isSuccess());
-    }
-
-    @Test
-    void ok_withNegativeStatus_skipsDebugLog() {
-        // The guard is `httpStatus > 0 && (status < 200 || status >= 400)`,
-        // so negative status is NOT logged but still success.
-        var r = Response.ok(-1, "C", "m", "d");
-        assertTrue(r.isSuccess());
-        assertEquals(-1, r.getStatus());
+    @TableTest("""
+            status | success
+            200    | true
+            0      | true
+            -1     | true
+            500    | true
+            """)
+    void ok_status(int status, boolean success) {
+        var r = Response.ok(status, "C", "m", "d");
+        assertEquals(success, r.isSuccess());
+        assertEquals(status, r.getStatus());
     }
 
     @Test
@@ -273,40 +262,39 @@ class ResponseTest {
         assertEquals("x_mapped", mapped.getData());
     }
 
-    @Test
-    void isPresent_whenDataIsNull() {
-        var r = buildResponse(200, true, null, null, null, null);
-        assertFalse(r.isPresent());
-        assertTrue(r.isEmpty());
+    @TableTest("""
+            data  | present | empty
+            null  | false   | true
+            value | true    | false
+            """)
+    void isPresentAndEmpty(String data, boolean present, boolean empty) {
+        var r = buildResponse(200, true, null, null, null, "null".equals(data) ? null : data);
+        assertEquals(present, r.isPresent());
+        assertEquals(empty, r.isEmpty());
     }
 
-    @Test
-    void isPresent_whenDataIsNotNull() {
-        var r = buildResponse(200, true, null, null, null, "x");
-        assertTrue(r.isPresent());
-        assertFalse(r.isEmpty());
+    @TableTest("""
+            success | failed
+            true    | false
+            false   | true
+            """)
+    void isFailed_followsSuccess(boolean success, boolean failed) {
+        var r = buildResponse(200, success, null, null, null, null);
+        assertEquals(success, r.isSuccess());
+        assertEquals(failed, r.isFailed());
     }
 
-    @Test
-    void isFailed_followsSuccess() {
-        var ok = buildResponse(200, true, null, null, null, null);
-        var fail = buildResponse(500, false, null, null, null, null);
-        assertFalse(ok.isFailed());
-        assertTrue(fail.isFailed());
-    }
-
-    @Test
-    void isSuccessWithStatus_bothMustMatch() {
-        var r = buildResponse(200, true, null, null, null, null);
-        assertTrue(r.isSuccessWithStatus(200));
-        assertFalse(r.isSuccessWithStatus(201));
-    }
-
-    @Test
-    void isFailedWithStatus_bothMustMatch() {
-        var r = buildResponse(404, false, null, null, null, null);
-        assertTrue(r.isFailedWithStatus(404));
-        assertFalse(r.isFailedWithStatus(200));
+    @TableTest("""
+            rStatus | rSuccess | qStatus | successWith | failedWith
+            200     | true     | 200     | true        | false
+            200     | true     | 201     | false       | false
+            404     | false    | 404     | false       | true
+            404     | false    | 200     | false       | false
+            """)
+    void status_predicates(int rStatus, boolean rSuccess, int qStatus, boolean successWith, boolean failedWith) {
+        var r = buildResponse(rStatus, rSuccess, null, null, null, null);
+        assertEquals(successWith, r.isSuccessWithStatus(qStatus));
+        assertEquals(failedWith, r.isFailedWithStatus(qStatus));
     }
 
     @Test

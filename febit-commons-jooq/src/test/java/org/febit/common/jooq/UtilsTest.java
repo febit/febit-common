@@ -17,22 +17,27 @@ package org.febit.common.jooq;
 
 import org.jooq.impl.DSL;
 import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
 import java.lang.reflect.Field;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 class UtilsTest {
 
-    @Test
-    void resolveSqlNameCamelToSnake() {
-        assertThat(Utils.resolveSqlName("")).isEmpty();
-        assertThat(Utils.resolveSqlName("a")).isEqualTo("a");
-        assertThat(Utils.resolveSqlName("foo")).isEqualTo("foo");
-        assertThat(Utils.resolveSqlName("fooBar")).isEqualTo("foo_bar");
-        assertThat(Utils.resolveSqlName("FooBar")).isEqualTo("_foo_bar");
-        assertThat(Utils.resolveSqlName("myFieldName")).isEqualTo("my_field_name");
-        assertThat(Utils.resolveSqlName("camelCase")).isEqualTo("camel_case");
+    @TableTest("""
+            input       | expected
+            ""          | ""
+            a           | a
+            foo         | foo
+            fooBar      | foo_bar
+            FooBar      | _foo_bar
+            myFieldName | my_field_name
+            camelCase   | camel_case
+            """)
+    void resolveSqlName(String input, String expected) {
+        assertEquals(expected, Utils.resolveSqlName(input));
     }
 
     @Test

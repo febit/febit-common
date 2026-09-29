@@ -15,50 +15,99 @@
  */
 package org.febit.lang.modeler;
 
-import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
-import static org.febit.lang.modeler.SchemaType.ARRAY;
-import static org.febit.lang.modeler.SchemaType.BOOLEAN;
-import static org.febit.lang.modeler.SchemaType.BYTES;
-import static org.febit.lang.modeler.SchemaType.DATETIME;
-import static org.febit.lang.modeler.SchemaType.DATETIME_ZONED;
-import static org.febit.lang.modeler.SchemaType.INT;
-import static org.febit.lang.modeler.SchemaType.LIST;
-import static org.febit.lang.modeler.SchemaType.MAP;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SchemaTypeTest {
 
-    @Test
-    void toTypeString() {
-        assertEquals("int", SchemaType.INT.identifier());
-        assertEquals("string", SchemaType.STRING.identifier());
-        assertEquals("bytes", SchemaType.BYTES.identifier());
-        assertEquals("boolean", SchemaType.BOOLEAN.identifier());
-        assertEquals("byte", SchemaType.BYTE.identifier());
-        assertEquals("short", SchemaType.SHORT.identifier());
-        assertEquals("datetime", SchemaType.DATETIME.identifier());
-
-        assertEquals("list", SchemaType.LIST.identifier());
-        assertEquals("array", SchemaType.ARRAY.identifier());
-        assertEquals("raw", SchemaType.RAW.identifier());
-        assertEquals("struct", SchemaType.STRUCT.identifier());
-        assertEquals("json", SchemaType.JSON.identifier());
-
-        assertEquals("datetimetz", SchemaType.DATETIME_ZONED.identifier());
+    @TableTest("""
+            type           | expected
+            ARRAY          | array
+            LIST           | list
+            MAP            | map
+            BYTES          | bytes
+            STRING         | string
+            BOOLEAN        | boolean
+            BYTE           | byte
+            SHORT          | short
+            INT            | int
+            LONG           | long
+            FLOAT          | float
+            DOUBLE         | double
+            DECIMAL        | decimal
+            INSTANT        | instant
+            DATE           | date
+            TIME           | time
+            DATETIME       | datetime
+            DATETIME_ZONED | datetimetz
+            ENUM           | enum
+            OPTIONAL       | optional
+            STRUCT         | struct
+            JSON           | json
+            RAW            | raw
+            """)
+    void identifier(SchemaType type, String expected) {
+        assertEquals(expected, type.identifier());
     }
 
-    @Test
-    void toJavaTypeString() {
-        assertEquals("Integer", INT.toJavaTypeString());
-        assertEquals("Boolean", BOOLEAN.toJavaTypeString());
+    @TableTest("""
+            type           | expected
+            ARRAY          | Object[]
+            LIST           | java.util.List
+            MAP            | java.util.Map
+            BYTES          | byte[]
+            STRING         | String
+            BOOLEAN        | Boolean
+            BYTE           | Byte
+            SHORT          | Short
+            INT            | Integer
+            LONG           | Long
+            FLOAT          | Float
+            DOUBLE         | Double
+            DECIMAL        | java.math.BigDecimal
+            INSTANT        | java.time.Instant
+            DATE           | java.time.LocalDate
+            TIME           | java.time.LocalTime
+            DATETIME       | java.time.LocalDateTime
+            DATETIME_ZONED | java.time.ZonedDateTime
+            ENUM           | Object
+            OPTIONAL       | Object
+            STRUCT         | Object
+            JSON           | Object
+            RAW            | Object
+            """)
+    void toJavaTypeString(SchemaType type, String expected) {
+        assertEquals(expected, type.toJavaTypeString());
+    }
 
-        assertEquals("byte[]", BYTES.toJavaTypeString());
-        assertEquals("Object[]", ARRAY.toJavaTypeString());
-        assertEquals("java.util.List", LIST.toJavaTypeString());
-        assertEquals("java.util.Map", MAP.toJavaTypeString());
-
-        assertEquals("java.time.LocalDateTime", DATETIME.toJavaTypeString());
-        assertEquals("java.time.ZonedDateTime", DATETIME_ZONED.toJavaTypeString());
+    @TableTest("""
+            type           | expected
+            ARRAY          | false
+            LIST           | false
+            MAP            | false
+            BYTES          | false
+            STRING         | true
+            BOOLEAN        | true
+            BYTE           | true
+            SHORT          | true
+            INT            | true
+            LONG           | true
+            FLOAT          | true
+            DOUBLE         | true
+            DECIMAL        | true
+            INSTANT        | true
+            DATE           | true
+            TIME           | true
+            DATETIME       | true
+            DATETIME_ZONED | true
+            ENUM           | false
+            OPTIONAL       | false
+            STRUCT         | false
+            JSON           | false
+            RAW            | false
+            """)
+    void basicType(SchemaType type, boolean expected) {
+        assertEquals(expected, type.basicType());
     }
 }

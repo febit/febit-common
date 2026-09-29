@@ -20,6 +20,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.web.client.RestClient;
+import org.tabletest.junit.TableTest;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.util.function.Consumer;
@@ -126,8 +127,13 @@ class RestClientStandardBuilderTest {
         assertNotSame(originalClient, clonedClient);
     }
 
-    @ParameterizedTest
-    @MethodSource("buildWiringScenarios")
+    @TableTest("""
+            withHeaders | withStatusHandlers | expectHeaders | expectStatusHandlers
+            true        | true               | true          | true
+            true        | false              | true          | false
+            false       | true               | false         | true
+            false       | false              | false         | false
+            """)
     @SuppressWarnings("removal")
     void buildShouldInvokeCorrectDelegateMethods(
             boolean withHeaders,
@@ -161,14 +167,5 @@ class RestClientStandardBuilderTest {
         } else {
             verify(delegate, never()).defaultStatusHandler(any());
         }
-    }
-
-    static Stream<Arguments> buildWiringScenarios() {
-        return Stream.of(
-                Arguments.of(true, true, true, true),
-                Arguments.of(true, false, true, false),
-                Arguments.of(false, true, false, true),
-                Arguments.of(false, false, false, false)
-        );
     }
 }

@@ -16,7 +16,9 @@
 package org.febit.common.jsonrpc2.protocol;
 
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
+
+import org.febit.common.jsonrpc2.exception.RpcErrorException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -25,79 +27,57 @@ class ReservedRpcErrorsTest {
     @Nested
     class EnumValues {
 
-        @Test
-        void reserved00Code() {
-            assertEquals(-32_000, ReservedRpcErrors.RESERVED_00.code());
-        }
-
-        @Test
-        void reserved00Message() {
-            assertEquals("Server error 32000", ReservedRpcErrors.RESERVED_00.message());
-        }
-
-        @Test
-        void reserved00Description() {
-            assertTrue(ReservedRpcErrors.RESERVED_00.description()
-                    .contains("implementation-defined"));
-        }
-
-        @Test
-        void reserved99Code() {
-            assertEquals(-32_099, ReservedRpcErrors.RESERVED_99.code());
-        }
-
-        @Test
-        void reserved99Message() {
-            assertEquals("Server error 32099", ReservedRpcErrors.RESERVED_99.message());
-        }
-
-        @Test
-        void reserved99Description() {
-            assertTrue(ReservedRpcErrors.RESERVED_99.description()
-                    .contains("implementation-defined"));
+        @TableTest("""
+                error       | code   | message            | descriptionContains
+                RESERVED_00 | -32000 | Server error 32000 | implementation-defined
+                RESERVED_99 | -32099 | Server error 32099 | implementation-defined
+                """)
+        void definesCodeMessageAndDescription(ReservedRpcErrors error, int code, String message, String descriptionContains) {
+            assertEquals(code, error.code());
+            assertEquals(message, error.message());
+            assertTrue(error.description().contains(descriptionContains));
         }
     }
 
-    @Nested
-    class ToError {
-
-        @Test
-        void toErrorDefault() {
-            var error = ReservedRpcErrors.RESERVED_00.toError();
-            assertEquals(-32_000, error.code());
-            assertEquals("Server error 32000", error.message());
-            assertNull(error.data());
+    @TableTest("""
+            error       | variant | messageArg | expectedCode | expectedMessage
+            RESERVED_00 | default |            | -32000       | Server error 32000
+            RESERVED_99 | message | custom     | -32099       | custom
+            """)
+    void toError(ReservedRpcErrors error, String variant, String messageArg, int expectedCode, String expectedMessage) {
+        IRpcError<?> result;
+        if ("default".equals(variant)) {
+            result = error.toError();
+        } else {
+            result = error.toError(messageArg);
         }
-
-        @Test
-        void toErrorWithMessage() {
-            var error = ReservedRpcErrors.RESERVED_99.toError("custom");
-            assertEquals(-32_099, error.code());
-            assertEquals("custom", error.message());
-        }
+        assertEquals(expectedCode, result.code());
+        assertEquals(expectedMessage, result.message());
+        assertNull(result.data());
     }
 
-    @Nested
-    class ToException {
-
-        @Test
-        void toExceptionDefault() {
-            var ex = ReservedRpcErrors.RESERVED_00.toException();
-            assertEquals(-32_000, ex.getError().code());
+    @TableTest("""
+            error       | variant | messageArg   | expectedCode | expectedMessage    | expectCause
+            RESERVED_00 | default |              | -32000       | Server error 32000 | false
+            RESERVED_99 | message | server error | -32099       | server error       | false
+            RESERVED_00 | cause   | wrapped      | -32000       | wrapped            | true
+            """)
+    void toException(ReservedRpcErrors error, String variant, String messageArg, int expectedCode, String expectedMessage, boolean expectCause) {
+        Exception cause = "cause".equals(variant) ? new RuntimeException("root") : null;
+        RpcErrorException ex;
+        if ("default".equals(variant)) {
+            ex = error.toException();
+        } else if ("message".equals(variant)) {
+            ex = error.toException(messageArg);
+        } else {
+            ex = error.toException(messageArg, cause);
         }
-
-        @Test
-        void toExceptionWithMessage() {
-            var ex = ReservedRpcErrors.RESERVED_99.toException("server error");
-            assertEquals(-32_099, ex.getError().code());
-            assertEquals("server error", ex.getError().message());
-        }
-
-        @Test
-        void toExceptionWithCause() {
-            var cause = new RuntimeException("root");
-            var ex = ReservedRpcErrors.RESERVED_00.toException("wrapped", cause);
+        assertEquals(expectedCode, ex.getError().code());
+        assertEquals(expectedMessage, ex.getError().message());
+        if (expectCause) {
             assertEquals(cause, ex.getCause());
+        } else {
+            assertNull(ex.getCause());
         }
     }
 }

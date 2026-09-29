@@ -15,98 +15,77 @@
  */
 package org.febit.common.jsonrpc2.protocol;
 
-import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
+
+import org.febit.common.jsonrpc2.exception.RpcErrorException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class StdRpcErrorsTest {
 
-    @Test
-    void parseError() {
-        assertEquals(-32_700, StdRpcErrors.PARSE_ERROR.code());
-        assertEquals("Parse error", StdRpcErrors.PARSE_ERROR.message());
-        assertTrue(StdRpcErrors.PARSE_ERROR.description().contains("Invalid JSON"));
+    @TableTest("""
+            error            | code   | message          | descriptionContains
+            PARSE_ERROR      | -32700 | Parse error      | Invalid JSON
+            INVALID_REQUEST  | -32600 | Invalid Request  | valid Request
+            METHOD_NOT_FOUND | -32601 | Method not found | not exist
+            INVALID_PARAMS   | -32602 | Invalid params   | Invalid method parameter
+            INTERNAL_ERROR   | -32603 | Internal error   | Internal JSON-RPC error
+            """)
+    void definesCodeMessageAndDescription(StdRpcErrors error, int code, String message, String descriptionContains) {
+        assertEquals(code, error.code());
+        assertEquals(message, error.message());
+        assertTrue(error.description().contains(descriptionContains));
     }
 
-    @Test
-    void invalidRequest() {
-        assertEquals(-32_600, StdRpcErrors.INVALID_REQUEST.code());
-        assertEquals("Invalid Request", StdRpcErrors.INVALID_REQUEST.message());
-        assertTrue(StdRpcErrors.INVALID_REQUEST.description().contains("valid Request"));
+    @TableTest("""
+            error           | variant | messageArg | expectedCode | expectedMessage | expectedData
+            PARSE_ERROR     | default |            | -32700       | Parse error     |
+            INVALID_REQUEST | message | custom msg | -32600       | custom msg      |
+            INTERNAL_ERROR  | data    | internal   | -32603       | internal        | data-value
+            """)
+    void toError(StdRpcErrors error, String variant, String messageArg, int expectedCode, String expectedMessage, String expectedData) {
+        Object data = "data".equals(variant) ? expectedData : null;
+        IRpcError<?> result;
+        if ("default".equals(variant)) {
+            result = error.toError();
+        } else if ("message".equals(variant)) {
+            result = error.toError(messageArg);
+        } else {
+            result = error.toError(messageArg, data);
+        }
+        assertEquals(expectedCode, result.code());
+        assertEquals(expectedMessage, result.message());
+        assertEquals(expectedData, result.data());
     }
 
-    @Test
-    void methodNotFound() {
-        assertEquals(-32_601, StdRpcErrors.METHOD_NOT_FOUND.code());
-        assertEquals("Method not found", StdRpcErrors.METHOD_NOT_FOUND.message());
-        assertTrue(StdRpcErrors.METHOD_NOT_FOUND.description().contains("not exist"));
-    }
-
-    @Test
-    void invalidParams() {
-        assertEquals(-32_602, StdRpcErrors.INVALID_PARAMS.code());
-        assertEquals("Invalid params", StdRpcErrors.INVALID_PARAMS.message());
-        assertTrue(StdRpcErrors.INVALID_PARAMS.description().contains("Invalid method parameter"));
-    }
-
-    @Test
-    void internalError() {
-        assertEquals(-32_603, StdRpcErrors.INTERNAL_ERROR.code());
-        assertEquals("Internal error", StdRpcErrors.INTERNAL_ERROR.message());
-        assertTrue(StdRpcErrors.INTERNAL_ERROR.description().contains("Internal JSON-RPC error"));
-    }
-
-    @Test
-    void toErrorDefault() {
-        var error = StdRpcErrors.PARSE_ERROR.toError();
-        assertEquals(-32_700, error.code());
-        assertEquals("Parse error", error.message());
-        assertNull(error.data());
-    }
-
-    @Test
-    void toErrorWithMessage() {
-        var error = StdRpcErrors.INVALID_REQUEST.toError("custom msg");
-        assertEquals(-32_600, error.code());
-        assertEquals("custom msg", error.message());
-        assertNull(error.data());
-    }
-
-    @Test
-    void toErrorWithData() {
-        var error = StdRpcErrors.INTERNAL_ERROR.toError("internal", "data-value");
-        assertEquals(-32_603, error.code());
-        assertEquals("internal", error.message());
-        assertEquals("data-value", error.data());
-    }
-
-    @Test
-    void toExceptionWithoutCause() {
-        var ex = StdRpcErrors.METHOD_NOT_FOUND.toException("not found");
-        assertEquals(-32_601, ex.getError().code());
-        assertEquals("not found", ex.getError().message());
-    }
-
-    @Test
-    void toExceptionWithCause() {
-        var cause = new RuntimeException("root cause");
-        var ex = StdRpcErrors.INTERNAL_ERROR.toException("failed", cause);
-        assertEquals(-32_603, ex.getError().code());
-        assertEquals("failed", ex.getError().message());
-        assertEquals(cause, ex.getCause());
-    }
-
-    @Test
-    void toExceptionWithData() {
-        var ex = StdRpcErrors.INVALID_PARAMS.toException("bad", "detail");
-        assertEquals(-32_602, ex.getError().code());
-        assertEquals("bad", ex.getError().message());
-        assertEquals("detail", ex.getError().data());
-    }
-
-    @Test
-    void toExceptionDefault() {
-        var ex = StdRpcErrors.PARSE_ERROR.toException();
-        assertEquals(-32_700, ex.getError().code());
+    @TableTest("""
+            error            | variant | messageArg | expectedCode | expectedMessage | expectedData | expectCause
+            PARSE_ERROR      | default |            | -32700       | Parse error     |              | false
+            INVALID_REQUEST  | message | custom msg | -32600       | custom msg      |              | false
+            METHOD_NOT_FOUND | message | not found  | -32601       | not found       |              | false
+            INTERNAL_ERROR   | cause   | failed     | -32603       | failed          |              | true
+            INVALID_PARAMS   | data    | bad        | -32602       | bad             | detail       | false
+            """)
+    void toException(StdRpcErrors error, String variant, String messageArg, int expectedCode, String expectedMessage, String expectedData, boolean expectCause) {
+        Exception cause = "cause".equals(variant) ? new RuntimeException("root cause") : null;
+        Object data = "data".equals(variant) ? expectedData : null;
+        RpcErrorException ex;
+        if ("default".equals(variant)) {
+            ex = error.toException();
+        } else if ("message".equals(variant)) {
+            ex = error.toException(messageArg);
+        } else if ("cause".equals(variant)) {
+            ex = error.toException(messageArg, cause);
+        } else {
+            ex = error.toException(messageArg, data);
+        }
+        assertEquals(expectedCode, ex.getError().code());
+        assertEquals(expectedMessage, ex.getError().message());
+        assertEquals(expectedData, ex.getError().data());
+        if (expectCause) {
+            assertEquals(cause, ex.getCause());
+        } else {
+            assertNull(ex.getCause());
+        }
     }
 }

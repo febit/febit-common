@@ -16,6 +16,7 @@
 package org.febit.lang.util;
 
 import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,213 +25,145 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ArraysUtilsTest {
 
-    @Test
-    void findIntervalInt_singleElement() {
-        int[] array = {2};
-        assertEquals(0, ArraysUtils.findInterval(array, 2));
-        assertEquals(0, ArraysUtils.findInterval(array, 1));
-        assertEquals(0, ArraysUtils.findInterval(array, Integer.MIN_VALUE));
-        assertEquals(1, ArraysUtils.findInterval(array, 3));
-        assertEquals(1, ArraysUtils.findInterval(array, Integer.MAX_VALUE));
+    @TableTest("""
+            scenario              | array                    | value       | expected
+            single, hit boundary  | [2]                      | 2           | 0
+            single, below         | [2]                      | 1           | 0
+            single, min int       | [2]                      | -2147483648 | 0
+            single, above         | [2]                      | 3           | 1
+            single, max int       | [2]                      | 2147483647  | 1
+            two, min int          | [2, 6]                   | -2147483648 | 0
+            two, below first      | [2, 6]                   | 1           | 0
+            two, hit first        | [2, 6]                   | 2           | 0
+            two, between          | [2, 6]                   | 3           | 1
+            two, hit second       | [2, 6]                   | 6           | 1
+            two, above second     | [2, 6]                   | 7           | 2
+            two, max int          | [2, 6]                   | 2147483647  | 2
+            three, below          | [10, 20, 30]             | 5           | 0
+            three, hit first      | [10, 20, 30]             | 10          | 0
+            three, between 1-2    | [10, 20, 30]             | 11          | 1
+            three, hit second     | [10, 20, 30]             | 20          | 1
+            three, between 2-3    | [10, 20, 30]             | 21          | 2
+            three, hit third      | [10, 20, 30]             | 30          | 2
+            three, above          | [10, 20, 30]             | 31          | 3
+            four, below           | [5, 15, 25, 35]          | 0           | 0
+            four, hit first       | [5, 15, 25, 35]          | 5           | 0
+            four, between 1-2     | [5, 15, 25, 35]          | 6           | 1
+            four, hit second      | [5, 15, 25, 35]          | 15          | 1
+            four, between 2-3     | [5, 15, 25, 35]          | 16          | 2
+            four, hit third       | [5, 15, 25, 35]          | 25          | 2
+            four, between 3-4     | [5, 15, 25, 35]          | 26          | 3
+            four, hit fourth      | [5, 15, 25, 35]          | 35          | 3
+            four, above           | [5, 15, 25, 35]          | 36          | 4
+            large, below          | [0, 2, 6, 9, 123, 10000] | -1          | 0
+            large, hit first      | [0, 2, 6, 9, 123, 10000] | 0           | 0
+            large, between 1-2    | [0, 2, 6, 9, 123, 10000] | 1           | 1
+            large, hit second     | [0, 2, 6, 9, 123, 10000] | 2           | 1
+            large, between 2-3    | [0, 2, 6, 9, 123, 10000] | 5           | 2
+            large, hit third      | [0, 2, 6, 9, 123, 10000] | 6           | 2
+            large, between 3-4    | [0, 2, 6, 9, 123, 10000] | 8           | 3
+            large, hit fourth     | [0, 2, 6, 9, 123, 10000] | 9           | 3
+            large, between 4-5    | [0, 2, 6, 9, 123, 10000] | 122         | 4
+            large, hit fifth      | [0, 2, 6, 9, 123, 10000] | 123         | 4
+            large, between 5-6    | [0, 2, 6, 9, 123, 10000] | 124         | 5
+            large, hit sixth      | [0, 2, 6, 9, 123, 10000] | 10000       | 5
+            large, above          | [0, 2, 6, 9, 123, 10000] | 100000      | 6
+            negative, below       | [-100, -50, -10]         | -200        | 0
+            negative, hit first   | [-100, -50, -10]         | -100        | 0
+            negative, between 1-2 | [-100, -50, -10]         | -99         | 1
+            negative, hit second  | [-100, -50, -10]         | -50         | 1
+            negative, between 2-3 | [-100, -50, -10]         | -49         | 2
+            negative, hit third   | [-100, -50, -10]         | -10         | 2
+            negative, above       | [-100, -50, -10]         | 0           | 3
+            mixed, below          | [-10, 0, 10]             | -20         | 0
+            mixed, hit first      | [-10, 0, 10]             | -10         | 0
+            mixed, between 1-2    | [-10, 0, 10]             | -5          | 1
+            mixed, hit second     | [-10, 0, 10]             | 0           | 1
+            mixed, between 2-3    | [-10, 0, 10]             | 5           | 2
+            mixed, hit third      | [-10, 0, 10]             | 10          | 2
+            mixed, above          | [-10, 0, 10]             | 20          | 3
+            exact, hit 1          | [1, 3, 5, 7, 9]          | 1           | 0
+            exact, hit 3          | [1, 3, 5, 7, 9]          | 3           | 1
+            exact, hit 5          | [1, 3, 5, 7, 9]          | 5           | 2
+            exact, hit 7          | [1, 3, 5, 7, 9]          | 7           | 3
+            exact, hit 9          | [1, 3, 5, 7, 9]          | 9           | 4
+            between, 2            | [1, 3, 5, 7, 9]          | 2           | 1
+            between, 4            | [1, 3, 5, 7, 9]          | 4           | 2
+            between, 6            | [1, 3, 5, 7, 9]          | 6           | 3
+            between, 8            | [1, 3, 5, 7, 9]          | 8           | 4
+            """)
+    void findIntervalInt(int[] array, int value, int expected) {
+        assertEquals(expected, ArraysUtils.findInterval(array, value));
     }
 
-    @Test
-    void findIntervalInt_twoElements() {
-        int[] array = {2, 6};
-        assertEquals(0, ArraysUtils.findInterval(array, Integer.MIN_VALUE));
-        assertEquals(0, ArraysUtils.findInterval(array, 1));
-        assertEquals(0, ArraysUtils.findInterval(array, 2));
-        assertEquals(1, ArraysUtils.findInterval(array, 3));
-        assertEquals(1, ArraysUtils.findInterval(array, 6));
-        assertEquals(2, ArraysUtils.findInterval(array, 7));
-        assertEquals(2, ArraysUtils.findInterval(array, Integer.MAX_VALUE));
+    @TableTest("""
+            scenario              | array                                | value                | expected
+            single, hit           | [100]                                | 100                  | 0
+            single, below         | [100]                                | 99                   | 0
+            single, min long      | [100]                                | -9223372036854775808 | 0
+            single, above         | [100]                                | 101                  | 1
+            single, max long      | [100]                                | 9223372036854775807  | 1
+            two, min long         | [100, 200]                           | -9223372036854775808 | 0
+            two, below            | [100, 200]                           | 50                   | 0
+            two, hit first        | [100, 200]                           | 100                  | 0
+            two, between          | [100, 200]                           | 150                  | 1
+            two, hit second       | [100, 200]                           | 200                  | 1
+            two, above            | [100, 200]                           | 300                  | 2
+            two, max long         | [100, 200]                           | 9223372036854775807  | 2
+            three, below          | [100, 200, 300]                      | 50                   | 0
+            three, hit first      | [100, 200, 300]                      | 100                  | 0
+            three, between 1-2    | [100, 200, 300]                      | 150                  | 1
+            three, hit second     | [100, 200, 300]                      | 200                  | 1
+            three, between 2-3    | [100, 200, 300]                      | 250                  | 2
+            three, hit third      | [100, 200, 300]                      | 300                  | 2
+            three, above          | [100, 200, 300]                      | 350                  | 3
+            four, below           | [10, 20, 30, 40]                     | 0                    | 0
+            four, hit first       | [10, 20, 30, 40]                     | 10                   | 0
+            four, between 1-2     | [10, 20, 30, 40]                     | 15                   | 1
+            four, hit second      | [10, 20, 30, 40]                     | 20                   | 1
+            four, between 2-3     | [10, 20, 30, 40]                     | 25                   | 2
+            four, hit third       | [10, 20, 30, 40]                     | 30                   | 2
+            four, between 3-4     | [10, 20, 30, 40]                     | 35                   | 3
+            four, hit fourth      | [10, 20, 30, 40]                     | 40                   | 3
+            four, above           | [10, 20, 30, 40]                     | 50                   | 4
+            large, below          | [1000000000, 2000000000, 5000000000] | 0                    | 0
+            large, hit first      | [1000000000, 2000000000, 5000000000] | 1000000000           | 0
+            large, between 1-2    | [1000000000, 2000000000, 5000000000] | 1500000000           | 1
+            large, hit second     | [1000000000, 2000000000, 5000000000] | 2000000000           | 1
+            large, between 2-3    | [1000000000, 2000000000, 5000000000] | 3000000000           | 2
+            large, hit third      | [1000000000, 2000000000, 5000000000] | 5000000000           | 2
+            large, above          | [1000000000, 2000000000, 5000000000] | 10000000000          | 3
+            negative, below       | [-500, -100, -50]                    | -1000                | 0
+            negative, hit first   | [-500, -100, -50]                    | -500                 | 0
+            negative, between 1-2 | [-500, -100, -50]                    | -200                 | 1
+            negative, hit second  | [-500, -100, -50]                    | -100                 | 1
+            negative, between 2-3 | [-500, -100, -50]                    | -60                  | 2
+            negative, hit third   | [-500, -100, -50]                    | -50                  | 2
+            negative, above       | [-500, -100, -50]                    | 0                    | 3
+            exact, hit 1          | [1, 2, 4, 8, 16]                     | 1                    | 0
+            exact, hit 2          | [1, 2, 4, 8, 16]                     | 2                    | 1
+            exact, hit 4          | [1, 2, 4, 8, 16]                     | 4                    | 2
+            exact, hit 8          | [1, 2, 4, 8, 16]                     | 8                    | 3
+            exact, hit 16         | [1, 2, 4, 8, 16]                     | 16                   | 4
+            between, 2            | [1, 2, 4, 8, 16]                     | 2                    | 1
+            between, 3            | [1, 2, 4, 8, 16]                     | 3                    | 2
+            between, 4            | [1, 2, 4, 8, 16]                     | 4                    | 2
+            between, 5            | [1, 2, 4, 8, 16]                     | 5                    | 3
+            between, 16           | [1, 2, 4, 8, 16]                     | 16                   | 4
+            between, 17           | [1, 2, 4, 8, 16]                     | 17                   | 5
+            """)
+    void findIntervalLong(long[] array, long value, long expected) {
+        assertEquals(expected, ArraysUtils.findInterval(array, value));
     }
 
-    @Test
-    void findIntervalInt_threeElements() {
-        int[] array = {10, 20, 30};
-        assertEquals(0, ArraysUtils.findInterval(array, 5));
-        assertEquals(0, ArraysUtils.findInterval(array, 10));
-        assertEquals(1, ArraysUtils.findInterval(array, 11));
-        assertEquals(1, ArraysUtils.findInterval(array, 20));
-        assertEquals(2, ArraysUtils.findInterval(array, 21));
-        assertEquals(2, ArraysUtils.findInterval(array, 30));
-        assertEquals(3, ArraysUtils.findInterval(array, 31));
-    }
-
-    @Test
-    void findIntervalInt_fourElements() {
-        int[] array = {5, 15, 25, 35};
-        assertEquals(0, ArraysUtils.findInterval(array, 0));
-        assertEquals(0, ArraysUtils.findInterval(array, 5));
-        assertEquals(1, ArraysUtils.findInterval(array, 6));
-        assertEquals(1, ArraysUtils.findInterval(array, 15));
-        assertEquals(2, ArraysUtils.findInterval(array, 16));
-        assertEquals(2, ArraysUtils.findInterval(array, 25));
-        assertEquals(3, ArraysUtils.findInterval(array, 26));
-        assertEquals(3, ArraysUtils.findInterval(array, 35));
-        assertEquals(4, ArraysUtils.findInterval(array, 36));
-    }
-
-    @Test
-    void findIntervalInt_largeArray() {
-        int[] array = {0, 2, 6, 9, 123, 10_000};
-        assertEquals(0, ArraysUtils.findInterval(array, -1));
-        assertEquals(0, ArraysUtils.findInterval(array, 0));
-        assertEquals(1, ArraysUtils.findInterval(array, 1));
-        assertEquals(1, ArraysUtils.findInterval(array, 2));
-        assertEquals(2, ArraysUtils.findInterval(array, 5));
-        assertEquals(2, ArraysUtils.findInterval(array, 6));
-        assertEquals(3, ArraysUtils.findInterval(array, 8));
-        assertEquals(3, ArraysUtils.findInterval(array, 9));
-        assertEquals(4, ArraysUtils.findInterval(array, 122));
-        assertEquals(4, ArraysUtils.findInterval(array, 123));
-        assertEquals(5, ArraysUtils.findInterval(array, 124));
-        assertEquals(5, ArraysUtils.findInterval(array, 10_000));
-        assertEquals(6, ArraysUtils.findInterval(array, 100_000));
-    }
-
-    @Test
-    void findIntervalInt_negativeIntervals() {
-        int[] array = {-100, -50, -10};
-        assertEquals(0, ArraysUtils.findInterval(array, -200));
-        assertEquals(0, ArraysUtils.findInterval(array, -100));
-        assertEquals(1, ArraysUtils.findInterval(array, -99));
-        assertEquals(1, ArraysUtils.findInterval(array, -50));
-        assertEquals(2, ArraysUtils.findInterval(array, -49));
-        assertEquals(2, ArraysUtils.findInterval(array, -10));
-        assertEquals(3, ArraysUtils.findInterval(array, 0));
-    }
-
-    @Test
-    void findIntervalInt_mixedSignIntervals() {
-        int[] array = {-10, 0, 10};
-        assertEquals(0, ArraysUtils.findInterval(array, -20));
-        assertEquals(0, ArraysUtils.findInterval(array, -10));
-        assertEquals(1, ArraysUtils.findInterval(array, -5));
-        assertEquals(1, ArraysUtils.findInterval(array, 0));
-        assertEquals(2, ArraysUtils.findInterval(array, 5));
-        assertEquals(2, ArraysUtils.findInterval(array, 10));
-        assertEquals(3, ArraysUtils.findInterval(array, 20));
-    }
-
-    @Test
-    void findIntervalInt_exactBoundaryHits() {
-        int[] array = {1, 3, 5, 7, 9};
-        // 每个边界值恰好命中
-        assertEquals(0, ArraysUtils.findInterval(array, 1));
-        assertEquals(1, ArraysUtils.findInterval(array, 3));
-        assertEquals(2, ArraysUtils.findInterval(array, 5));
-        assertEquals(3, ArraysUtils.findInterval(array, 7));
-        assertEquals(4, ArraysUtils.findInterval(array, 9));
-    }
-
-    @Test
-    void findIntervalInt_betweenBoundaries() {
-        int[] array = {1, 3, 5, 7, 9};
-        // 每个区间内的值
-        assertEquals(1, ArraysUtils.findInterval(array, 2));
-        assertEquals(2, ArraysUtils.findInterval(array, 4));
-        assertEquals(3, ArraysUtils.findInterval(array, 6));
-        assertEquals(4, ArraysUtils.findInterval(array, 8));
-    }
-
-    @Test
-    void findIntervalLong_singleElement() {
-        long[] array = {100L};
-        assertEquals(0, ArraysUtils.findInterval(array, 100L));
-        assertEquals(0, ArraysUtils.findInterval(array, 99L));
-        assertEquals(0, ArraysUtils.findInterval(array, Long.MIN_VALUE));
-        assertEquals(1, ArraysUtils.findInterval(array, 101L));
-        assertEquals(1, ArraysUtils.findInterval(array, Long.MAX_VALUE));
-    }
-
-    @Test
-    void findIntervalLong_twoElements() {
-        long[] array = {100L, 200L};
-        assertEquals(0, ArraysUtils.findInterval(array, Long.MIN_VALUE));
-        assertEquals(0, ArraysUtils.findInterval(array, 50L));
-        assertEquals(0, ArraysUtils.findInterval(array, 100L));
-        assertEquals(1, ArraysUtils.findInterval(array, 150L));
-        assertEquals(1, ArraysUtils.findInterval(array, 200L));
-        assertEquals(2, ArraysUtils.findInterval(array, 300L));
-        assertEquals(2, ArraysUtils.findInterval(array, Long.MAX_VALUE));
-    }
-
-    @Test
-    void findIntervalLong_threeElements() {
-        long[] array = {100L, 200L, 300L};
-        assertEquals(0, ArraysUtils.findInterval(array, 50L));
-        assertEquals(0, ArraysUtils.findInterval(array, 100L));
-        assertEquals(1, ArraysUtils.findInterval(array, 150L));
-        assertEquals(1, ArraysUtils.findInterval(array, 200L));
-        assertEquals(2, ArraysUtils.findInterval(array, 250L));
-        assertEquals(2, ArraysUtils.findInterval(array, 300L));
-        assertEquals(3, ArraysUtils.findInterval(array, 350L));
-    }
-
-    @Test
-    void findIntervalLong_fourElements() {
-        long[] array = {10L, 20L, 30L, 40L};
-        assertEquals(0, ArraysUtils.findInterval(array, 0L));
-        assertEquals(0, ArraysUtils.findInterval(array, 10L));
-        assertEquals(1, ArraysUtils.findInterval(array, 15L));
-        assertEquals(1, ArraysUtils.findInterval(array, 20L));
-        assertEquals(2, ArraysUtils.findInterval(array, 25L));
-        assertEquals(2, ArraysUtils.findInterval(array, 30L));
-        assertEquals(3, ArraysUtils.findInterval(array, 35L));
-        assertEquals(3, ArraysUtils.findInterval(array, 40L));
-        assertEquals(4, ArraysUtils.findInterval(array, 50L));
-    }
-
-    @Test
-    void findIntervalLong_largeValues() {
-        long[] array = {1_000_000_000L, 2_000_000_000L, 5_000_000_000L};
-        assertEquals(0, ArraysUtils.findInterval(array, 0L));
-        assertEquals(0, ArraysUtils.findInterval(array, 1_000_000_000L));
-        assertEquals(1, ArraysUtils.findInterval(array, 1_500_000_000L));
-        assertEquals(1, ArraysUtils.findInterval(array, 2_000_000_000L));
-        assertEquals(2, ArraysUtils.findInterval(array, 3_000_000_000L));
-        assertEquals(2, ArraysUtils.findInterval(array, 5_000_000_000L));
-        assertEquals(3, ArraysUtils.findInterval(array, 10_000_000_000L));
-    }
-
-    @Test
-    void findIntervalLong_negativeIntervals() {
-        long[] array = {-500L, -100L, -50L};
-        assertEquals(0, ArraysUtils.findInterval(array, -1000L));
-        assertEquals(0, ArraysUtils.findInterval(array, -500L));
-        assertEquals(1, ArraysUtils.findInterval(array, -200L));
-        assertEquals(1, ArraysUtils.findInterval(array, -100L));
-        assertEquals(2, ArraysUtils.findInterval(array, -60L));
-        assertEquals(2, ArraysUtils.findInterval(array, -50L));
-        assertEquals(3, ArraysUtils.findInterval(array, 0L));
-    }
-
-    @Test
-    void findIntervalLong_exactBoundaryHits() {
-        long[] array = {1L, 2L, 4L, 8L, 16L};
-        assertEquals(0, ArraysUtils.findInterval(array, 1L));
-        assertEquals(1, ArraysUtils.findInterval(array, 2L));
-        assertEquals(2, ArraysUtils.findInterval(array, 4L));
-        assertEquals(3, ArraysUtils.findInterval(array, 8L));
-        assertEquals(4, ArraysUtils.findInterval(array, 16L));
-    }
-
-    @Test
-    void findIntervalLong_betweenBoundaries() {
-        long[] array = {1L, 2L, 4L, 8L, 16L};
-        assertEquals(1, ArraysUtils.findInterval(array, 2L));
-        assertEquals(2, ArraysUtils.findInterval(array, 3L));
-        assertEquals(2, ArraysUtils.findInterval(array, 4L));
-        assertEquals(3, ArraysUtils.findInterval(array, 5L));
-        assertEquals(4, ArraysUtils.findInterval(array, 16L));
-        assertEquals(5, ArraysUtils.findInterval(array, 17L));
-    }
-
-    @Test
-    void of() {
-        assertArrayEquals(new String[]{"1", "2", "3"}, ArraysUtils.of("1", "2", "3"));
+    @TableTest("""
+            input           | expected
+            []              | []
+            ["a"]           | ["a"]
+            ["1", "2", "3"] | ["1", "2", "3"]
+            """)
+    void of(String[] input, String[] expected) {
+        assertArrayEquals(expected, ArraysUtils.of(input));
     }
 
     @Test
@@ -264,33 +197,54 @@ class ArraysUtilsTest {
                 new String[]{"1", "2", "3"}, Integer[]::new, Integer::parseInt));
     }
 
-    @Test
-    void get() {
-        //noinspection ConstantValue
-        assertNull(ArraysUtils.get(null, 0));
-
-        assertEquals("1", ArraysUtils.get(new String[]{"1", "2", "3"}, 0));
-        assertEquals("2", ArraysUtils.get(new String[]{"1", "2", "3"}, 1));
-        assertEquals("3", ArraysUtils.get(new String[]{"1", "2", "3"}, 2));
-        assertNull(ArraysUtils.get(new String[]{"1", "2", "3"}, 3));
-        assertNull(ArraysUtils.get(new String[]{"1", "2", "3"}, -1));
-
-        assertEquals("3", ArraysUtils.get(new String[]{"1", "2", "3"}, 2, "default"));
-        assertEquals("default", ArraysUtils.get(new String[]{"1", "2", "3"}, 3, "default"));
-        assertEquals("default", ArraysUtils.get(new String[]{"1", "2", "3"}, -1, "default"));
+    @TableTest("""
+            index | defaultValue | expected
+            0     |              | 1
+            1     |              | 2
+            2     |              | 3
+            3     |              |
+            -1    |              |
+            2     | default      | 3
+            3     | default      | default
+            -1    | default      | default
+            """)
+    void get(int index, String defaultValue, String expected) {
+        assertEquals(expected, ArraysUtils.get(new String[]{"1", "2", "3"}, index, defaultValue));
     }
 
     @Test
-    void longs() {
-        assertArrayEquals(new long[]{}, ArraysUtils.longs(List.of()));
-        assertArrayEquals(new long[]{1, 2, 3}, ArraysUtils.longs(List.of(1L, 2L, 3L)));
+    void get_nullArray() {
+        //noinspection ConstantValue
+        assertNull(ArraysUtils.get(null, 0));
+    }
+
+    @TableTest("""
+            input     | defaultValue | expected
+            []        | 0            | []
+            [1, 2, 3] | 0            | [1, 2, 3]
+            [1, 2, 3] | 9            | [1, 2, 3]
+            """)
+    void longs(long[] input, long defaultValue, long[] expected) {
+        assertArrayEquals(expected, ArraysUtils.longs(Arrays.stream(input).boxed().toList(), defaultValue));
+    }
+
+    @Test
+    void longs_replacesNullWithDefault() {
         assertArrayEquals(new long[]{1, 0, 3}, ArraysUtils.longs(Arrays.asList(1L, null, 3L), 0));
     }
 
+    @TableTest("""
+            input     | defaultValue | expected
+            []        | 0            | []
+            [1, 2, 3] | 0            | [1, 2, 3]
+            [1, 2, 3] | 9            | [1, 2, 3]
+            """)
+    void ints(int[] input, int defaultValue, int[] expected) {
+        assertArrayEquals(expected, ArraysUtils.ints(Arrays.stream(input).boxed().toList(), defaultValue));
+    }
+
     @Test
-    void ints() {
-        assertArrayEquals(new int[]{}, ArraysUtils.ints(List.of()));
-        assertArrayEquals(new int[]{1, 2, 3}, ArraysUtils.ints(List.of(1, 2, 3)));
+    void ints_replacesNullWithDefault() {
         assertArrayEquals(new int[]{1, 0, 3}, ArraysUtils.ints(Arrays.asList(1, null, 3), 0));
     }
 }

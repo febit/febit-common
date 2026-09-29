@@ -16,6 +16,7 @@
 package org.febit.common.jooq.converter;
 
 import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
 import org.febit.common.jooq.foo.FooStatus;
 import org.febit.lang.Valued;
@@ -24,59 +25,57 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ValuedEnumConverterTest {
 
-    @Test
-    void fromType() {
-        var converter = ValuedEnumConverter.forEnum(FooStatus.class);
-        assertEquals(String.class, converter.fromType());
+    private final ValuedEnumConverter<String, FooStatus> converter = ValuedEnumConverter.forEnum(FooStatus.class);
+
+    @TableTest("""
+            kind | expectedClassName
+            from | java.lang.String
+            to   | org.febit.common.jooq.foo.FooStatus
+            """)
+    void typeAccessors(String kind, String expectedClassName) {
+        var actual = "from".equals(kind) ? converter.fromType() : converter.toType();
+        assertEquals(expectedClassName, actual.getName());
     }
 
-    @Test
-    void toType() {
-        var converter = ValuedEnumConverter.forEnum(FooStatus.class);
-        assertEquals(FooStatus.class, converter.toType());
+    @TableTest("""
+            direction
+            from
+            to
+            """)
+    void nullReturnsNull(String direction) {
+        var actual = "from".equals(direction) ? converter.from(null) : converter.to(null);
+        assertNull(actual);
     }
 
-    @Test
-    void fromNullReturnsNull() {
-        var converter = ValuedEnumConverter.forEnum(FooStatus.class);
-        assertNull(converter.from(null));
+    @TableTest("""
+            dbValue | status
+            created | CREATED
+            running | RUNNING
+            failed  | FAILED
+            success | SUCCESS
+            """)
+    void fromDbValue(String dbValue, FooStatus status) {
+        assertEquals(status, converter.from(dbValue));
     }
 
-    @Test
-    void toNullReturnsNull() {
-        var converter = ValuedEnumConverter.forEnum(FooStatus.class);
-        assertNull(converter.to(null));
-    }
-
-    @Test
-    void fromDbValueReturnsEnum() {
-        var converter = ValuedEnumConverter.forEnum(FooStatus.class);
-
-        assertEquals(FooStatus.CREATED, converter.from("created"));
-        assertEquals(FooStatus.RUNNING, converter.from("running"));
-        assertEquals(FooStatus.FAILED, converter.from("failed"));
-        assertEquals(FooStatus.SUCCESS, converter.from("success"));
-    }
-
-    @Test
-    void toDbValueReturnsValue() {
-        var converter = ValuedEnumConverter.forEnum(FooStatus.class);
-
-        assertEquals("created", converter.to(FooStatus.CREATED));
-        assertEquals("running", converter.to(FooStatus.RUNNING));
-        assertEquals("failed", converter.to(FooStatus.FAILED));
-        assertEquals("success", converter.to(FooStatus.SUCCESS));
+    @TableTest("""
+            dbValue | status
+            created | CREATED
+            running | RUNNING
+            failed  | FAILED
+            success | SUCCESS
+            """)
+    void toDbValue(String dbValue, FooStatus status) {
+        assertEquals(dbValue, converter.to(status));
     }
 
     @Test
     void fromUnknownValueReturnsNull() {
-        var converter = ValuedEnumConverter.forEnum(FooStatus.class);
         assertNull(converter.from("unknown"));
     }
 
     @Test
     void roundTrip() {
-        var converter = ValuedEnumConverter.forEnum(FooStatus.class);
         for (var status : FooStatus.values()) {
             assertEquals(status, converter.from(converter.to(status)));
         }
@@ -84,9 +83,9 @@ class ValuedEnumConverterTest {
 
     @Test
     void directConstructorRoundTrip() {
-        var converter = new ValuedEnumConverter<>(String.class, FooStatus.class);
+        var c = new ValuedEnumConverter<>(String.class, FooStatus.class);
         for (var status : FooStatus.values()) {
-            assertEquals(status, converter.from(converter.to(status)));
+            assertEquals(status, c.from(c.to(status)));
         }
     }
 

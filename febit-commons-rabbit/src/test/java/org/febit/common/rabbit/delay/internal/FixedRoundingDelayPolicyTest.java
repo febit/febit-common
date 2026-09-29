@@ -15,8 +15,8 @@
  */
 package org.febit.common.rabbit.delay.internal;
 
-import org.junit.jupiter.api.Test;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.tabletest.junit.TableTest;
 
 import org.febit.common.rabbit.delay.DelayContext;
 import org.febit.common.rabbit.delay.DelayQueueOptions;
@@ -32,9 +32,6 @@ import static org.mockito.Mockito.mock;
 
 class FixedRoundingDelayPolicyTest {
 
-    /**
-     * Built from real values: {@code Control}/{@code DelayContext}/{@code DelayQueueOptions} are final types that mock unreliably, and the policy only reads the clock and deadline.
-     */
     private static DelayContext context(Instant now, Instant deadline) {
         var options = DelayQueueOptions.builder()
                 .name("test")
@@ -44,133 +41,57 @@ class FixedRoundingDelayPolicyTest {
         return DelayContexts.of(options, deadline, 0);
     }
 
-    @Test
-    void returnsZeroWhenExpired() {
-        var now = Instant.parse("2026-01-01T00:00:10Z");
-        var ctx = context(now, now.minusSeconds(5));
-        var policy = new FixedRoundingDelayPolicy(0);
-        assertThat(policy.delay(ctx)).isEqualTo(Duration.ZERO);
+    @TableTest("""
+            nowInstant             | deadlineInstant                  | rounding | expectedSeconds
+            "2026-01-01T00:00:10Z" | "2026-01-01T00:00:05Z"           | 0        | 0
+            "2026-01-01T00:00:00Z" | "2026-01-01T00:00:00Z"           | 0        | 0
+            "2026-01-01T00:00:00Z" | "2026-01-01T00:00:01.4Z"         | 0.5      | 1
+            "2026-01-01T00:00:00Z" | "2026-01-01T00:00:01.6Z"         | 0.5      | 2
+            "2026-01-01T00:00:00Z" | "2026-01-01T00:00:07Z"           | 0        | 7
+            "2026-01-01T00:00:00Z" | "2026-01-01T00:00:05.3Z"         | 0.8      | 6
+            "2026-01-01T00:00:00Z" | "2026-01-01T00:00:05.3Z"         | 0.5      | 5
+            "2026-01-01T00:00:00Z" | "2026-01-01T00:00:05.000000001Z" | 0        | 5
+            "2026-01-01T00:00:00Z" | "2026-01-01T00:00:05.000000001Z" | 1.0      | 6
+            "2025-12-31T23:59:30Z" | "2026-01-01T00:01:00Z"           | 0        | 90
+            "2026-01-01T00:02:00Z" | "2026-01-01T00:01:00Z"           | 0        | 0
+            """)
+    void delay(String nowInstant, String deadlineInstant, double rounding, long expectedSeconds) {
+        var now = Instant.parse(nowInstant);
+        var deadline = Instant.parse(deadlineInstant);
+        var policy = FixedRoundingDelayPolicy.ofRounding(rounding);
+        assertThat(policy.delay(context(now, deadline)))
+                .isEqualTo(Duration.ofSeconds(expectedSeconds));
     }
 
-    @Test
-    void returnsZeroWhenDueNow() {
-        var now = Instant.parse("2026-01-01T00:00:00Z");
-        assertThat(new FixedRoundingDelayPolicy(0).delay(context(now, now)))
-                .isEqualTo(Duration.ZERO);
+    @TableTest("""
+            rounding | expectThrows
+            0        | false
+            1        | false
+            -0.1     | true
+            1.1      | true
+            """)
+    void ofRoundingRange(double rounding, boolean expectThrows) {
+        if (expectThrows) {
+            assertThatThrownBy(() -> FixedRoundingDelayPolicy.ofRounding(rounding))
+                    .isInstanceOf(IllegalArgumentException.class);
+        } else {
+            assertThat(FixedRoundingDelayPolicy.ofRounding(rounding)).isNotNull();
+        }
     }
 
-    @Test
-    void roundsDownWithinAndUpBeyondHalfSecondTolerance() {
-        var now = Instant.parse("2026-01-01T00:00:00Z");
-        var policy = FixedRoundingDelayPolicy.ofRounding(0.5);
-        // 1.4s remaining -> 400ms to fill, within the 500ms tolerance -> down
-        assertThat(policy.delay(context(now, now.plusSeconds(1).plusMillis(400))))
-                .isEqualTo(Duration.ofSeconds(1));
-        // 1.6s remaining -> 600ms to fill, beyond the 500ms tolerance -> up
-        assertThat(policy.delay(context(now, now.plusSeconds(1).plusMillis(600))))
-                .isEqualTo(Duration.ofSeconds(2));
-    }
-
-    @Test
-    void ofRoundingAcceptsSingleNanoInterval() {
-        assertThat(FixedRoundingDelayPolicy.ofRounding(0)).isNotNull();
-        assertThat(FixedRoundingDelayPolicy.ofRounding(1)).isNotNull();
-    }
-
-    @Test
-    void returnsWholeSecondsWithoutRounding() {
-        var now = Instant.parse("2026-01-01T00:00:00Z");
-        var ctx = context(now, now.plusSeconds(7));
-        var policy = new FixedRoundingDelayPolicy(0);
-        assertThat(policy.delay(ctx)).isEqualTo(Duration.ofSeconds(7));
-    }
-
-    @Test
-    void roundsUpWhenWithinTolerance() {
-        var now = Instant.parse("2026-01-01T00:00:00Z");
-        // 5s + 300ms -> addNanos = 700ms tolerance; rounding 0.8s -> ceil
-        var ctx = context(now, now.plusSeconds(5).plusMillis(300));
-        var policy = FixedRoundingDelayPolicy.ofRounding(0.8);
-        assertThat(policy.delay(ctx)).isEqualTo(Duration.ofSeconds(6));
-    }
-
-    @Test
-    void roundsDownWhenBeyondTolerance() {
-        var now = Instant.parse("2026-01-01T00:00:00Z");
-        var ctx = context(now, now.plusSeconds(5).plusMillis(300));
-        var policy = FixedRoundingDelayPolicy.ofRounding(0.5);
-        assertThat(policy.delay(ctx)).isEqualTo(Duration.ofSeconds(5));
-    }
-
-    @Test
-    void alwaysFloorsWhenRoundingNanosIsZero() {
-        var now = Instant.parse("2026-01-01T00:00:00Z");
-        var ctx = context(now, now.plusSeconds(5).plusNanos(1));
-        var policy = new FixedRoundingDelayPolicy(0);
-        assertThat(policy.delay(ctx)).isEqualTo(Duration.ofSeconds(5));
-    }
-
-    @Test
-    void alwaysCeilsWhenRoundingNanosIsFullSecond() {
-        var now = Instant.parse("2026-01-01T00:00:00Z");
-        var ctx = context(now, now.plusSeconds(5).plusNanos(1));
-        var policy = FixedRoundingDelayPolicy.ofRounding(1.0);
-        assertThat(policy.delay(ctx)).isEqualTo(Duration.ofSeconds(6));
-    }
-
-    @Test
-    void ofRoundingRejectsOutOfRange() {
-        assertThatThrownBy(() -> FixedRoundingDelayPolicy.ofRounding(-0.1))
-                .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> FixedRoundingDelayPolicy.ofRounding(1.1))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    void constructorRejectsInvalidRoundingNanos() {
-        assertThatThrownBy(() -> new FixedRoundingDelayPolicy(-1))
-                .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> new FixedRoundingDelayPolicy(1_000_000_001L))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    /**
-     * Dual-clock model: {@code delay()} reads "now" from a separate dispatch clock, while the
-     * deadline stays anchored to the enqueue epoch.  A dispatch-clock rollback makes the wait only
-     * ever grow — longer than intended, but never negative or early (the safe degradation).
-     */
-    @Test
-    void rollbackOfDispatchClockExtendsWaitAndStaysNonNegative() {
-        var enqueue = Instant.parse("2026-01-01T00:00:00Z");
-        var intendedWait = Duration.ofSeconds(60);
-        var deadline = enqueue.plus(intendedWait); // absolute target, anchored to enqueue epoch
-
-        var dispatch = enqueue.minusSeconds(30);   // dispatch clock rolled back 30s
-        var policy = new FixedRoundingDelayPolicy(0);
-
-        var actualWait = policy.delay(context(dispatch, deadline));
-
-        // 90s of dispatch-clock time: 30s longer than intended, yet still strictly forward.
-        assertThat(actualWait).isEqualTo(Duration.ofSeconds(90));
-        assertThat(actualWait).isGreaterThanOrEqualTo(intendedWait);
-        assertThat(actualWait).isPositive();
-    }
-
-    /**
-     * Dual-clock model, the other direction: a dispatch-clock jump past the deadline makes the
-     * policy treat the message as already due and return {@link Duration#ZERO} — never negative.
-     */
-    @Test
-    void forwardJumpOfDispatchClockDeliversImmediatelyWithoutNegativeDelay() {
-        var enqueue = Instant.parse("2026-01-01T00:00:00Z");
-        var deadline = enqueue.plusSeconds(60);
-
-        var dispatch = enqueue.plusSeconds(120);    // dispatch clock jumped 120s ahead
-        var policy = new FixedRoundingDelayPolicy(0);
-
-        var actualWait = policy.delay(context(dispatch, deadline));
-
-        assertThat(actualWait).isEqualTo(Duration.ZERO); // due now, never negative
-        assertThat(actualWait).isGreaterThanOrEqualTo(Duration.ZERO);
+    @TableTest("""
+            nanos      | expectThrows
+            -1         | true
+            0          | false
+            500        | false
+            1000000001 | true
+            """)
+    void constructorRange(long nanos, boolean expectThrows) {
+        if (expectThrows) {
+            assertThatThrownBy(() -> new FixedRoundingDelayPolicy(nanos))
+                    .isInstanceOf(IllegalArgumentException.class);
+        } else {
+            assertThat(new FixedRoundingDelayPolicy(nanos)).isNotNull();
+        }
     }
 }

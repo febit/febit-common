@@ -15,8 +15,10 @@
  */
 package org.febit.common.jsonrpc2;
 
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
+
+import org.febit.common.jsonrpc2.exception.RpcErrorException;
+import org.febit.common.jsonrpc2.protocol.IRpcError;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -56,110 +58,69 @@ class RpcErrorsTest {
         }
     }
 
-    @Nested
-    class ToError {
-
-        @Test
-        void defaultToErrorUsesDefaultMessage() {
-            var error = CustomErrors.CUSTOM_1.toError();
-            assertEquals(100, error.code());
-            assertEquals("Custom error one", error.message());
-            assertNull(error.data());
-        }
-
-        @Test
-        void toErrorWithCustomMessage() {
-            var error = CustomErrors.CUSTOM_2.toError("overridden message");
-            assertEquals(200, error.code());
-            assertEquals("overridden message", error.message());
-            assertNull(error.data());
-        }
-
-        @Test
-        void toErrorWithData() {
-            var error = CustomErrors.CUSTOM_1.toError("with data", 42);
-            assertEquals(100, error.code());
-            assertEquals("with data", error.message());
-            assertEquals(42, error.data());
-        }
-
-        @Test
-        void toErrorWithNullData() {
-            var error = CustomErrors.CUSTOM_2.toError("msg", null);
-            assertEquals(200, error.code());
-            assertEquals("msg", error.message());
-            assertNull(error.data());
-        }
+    @TableTest("""
+            error    | code | message          | description
+            CUSTOM_1 | 100  | Custom error one | Description one
+            CUSTOM_2 | 200  | Custom error two | Description two
+            """)
+    void customErrorsValues(CustomErrors error, int code, String message, String description) {
+        assertEquals(code, error.code());
+        assertEquals(message, error.message());
+        assertEquals(description, error.description());
     }
 
-    @Nested
-    class ToException {
-
-        @Test
-        void defaultToExceptionUsesDefaultMessage() {
-            var ex = CustomErrors.CUSTOM_1.toException();
-            assertNotNull(ex);
-            assertEquals(100, ex.getError().code());
-            assertEquals("Custom error one", ex.getError().message());
+    @TableTest("""
+            error    | variant       | messageArg         | expectedCode | expectedMessage    | expectedData
+            CUSTOM_1 | default       |                    | 100          | Custom error one   |
+            CUSTOM_2 | customMessage | overridden message | 200          | overridden message |
+            CUSTOM_1 | withData      | with data          | 100          | with data          | 42
+            CUSTOM_2 | withNullData  | msg                | 200          | msg                |
+            """)
+    void toError(CustomErrors error, String variant, String messageArg, int expectedCode, String expectedMessage, Integer expectedData) {
+        Object data = "withData".equals(variant) ? 42 : null;
+        IRpcError<?> result;
+        if ("default".equals(variant)) {
+            result = error.toError();
+        } else if ("customMessage".equals(variant)) {
+            result = error.toError(messageArg);
+        } else if ("withNullData".equals(variant)) {
+            result = error.toError(messageArg, null);
+        } else {
+            result = error.toError(messageArg, data);
         }
+        assertEquals(expectedCode, result.code());
+        assertEquals(expectedMessage, result.message());
+        assertEquals(expectedData, result.data());
+    }
 
-        @Test
-        void toExceptionWithCustomMessageNoCause() {
-            var ex = CustomErrors.CUSTOM_2.toException("custom message");
-            assertNotNull(ex);
-            assertEquals(200, ex.getError().code());
-            assertEquals("custom message", ex.getError().message());
-            assertNull(ex.getCause());
+    @TableTest("""
+            error    | variant       | messageArg | expectedCode | expectedMessage  | expectedData | expectCause
+            CUSTOM_1 | default       |            | 100          | Custom error one |              | false
+            CUSTOM_2 | customMessage | custom msg | 200          | custom msg       |              | false
+            CUSTOM_1 | withData      | data msg   | 100          | data msg         | payload      | false
+            CUSTOM_2 | withNullCause | msg        | 200          | msg              |              | false
+            CUSTOM_1 | withCause     | wrapped    | 100          | wrapped          |              | true
+            """)
+    void toException(CustomErrors error, String variant, String messageArg, int expectedCode, String expectedMessage, String expectedData, boolean expectCause) {
+        Exception cause = "withCause".equals(variant) ? new IllegalStateException("root") : null;
+        Object data = "withData".equals(variant) ? "payload" : null;
+        RpcErrorException ex;
+        if ("default".equals(variant)) {
+            ex = error.toException();
+        } else if ("customMessage".equals(variant) || "withNullCause".equals(variant)) {
+            ex = error.toException(messageArg);
+        } else if ("withCause".equals(variant)) {
+            ex = error.toException(messageArg, cause);
+        } else {
+            ex = error.toException(messageArg, data);
         }
-
-        @Test
-        void toExceptionWithMessageAndCause() {
-            var cause = new IllegalStateException("root");
-            var ex = CustomErrors.CUSTOM_1.toException("wrapped", cause);
-
-            assertEquals(100, ex.getError().code());
-            assertEquals("wrapped", ex.getError().message());
+        assertEquals(expectedCode, ex.getError().code());
+        assertEquals(expectedMessage, ex.getError().message());
+        assertEquals(expectedData, ex.getError().data());
+        if (expectCause) {
             assertEquals(cause, ex.getCause());
-        }
-
-        @Test
-        void toExceptionWithNullCause() {
-            var ex = CustomErrors.CUSTOM_2.toException("msg", null);
-
-            assertEquals(200, ex.getError().code());
-            assertEquals("msg", ex.getError().message());
+        } else {
             assertNull(ex.getCause());
-        }
-
-        @Test
-        void toExceptionWithMessageAndData() {
-            var ex = CustomErrors.CUSTOM_1.toException("data msg", "payload");
-
-            assertEquals(100, ex.getError().code());
-            assertEquals("data msg", ex.getError().message());
-            assertEquals("payload", ex.getError().data());
-        }
-    }
-
-    @Nested
-    class CustomErrorsValues {
-
-        @Test
-        void codeMatches() {
-            assertEquals(100, CustomErrors.CUSTOM_1.code());
-            assertEquals(200, CustomErrors.CUSTOM_2.code());
-        }
-
-        @Test
-        void messageMatches() {
-            assertEquals("Custom error one", CustomErrors.CUSTOM_1.message());
-            assertEquals("Custom error two", CustomErrors.CUSTOM_2.message());
-        }
-
-        @Test
-        void descriptionMatches() {
-            assertEquals("Description one", CustomErrors.CUSTOM_1.description());
-            assertEquals("Description two", CustomErrors.CUSTOM_2.description());
         }
     }
 }

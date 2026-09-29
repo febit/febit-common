@@ -16,53 +16,36 @@
 package org.febit.lang.util;
 
 import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class StreamsTest {
 
-    @Test
-    void of_iterable_streamsAllElements() {
-        var stream = Streams.of(List.of(1, 2, 3));
-        assertEquals(List.of(1, 2, 3), stream.toList());
-    }
-
-    @Test
-    void of_iterable_emptyIterable_yieldsEmptyStream() {
-        var stream = Streams.of(Collections.<Integer>emptyList());
-        assertEquals(0, stream.count());
-    }
-
-    @Test
-    void of_iterator_streamsAllElements() {
-        var stream = Streams.of(List.of(1, 2, 3).iterator());
-        assertEquals(List.of(1, 2, 3), stream.toList());
-    }
-
-    @Test
-    void of_iterator_emptyIterator_yieldsEmptyStream() {
-        Iterator<Integer> empty = Collections.<Integer>emptyList().iterator();
-        var stream = Streams.of(empty);
-        assertEquals(0, stream.count());
-    }
-
-    @Test
-    void of_enumeration_streamsAllElements() {
-        Enumeration<Integer> en = Collections.enumeration(List.of(1, 2, 3));
-        var stream = Streams.of(en);
-        assertEquals(List.of(1, 2, 3), stream.toList());
-    }
-
-    @Test
-    void of_enumeration_empty_yieldsEmptyStream() {
-        Enumeration<Integer> en = Collections.emptyEnumeration();
-        var stream = Streams.of(en);
-        assertEquals(0, stream.count());
+    @TableTest("""
+            kind        | elements | expected
+            iterable    | 1,2,3    | 1,2,3
+            iterable    |          |
+            iterator    | 1,2,3    | 1,2,3
+            iterator    |          |
+            enumeration | 1,2,3    | 1,2,3
+            enumeration |          |
+            iterable    | 42       | 42
+            iterator    | 42       | 42
+            """)
+    void of(String kind, String elements, String expected) {
+        List<Integer> items = parse(elements);
+        var stream = switch (kind) {
+            case "iterable" -> Streams.of(items);
+            case "iterator" -> Streams.of(items.iterator());
+            case "enumeration" -> Streams.of(Collections.enumeration(items));
+            default -> throw new IllegalStateException("unexpected kind: " + kind);
+        };
+        assertEquals(parse(expected), stream.toList());
     }
 
     @Test
@@ -77,15 +60,9 @@ class StreamsTest {
         assertFalse(stream.isParallel());
     }
 
-    @Test
-    void of_iterator_singleElement() {
-        var stream = Streams.of(List.of(42).iterator());
-        assertEquals(List.of(42), stream.toList());
-    }
-
-    @Test
-    void of_iterable_singleElement() {
-        var stream = Streams.of(List.of("x"));
-        assertEquals(List.of("x"), stream.toList());
+    private static List<Integer> parse(String csv) {
+        return csv == null || csv.isBlank()
+                ? List.of()
+                : Arrays.stream(csv.split(",")).map(Integer::parseInt).toList();
     }
 }

@@ -16,18 +16,22 @@
 package org.febit.lang.util;
 
 import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class MillisTest {
 
-    @Test
-    void constants() {
-        assertEquals(1000L, Millis.SECOND);
-        assertEquals(1000L * 60, Millis.MINUTE);
-        assertEquals(1000L * 60 * 60, Millis.HOUR);
-        assertEquals(1000L * 60 * 60 * 24, Millis.DAY);
-        assertEquals(1000L * 60 * 60 * 24 * 7, Millis.WEEK);
+    @TableTest("""
+            name   | expected
+            SECOND | 1000
+            MINUTE | 60000
+            HOUR   | 3600000
+            DAY    | 86400000
+            WEEK   | 604800000
+            """)
+    void constants(String name, long expected) throws Exception {
+        assertEquals(expected, Millis.class.getDeclaredField(name).getLong(null));
     }
 
     @Test

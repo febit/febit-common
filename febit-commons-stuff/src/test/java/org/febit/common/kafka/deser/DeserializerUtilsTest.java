@@ -16,6 +16,7 @@
 package org.febit.common.kafka.deser;
 
 import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
 import java.util.Map;
 
@@ -24,56 +25,19 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DeserializerUtilsTest {
 
-    @Test
-    void shouldResolveBuildInDiscardDeser() {
-        assertDoesNotThrow(() -> {
-            var cls = DeserializerUtils.resolveDeserClass("discard");
-            assertEquals(DiscardDeserializer.class, cls);
-        });
-    }
-
-    @Test
-    void shouldResolveBuildInStringDeser() {
-        assertDoesNotThrow(() -> {
-            var cls = DeserializerUtils.resolveDeserClass("string");
-            assertEquals(StringDeserializer.class, cls);
-        });
-    }
-
-    @Test
-    void shouldResolveBuildInFailsafeDeser() {
-        assertDoesNotThrow(() -> {
-            var cls = DeserializerUtils.resolveDeserClass("failsafe");
-            assertEquals(FailsafeDeserializer.class, cls);
-        });
-    }
-
-    @Test
-    void shouldResolveBuildInJsonDeser() {
-        assertDoesNotThrow(() -> {
-            var cls = DeserializerUtils.resolveDeserClass("json");
-            assertEquals(JsonDeserializer.class, cls);
-        });
-    }
-
-    @Test
-    void shouldResolveBuildInAccessLogDeser() {
-        assertDoesNotThrow(() -> {
-            var cls = DeserializerUtils.resolveDeserClass("access-log");
-            assertEquals(AccessLogDeserializer.class, cls);
-        });
-    }
-
-    @Test
-    void shouldDefaultToStringDeserializerForEmptyOrNull() throws Exception {
-        assertEquals(StringDeserializer.class, DeserializerUtils.resolveDeserClass(null));
-        assertEquals(StringDeserializer.class, DeserializerUtils.resolveDeserClass(""));
-    }
-
-    @Test
-    void shouldResolveByFullClassName() throws Exception {
-        var cls = DeserializerUtils.resolveDeserClass(StringDeserializer.class.getName());
-        assertEquals(StringDeserializer.class, cls);
+    @TableTest("""
+            input                                           | expectedClassName
+            discard                                         | org.febit.common.kafka.deser.DiscardDeserializer
+            string                                          | org.febit.common.kafka.deser.StringDeserializer
+            failsafe                                        | org.febit.common.kafka.deser.FailsafeDeserializer
+            json                                            | org.febit.common.kafka.deser.JsonDeserializer
+            access-log                                      | org.febit.common.kafka.deser.AccessLogDeserializer
+                                                            | org.febit.common.kafka.deser.StringDeserializer
+            ""                                              | org.febit.common.kafka.deser.StringDeserializer
+            org.febit.common.kafka.deser.StringDeserializer | org.febit.common.kafka.deser.StringDeserializer
+            """)
+    void resolveDeserClass(String input, String expectedClassName) throws ClassNotFoundException {
+        assertEquals(expectedClassName, DeserializerUtils.resolveDeserClass(input).getName());
     }
 
     @Test
@@ -82,16 +46,14 @@ class DeserializerUtilsTest {
                 () -> DeserializerUtils.resolveDeserClass("com.example.UnknownDeserializer"));
     }
 
-    @Test
-    void shouldCreateDeserializer() {
-        var deser = DeserializerUtils.<String>create("string", Map.of(), false);
-        assertThat(deser).isInstanceOf(StringDeserializer.class);
-    }
-
-    @Test
-    void shouldCreateDiscardDeserializer() {
-        var deser = DeserializerUtils.<Object>create("discard", Map.of(), false);
-        assertThat(deser).isInstanceOf(DiscardDeserializer.class);
+    @TableTest("""
+            name    | expectedClassName
+            string  | org.febit.common.kafka.deser.StringDeserializer
+            discard | org.febit.common.kafka.deser.DiscardDeserializer
+            """)
+    void createResolvesToDeserializer(String name, String expectedClassName) {
+        var deser = DeserializerUtils.<Object>create(name, Map.of(), false);
+        assertEquals(expectedClassName, deser.getClass().getName());
     }
 
     @Test

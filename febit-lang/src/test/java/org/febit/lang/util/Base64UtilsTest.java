@@ -16,79 +16,117 @@
 package org.febit.lang.util;
 
 import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
 import static org.apache.commons.lang3.StringUtils.repeat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class Base64UtilsTest {
 
-    @Test
-    void encode() {
-        assertEquals("", Base64Utils.encode(""));
-        assertEquals("ZmViaXQ=", Base64Utils.encode("febit"));
-        assertEquals("MDY/", Base64Utils.encode("06?"));
-        assertEquals(repeat("MTIz", 100),
-                Base64Utils.encode(repeat("123", 100)));
+    @TableTest("""
+            input | expected
+            ""    | ""
+            febit | ZmViaXQ=
+            06?   | MDY/
+            """)
+    void encode(String input, String expected) {
+        assertEquals(expected, Base64Utils.encode(input));
     }
 
     @Test
-    void encodeUrlSafe() {
-        assertEquals("", Base64Utils.encodeUrlSafe(""));
-        assertEquals("ZmViaXQ=", Base64Utils.encodeUrlSafe("febit"));
-        assertEquals("MDY_", Base64Utils.encodeUrlSafe("06?"));
+    void encode_longInput() {
+        assertEquals(repeat("MTIz", 100), Base64Utils.encode(repeat("123", 100)));
+    }
+
+    @TableTest("""
+            input | expected
+            ""    | ""
+            febit | ZmViaXQ=
+            06?   | MDY_
+            """)
+    void encodeUrlSafe(String input, String expected) {
+        assertEquals(expected, Base64Utils.encodeUrlSafe(input));
+    }
+
+    @TableTest("""
+            input    | expected
+            ""       | ""
+            ZmViaXQ= | febit
+            MDY/     | 06?
+            """)
+    void decode(String input, String expected) {
+        assertArrayEquals(expected.getBytes(), Base64Utils.decode(input));
+    }
+
+    @TableTest("""
+            input    | expected
+            ""       | ""
+            ZmViaXQ= | febit
+            MDY/     | 06?
+            """)
+    void decodeToString(String input, String expected) {
+        assertEquals(expected, Base64Utils.decodeToString(input));
+    }
+
+    @TableTest("""
+            input    | expected
+            ""       | ""
+            ZmViaXQ= | febit
+            MDY_     | 06?
+            """)
+    void decodeUrlSafe(String input, String expected) {
+        assertArrayEquals(expected.getBytes(), Base64Utils.decodeUrlSafe(input));
+    }
+
+    @TableTest("""
+            input    | expected
+            ""       | ""
+            ZmViaXQ= | febit
+            MDY_     | 06?
+            """)
+    void decodeUrlSafeToString(String input, String expected) {
+        assertEquals(expected, Base64Utils.decodeUrlSafeToString(input));
+    }
+
+    @TableTest("""
+            input | expected
+            ""    | ""
+            febit | ZmViaXQ=
+            06?   | MDY/
+            """)
+    void encodeMime(String input, String expected) {
+        assertEquals(expected, Base64Utils.encodeMime(input));
     }
 
     @Test
-    void decode() {
-        assertArrayEquals(new byte[0], Base64Utils.decode(""));
-        assertArrayEquals("febit".getBytes(), Base64Utils.decode("ZmViaXQ="));
-        assertArrayEquals("06?".getBytes(), Base64Utils.decode("MDY/"));
-    }
-
-    @Test
-    void decodeToString() {
-        assertEquals("", Base64Utils.decodeToString(""));
-        assertEquals("febit", Base64Utils.decodeToString("ZmViaXQ="));
-        assertEquals("06?", Base64Utils.decodeToString("MDY/"));
-    }
-
-    @Test
-    void decodeUrlSafe() {
-        assertArrayEquals(new byte[0], Base64Utils.decodeUrlSafe(""));
-        assertArrayEquals("febit".getBytes(), Base64Utils.decodeUrlSafe("ZmViaXQ="));
-        assertArrayEquals("06?".getBytes(), Base64Utils.decodeUrlSafe("MDY_"));
-    }
-
-    @Test
-    void decodeUrlSafeToString() {
-        assertEquals("", Base64Utils.decodeUrlSafeToString(""));
-        assertEquals("febit", Base64Utils.decodeUrlSafeToString("ZmViaXQ="));
-        assertEquals("06?", Base64Utils.decodeUrlSafeToString("MDY_"));
-    }
-
-    @Test
-    void encodeMime() {
-        assertEquals("", Base64Utils.encodeMime(""));
-        assertEquals("ZmViaXQ=", Base64Utils.encodeMime("febit"));
-        assertEquals("MDY/", Base64Utils.encodeMime("06?"));
-
+    void encodeMime_longInput() {
         assertEquals(repeat(repeat("MTIz", 19) + "\r\n", 2) + "MTIz",
                 Base64Utils.encodeMime(repeat("123", 19 * 2 + 1)));
     }
 
-    @Test
-    void decodeMime() {
-        assertArrayEquals(new byte[0], Base64Utils.decodeMime(""));
-        assertArrayEquals("febit".getBytes(), Base64Utils.decodeMime("ZmViaXQ="));
-        assertArrayEquals("06?".getBytes(), Base64Utils.decodeMime("MDY/"));
+    @TableTest("""
+            input    | expected
+            ""       | ""
+            ZmViaXQ= | febit
+            MDY/     | 06?
+            """)
+    void decodeMime(String input, String expected) {
+        assertArrayEquals(expected.getBytes(), Base64Utils.decodeMime(input));
+    }
 
-        assertArrayEquals("febit".getBytes(), Base64Utils.decodeMime("Zm \r\n;[]{}()*&&^%$#@!-_ \tViaXQ=\n\n"));
+    @TableTest("""
+            input    | expected
+            ""       | ""
+            ZmViaXQ= | febit
+            MDY/     | 06?
+            """)
+    void decodeMimeToString(String input, String expected) {
+        assertEquals(expected, Base64Utils.decodeMimeToString(input));
     }
 
     @Test
-    void decodeMimeToString() {
-        assertEquals("", Base64Utils.decodeMimeToString(""));
-        assertEquals("febit", Base64Utils.decodeMimeToString("ZmViaXQ="));
-        assertEquals("06?", Base64Utils.decodeMimeToString("MDY/"));
+    void decodeMime_ignoresWhitespace() {
+        assertArrayEquals("febit".getBytes(),
+                Base64Utils.decodeMime("Zm \r\n;[]{}()*&&^%$#@!-_ \tViaXQ=\n\n"));
     }
 }

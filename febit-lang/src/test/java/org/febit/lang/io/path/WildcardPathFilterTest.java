@@ -16,15 +16,15 @@
 package org.febit.lang.io.path;
 
 import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
+import java.nio.file.FileVisitResult;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
-import static java.nio.file.FileVisitResult.CONTINUE;
-import static java.nio.file.FileVisitResult.TERMINATE;
 
 class WildcardPathFilterTest {
 
@@ -49,53 +49,47 @@ class WildcardPathFilterTest {
         assertDoesNotThrow(() -> WildcardPathFilter.create(Path.of("/.."), ""));
     }
 
-    @Test
-    void accept() {
-        var baseDir = Path.of("/a/b");
-        var filter = WildcardPathFilter.create(baseDir, "*");
+    @TableTest("""
+            pattern | sensitive | path        | expected
+            *       | true      | /a/b/c      | CONTINUE
+            *       | true      | /a/b/C      | CONTINUE
+            *       | true      | /a/b/c/d    | CONTINUE
+            *       | true      | /a/b/../b/c | CONTINUE
+            *       | true      | /x/../a/b/c | CONTINUE
+            *       | true      | /../a/b/c   | CONTINUE
+            *       | true      | /A/B/C      | TERMINATE
+            *       | true      | /a          | TERMINATE
+            *       | true      | /a/b/../c   | TERMINATE
+            *       | false     | /a/b/c      | CONTINUE
+            *       | false     | /a/b/C      | CONTINUE
+            *       | false     | /A/B/C      | TERMINATE
+            *       | false     | /a          | TERMINATE
+            *       | false     | /a/b/../c   | TERMINATE
+            c       | true      | /a/b/c      | CONTINUE
+            c       | true      | /a/b/C      | TERMINATE
+            c       | true      | /a/b/d      | TERMINATE
+            c       | false     | /a/b/c      | CONTINUE
+            c       | false     | /a/b/C      | CONTINUE
+            c       | false     | /a/b/d      | TERMINATE
+            """)
+    void accept(String pattern, boolean sensitive, String path, FileVisitResult expected) {
         var attrs = mock(BasicFileAttributes.class);
-
-        assertEquals(CONTINUE, filter.accept(Path.of("/a/b/c"), attrs));
-        assertEquals(CONTINUE, filter.accept(Path.of("/a/b/C"), attrs));
-        assertEquals(CONTINUE, filter.accept(Path.of("/a/b/c/d"), attrs));
-        assertEquals(CONTINUE, filter.accept(Path.of("/a/b/../b/c"), attrs));
-        assertEquals(CONTINUE, filter.accept(Path.of("/x/../a/b/c"), attrs));
-
-        // NOTICE: overflowed path is still accepted, because it can be normalized by caller.
-        assertEquals(CONTINUE, filter.accept(Path.of("/../a/b/c"), attrs));
-
-        assertEquals(TERMINATE, filter.accept(Path.of("/A/B/C"), attrs));
-        assertEquals(TERMINATE, filter.accept(Path.of("/a"), attrs));
-        assertEquals(TERMINATE, filter.accept(Path.of("/a/b/../c"), attrs));
-
-        filter = WildcardPathFilter.create(baseDir, "*", false);
-        assertEquals(CONTINUE, filter.accept(Path.of("/a/b/c"), attrs));
-        assertEquals(CONTINUE, filter.accept(Path.of("/a/b/C"), attrs));
-        assertEquals(TERMINATE, filter.accept(Path.of("/A/B/C"), attrs));
-        assertEquals(TERMINATE, filter.accept(Path.of("/a"), attrs));
-        assertEquals(TERMINATE, filter.accept(Path.of("/a/b/../c"), attrs));
-
-        filter = WildcardPathFilter.create(baseDir, "c");
-        assertEquals(CONTINUE, filter.accept(Path.of("/a/b/c"), attrs));
-        assertEquals(TERMINATE, filter.accept(Path.of("/a/b/C"), attrs));
-        assertEquals(TERMINATE, filter.accept(Path.of("/a/b/d"), attrs));
-
-        filter = WildcardPathFilter.create(baseDir, "c", false);
-        assertEquals(CONTINUE, filter.accept(Path.of("/a/b/c"), attrs));
-        assertEquals(CONTINUE, filter.accept(Path.of("/a/b/C"), attrs));
-        assertEquals(TERMINATE, filter.accept(Path.of("/a/b/d"), attrs));
+        var filter = WildcardPathFilter.create(Path.of("/a/b"), pattern, sensitive);
+        assertEquals(expected, filter.accept(Path.of(path), attrs));
     }
 
-    @Test
-    void getAbsolutePath() {
-        assertEquals("/", WildcardPathFilter.absolutePath(Path.of("/..")));
-        assertEquals("/", WildcardPathFilter.absolutePath(Path.of("/../")));
-        assertEquals("/", WildcardPathFilter.absolutePath(Path.of("/../..")));
-        assertEquals("/abc", WildcardPathFilter.absolutePath(Path.of("/../abc")));
-        assertEquals("/abc", WildcardPathFilter.absolutePath(Path.of("/a/b/../../../abc")));
-
-        assertEquals("/", WildcardPathFilter.absolutePath(Path.of("/")));
-        assertEquals("/", WildcardPathFilter.absolutePath(Path.of("/.")));
-        assertEquals("/a/d", WildcardPathFilter.absolutePath(Path.of("/a/b/c/../../d")));
+    @TableTest("""
+            input             | expected
+            /..               | /
+            /../              | /
+            /../..            | /
+            /../abc           | /abc
+            /a/b/../../../abc | /abc
+            /                 | /
+            /.                | /
+            /a/b/c/../../d    | /a/d
+            """)
+    void getAbsolutePath(String input, String expected) {
+        assertEquals(expected, WildcardPathFilter.absolutePath(Path.of(input)));
     }
 }

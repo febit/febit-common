@@ -16,6 +16,7 @@
 package org.febit.lang.protocol;
 
 import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
 import org.febit.lang.Valued;
 
@@ -23,171 +24,79 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SortTest {
 
-    @Test
-    void asc_createsAscendingSort() {
-        var sort = Sort.asc("name");
-        assertEquals("name", sort.getProperty());
-        assertEquals(Sort.Direction.ASC, sort.getDirection());
+    @TableTest("""
+            property  | direction | expectedProperty | expectedDirection
+            name      | ASC       | name             | ASC
+            createdAt | DESC      | createdAt        | DESC
+            field     | DESC      | field            | DESC
+            ""        | ASC       | ""               | ASC
+            """)
+    void construction(String property, Sort.Direction direction, String expectedProperty, Sort.Direction expectedDirection) {
+        var sort = Sort.of(property, direction);
+        assertEquals(expectedProperty, sort.getProperty());
+        assertEquals(expectedDirection, sort.getDirection());
     }
 
-    @Test
-    void desc_createsDescendingSort() {
-        var sort = Sort.desc("createdAt");
-        assertEquals("createdAt", sort.getProperty());
-        assertEquals(Sort.Direction.DESC, sort.getDirection());
+    @TableTest("""
+            direction | isAscExpected | isDescExpected
+            ASC       | true          | false
+            DESC      | false         | true
+            null      | true          | false
+            """)
+    void directionSemantics(String direction, boolean isAscExpected, boolean isDescExpected) {
+        var sort = Sort.of("x", "null".equals(direction) ? null : Sort.Direction.valueOf(direction));
+        assertEquals(isAscExpected, sort.isAsc());
+        assertEquals(isDescExpected, sort.isDesc());
     }
 
-    @Test
-    void of_setsAllFields() {
-        var sort = Sort.of("field", Sort.Direction.DESC);
-        assertEquals("field", sort.getProperty());
-        assertEquals(Sort.Direction.DESC, sort.getDirection());
+    @TableTest("""
+            direction | expected
+            ASC       | ASC
+            DESC      | DESC
+            null      | ASC
+            """)
+    void getDirection(String direction, Sort.Direction expected) {
+        var sort = Sort.of("x", "null".equals(direction) ? null : Sort.Direction.valueOf(direction));
+        assertEquals(expected, sort.getDirection());
     }
 
-    @Test
-    void isAsc_trueWhenDirectionAsc() {
-        assertTrue(Sort.asc("x").isAsc());
+    @TableTest("""
+            propA | dirA | propB | dirB | expected
+            name  | ASC  | name  | ASC  | true
+            name  | ASC  | name  | DESC | false
+            a     | ASC  | b     | ASC  | false
+            x     | null | x     | null | true
+            """)
+    void equals(String propA, String dirA, String propB, String dirB, boolean expected) {
+        var a = Sort.of(propA, "null".equals(dirA) ? null : Sort.Direction.valueOf(dirA));
+        var b = Sort.of(propB, "null".equals(dirB) ? null : Sort.Direction.valueOf(dirB));
+        assertEquals(expected, a.equals(b));
+        if (expected) {
+            assertEquals(a.hashCode(), b.hashCode());
+        }
     }
 
-    @Test
-    void isAsc_falseWhenDirectionDesc() {
-        assertFalse(Sort.desc("x").isAsc());
-    }
-
-    @Test
-    void isAsc_trueWhenDirectionIsNull() {
-        // getDirection() defaults to ASC when null
-        var sort = Sort.of("x", null);
-        assertTrue(sort.isAsc());
-    }
-
-    @Test
-    void isDesc_trueWhenDirectionDesc() {
-        assertTrue(Sort.desc("x").isDesc());
-    }
-
-    @Test
-    void isDesc_falseWhenDirectionAsc() {
-        assertFalse(Sort.asc("x").isDesc());
-    }
-
-    @Test
-    void isDesc_falseWhenDirectionIsNull() {
-        var sort = Sort.of("x", null);
-        assertFalse(sort.isDesc());
-    }
-
-    @Test
-    void isAsc_andIsDesc_areMutuallyExclusiveForAsc() {
+    @TableTest("""
+            setTo | expectedDirection | isAscExpected | isDescExpected
+            DESC  | DESC              | false         | true
+            null  | ASC               | true          | false
+            """)
+    void setDirection(String setTo, Sort.Direction expectedDirection, boolean isAscExpected, boolean isDescExpected) {
         var sort = Sort.asc("x");
-        assertTrue(sort.isAsc());
-        assertFalse(sort.isDesc());
+        sort.setDirection("null".equals(setTo) ? null : Sort.Direction.valueOf(setTo));
+        assertEquals(expectedDirection, sort.getDirection());
+        assertEquals(isAscExpected, sort.isAsc());
+        assertEquals(isDescExpected, sort.isDesc());
     }
 
-    @Test
-    void isAsc_andIsDesc_areMutuallyExclusiveForDesc() {
-        var sort = Sort.desc("x");
-        assertFalse(sort.isAsc());
-        assertTrue(sort.isDesc());
-    }
-
-    @Test
-    void getDirection_returnsDefaultAscWhenFieldIsNull() {
-        // Field is null but the @Data-generated getter still applies the ASC default
-        var sort = Sort.of("x", null);
-        assertEquals(Sort.Direction.ASC, sort.getDirection());
-    }
-
-    @Test
-    void getDirection_returnsFieldValueWhenNotNull() {
-        var sort = Sort.of("x", Sort.Direction.DESC);
-        assertEquals(Sort.Direction.DESC, sort.getDirection());
-    }
-
-    @Test
-    void toString_includesPropertyAndDirectionValue() {
-        assertEquals("name,asc", Sort.asc("name").toString());
-        assertEquals("createdAt,desc", Sort.desc("createdAt").toString());
-    }
-
-    @Test
-    void equalsAndHashCode_basedOnDataAnnotation() {
-        var a = Sort.asc("name");
-        var b = Sort.asc("name");
-        var c = Sort.desc("name");
-        assertEquals(a, b);
-        assertEquals(a.hashCode(), b.hashCode());
-        assertNotEquals(a, c);
-    }
-
-    @Test
-    void dataAccessors_setAndGet() {
-        // Sort has no no-args constructor (Lombok @AllArgsConstructor with static factory).
-        // Use the factory then mutate via setters.
-        var sort = Sort.of("placeholder", null);
-        sort.setProperty("updatedAt");
-        sort.setDirection(Sort.Direction.DESC);
-        assertEquals("updatedAt", sort.getProperty());
-        assertEquals(Sort.Direction.DESC, sort.getDirection());
-    }
-
-    @Test
-    void dataAccessors_getDirection_defaultsToAscWhenFieldIsNull() {
-        // getDirection() is overridden to return ASC when the underlying field is null.
-        // The raw field can be inspected via reflection if needed, but the public
-        // contract via getDirection() is "never null".
-        var sort = Sort.of("name", null);
-        assertEquals("name", sort.getProperty());
-        assertEquals(Sort.Direction.ASC, sort.getDirection());
-    }
-
-    @Test
-    void direction_enumValues() {
-        var values = Sort.Direction.values();
-        assertEquals(2, values.length);
-        assertEquals(Sort.Direction.ASC, values[0]);
-        assertEquals(Sort.Direction.DESC, values[1]);
-    }
-
-    @Test
-    void direction_ascValue() {
-        assertEquals("asc", Sort.Direction.ASC.getValue());
-    }
-
-    @Test
-    void direction_descValue() {
-        assertEquals("desc", Sort.Direction.DESC.getValue());
-    }
-
-    @Test
-    void direction_implementsValued() {
-        assertNotNull(Sort.Direction.ASC);
-        assertSame(Sort.Direction.ASC.getValue(), ((Valued<?>) Sort.Direction.ASC).getValue());
-    }
-
-    @Test
-    void direction_valueOf() {
-        assertEquals(Sort.Direction.ASC, Sort.Direction.valueOf("ASC"));
-        assertEquals(Sort.Direction.DESC, Sort.Direction.valueOf("DESC"));
-    }
-
-    @Test
-    void direction_valueOf_unknownThrows() {
-        assertThrows(IllegalArgumentException.class,
-                () -> Sort.Direction.valueOf("UNKNOWN"));
-    }
-
-    @Test
-    void direction_valueOf_caseSensitive() {
-        assertThrows(IllegalArgumentException.class,
-                () -> Sort.Direction.valueOf("asc"));
-    }
-
-    @Test
-    void asc_withEmptyProperty() {
-        var sort = Sort.asc("");
-        assertEquals("", sort.getProperty());
-        assertEquals(Sort.Direction.ASC, sort.getDirection());
+    @TableTest("""
+            property  | direction | expected
+            name      | ASC       | name,asc
+            createdAt | DESC      | createdAt,desc
+            """)
+    void toString_includesPropertyAndDirectionValue(String property, Sort.Direction direction, String expected) {
+        var sort = direction == Sort.Direction.ASC ? Sort.asc(property) : Sort.desc(property);
+        assertEquals(expected, sort.toString());
     }
 
     @Test
@@ -198,54 +107,67 @@ class SortTest {
     }
 
     @Test
+    void dataAccessors_setAndGet() {
+        var sort = Sort.of("placeholder", null);
+        sort.setProperty("updatedAt");
+        sort.setDirection(Sort.Direction.DESC);
+        assertEquals("updatedAt", sort.getProperty());
+        assertEquals(Sort.Direction.DESC, sort.getDirection());
+    }
+
+    @Test
+    void dataAccessors_getDirection_defaultsToAscWhenFieldIsNull() {
+        var sort = Sort.of("name", null);
+        assertEquals("name", sort.getProperty());
+        assertEquals(Sort.Direction.ASC, sort.getDirection());
+    }
+
+    @TableTest("""
+            index | expected
+            0     | ASC
+            1     | DESC
+            """)
+    void direction_enumValues(int index, Sort.Direction expected) {
+        assertEquals(2, Sort.Direction.values().length);
+        assertEquals(expected, Sort.Direction.values()[index]);
+    }
+
+    @TableTest("""
+            direction | expected
+            ASC       | asc
+            DESC      | desc
+            """)
+    void direction_value(Sort.Direction direction, String expected) {
+        assertEquals(expected, direction.getValue());
+    }
+
+    @Test
+    void direction_implementsValued() {
+        assertNotNull(Sort.Direction.ASC);
+        assertSame(Sort.Direction.ASC.getValue(), ((Valued<?>) Sort.Direction.ASC).getValue());
+    }
+
+    @TableTest("""
+            name | expected
+            ASC  | ASC
+            DESC | DESC
+            """)
+    void direction_valueOf(String name, Sort.Direction expected) {
+        assertEquals(expected, Sort.Direction.valueOf(name));
+    }
+
+    @TableTest("""
+            name
+            UNKNOWN
+            asc
+            """)
+    void direction_valueOf_invalidThrows(String name) {
+        assertThrows(IllegalArgumentException.class, () -> Sort.Direction.valueOf(name));
+    }
+
+    @Test
     void toString_withNullDirection_throwsNpe() {
-        // toString() is not null-safe for direction
         var sort = Sort.of("prop", null);
         assertThrows(NullPointerException.class, sort::toString);
-    }
-
-    @Test
-    void equals_differsByProperty() {
-        assertNotEquals(Sort.asc("a"), Sort.asc("b"));
-    }
-
-    @Test
-    void equals_differsByDirection() {
-        assertNotEquals(Sort.asc("x"), Sort.desc("x"));
-    }
-
-    @Test
-    void equals_bothNullDirectionEqual() {
-        // Two Sort objects both with null direction: equals depends on field equality
-        var a = Sort.of("x", null);
-        var b = Sort.of("x", null);
-        assertEquals(a, b);
-    }
-
-    @Test
-    void isAsc_returnsTrueForNullDirection() {
-        // isAsc uses getDirection() which defaults to ASC when direction is null
-        var sort = Sort.of("x", null);
-        assertTrue(sort.isAsc());
-        assertFalse(sort.isDesc());
-    }
-
-    @Test
-    void setDirection_overridesValue() {
-        var sort = Sort.asc("x");
-        sort.setDirection(Sort.Direction.DESC);
-        assertEquals(Sort.Direction.DESC, sort.getDirection());
-        assertTrue(sort.isDesc());
-    }
-
-    @Test
-    void setDirection_nullAllowed_getDirectionReturnsDefault() {
-        var sort = Sort.asc("x");
-        sort.setDirection(null);
-        // getDirection() is overridden to return ASC when direction is null,
-        // so it never returns null from the public API
-        assertEquals(Sort.Direction.ASC, sort.getDirection());
-        assertTrue(sort.isAsc());
-        assertFalse(sort.isDesc());
     }
 }

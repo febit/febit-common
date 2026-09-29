@@ -17,6 +17,7 @@ package org.febit.common.jooq;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
 import org.febit.lang.protocol.Sort;
 
@@ -53,26 +54,23 @@ class SortUtilsTest {
     @Nested
     class Resolve {
 
-        @Test
-        void asc() {
+        @TableTest("""
+                property  | direction | column
+                id        |           | id
+                id        | desc      | id
+                createdAt |           | created_at
+                createdAt | desc      | created_at
+                updatedAt |           | updated_at
+                """)
+        void resolvesColumnAndDirection(String property, String direction, String column) {
             var form = SortableForm.builder().build();
-            var result = SortUtils.resolve(List.of(Sort.asc("id")), form);
-
-            assertThat(result)
-                    .hasSize(1);
-            assertThat(result.getFirst())
-                    .hasToString("\"id\" asc");
-        }
-
-        @Test
-        void desc() {
-            var form = SortableForm.builder().build();
-            var result = SortUtils.resolve(List.of(Sort.desc("id")), form);
-
-            assertThat(result)
-                    .hasSize(1);
-            assertThat(result.getFirst())
-                    .hasToString("\"id\" desc");
+            var sort = direction == null || direction.isBlank()
+                    ? Sort.of(property, null)
+                    : Sort.of(property, Sort.Direction.valueOf(direction.toUpperCase()));
+            var result = SortUtils.resolve(List.of(sort), form);
+            var expectedDir = direction == null || direction.isBlank() ? "asc" : direction;
+            assertThat(result).hasSize(1);
+            assertThat(result.getFirst()).hasToString("\"" + column + "\" " + expectedDir);
         }
 
         @Test
@@ -87,28 +85,6 @@ class SortUtilsTest {
                     .hasToString("\"id\" asc");
             assertThat(result.get(1))
                     .hasToString("\"created_at\" desc");
-        }
-
-        @Test
-        void explicitColumnName() {
-            var form = SortableForm.builder().build();
-            var result = SortUtils.resolve(List.of(Sort.asc("createdAt")), form);
-
-            assertThat(result)
-                    .hasSize(1);
-            assertThat(result.getFirst())
-                    .hasToString("\"created_at\" asc");
-        }
-
-        @Test
-        void defaultDirectionIsAsc() {
-            var form = SortableForm.builder().build();
-            var result = SortUtils.resolve(List.of(Sort.of("id", null)), form);
-
-            assertThat(result)
-                    .hasSize(1);
-            assertThat(result.getFirst())
-                    .hasToString("\"id\" asc");
         }
 
         @Test
@@ -167,47 +143,34 @@ class SortUtilsTest {
     @Nested
     class ResolveEntry {
 
-        @Test
-        void plainField() throws Exception {
-            var field = SortMapping.class.getDeclaredField("id");
+        @TableTest("""
+                property  | expectedName | expectedColumn
+                id        | id           | id
+                createdAt | createdAt    | created_at
+                """)
+        void resolveEntry(String property, String expectedName, String expectedColumn) throws Exception {
+            var field = SortMapping.class.getDeclaredField(property);
             var entry = SortUtils.resolveEntry(field);
 
-            assertThat(entry.name()).isEqualTo("id");
-            assertThat(entry.field())
-                    .hasToString("\"id\"");
-        }
-
-        @Test
-        void annotatedField() throws Exception {
-            var field = SortMapping.class.getDeclaredField("createdAt");
-            var entry = SortUtils.resolveEntry(field);
-
-            assertThat(entry.name()).isEqualTo("createdAt");
-            assertThat(entry.field())
-                    .hasToString("\"created_at\"");
+            assertThat(entry.name()).isEqualTo(expectedName);
+            assertThat(entry.field().toString()).isEqualTo("\"" + expectedColumn + "\"");
         }
     }
 
     @Nested
     class SortDirection {
 
-        @Test
-        void nullDirectionIsAsc() {
-            var sort = Sort.of("id", null);
-            assertThat(sort.isAsc()).isTrue();
-            assertThat(sort.isDesc()).isFalse();
-        }
-
-        @Test
-        void ascIsNotDesc() {
-            assertThat(Sort.asc("id").isAsc()).isTrue();
-            assertThat(Sort.asc("id").isDesc()).isFalse();
-        }
-
-        @Test
-        void descIsNotAsc() {
-            assertThat(Sort.desc("id").isAsc()).isFalse();
-            assertThat(Sort.desc("id").isDesc()).isTrue();
+        @TableTest("""
+                direction | isAsc | isDesc
+                          | true  | false
+                asc       | true  | false
+                desc      | false | true
+                """)
+        void directionBooleans(String direction, boolean isAsc, boolean isDesc) {
+            var dir = direction == null ? null : Sort.Direction.valueOf(direction.toUpperCase());
+            var sort = Sort.of("id", dir);
+            assertThat(sort.isAsc()).isEqualTo(isAsc);
+            assertThat(sort.isDesc()).isEqualTo(isDesc);
         }
     }
 }

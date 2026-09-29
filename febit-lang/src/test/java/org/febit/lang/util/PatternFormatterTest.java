@@ -16,6 +16,7 @@
 package org.febit.lang.util;
 
 import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,6 +28,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class PatternFormatterTest {
+
+    enum AccountType {
+        HUMAN, ROBOT
+    }
 
     @Test
     void empty() {
@@ -94,8 +99,16 @@ class PatternFormatterTest {
         )));
     }
 
-    @Test
-    void matches() {
+    @TableTest("""
+            input                  | expected
+                                   | false
+            ""                     | false
+            /users/123/names       | true
+            users/123/names        | false
+            /users/123/names/extra | false
+            /users/123             | false
+            """)
+    void matches(String input, boolean expected) {
         var fmt = PatternFormatter.builder()
                 .text("/")
                 .regex("entity", "[a-zA-Z-]+")
@@ -104,15 +117,7 @@ class PatternFormatterTest {
                 .text("/")
                 .regex("more", "[^/]*")
                 .build();
-
-        assertThat(fmt.matches(null)).isFalse();
-        assertThat(fmt.matches("")).isFalse();
-
-        assertThat(fmt.matches("/users/123/names")).isTrue();
-
-        assertThat(fmt.matches("users/123/names")).isFalse();
-        assertThat(fmt.matches("/users/123/names/extra")).isFalse();
-        assertThat(fmt.matches("/users/123")).isFalse();
+        assertEquals(expected, fmt.matches(input));
     }
 
     @Test
@@ -187,9 +192,5 @@ class PatternFormatterTest {
         Integer id;
         String name;
         AccountType type;
-    }
-
-    enum AccountType {
-        HUMAN, ROBOT
     }
 }

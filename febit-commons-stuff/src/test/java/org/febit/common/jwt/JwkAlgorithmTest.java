@@ -15,68 +15,65 @@
  */
 package org.febit.common.jwt;
 
-import com.nimbusds.jose.JWSAlgorithm;
 import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
 import org.febit.lang.security.SecurityAlgorithm;
 
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 class JwkAlgorithmTest {
 
-    @Test
-    void allAlgorithmsShouldHaveJwsAlgorithm() {
-        for (var alg : JwkAlgorithm.values()) {
-            assertThat(alg.getJws()).isNotNull();
-        }
+    @TableTest("""
+            alg
+            RS256
+            RS384
+            RS512
+            ES256
+            ES256K
+            ES384
+            ES512
+            """)
+    void propertiesAreNotNull(JwkAlgorithm alg) {
+        assertNotNull(alg.getJws());
+        assertNotNull(alg.getSecurity());
+        assertNotNull(alg.getSignerFactory());
     }
 
-    @Test
-    void allAlgorithmsShouldHaveSecurityAlgorithm() {
-        for (var alg : JwkAlgorithm.values()) {
-            assertThat(alg.getSecurity()).isNotNull();
-        }
+    @TableTest("""
+            alg    | expected
+            RS256  | RSA
+            RS384  | RSA
+            RS512  | RSA
+            ES256  | EC
+            ES256K | EC
+            ES384  | EC
+            ES512  | EC
+            """)
+    void securityAlgorithm(JwkAlgorithm alg, SecurityAlgorithm expected) {
+        assertEquals(expected, alg.getSecurity());
     }
 
-    @Test
-    void allAlgorithmsShouldHaveSignerFactory() {
-        for (var alg : JwkAlgorithm.values()) {
-            assertThat(alg.getSignerFactory()).isNotNull();
-        }
-    }
-
-    @Test
-    void rsaAlgorithmsShouldUseSecurityAlgorithmRsa() {
-        assertThat(JwkAlgorithm.RS256.getSecurity()).isEqualTo(SecurityAlgorithm.RSA);
-        assertThat(JwkAlgorithm.RS384.getSecurity()).isEqualTo(SecurityAlgorithm.RSA);
-        assertThat(JwkAlgorithm.RS512.getSecurity()).isEqualTo(SecurityAlgorithm.RSA);
-    }
-
-    @Test
-    void ecAlgorithmsShouldUseSecurityAlgorithmEc() {
-        assertThat(JwkAlgorithm.ES256.getSecurity()).isEqualTo(SecurityAlgorithm.EC);
-        assertThat(JwkAlgorithm.ES256K.getSecurity()).isEqualTo(SecurityAlgorithm.EC);
-        assertThat(JwkAlgorithm.ES384.getSecurity()).isEqualTo(SecurityAlgorithm.EC);
-        assertThat(JwkAlgorithm.ES512.getSecurity()).isEqualTo(SecurityAlgorithm.EC);
-    }
-
-    @Test
-    void jwsAlgorithmsShouldMatchExpected() {
-        assertThat(JwkAlgorithm.RS256.getJws()).isEqualTo(JWSAlgorithm.RS256);
-        assertThat(JwkAlgorithm.RS384.getJws()).isEqualTo(JWSAlgorithm.RS384);
-        assertThat(JwkAlgorithm.RS512.getJws()).isEqualTo(JWSAlgorithm.RS512);
-        assertThat(JwkAlgorithm.ES256.getJws()).isEqualTo(JWSAlgorithm.ES256);
-        assertThat(JwkAlgorithm.ES256K.getJws()).isEqualTo(JWSAlgorithm.ES256K);
-        assertThat(JwkAlgorithm.ES384.getJws()).isEqualTo(JWSAlgorithm.ES384);
-        assertThat(JwkAlgorithm.ES512.getJws()).isEqualTo(JWSAlgorithm.ES512);
+    @TableTest("""
+            alg    | expected
+            RS256  | RS256
+            RS384  | RS384
+            RS512  | RS512
+            ES256  | ES256
+            ES256K | ES256K
+            ES384  | ES384
+            ES512  | ES512
+            """)
+    void jwsAlgorithmName(JwkAlgorithm alg, String expected) {
+        assertEquals(expected, alg.getJws().getName());
     }
 
     @Test
     void shouldHaveSevenAlgorithms() {
-        assertThat(JwkAlgorithm.values()).hasSize(7);
+        assertEquals(7, JwkAlgorithm.values().length);
     }
 
     @Test
@@ -86,6 +83,6 @@ class JwkAlgorithmTest {
         var keyPair = keyPairGen.generateKeyPair();
         var signer = JwkAlgorithm.RS256.getSignerFactory().create((RSAPrivateKey) keyPair.getPrivate());
 
-        assertThat(signer).isNotNull();
+        assertNotNull(signer);
     }
 }

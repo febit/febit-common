@@ -17,6 +17,7 @@ package org.febit.lang.protocol;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
 import java.util.Arrays;
 import java.util.List;
@@ -111,38 +112,23 @@ class PageTest {
         assertTrue(mapped.getRows().isEmpty());
     }
 
-    @Test
-    void isLastPage_trueWhenTotalZeroAndNoRows() {
-        var page = Page.<String>of(1, 10, 0, List.of());
-        assertTrue(page.isLastPage());
-    }
-
-    @Test
-    void isLastPage_trueWhenTotalZeroButRowsPresent() {
-        // total <= 0 falls into the rows-check branch
-        var page = Page.<String>of(1, 10, 0, List.of("a"));
-        assertFalse(page.isLastPage());
-    }
-
-    @Test
-    void isLastPage_falseWhenMorePagesRemain() {
-        // page=1, size=10, total=25 → 25 > 1*10, more pages
-        var page = Page.<String>of(1, 10, 25, List.of());
-        assertFalse(page.isLastPage());
-    }
-
-    @Test
-    void isLastPage_trueWhenExactlyOnLastPage() {
-        // page=3, size=10, total=25 → 25 <= 3*10=30, last page
-        var page = Page.<String>of(3, 10, 25, List.of());
-        assertTrue(page.isLastPage());
-    }
-
-    @Test
-    void isLastPage_trueWhenTotalIsExactMultiple() {
-        // page=2, size=10, total=20 → 20 <= 20, last page
-        var page = Page.<String>of(2, 10, 20, List.of());
-        assertTrue(page.isLastPage());
+    @TableTest("""
+            page       | size       | total               | rows | expected
+            1          | 10         | 25                  |      | false
+            3          | 10         | 25                  |      | true
+            2          | 10         | 20                  |      | true
+            1          | 10         | 10                  |      | true
+            1          | 10         | 11                  |      | false
+            1          | 10         | 0                   |      | true
+            1          | 10         | 0                   | a    | false
+            1          | 10         | -1                  |      | true
+            1          | 10         | -5                  | a    | false
+            1          | 2147483647 | 9223372036854775807 |      | false
+            2147483647 | 2147483647 | 1                   |      | true
+            """)
+    void isLastPage(int page, int size, long total, String rows, boolean expected) {
+        var rowList = rows == null ? List.<String>of() : List.of(rows);
+        assertEquals(expected, Page.<String>of(page, size, total, rowList).isLastPage());
     }
 
     @Test
@@ -173,15 +159,6 @@ class PageTest {
     }
 
     @Test
-    void isLastPage_handlesLongTotalOverflow() {
-        // page=1, size=Integer.MAX_VALUE, total=Long.MAX_VALUE
-        // total <= (long)page*size check uses long arithmetic
-        var page = Page.<String>of(1, Integer.MAX_VALUE, Long.MAX_VALUE, List.of());
-        // Long.MAX_VALUE > 1 * Integer.MAX_VALUE → not last
-        assertFalse(page.isLastPage());
-    }
-
-    @Test
     void meta_noArgsConstructor_leavesDefaults() {
         var meta = new Page.Meta();
         assertEquals(0, meta.getPage());
@@ -207,41 +184,7 @@ class PageTest {
         assertNotEquals(a, c);
     }
 
-    @Test
-    void isLastPage_maxIntPageAndSize_usesLongArithmetic() {
-        // page=Integer.MAX_VALUE, size=Integer.MAX_VALUE, total=1
-        // (long)page * size does not overflow, total <= result is true
-        var page = Page.<String>of(Integer.MAX_VALUE, Integer.MAX_VALUE, 1, List.of());
-        assertTrue(page.isLastPage());
-    }
 
-    @Test
-    void isLastPage_totalEqualToOnePage_isLast() {
-        // page=1, size=10, total=10 → 10 <= 10, last
-        var page = Page.<String>of(1, 10, 10, List.of());
-        assertTrue(page.isLastPage());
-    }
-
-    @Test
-    void isLastPage_totalOneMoreThanOnePage_isNotLast() {
-        // page=1, size=10, total=11 → 11 > 10, not last
-        var page = Page.<String>of(1, 10, 11, List.of());
-        assertFalse(page.isLastPage());
-    }
-
-    @Test
-    void isLastPage_negativeTotal_treatedAsZeroBranch() {
-        // total < 0 → meta.total > 0 is false → rows branch
-        // with empty rows → last
-        var page = Page.<String>of(1, 10, -1, List.of());
-        assertTrue(page.isLastPage());
-    }
-
-    @Test
-    void isLastPage_negativeTotalWithRows_isNotLast() {
-        var page = Page.<String>of(1, 10, -5, List.of("a"));
-        assertFalse(page.isLastPage());
-    }
 
     @Test
     void map_chainsAnotherMap() {

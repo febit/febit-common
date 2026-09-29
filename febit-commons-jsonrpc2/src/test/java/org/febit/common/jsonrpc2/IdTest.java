@@ -15,87 +15,74 @@
  */
 package org.febit.common.jsonrpc2;
 
-import org.junit.jupiter.api.Test;
+import org.tabletest.junit.TableTest;
 
 import org.febit.common.jsonrpc2.protocol.Id;
+
+import java.io.Serializable;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class IdTest {
 
-    @Test
-    void ofString() {
-        var id = Id.of("abc");
-        assertEquals("abc", id.value());
-        assertEquals("abc", id.toString());
+    @TableTest("""
+            kind   | value               | str
+            string | abc                 | abc
+            int    | 42                  | 42
+            long   | 100                 | 100
+            double | 3.14                |
+            long   | 9223372036854775807 | 9223372036854775807
+            string | hello               | hello
+            long   | -1                  | -1
+            """)
+    void of(String kind, String value, String str) {
+        var id = idOf(kind, value);
+        assertEquals(typedValue(kind, value), id.value());
+        if (str != null) {
+            assertEquals(str, id.toString());
+        }
     }
 
-    @Test
-    void ofInteger() {
-        var id = Id.of(42);
-        assertEquals(42, id.value());
-        assertEquals("42", id.toString());
+    @TableTest("""
+            kindA  | a   | kindB  | b   | equal
+            string | abc | string | abc | true
+            int    | 1   | int    | 1   | true
+            long   | 42  | long   | 42  | true
+            int    | 1   | int    | 2   | false
+            string | a   | string | b   | false
+            long   | 42  | long   | 99  | false
+            int    | 1   | long   | 1   | false
+            int    | 1   | double | 1.0 | false
+            int    | 1   | string | 1   | false
+            """)
+    void equals(String kindA, String a, String kindB, String b, boolean equal) {
+        assertEquals(equal, idOf(kindA, a).equals(idOf(kindB, b)));
     }
 
-    @Test
-    void ofLong() {
-        var id = Id.of(100L);
-        assertEquals(100L, id.value());
-        assertEquals("100", id.toString());
+    @TableTest("""
+            kindA  | a  | kindB  | b  | same
+            string | x  | string | x  | true
+            int    | 42 | int    | 42 | true
+            string | a  | string | b  | false
+            """)
+    void hashCode(String kindA, String a, String kindB, String b, boolean same) {
+        assertEquals(same, idOf(kindA, a).hashCode() == idOf(kindB, b).hashCode());
     }
 
-    @Test
-    void ofDouble() {
-        var id = Id.of(3.14D);
-        assertEquals(3.14D, id.value());
+    private static Serializable typedValue(String kind, String value) {
+        return switch (kind) {
+            case "string" -> value;
+            case "int" -> Integer.parseInt(value);
+            case "long" -> Long.parseLong(value);
+            case "double" -> Double.parseDouble(value);
+            default -> throw new IllegalStateException("unexpected kind: " + kind);
+        };
     }
 
-    @Test
-    void ofLargeLong() {
-        var id = Id.of(Long.MAX_VALUE);
-        assertEquals(Long.MAX_VALUE, id.value());
-        assertEquals(String.valueOf(Long.MAX_VALUE), id.toString());
-    }
-
-    @Test
-    void toStringForString() {
-        assertEquals("hello", Id.of("hello").toString());
-    }
-
-    @Test
-    void toStringForNegativeLong() {
-        assertEquals("-1", Id.of(-1L).toString());
-    }
-
-    @Test
-    void sameValueEquals() {
-        assertEquals(Id.of("abc"), Id.of("abc"));
-        assertEquals(Id.of(1), Id.of(1));
-        assertEquals(Id.of(42L), Id.of(42L));
-    }
-
-    @Test
-    void differentValueNotEquals() {
-        assertNotEquals(Id.of(1), Id.of(2));
-        assertNotEquals(Id.of("a"), Id.of("b"));
-        assertNotEquals(Id.of(42L), Id.of(99L));
-    }
-
-    @Test
-    void differentTypeNotEquals() {
-        assertNotEquals(Id.of(1), Id.of(1L));
-        assertNotEquals(Id.of(1), Id.of(1.0D));
-        assertNotEquals(Id.of(1), Id.of("1"));
-    }
-
-    @Test
-    void sameValueSameHashCode() {
-        assertEquals(Id.of("x").hashCode(), Id.of("x").hashCode());
-        assertEquals(Id.of(42).hashCode(), Id.of(42).hashCode());
-    }
-
-    @Test
-    void hashCodeDiffersForDifferentValues() {
-        assertNotEquals(Id.of("a").hashCode(), Id.of("b").hashCode());
+    private static Id idOf(String kind, String value) {
+        var typed = typedValue(kind, value);
+        return typed instanceof Number n
+                ? Id.of(n)
+                : Id.of((String) typed);
     }
 }
