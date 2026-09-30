@@ -2,6 +2,71 @@
 
 ## [4.2.0] - not yet released
 
+## [4.2.0-M1] - 2026-09-30
+
+### New Features
+
+- **rabbit**: Added `febit-commons-rabbit` module with `RabbitDelayQueue` — delayed message delivery over RabbitMQ:
+  messages are parked in a
+  TTL `wait` queue and re-hopped internally until the deadline, then published to the application's own ready exchange.
+  Includes
+  `DelayQueueOptions` / `DelayQueueTopology`, `DelayMessage` / `DelayReceipt`, pluggable `DelayPolicy`
+  (`FixedRoundingDelayPolicy`) and
+  `MessageIdGenerator` (`UuidIdGenerator`), and Micrometer-based `DelayQueueMetrics`
+- **etcd**: Added the typed key-value store `org.febit.common.etcd.store`: `EtcdAccessor` (get / put / delete / txn /
+  paging scan / typed
+  watch) with `KVRecord`, `Put` / `SidePut`, `EtcdPagingScanner`, `TypedWatchObserver` / `TypedWatchListenerAdapter`,
+  the codec SPI
+  `KVCodec` / `Codec` (`GenericKVCodec`, `JsonCodec`, `PatternCodec`, `CodecUtils`), and Micrometer-based `EtcdMetrics`
+- **caffeine**: Added `CaffeineDebouncer` (per-key debounce with optional max delay) and `CaffeineThrottle` (per-key
+  cooldown window) to
+  `febit-commons-stuff`
+
+### Fixes
+
+- **caffeine**: `CaffeineDebouncer` now arms its consumer thread before starting it, so a pending callback can no longer
+  stall silently
+- **jsonrpc2**: An unconvertible response no longer leaves the caller waiting — the request future now completes
+  exceptionally with the cause
+- **jsonrpc2**: Notification handler failures are now logged instead of escaping to the executor thread
+- **stuff**: `ProcessFuture.cancel()` no longer throws when the process has not been created yet, and a repeated call no
+  longer clears `isCancelled()`
+- **stuff**: A process cancelled before it was created is now destroyed instead of being left running
+
+### Deprecations
+
+- **rest-client**: Aligned with Spring Framework 7.1 — deprecated `RecallJsonResponseErrorHandler` and
+  `StandardRestClients.statusHandlers(...)`, together with the `RestClientBuilderDecorator.defaultStatusHandler(...)` /
+  `messageConverters(...)` overrides
+
+### Dependencies
+
+- febit-devkit 1.6.2 → 1.7.0
+- spring 7.0.9 → 7.1.0-M2
+- spring-boot 4.1.1 → 4.2.0-M2
+- caffeine 3.2.4 → 3.3.0
+- jackson 3.2.2 → 3.2.3
+- jooq 3.21.7 → 3.21.8
+- nimbus-jose-jwt 10.9.1 → 10.10
+- slf4j 2.0.18 → 2.0.19
+- protobuf 4.36.1 → 4.36.2
+- mockito 5.23.0 → 5.24.0
+- Added micrometer 1.18.0-M2
+- Added spring-amqp 4.2.0-M2 and rabbitmq amqp-client 5.36.0
+- Added tabletest-junit 1.2.2
+- Removed the hierynomus license plugin
+
+### Build
+
+- Replaced the license plugin with Spotless, which now enforces license headers and normalizes code style (import order,
+  unused imports,
+  shortened fully-qualified types, trailing whitespace / newline, table-test formatting)
+- Removed the deprecated implicit lookup of build-script helpers in parent projects (Gradle 10 ready)
+
+### Tests
+
+- Converted test suites to table-driven `@TableTest` cases and added coverage for the new rabbit / etcd components
+
 ## [4.1.1] - 2026-09-10
 
 ### New Features

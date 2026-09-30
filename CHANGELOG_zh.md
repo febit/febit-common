@@ -2,6 +2,64 @@
 
 ## [4.2.0] - 尚未发布
 
+## [4.2.0-M1] - 2026-09-30
+
+### New Features
+
+- **rabbit**: 新增 `febit-commons-rabbit` 模块与 `RabbitDelayQueue` —— 基于 RabbitMQ 的延迟投递：消息先进入带 TTL 的
+  `wait` 队列，到期前
+  内部自动 re-hop，到期后投递到应用自己的 ready exchange。包含 `DelayQueueOptions` / `DelayQueueTopology`、`DelayMessage` /
+  `DelayReceipt`、可插拔的 `DelayPolicy`（`FixedRoundingDelayPolicy`）与 `MessageIdGenerator`（`UuidIdGenerator`），以及基于
+  Micrometer 的 `DelayQueueMetrics`
+- **etcd**: 新增类型化键值存储 `org.febit.common.etcd.store`：`EtcdAccessor`（get / put / delete / txn / 分页扫描 / 类型化
+  watch）配
+  `KVRecord`、`Put` / `SidePut`、`EtcdPagingScanner`、`TypedWatchObserver` / `TypedWatchListenerAdapter`，codec SPI
+  `KVCodec` / `Codec`（`GenericKVCodec`、`JsonCodec`、`PatternCodec`、`CodecUtils`），以及基于 Micrometer 的 `EtcdMetrics`
+- **caffeine**: `febit-commons-stuff` 新增 `CaffeineDebouncer`（按 key 防抖，支持最大延迟）与 `CaffeineThrottle`（按 key
+  冷却窗口）
+
+### Fixes
+
+- **caffeine**: `CaffeineDebouncer` 改为先置位消费者线程运行标志再启动线程，待执行回调不会再静默停滞
+- **jsonrpc2**: 响应无法转换时不再让调用方永久等待 —— 请求 future 会带原因异常完成
+- **jsonrpc2**: 通知 handler 的异常现在会被记录，不再逃逸到执行器线程
+- **stuff**: 进程尚未创建时 `ProcessFuture.cancel()` 不再抛异常，重复调用也不再清除 `isCancelled()`
+- **stuff**: 在进程创建前被取消的进程现在会被销毁，不再遗留运行
+
+### Deprecations
+
+- **rest-client**: 跟随 Spring Framework 7.1 废弃 `RecallJsonResponseErrorHandler` 与
+  `StandardRestClients.statusHandlers(...)`，以及
+  `RestClientBuilderDecorator.defaultStatusHandler(...)` / `messageConverters(...)` 重载
+
+### Dependencies
+
+- febit-devkit 1.6.2 → 1.7.0
+- spring 7.0.9 → 7.1.0-M2
+- spring-boot 4.1.1 → 4.2.0-M2
+- caffeine 3.2.4 → 3.3.0
+- jackson 3.2.2 → 3.2.3
+- jooq 3.21.7 → 3.21.8
+- nimbus-jose-jwt 10.9.1 → 10.10
+- slf4j 2.0.18 → 2.0.19
+- protobuf 4.36.1 → 4.36.2
+- mockito 5.23.0 → 5.24.0
+- 新增 micrometer 1.18.0-M2
+- 新增 spring-amqp 4.2.0-M2 与 rabbitmq amqp-client 5.36.0
+- 新增 tabletest-junit 1.2.2
+- 移除 hierynomus license 插件
+
+### Build
+
+- 用 Spotless 取代 license 插件，统一校验 license header 并规范化代码（import 顺序、无用 import、全限定类名缩短、行尾空白 /
+  换行、
+  表格测试格式）
+- 移除构建脚本中父项目隐式查找的弃用写法（兼容 Gradle 10）
+
+### Tests
+
+- 测试改造为 `@TableTest` 表驱动写法，并补充新的 rabbit / etcd 组件测试
+
 ## [4.1.1] - 2026-09-10
 
 ### New Features
