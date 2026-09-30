@@ -39,13 +39,23 @@ class ProcessFutureImpl implements ProcessFuture {
 
     @Override
     public boolean cancel(boolean mayInterruptIfRunning) {
-        startedFuture.cancel(mayInterruptIfRunning);
-        var process = startedFuture.getNow(null);
+        var cancelledNow = startedFuture.cancel(mayInterruptIfRunning);
+        // Cancel fails once the process-creation task finished: the running process must then be
+        // destroyed here. `getNow` throws when the future is cancelled or failed, hence the guards.
+        var process = !cancelledNow
+                && startedFuture.isDone()
+                && !startedFuture.isCompletedExceptionally()
+                ? startedFuture.getNow(null)
+                : null;
         if (process != null && process.isAlive()) {
             process.destroy();
+            cancelledNow = true;
+        }
+        if (cancelledNow) {
+            // Set only: a repeated cancel must not report the task as not-cancelled again.
             cancelled.set(true);
         }
-        return true;
+        return cancelledNow;
     }
 
     @Override

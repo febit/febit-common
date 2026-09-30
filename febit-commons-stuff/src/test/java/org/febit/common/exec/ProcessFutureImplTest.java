@@ -78,6 +78,34 @@ class ProcessFutureImplTest {
     }
 
     @Test
+    void shouldStayCancelledAfterRepeatedCancel() {
+        var process = mock(Process.class);
+        // Alive when cancelled, already gone on the repeated call.
+        when(process.isAlive()).thenReturn(true, false);
+        var started = CompletableFuture.completedFuture(process);
+        var combined = new CompletableFuture<Integer>();
+
+        var future = ProcessFutureImpl.of(started, combined);
+        assertTrue(future.cancel(true));
+        assertTrue(future.isCancelled());
+
+        future.cancel(true);
+        assertTrue(future.isCancelled());
+    }
+
+    @Test
+    void shouldNotCancelCompletedProcess() {
+        var process = mock(Process.class);
+        when(process.isAlive()).thenReturn(false);
+        var started = CompletableFuture.completedFuture(process);
+        var combined = CompletableFuture.completedFuture(0);
+
+        var future = ProcessFutureImpl.of(started, combined);
+        assertFalse(future.cancel(true));
+        assertFalse(future.isCancelled());
+    }
+
+    @Test
     void shouldPropagateExceptionFromCombinedFuture() {
         var started = new CompletableFuture<Process>();
         var combined = new CompletableFuture<Integer>();
