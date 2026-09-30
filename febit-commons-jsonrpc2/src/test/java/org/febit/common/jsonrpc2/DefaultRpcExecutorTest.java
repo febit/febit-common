@@ -21,7 +21,12 @@ import org.febit.common.jsonrpc2.internal.protocol.Notification;
 import org.febit.common.jsonrpc2.internal.protocol.Request;
 import org.febit.common.jsonrpc2.protocol.Id;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -83,6 +88,33 @@ class DefaultRpcExecutorTest {
 
         // Should not throw - exceptions are caught and logged
         assertDoesNotThrow(() -> executor.execute(handler, notification));
+    }
+
+    @Test
+    void notificationHandlerExceptionDoesNotEscapeToExecutorThread() throws Exception {
+        var createdThreads = Collections.synchronizedList(new ArrayList<Thread>());
+        var executor = Executors.newSingleThreadExecutor(r -> {
+            var thread = new Thread(r);
+            createdThreads.add(thread);
+            return thread;
+        });
+        try {
+            var rpcExecutor = DefaultRpcExecutor.create(executor);
+            RpcNotificationHandler handler = notification -> {
+                throw new RuntimeException("handler failed");
+            };
+            rpcExecutor.execute(handler, new Notification("test/event", null));
+
+            // Runs after the notification task (single thread, FIFO): had the exception escaped,
+            // the worker would have died and a replacement thread would have been created.
+            var latch = new CountDownLatch(1);
+            executor.execute(latch::countDown);
+            assertTrue(latch.await(2, TimeUnit.SECONDS));
+
+            assertEquals(1, createdThreads.size());
+        } finally {
+            executor.shutdownNow();
+        }
     }
 
     @Test

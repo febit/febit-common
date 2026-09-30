@@ -63,9 +63,17 @@ public class DefaultRpcExecutor implements RpcExecutor {
     @Override
     public void execute(RpcNotificationHandler handler, IRpcNotification notification) {
         try {
-            forNotification.execute(() -> handler.handle(notification));
+            // The handler runs later on `forNotification`: catching inside the task, otherwise the
+            // exception escapes to the executor thread instead of being logged here.
+            forNotification.execute(() -> {
+                try {
+                    handler.handle(notification);
+                } catch (Exception e) {
+                    log.warn("Notification handler throw exception", e);
+                }
+            });
         } catch (Exception e) {
-            log.warn("Notification handler throw exception", e);
+            log.warn("Failed to submit notification: {}", notification.method(), e);
         }
     }
 
