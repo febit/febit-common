@@ -24,6 +24,8 @@ import org.febit.lang.io.Lines;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
+import java.time.Duration;
+import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -242,5 +244,57 @@ class ExecUtilsTest {
                     log.info("> {}", line);
                 })
         );
+    }
+
+    @Test
+    void shouldDestroyProcessCancelledBeforeStarted() throws InterruptedException {
+        if (!SystemUtils.IS_OS_LINUX && !SystemUtils.IS_OS_MAC) {
+            log.warn("Skip orphan-process test on non-Linux/Mac OS");
+            return;
+        }
+        var marker = "sleep 33";
+        var deferred = new ArrayList<Runnable>();
+        var future = ExecUtils.launcher()
+                .command(new CommandLine("sh").addArgument("-c").addArgument(marker))
+                .executor(deferred::add)
+                .start();
+        try {
+            // Without handlers start() does not wait, so the process does not exist yet.
+            assertFalse(future.isDone());
+            assertTrue(future.cancel(true));
+
+            // The process is created only now — nobody owns it anymore, so it must be destroyed.
+            deferred.forEach(Runnable::run);
+            assertTrue(waitForChildExit(marker, Duration.ofSeconds(5)), "orphan process left running");
+        } finally {
+            destroyChildren(marker);
+        }
+    }
+
+    private static boolean waitForChildExit(String marker, Duration timeout) throws InterruptedException {
+        var deadline = System.nanoTime() + timeout.toNanos();
+        while (System.nanoTime() < deadline) {
+            if (!hasLiveChild(marker)) {
+                return true;
+            }
+            Thread.sleep(20);
+        }
+        return !hasLiveChild(marker);
+    }
+
+    private static boolean hasLiveChild(String marker) {
+        return ProcessHandle.current().children()
+                .filter(ProcessHandle::isAlive)
+                .anyMatch(process -> process.info().commandLine()
+                        .map(line -> line.contains(marker))
+                        .orElse(false));
+    }
+
+    private static void destroyChildren(String marker) {
+        ProcessHandle.current().children()
+                .filter(process -> process.info().commandLine()
+                        .map(line -> line.contains(marker))
+                        .orElse(false))
+                .forEach(ProcessHandle::destroy);
     }
 }

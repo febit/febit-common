@@ -188,7 +188,10 @@ public class ExecUtils {
             try {
                 var launcher = CommandLauncherFactory.createVMLauncher();
                 var process = launcher.exec(command, env, workingDir);
-                started.complete(process);
+                if (!started.complete(process)) {
+                    // Cancelled while starting: no future owns this process, so nobody would destroy it.
+                    process.destroy();
+                }
             } catch (Throwable e) {
                 started.completeExceptionally(e);
             }
