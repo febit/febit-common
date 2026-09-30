@@ -2,8 +2,6 @@
 //  configurations.configureEach { resolutionStrategy.cacheChangingModulesFor 0, 'seconds' }
 //}
 plugins {
-  alias libs.plugins.spotless apply false
-
   alias libs.plugins.febit.java
   alias libs.plugins.febit.maven.publish
   alias libs.plugins.febit.codegen.module
@@ -17,8 +15,43 @@ description = 'Febit Commons'
 ext {
 }
 
+def customPom = { Project project, MavenPom pom ->
+  pom.with {
+    name.set project.name
+    description.set project.description
+    url.set 'https://github.com/febit/febit-common'
+    organization {
+      name = 'Febit'
+      url = 'https://github.com/febit'
+    }
+    licenses {
+      license {
+        name = 'Apache License, Version 2.0'
+        url = 'https://github.com/febit/febit-common/blob/main/LICENSE.txt'
+        distribution = 'repo'
+      }
+    }
+    scm {
+      url = 'https://github.com/febit/febit-common'
+      connection = 'scm:git:https://github.com/febit/febit-common.git'
+      developerConnection = 'scm:git:https://github.com/febit/febit-common.git'
+    }
+    issueManagement {
+      system = 'GitHub'
+      url = 'https://github.com/febit/febit-common/issues'
+    }
+    developers {
+      developer {
+        id = 'kurt'
+        name = 'Kurt Zhu'
+        email = 'kurt@febit.org'
+        timezone = '+8'
+      }
+    }
+  }
+}
+
 allprojects { subproject ->
-  apply plugin: 'com.diffplug.spotless'
 
   group = rootProject.group
   version = rootProject.version
@@ -39,11 +72,7 @@ allprojects { subproject ->
 
   spotless {
     java {
-      target 'src/*/java/**/*.java'
       licenseHeaderFile rootProject.file('etc/license-header.txt')
-
-      endWithNewline()
-      trimTrailingWhitespace()
 
       shortenFullyQualifiedTypes()
 
@@ -65,9 +94,9 @@ allprojects { subproject ->
       // tableTestFormatter()
     }
   }
-
-  tasks.check.dependsOn tasks.named('spotlessCheck')
 }
+
+def LIBS = libs
 
 configure(subprojects.findAll {
   !it.name.endsWith('-bom')
@@ -80,26 +109,6 @@ configure(subprojects.findAll {
 
     withJavadocJar()
     withSourcesJar()
-  }
-
-  configurations {
-    mockitoAgent
-  }
-
-  dependencies {
-    mockitoAgent(libs.mockito.core) {
-      transitive = false
-    }
-  }
-  test {
-    jvmArgs += "-javaagent:${configurations.mockitoAgent.asPath}"
-    useJUnitPlatform()
-  }
-
-  jacocoTestReport {
-    reports {
-      xml.required.set(true)
-    }
   }
 
   tasks.named('jar', Jar) {
@@ -136,15 +145,15 @@ configure(subprojects.findAll {
       cacheChangingModulesFor 0, 'seconds'
     }
     imports {
-      mavenBom "${libs.assertj.bom.get()}"
-      mavenBom "${libs.jackson.bom.get()}"
-      mavenBom "${libs.junit.bom.get()}"
-      mavenBom "${libs.mockito.bom.get()}"
-      mavenBom "${libs.okhttp.bom.get()}"
-      mavenBom "${libs.testcontainers.bom.get()}"
+      mavenBom "${LIBS.assertj.bom.get()}"
+      mavenBom "${LIBS.jackson.bom.get()}"
+      mavenBom "${LIBS.junit.bom.get()}"
+      mavenBom "${LIBS.mockito.bom.get()}"
+      mavenBom "${LIBS.okhttp.bom.get()}"
+      mavenBom "${LIBS.testcontainers.bom.get()}"
     }
     dependencies {
-      dependencySet(group: 'org.slf4j', version: "${libs.versions.slf4j.get()}") {
+      dependencySet(group: 'org.slf4j', version: "${LIBS.versions.slf4j.get()}") {
         entry 'jcl-over-slf4j'
         entry 'jul-to-slf4j'
         entry 'log4j-over-slf4j'
@@ -153,13 +162,13 @@ configure(subprojects.findAll {
         entry 'slf4j-simple'
       }
 
-      dependencySet(group: 'io.swagger.core.v3', version: "${libs.versions.swagger.get()}") {
+      dependencySet(group: 'io.swagger.core.v3', version: "${LIBS.versions.swagger.get()}") {
         entry 'swagger-annotations'
         entry 'swagger-annotations-jakarta'
         entry 'swagger-core'
         entry 'swagger-core-jakarta'
       }
-      dependencySet(group: 'io.etcd', version: "${libs.versions.jetcd.get()}") {
+      dependencySet(group: 'io.etcd', version: "${LIBS.versions.jetcd.get()}") {
         entry 'jetcd-grpc'
         entry 'jetcd-api'
         entry 'jetcd-common'
@@ -169,78 +178,42 @@ configure(subprojects.findAll {
         entry 'jetcd-ctl'
       }
 
-      dependency "${libs.jspecify.get()}"
-      dependency "${libs.jsr305.get()}"
-      dependency "${libs.spotbugs.annotations.get()}"
-      dependency "${libs.swagger.annotations.get()}"
+      dependency "${LIBS.jspecify.get()}"
+      dependency "${LIBS.jsr305.get()}"
+      dependency "${LIBS.spotbugs.annotations.get()}"
+      dependency "${LIBS.swagger.annotations.get()}"
 
-      dependency "${libs.jakarta.annotation.api.get()}"
-      dependency "${libs.jakarta.persistence.api.get()}"
-      dependency "${libs.jakarta.validation.api.get()}"
-      dependency "${libs.jakarta.xml.bind.api.get()}"
+      dependency "${LIBS.jakarta.annotation.api.get()}"
+      dependency "${LIBS.jakarta.persistence.api.get()}"
+      dependency "${LIBS.jakarta.validation.api.get()}"
+      dependency "${LIBS.jakarta.xml.bind.api.get()}"
 
-      dependency "${libs.commons.cli.get()}"
-      dependency "${libs.commons.codec.get()}"
-      dependency "${libs.commons.collections4.get()}"
-      dependency "${libs.commons.compress.get()}"
-      dependency "${libs.commons.csv.get()}"
-      dependency "${libs.commons.exec.get()}"
-      dependency "${libs.commons.io.get()}"
-      dependency "${libs.commons.lang3.get()}"
-      dependency "${libs.commons.pool2.get()}"
-      dependency "${libs.commons.text.get()}"
+      dependency "${LIBS.commons.cli.get()}"
+      dependency "${LIBS.commons.codec.get()}"
+      dependency "${LIBS.commons.collections4.get()}"
+      dependency "${LIBS.commons.compress.get()}"
+      dependency "${LIBS.commons.csv.get()}"
+      dependency "${LIBS.commons.exec.get()}"
+      dependency "${LIBS.commons.io.get()}"
+      dependency "${LIBS.commons.lang3.get()}"
+      dependency "${LIBS.commons.pool2.get()}"
+      dependency "${LIBS.commons.text.get()}"
 
-      dependency "${libs.caffeine.get()}"
-      dependency "${libs.disruptor.get()}"
-      dependency "${libs.h2database.get()}"
-      dependency "${libs.hamcrest.get()}"
-      dependency "${libs.jcommander.get()}"
-      dependency "${libs.jool.get()}"
-      dependency "${libs.jsonpath.get()}"
-      dependency "${libs.kafka.clients.get()}"
-      dependency "${libs.nimbus.jose.jwt.get()}"
-      dependency "${libs.protobuf.java.get()}"
-      dependency "${libs.semver4j.get()}"
-      dependency "${libs.snakeyaml.engine.get()}"
-      dependency "${libs.snakeyaml2.get()}"
-      dependency "${libs.tabletest.junit.get()}"
-      dependency "${libs.uuid.generator.get()}"
-    }
-  }
-}
-
-static def customPom(Project project, MavenPom pom) {
-  pom.with {
-    name.set project.name
-    description.set project.description
-    url.set 'https://github.com/febit/febit-common'
-    organization {
-      name = 'Febit'
-      url = 'https://github.com/febit'
-    }
-    licenses {
-      license {
-        name = 'Apache License, Version 2.0'
-        url = 'https://github.com/febit/febit-common/blob/main/LICENSE.txt'
-        distribution = 'repo'
-      }
-    }
-    scm {
-      url = 'https://github.com/febit/febit-common'
-      connection = 'scm:git:https://github.com/febit/febit-common.git'
-      developerConnection = 'scm:git:https://github.com/febit/febit-common.git'
-    }
-    issueManagement {
-      system = 'GitHub'
-      url = 'https://github.com/febit/febit-common/issues'
-    }
-    developers {
-      developer {
-        id = 'kurt'
-        name = 'Kurt Zhu'
-        email = 'kurt@febit.org'
-        timezone = '+8'
-      }
+      dependency "${LIBS.caffeine.get()}"
+      dependency "${LIBS.disruptor.get()}"
+      dependency "${LIBS.h2database.get()}"
+      dependency "${LIBS.hamcrest.get()}"
+      dependency "${LIBS.jcommander.get()}"
+      dependency "${LIBS.jool.get()}"
+      dependency "${LIBS.jsonpath.get()}"
+      dependency "${LIBS.kafka.clients.get()}"
+      dependency "${LIBS.nimbus.jose.jwt.get()}"
+      dependency "${LIBS.protobuf.java.get()}"
+      dependency "${LIBS.semver4j.get()}"
+      dependency "${LIBS.snakeyaml.engine.get()}"
+      dependency "${LIBS.snakeyaml2.get()}"
+      dependency "${LIBS.tabletest.junit.get()}"
+      dependency "${LIBS.uuid.generator.get()}"
     }
   }
 }
