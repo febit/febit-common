@@ -247,8 +247,9 @@ public class CaffeineDebouncer<K> implements AutoCloseable {
             throw new IllegalStateException("threadFactory returned null");
         }
         debouncer.consumerThread = thread;
-        thread.start();
+        // Arm before start: the consumer may run immediately and exit on seeing `started == false`.
         debouncer.started.set(true);
+        thread.start();
         return debouncer;
     }
 
