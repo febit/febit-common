@@ -24,6 +24,7 @@ import org.febit.common.jsonrpc2.annotation.RpcNotification;
 import org.febit.common.jsonrpc2.annotation.RpcParamsKind;
 import org.febit.common.jsonrpc2.annotation.RpcRequest;
 import org.febit.common.jsonrpc2.exception.RpcErrorException;
+import org.febit.common.jsonrpc2.internal.protocol.Response;
 import org.febit.common.jsonrpc2.protocol.Id;
 import org.febit.common.jsonrpc2.protocol.StdRpcErrors;
 import org.febit.lang.Tuple2;
@@ -32,9 +33,11 @@ import lombok.RequiredArgsConstructor;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.LongAdder;
 
@@ -358,6 +361,26 @@ class RpcChannelImplTest {
         var ex = assertThrows(ExecutionException.class, future::get);
         assertInstanceOf(RpcErrorException.class, ex.getCause());
         assertTrue(pool.isEmpty(), "pool should be empty after error response");
+    }
+
+    @Test
+    void unconvertibleResponseCompletesFutureExceptionally() {
+        var pool = new TrackingRequestPool();
+        var channel = RpcChannelImpl.builder()
+                .executor(DefaultRpcExecutor.create(Runnable::run))
+                .poster(m -> { /* never delivers — the response is fed in below */ })
+                .requestPool(pool)
+                .build();
+
+        var future = channel.request("test", null, null, String.class);
+        var id = pool.requests.keySet().iterator().next();
+
+        channel.handle(Response.ok(id, Map.of("k", "v")));
+
+        var ex = assertThrows(ExecutionException.class,
+                () -> future.get(1, TimeUnit.SECONDS));
+        assertInstanceOf(RpcErrorException.class, ex.getCause());
+        assertTrue(pool.isEmpty(), "pool should be empty after a failed conversion");
     }
 
     @Test

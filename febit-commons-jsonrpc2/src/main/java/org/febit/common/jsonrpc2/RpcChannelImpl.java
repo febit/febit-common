@@ -178,8 +178,13 @@ public class RpcChannelImpl implements RpcChannel {
             packet.future().completeExceptionally(new RpcErrorException(error));
             return;
         }
-        var converted = JsonCodec.convert(response.result(), packet.resultType());
-        packet.future().complete(converted);
+        try {
+            packet.future().complete(JsonCodec.convert(response.result(), packet.resultType()));
+        } catch (Exception e) {
+            // Packet is already popped from the pool: a failure here would leave the caller waiting forever.
+            log.error("Failed to convert response: id={}", id, e);
+            packet.future().completeExceptionally(e);
+        }
     }
 
     private void handle(IRpcRequest request) {
