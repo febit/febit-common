@@ -84,4 +84,33 @@ class MpscPipeImplTest {
 
     }
 
+    @Test
+    void singleThreadedLifecycle() throws Exception {
+        // basic put/size/hasNext/next + closed-state behaviour
+        MpscPipeImpl<String> pipe = (MpscPipeImpl<String>) MpscPipeImpl.<String>ofUnbound();
+        assertNotNull(pipe);
+        assertEquals(0, pipe.size());
+
+        var producer = pipe.createProducer();
+        producer.accept("a");
+        assertEquals(1, pipe.size());
+        assertTrue(pipe.hasNext());
+        assertEquals("a", pipe.next());
+        assertEquals(0, pipe.size());
+        producer.close();
+
+        assertThrows(IllegalStateException.class, () -> pipe.put("x"));
+        assertThrows(IllegalStateException.class, pipe::createProducer);
+        assertFalse(pipe.hasNext());
+
+        // multiple producers keep the pipe open until the last one closes
+        MpscPipeImpl<String> pipe2 = (MpscPipeImpl<String>) MpscPipeImpl.<String>ofBounded(16);
+        var a = pipe2.createProducer();
+        var b = pipe2.createProducer();
+        a.close();
+        assertDoesNotThrow(() -> pipe2.createProducer().close());
+        b.close();
+        assertThrows(IllegalStateException.class, pipe2::createProducer);
+    }
+
 }
