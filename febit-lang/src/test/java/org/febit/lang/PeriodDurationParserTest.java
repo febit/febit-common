@@ -175,4 +175,13 @@ class PeriodDurationParserTest {
         assertEquals(PeriodDuration.ofSeconds(1), parse(" 1 "));
         assertEquals(PeriodDuration.ofSeconds(1), parse("\n  \n \t1\ns \r \n\t"));
     }
+
+    @TableTest("""
+            input   | seconds
+            1 sec    | 1
+            2 min    | 120
+            """)
+    void aliases(String input, int seconds) {
+        assertEquals(seconds, parse(input).getSeconds());
+    }
 }
