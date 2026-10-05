@@ -194,4 +194,26 @@ class ExecutorUtilsTest {
         assertEquals(3, failed.get());
         exec.shutdownNow();
     }
+
+    static class ThrowingQueue<E> extends LinkedBlockingQueue<E> {
+        @Override
+        public boolean offer(E e, long timeout, TimeUnit unit) throws InterruptedException {
+            throw new IllegalStateException("queue rejected");
+        }
+    }
+
+    @Test
+    void blockingRejected_callsOnFailed_whenOfferThrows() {
+        var exec = new ThreadPoolExecutor(1, 1, 0, TimeUnit.MILLISECONDS, new ThrowingQueue<>());
+        var failed = new AtomicInteger();
+        var handler = ExecutorUtils.blockingRejected(
+                Duration.ofMillis(10),
+                r -> failed.incrementAndGet()
+        );
+        handler.rejectedExecution(() -> {
+        }, exec);
+
+        assertEquals(1, failed.get(), "onFailed should be called when offer throws");
+        exec.shutdownNow();
+    }
 }
