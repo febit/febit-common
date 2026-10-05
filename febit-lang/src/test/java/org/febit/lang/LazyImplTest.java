@@ -68,4 +68,26 @@ class LazyImplTest {
         assertDoesNotThrow(lazy::get);
     }
 
+    @Test
+    @SuppressWarnings("unchecked")
+    void isPresentAndIsAbsent() {
+        var supplier = mock(SerializableSupplier.class);
+        when(supplier.get()).thenReturn("v");
+
+        var lazy = new LazyImpl<String>(supplier);
+
+        assertTrue(lazy.isAbsent());
+        assertFalse(lazy.isPresent());
+
+        lazy.get();
+
+        assertTrue(lazy.isPresent());
+        assertFalse(lazy.isAbsent());
+
+        lazy.reset();
+
+        assertTrue(lazy.isAbsent());
+        assertFalse(lazy.isPresent());
+    }
+
 }
