@@ -19,6 +19,7 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.util.StandardCharset;
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import org.junit.jupiter.api.Test;
 
 import java.security.spec.InvalidKeySpecException;
@@ -223,6 +224,20 @@ class JwtCodecTest {
         assertThat(decoded.getMessage())
                 .isNotEmpty()
                 .startsWith(MSG_INVALID_FORMAT_PAYLOAD);
+    }
+
+    @Test
+    void shouldReturnErrorWhenTokenHasNoKeyId() throws JOSEException {
+        var resolved = ES_1.resolve();
+        var header = new JWSHeader.Builder(JwkAlgorithm.ES256.getJws()).build();
+        var jwt = new SignedJWT(header, new JWTClaimsSet.Builder().subject("x").build());
+        jwt.sign(resolved.signer().orElseThrow());
+
+        var decoded = CODEC_ALL.decode(jwt.serialize());
+        assertFalse(decoded.isSuccess());
+        assertEquals(STATUS_UNAUTHORIZED, decoded.getStatus());
+        assertEquals(CODE_INVALID_TOKEN, decoded.getCode());
+        assertEquals(MSG_NO_VERIFIER_KEY, decoded.getMessage());
     }
 
     @Test

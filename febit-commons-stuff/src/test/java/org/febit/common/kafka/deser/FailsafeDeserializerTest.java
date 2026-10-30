@@ -95,6 +95,41 @@ class FailsafeDeserializerTest {
     }
 
     @Test
+    void shouldReturnDelegatedValueWithHeaders() {
+        var delegate = mock(StringDeserializer.class);
+        when(delegate.deserialize(eq("topic"), any(Headers.class), any(byte[].class))).thenReturn("ok");
+
+        var deserializer = new FailsafeDeserializer<String>() {
+            @Override
+            protected String getNameOfDelegated(boolean isKey) {
+                return "test.deser";
+            }
+
+            @Override
+            public Deserializer<String> delegated() {
+                return delegate;
+            }
+        };
+
+        Headers headers = mock(Headers.class);
+        assertEquals("ok", deserializer.deserialize("topic", headers, new byte[]{1}));
+    }
+
+    @Test
+    void getNameOfDelegatedReturnsConfigKeys() {
+        // Do NOT override getNameOfDelegated, so the real `isKey ? ... : ...` ternary runs.
+        var deserializer = new FailsafeDeserializer<String>() {
+            @Override
+            public Deserializer<String> delegated() {
+                return mock(StringDeserializer.class);
+            }
+        };
+
+        assertEquals(FailsafeDeserializer.DESER_FOR_KEY, deserializer.getNameOfDelegated(true));
+        assertEquals(FailsafeDeserializer.DESER_FOR_VALUE, deserializer.getNameOfDelegated(false));
+    }
+
+    @Test
     void shouldThrowWhenNotConfigured() {
         var deserializer = new FailsafeDeserializer<String>() {
             @Override

@@ -503,4 +503,24 @@ class CaffeineThrottleTest {
             threadB.join();
         }
     }
+
+    @Nested
+    class Factory {
+
+        /**
+         * Every other case uses the 3-arg {@code create(window, caffeine, clock)};
+         * this one exercises the 2-arg overload that defaults the clock to
+         * {@code System::nanoTime} (line 112 of {@link CaffeineThrottle}).
+         */
+        @Test
+        void usesSystemClockWhenNotProvided() {
+            var throttle = CaffeineThrottle.create(
+                    WINDOW,
+                    Caffeine.newBuilder()
+                            .expireAfterAccess(WINDOW.multipliedBy(4))
+                            .maximumSize(100));
+            assertThat(throttle.execute("a", () -> {
+            })).isTrue();
+        }
+    }
 }

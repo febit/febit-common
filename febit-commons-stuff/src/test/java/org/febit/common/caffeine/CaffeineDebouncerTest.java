@@ -374,6 +374,27 @@ class CaffeineDebouncerTest {
     }
 
     @Nested
+    class Defaults {
+
+        /**
+         * Building via the public fluent API with no knobs exercises the
+         * {@code null} default branches of {@link CaffeineDebouncer}'s
+         * {@code createForBuilder} (config, executor, delayQueue, clock) and the
+         * default {@code threadFactory} ({@code CaffeineDebouncer::defaultThreadFactory}),
+         * none of which {@link DebouncerFixture} reaches because it always injects
+         * explicit config/executor/queue/clock/threadFactory.
+         */
+        @Test
+        void usesDefaultConfigAndThreadFactory() {
+            var debouncer = CaffeineDebouncer.<String>builder()
+                    .debounce(Duration.ofMillis(10))
+                    .build();
+            assertThat(debouncer).isNotNull();
+            debouncer.close();
+        }
+    }
+
+    @Nested
     class EstimatedSize {
 
         @Test
@@ -575,6 +596,42 @@ class CaffeineDebouncerTest {
                     .build();
             assertRejects(config, IllegalStateException.class, "returned null");
         }
+
+        @Test
+        void rejectsZeroMaxDebounce() {
+            var config = CaffeineDebouncer.Configuration.builder()
+                    .debounce(DEBOUNCE)
+                    .maxDebounce(Duration.ZERO)
+                    .build();
+            assertRejects(config, IllegalArgumentException.class, "maxDebounce must be positive");
+        }
+
+        @Test
+        void rejectsNegativeMaxDebounce() {
+            var config = CaffeineDebouncer.Configuration.builder()
+                    .debounce(DEBOUNCE)
+                    .maxDebounce(Duration.ofMillis(-1))
+                    .build();
+            assertRejects(config, IllegalArgumentException.class, "maxDebounce must be positive");
+        }
+
+        @Test
+        void acceptsPositiveIdle() {
+            assertThatCode(() -> CaffeineDebouncer.Configuration.builder()
+                    .debounce(DEBOUNCE)
+                    .idle(Duration.ofMillis(1))
+                    .build())
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        void acceptsPositiveMaxSize() {
+            assertThatCode(() -> CaffeineDebouncer.Configuration.builder()
+                    .debounce(DEBOUNCE)
+                    .maxSize(1L)
+                    .build())
+                    .doesNotThrowAnyException();
+        }
     }
 
     @Nested
@@ -691,6 +748,30 @@ class CaffeineDebouncerTest {
             // Wait a bit - the callback won't fire, but the debouncer shouldn't crash
             Thread.sleep(SETTLE_MILLIS);
             assertThat(latch.getCount()).isEqualTo(1);
+        }
+    }
+
+    @Nested
+    class EvictionRejection {
+
+        /**
+         * A rejecting executor makes both {@code process()} and the cache removal
+         * listener hit their {@code RejectedExecutionException} catches.
+         * {@code close() -> invalidateAll()} evicts the cached entry
+         * synchronously, so this is deterministic (no timing dependency).
+         */
+        @Test
+        void logsErrorWhenRemovalListenerRejected() {
+            var clock = new ControllableClock(BASE_NANOS);
+            var executor = Executors.newSingleThreadExecutor();
+            executor.shutdownNow(); // every subsequent execute() is rejected
+
+            var d = debouncer(clock)
+                    .executor(executor)
+                    .build();
+            d.call("key", NOOP);
+
+            assertThatCode(d::close).doesNotThrowAnyException();
         }
     }
 

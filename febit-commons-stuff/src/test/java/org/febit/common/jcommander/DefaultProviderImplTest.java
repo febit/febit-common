@@ -110,6 +110,18 @@ class DefaultProviderImplTest {
     }
 
     @Test
+    void fromDirShouldReturnEmptyForNonDirectory(@TempDir Path tempDir) throws IOException {
+        var file = tempDir.resolve("not-a-dir.txt").toFile();
+        Files.writeString(file.toPath(), "x");
+
+        // A regular file is not a directory, so listFiles() returns null —
+        // this exercises the `files == null` branch (lines 86-88).
+        var provider = DefaultProviderImpl.fromDir(file);
+
+        assertThat(provider.getDefaultValueFor("anything")).isNull();
+    }
+
+    @Test
     void fromWorkDirShouldNotThrow() {
         assertDoesNotThrow(DefaultProviderImpl::fromWorkDir);
     }

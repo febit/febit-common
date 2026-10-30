@@ -76,6 +76,19 @@ class JwtKeyTest {
     }
 
     @Test
+    void shouldThrowForUnparseableVerifierKeySpec() {
+        // Valid base64 but not a valid EC public key: decodePublicKey throws
+        // InvalidKeySpecException, which is the branch caught at lines 91-92.
+        var key = JwtKey.builder()
+                .id("bad-spec")
+                .algorithm(JwkAlgorithm.ES256)
+                .verifierKey("AAAA")
+                .build();
+
+        assertThrows(RuntimeException.class, key::resolve);
+    }
+
+    @Test
     void shouldThrowForInvalidSignerKey() {
         var key = JwtKey.builder()
                 .id("bad")
