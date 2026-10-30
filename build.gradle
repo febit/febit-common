@@ -8,7 +8,7 @@ plugins {
 }
 
 group = 'org.febit'
-version = '4.2.0-M1'
+version = '4.2.0-SNAPSHOT'
 
 description = 'Febit Commons'
 
@@ -56,10 +56,6 @@ allprojects { subproject ->
   group = rootProject.group
   version = rootProject.version
 
-  repositories {
-    mavenCentral()
-  }
-
   standardMavenPublish {
     pom {
       customPom(subproject, it)
@@ -67,12 +63,12 @@ allprojects { subproject ->
   }
 
   codegenModule {
-    defaultTemplate = fromFile("$rootDir/etc/module.java.tmpl")
+    defaultTemplate = fromFile("$rootDir/gradle/module.java.tmpl")
   }
 
   spotless {
     java {
-      licenseHeaderFile rootProject.file('etc/license-header.txt')
+      licenseHeaderFile rootProject.file('gradle/license-header.txt')
 
       shortenFullyQualifiedTypes()
 
@@ -104,8 +100,9 @@ configure(subprojects.findAll {
   apply plugin: 'java-library'
 
   java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    toolchain {
+      languageVersion = JavaLanguageVersion.of(25)
+    }
 
     withJavadocJar()
     withSourcesJar()
