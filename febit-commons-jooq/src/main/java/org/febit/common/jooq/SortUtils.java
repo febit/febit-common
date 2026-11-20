@@ -20,6 +20,8 @@ import org.jooq.impl.DSL;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.util.ConcurrentReferenceHashMap;
 
+import org.febit.common.jooq.annotation.CriterionMapping;
+import org.febit.common.jooq.annotation.OrderMappingBy;
 import org.febit.lang.protocol.Sort;
 
 import lombok.experimental.UtilityClass;
@@ -38,11 +40,14 @@ import static org.febit.common.jooq.Utils.declaredFields;
 @UtilityClass
 public class SortUtils {
 
-    private static final Map<Class<?>, Map<String, SortEntry>> CACHE
+    private static final Map<Class<?>, Map<String, SortBinding>> FORM_CACHE
+            = new ConcurrentReferenceHashMap<>(256);
+
+    private static final Map<Class<?>, Map<String, SortBinding>> MAPPING_CACHE
             = new ConcurrentReferenceHashMap<>(256);
 
     public static List<OrderField<?>> resolve(List<Sort> sorts, SearchForm form) {
-        var mapper = CACHE.computeIfAbsent(form.getClass(), SortUtils::resolveFromForm);
+        var mapper = FORM_CACHE.computeIfAbsent(form.getClass(), SortUtils::resolveFromForm);
         var result = new ArrayList<OrderField<?>>(mapper.size());
         for (var sort : sorts) {
             var entry = mapper.get(sort.getProperty());
@@ -57,30 +62,30 @@ public class SortUtils {
         return result;
     }
 
-    private static Map<String, SortEntry> resolveFromForm(Class<?> formClass) {
-        var orderByAnno = formClass.getAnnotation(OrderMappingBy.class);
+    private static Map<String, SortBinding> resolveFromForm(Class<?> formClass) {
+        var orderByAnno = AnnotatedElementUtils.findMergedAnnotation(formClass, OrderMappingBy.class);
         if (orderByAnno == null) {
             return Map.of();
         }
-        return CACHE.computeIfAbsent(orderByAnno.value(), SortUtils::resolve);
+        return MAPPING_CACHE.computeIfAbsent(orderByAnno.value(), SortUtils::resolve);
     }
 
-    private static Map<String, SortEntry> resolve(Class<?> mappingType) {
+    private static Map<String, SortBinding> resolve(Class<?> mappingType) {
         return declaredFields(mappingType)
-                .map(SortUtils::resolveEntry)
+                .map(SortUtils::resolveBinding)
                 .collect(Collectors.toUnmodifiableMap(
-                        SortEntry::name,
+                        SortBinding::name,
                         Function.identity()
                 ));
     }
 
-    public static SortEntry resolveEntry(Field field) {
-        var anno = AnnotatedElementUtils.findMergedAnnotation(field, Column.class);
-        var name = Utils.name(anno, field.getName());
-        return new SortEntry(field.getName(), DSL.field(name, field.getType()));
+    public static SortBinding resolveBinding(Field field) {
+        var anno = AnnotatedElementUtils.findMergedAnnotation(field, CriterionMapping.class);
+        var name = Utils.nameOf(anno, field.getName());
+        return new SortBinding(field.getName(), DSL.field(name, field.getType()));
     }
 
-    public record SortEntry(
+    public record SortBinding(
             String name,
             org.jooq.Field<?> field
     ) {

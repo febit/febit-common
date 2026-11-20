@@ -15,13 +15,23 @@
  */
 package org.febit.common.jooq;
 
+import org.jooq.impl.DSL;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.tabletest.junit.TableTest;
 
+import org.febit.common.jooq.annotation.CriterionMapping;
+import org.febit.common.jooq.annotation.Equals;
+import org.febit.common.jooq.annotation.Keyword;
+import org.febit.common.jooq.annotation.OrderMappingBy;
 import org.febit.lang.protocol.Sort;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -39,10 +49,33 @@ class SortUtilsTest {
 
     static class SortMapping {
         String id;
-        @Column("created_at")
+        @CriterionMapping("created_at")
         String createdAt;
-        @Column("updated_at")
+        @CriterionMapping("updated_at")
         String updatedAt;
+        @CriterionMapping(table = "t_foo", value = "rank_col")
+        String rank;
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.TYPE)
+    @OrderMappingBy(SortMapping.class)
+    @interface ComposedOrderMappingBy {
+    }
+
+    @lombok.Builder
+    @ComposedOrderMappingBy
+    static class MetaAnnotatedForm implements SearchForm {
+    }
+
+    static class OtherSortMapping {
+        @CriterionMapping("created_at")
+        String createdAt;
+    }
+
+    @lombok.Builder
+    @OrderMappingBy(OtherSortMapping.class)
+    static class OtherSortableForm implements SearchForm {
     }
 
     @lombok.Builder
@@ -71,6 +104,40 @@ class SortUtilsTest {
             var expectedDir = direction == null || direction.isBlank() ? "asc" : direction;
             assertThat(result).hasSize(1);
             assertThat(result.getFirst()).hasToString("\"" + column + "\" " + expectedDir);
+        }
+
+        @Test
+        void resolvesQualifiedColumnFromAnnotation() {
+            var form = SortableForm.builder().build();
+
+            var result = SortUtils.resolve(List.of(Sort.asc("rank")), form);
+
+            assertThat(result).containsExactly(
+                    DSL.field(DSL.name("t_foo", "rank_col"), String.class).asc());
+        }
+
+        @Test
+        void resolvesThroughMetaAnnotation() {
+            var form = MetaAnnotatedForm.builder().build();
+
+            assertThat(SortUtils.resolve(List.of(Sort.asc("createdAt")), form))
+                    .containsExactly(DSL.field(DSL.name("created_at"), String.class).asc());
+        }
+
+        @Test
+        void concurrentResolveIsStable() {
+            var a = SortableForm.builder().build();
+            var b = OtherSortableForm.builder().build();
+
+            var results = IntStream.range(0, 200)
+                    .parallel()
+                    .mapToObj(i -> SortUtils.resolve(
+                            List.of(Sort.asc("createdAt")), i % 2 == 0 ? a : b))
+                    .toList();
+
+            assertThat(results).hasSize(200)
+                    .allSatisfy(r -> assertThat(r.getFirst())
+                            .hasToString("\"created_at\" asc"));
         }
 
         @Test
@@ -150,7 +217,7 @@ class SortUtilsTest {
                 """)
         void resolveEntry(String property, String expectedName, String expectedColumn) throws Exception {
             var field = SortMapping.class.getDeclaredField(property);
-            var entry = SortUtils.resolveEntry(field);
+            var entry = SortUtils.resolveBinding(field);
 
             assertThat(entry.name()).isEqualTo(expectedName);
             assertThat(entry.field().toString()).isEqualTo("\"" + expectedColumn + "\"");

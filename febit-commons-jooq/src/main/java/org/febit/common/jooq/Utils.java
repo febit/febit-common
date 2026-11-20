@@ -29,6 +29,8 @@ import org.jooq.UpdatableRecord;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultRecordListenerProvider;
 
+import org.febit.common.jooq.annotation.CriterionMapping;
+
 import lombok.experimental.UtilityClass;
 import org.jspecify.annotations.Nullable;
 
@@ -46,26 +48,52 @@ import static java.lang.Boolean.TRUE;
 @UtilityClass
 class Utils {
 
-    static Name name(String table, String col) {
+    @FunctionalInterface
+    private interface BaseRecordListener extends RecordListener {
+
+        @Override
+        default void storeEnd(RecordContext ctx) {
+            end(ctx);
+        }
+
+        @Override
+        default void insertEnd(RecordContext ctx) {
+            end(ctx);
+        }
+
+        @Override
+        default void updateEnd(RecordContext ctx) {
+            end(ctx);
+        }
+
+        @Override
+        default void deleteEnd(RecordContext ctx) {
+            end(ctx);
+        }
+
+        void end(RecordContext ctx);
+    }
+
+    static Name nameOf(String table, String col) {
         if (table.isEmpty()) {
             return DSL.name(col);
         }
         return DSL.name(table, col);
     }
 
-    static Name name(Column.Name anno) {
-        return name(anno.table(), anno.value());
+    static Name nameOf(CriterionMapping.Name anno) {
+        return nameOf(anno.table(), anno.value());
     }
 
-    static Name name(@Nullable Column column, String fieldName) {
-        if (column == null) {
+    static Name nameOf(@Nullable CriterionMapping mapping, String fieldName) {
+        if (mapping == null) {
             return DSL.name(resolveSqlName(fieldName));
         }
-        var col = column.value();
+        var col = mapping.value();
         if (col.isEmpty()) {
             col = resolveSqlName(fieldName);
         }
-        return name(column.table(), col);
+        return nameOf(mapping.table(), col);
     }
 
     static <R extends UpdatableRecord<R>, P, T extends ITable<R, I>, I> List<R> records(
@@ -200,31 +228,5 @@ class Utils {
             }
         }
         return buf.toString();
-    }
-
-    @FunctionalInterface
-    private interface BaseRecordListener extends RecordListener {
-
-        @Override
-        default void storeEnd(RecordContext ctx) {
-            end(ctx);
-        }
-
-        void end(RecordContext ctx);
-
-        @Override
-        default void insertEnd(RecordContext ctx) {
-            end(ctx);
-        }
-
-        @Override
-        default void updateEnd(RecordContext ctx) {
-            end(ctx);
-        }
-
-        @Override
-        default void deleteEnd(RecordContext ctx) {
-            end(ctx);
-        }
     }
 }

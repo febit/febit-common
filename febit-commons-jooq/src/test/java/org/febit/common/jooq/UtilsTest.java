@@ -19,6 +19,8 @@ import org.jooq.impl.DSL;
 import org.junit.jupiter.api.Test;
 import org.tabletest.junit.TableTest;
 
+import org.febit.common.jooq.annotation.CriterionMapping;
+
 import java.lang.reflect.Field;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,13 +44,13 @@ class UtilsTest {
 
     @Test
     void nameWithTableAndColumn() {
-        var name = Utils.name("t_foo", "col_name");
+        var name = Utils.nameOf("t_foo", "col_name");
         assertThat(name).isEqualTo(DSL.name("t_foo", "col_name"));
     }
 
     @Test
     void nameWithEmptyTable() {
-        var name = Utils.name("", "col_name");
+        var name = Utils.nameOf("", "col_name");
         assertThat(name).isEqualTo(DSL.name("col_name"));
     }
 
@@ -66,6 +68,33 @@ class UtilsTest {
         var field = Utils.field("col_name", Integer.class);
 
         assertThat(field.getName()).isEqualTo("col_name");
+    }
+
+    @Test
+    void nameOfMappingUsesExplicitValue() throws Exception {
+        var anno = Annotated.class.getDeclaredField("explicit").getAnnotation(CriterionMapping.class);
+
+        assertThat(Utils.nameOf(anno, "explicit")).isEqualTo(DSL.name("t_foo", "col_name"));
+    }
+
+    @Test
+    void nameOfMappingFallsBackToFieldName() throws Exception {
+        var anno = Annotated.class.getDeclaredField("noValue").getAnnotation(CriterionMapping.class);
+
+        assertThat(Utils.nameOf(anno, "noValue")).isEqualTo(DSL.name("t_foo", "no_value"));
+    }
+
+    @Test
+    void nameOfNullMappingFallsBackToSnakeCase() {
+        assertThat(Utils.nameOf((CriterionMapping) null, "fooBar"))
+                .isEqualTo(DSL.name("foo_bar"));
+    }
+
+    @Test
+    void nameOfNestedNameAnnotation() throws Exception {
+        var anno = Annotated.class.getDeclaredField("withName").getAnnotation(CriterionMapping.class);
+
+        assertThat(Utils.nameOf(anno.names()[0])).isEqualTo(DSL.name("t_bar", "name_col"));
     }
 
     @Test
@@ -91,5 +120,16 @@ class UtilsTest {
     }
 
     static class EmptyClass {
+    }
+
+    static class Annotated {
+        @CriterionMapping(table = "t_foo", value = "col_name")
+        String explicit;
+
+        @CriterionMapping(table = "t_foo")
+        String noValue;
+
+        @CriterionMapping(names = @CriterionMapping.Name(table = "t_bar", value = "name_col"))
+        String withName;
     }
 }

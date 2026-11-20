@@ -22,9 +22,27 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import org.febit.common.jooq.annotation.Contains;
+import org.febit.common.jooq.annotation.CriterionMapping;
+import org.febit.common.jooq.annotation.EndsWith;
+import org.febit.common.jooq.annotation.Equals;
+import org.febit.common.jooq.annotation.GreaterEquals;
+import org.febit.common.jooq.annotation.GreaterThan;
+import org.febit.common.jooq.annotation.In;
+import org.febit.common.jooq.annotation.IsNotNull;
+import org.febit.common.jooq.annotation.IsNull;
+import org.febit.common.jooq.annotation.Keyword;
+import org.febit.common.jooq.annotation.LessEquals;
+import org.febit.common.jooq.annotation.LessThan;
+import org.febit.common.jooq.annotation.NotContains;
+import org.febit.common.jooq.annotation.NotIn;
+import org.febit.common.jooq.annotation.StartsWith;
+
 import lombok.Data;
 import org.jspecify.annotations.NonNull;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -32,7 +50,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 
-class SearchFormUtilsTest {
+class CriterionBindingsTest {
 
     DSLContext dsl;
 
@@ -69,8 +87,8 @@ class SearchFormUtilsTest {
         }
 
         @Test
-        void emptyRecordFormListAnnotatedConditionsEmpty() {
-            var conditions = SearchFormUtils.listAnnotatedConditions(dsl, new EmptyRecordSearchForm());
+        void emptyRecordFormToConditionsEmpty() {
+            var conditions = new EmptyRecordSearchForm().toConditions(dsl);
             assertThat(conditions).isEmpty();
         }
 
@@ -140,7 +158,7 @@ class SearchFormUtilsTest {
     }
 
     @Nested
-    class StandardOperators {
+    class StandardCriteria {
 
         @lombok.Builder
         static class StdForm implements SearchForm {
@@ -174,7 +192,7 @@ class SearchFormUtilsTest {
 
         @Test
         @SuppressWarnings({"unchecked"})
-        void allOperators() {
+        void allCriteria() {
             var conditions = StdForm.builder()
                     .q("key")
                     .contains("contains")
@@ -213,7 +231,7 @@ class SearchFormUtilsTest {
     }
 
     @Nested
-    class NullOperators {
+    class NullCriteria {
 
         @lombok.Builder
         static class NullForm implements SearchForm {
@@ -274,7 +292,7 @@ class SearchFormUtilsTest {
         }
 
         @Test
-        void stringOperatorsIgnoreCase() {
+        void stringCriteriaIgnoreCase() {
             var conditions = new IgnoreCaseSearchForm(
                     "cont", "not", "start", "end", "eq"
             ).toConditions(dsl);
@@ -287,6 +305,21 @@ class SearchFormUtilsTest {
                             Fields.string("starts_with").startsWithIgnoreCase("start"),
                             Fields.string("ends_with").endsWithIgnoreCase("end"),
                             Fields.string("eq").equalIgnoreCase("eq"));
+        }
+
+        static class NonTextForm implements SearchForm {
+            @Equals(ignoreCase = true)
+            Integer number;
+        }
+
+        @Test
+        void ignoreCaseOnNonTextFieldThrows() {
+            var form = new NonTextForm();
+            form.number = 1;
+
+            assertThatThrownBy(() -> form.toConditions(dsl))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("ignoreCase is only supported for text fields");
         }
 
         @Test
@@ -365,22 +398,22 @@ class SearchFormUtilsTest {
 
         record NamesForm(
                 @Keyword(names = {
-                        @Column.Name("name"),
-                        @Column.Name("title")
+                        @CriterionMapping.Name("name"),
+                        @CriterionMapping.Name("title")
                 }) String q
         ) implements SearchForm {
         }
 
         record CombinedForm(
                 @Keyword(value = {"name"}, names = {
-                        @Column.Name("title")
+                        @CriterionMapping.Name("title")
                 }) String q
         ) implements SearchForm {
         }
 
         record NameWithTableForm(
                 @Keyword(names = {
-                        @Column.Name(value = "name", table = "t_foo")
+                        @CriterionMapping.Name(value = "name", table = "t_foo")
                 }) String q
         ) implements SearchForm {
         }
@@ -428,24 +461,29 @@ class SearchFormUtilsTest {
     }
 
     @Nested
-    class DirectColumnAnnotation {
+    class DirectCriterionMappingAnnotation {
 
         static class EqForm implements SearchForm {
-            @Column(operator = Column.Operator.EQ, value = "direct_column")
+            @CriterionMapping(using = Criteria.Equals.class, value = "direct_column")
             String field;
         }
 
         static class WithTableForm implements SearchForm {
-            @Column(operator = Column.Operator.EQ, table = "t_foo", value = "col_name")
+            @CriterionMapping(using = Criteria.Equals.class, table = "t_foo", value = "col_name")
             String field;
         }
 
         static class NoneForm implements SearchForm {
-            @Column(operator = Column.Operator.NONE)
+            @CriterionMapping(using = Criteria.Noop.class)
             String ignored;
 
             @Equals
             String name;
+        }
+
+        static class DefaultForm implements SearchForm {
+            @CriterionMapping("default_col")
+            String field;
         }
 
         @Test
@@ -472,7 +510,7 @@ class SearchFormUtilsTest {
         }
 
         @Test
-        void operatorNoneIsSkipped() {
+        void criterionNoneIsSkipped() {
             var form = new NoneForm();
             form.ignored = "should-be-skipped";
             form.name = "test";
@@ -481,6 +519,15 @@ class SearchFormUtilsTest {
             assertThat(conditions)
                     .hasSize(1)
                     .contains(Fields.string("name").eq("test"));
+        }
+
+        @Test
+        void defaultCriterionIsEquals() {
+            var form = new DefaultForm();
+            form.field = "value";
+
+            assertThat(form.toConditions(dsl))
+                    .containsExactly(Fields.string("default_col").eq("value"));
         }
     }
 
@@ -493,6 +540,12 @@ class SearchFormUtilsTest {
         static class InOnStringFieldForm implements SearchForm {
             @In
             String badField;
+        }
+
+        record EmptyInForm(@In List<String> values) implements SearchForm {
+        }
+
+        record EmptyNotInForm(@NotIn String[] values) implements SearchForm {
         }
 
         @Test
@@ -510,7 +563,67 @@ class SearchFormUtilsTest {
 
             assertThatThrownBy(() -> form.toConditions(dsl))
                     .isInstanceOf(UnsupportedOperationException.class)
-                    .hasMessageContaining("Unsupported type for 'IN'");
+                    .hasMessageContaining("Unsupported type for 'In'");
+        }
+
+        @Test
+        void emptyCollectionIsSkipped() {
+            assertThat(new EmptyInForm(List.of()).toConditions(dsl)).isEmpty();
+        }
+
+        @Test
+        void emptyArrayIsSkipped() {
+            assertThat(new EmptyNotInForm(new String[0]).toConditions(dsl)).isEmpty();
+        }
+    }
+
+    @Nested
+    class CachedBindings {
+
+        record ValueForm(@Equals String name) implements SearchForm {
+        }
+
+        @Test
+        void cachedBindingsDoNotShareValues() {
+            assertThat(new ValueForm("first").toConditions(dsl))
+                    .containsExactly(Fields.string("name").eq("first"));
+            assertThat(new ValueForm("second").toConditions(dsl))
+                    .containsExactly(Fields.string("name").eq("second"));
+        }
+    }
+
+    @Nested
+    class PrivateFields {
+
+        static class PrivateForm implements SearchForm {
+            @Equals
+            private String name;
+
+            PrivateForm(String name) {
+                this.name = name;
+            }
+        }
+
+        @Test
+        void readsPrivateField() {
+            assertThat(new PrivateForm("secret").toConditions(dsl))
+                    .containsExactly(Fields.string("name").eq("secret"));
+        }
+    }
+
+    @Nested
+    class IgnoreEmptyFlag {
+
+        record KeepEmptyForm(
+                @CriterionMapping(using = Criteria.Equals.class, ignoreEmpty = false, value = "empty_col")
+                String value
+        ) implements SearchForm {
+        }
+
+        @Test
+        void emptyStringIsKeptWhenIgnoreEmptyFalse() {
+            assertThat(new KeepEmptyForm("").toConditions(dsl))
+                    .containsExactly(Fields.string("empty_col").eq(""));
         }
     }
 
@@ -541,16 +654,198 @@ class SearchFormUtilsTest {
         }
 
         @Test
-        void listAnnotatedConditionsAlsoIncludesApply() {
+        void collectOnlyIncludesAnnotatedConditions() {
             var form = new CustomApplyForm();
             form.name = "test";
+            var conditions = new ArrayList<Condition>();
 
-            var conditions = SearchFormUtils.listAnnotatedConditions(dsl, form);
-            assertThat(conditions)
-                    .hasSize(2)
-                    .contains(
-                            Fields.string("name").eq("test"),
-                            Fields.string("extra").eq("custom"));
+            CriterionBindings.collect(dsl, form, conditions::add);
+
+            assertThat(conditions).containsExactly(Fields.string("name").eq("test"));
+        }
+    }
+
+    @Nested
+    class CustomCriterion {
+
+        public static class PrefixOf implements Criterion {
+            @Override
+            public Condition apply(DSLContext dsl, CriterionBinding binding, Object value) {
+                return binding.field().like(value + "%");
+            }
+        }
+
+        public static class PrimaryField implements Criterion {
+            @Override
+            public Condition apply(DSLContext dsl, CriterionBinding binding, Object value) {
+                return binding.field().eq(value);
+            }
+        }
+
+        public static class NoDefaultCtor implements Criterion {
+            public NoDefaultCtor(String ignored) {
+            }
+
+            @Override
+            public Condition apply(DSLContext dsl, CriterionBinding binding, Object value) {
+                return null;
+            }
+        }
+
+        public static class AnyOf implements Criterion {
+            @Override
+            public Condition apply(DSLContext dsl, CriterionBinding binding, Object value) {
+                return binding.field().in((Collection<?>) value);
+            }
+
+            @Override
+            public boolean multiValues() {
+                return true;
+            }
+        }
+
+        public static class NullResult implements Criterion {
+            @Override
+            public Condition apply(DSLContext dsl, CriterionBinding binding, Object value) {
+                return null;
+            }
+        }
+
+        public static class PrivateCtor implements Criterion {
+            private PrivateCtor() {
+            }
+
+            @Override
+            public Condition apply(DSLContext dsl, CriterionBinding binding, Object value) {
+                return DSL.trueCondition();
+            }
+        }
+
+        public static class SharedState implements Criterion {
+            static Criterion lastUsed;
+
+            private final String suffix;
+
+            public SharedState() {
+                suffix = "%";
+            }
+
+            @Override
+            public Condition apply(DSLContext dsl, CriterionBinding binding, Object value) {
+                lastUsed = this;
+                return binding.field().like(value + suffix);
+            }
+        }
+
+        static class CustomForm implements SearchForm {
+            @CriterionMapping(using = PrefixOf.class, value = "custom_col")
+            String prefix;
+        }
+
+        static class PrimaryFieldForm implements SearchForm {
+            @CriterionMapping(using = PrimaryField.class, values = {"first_col", "second_col"})
+            String ghost;
+        }
+
+        static class InvalidForm implements SearchForm {
+            @CriterionMapping(using = NoDefaultCtor.class, value = "custom_col")
+            String value;
+        }
+
+        static class AnyOfForm implements SearchForm {
+            @CriterionMapping(using = AnyOf.class, value = "custom_col")
+            List<Integer> values;
+        }
+
+        static class NullResultForm implements SearchForm {
+            @CriterionMapping(using = NullResult.class, value = "custom_col")
+            String value;
+        }
+
+        static class PrivateCtorForm implements SearchForm {
+            @CriterionMapping(using = PrivateCtor.class, value = "custom_col")
+            String value;
+        }
+
+        static class SharedStateFormA implements SearchForm {
+            @CriterionMapping(using = SharedState.class, value = "col_a")
+            String value;
+        }
+
+        static class SharedStateFormB implements SearchForm {
+            @CriterionMapping(using = SharedState.class, value = "col_b")
+            String value;
+        }
+
+        @Test
+        void customCriterionGeneratesCondition() {
+            var form = new CustomForm();
+            form.prefix = "foo";
+
+            assertThat(form.toConditions(dsl))
+                    .containsExactly(Fields.string("custom_col").like("foo%"));
+        }
+
+        @Test
+        void primaryFieldPointsToExplicitColumnWhenMultiColumnsDeclared() {
+            var form = new PrimaryFieldForm();
+            form.ghost = "x";
+
+            assertThat(form.toConditions(dsl))
+                    .containsExactly(Fields.string("first_col").eq("x"));
+        }
+
+        @Test
+        void operatorWithoutNoArgsConstructorReportsType() {
+            var form = new InvalidForm();
+            form.value = "x";
+
+            assertThatThrownBy(() -> form.toConditions(dsl))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("Cannot instantiate Criterion")
+                    .hasMessageContaining(NoDefaultCtor.class.getName());
+        }
+
+        @Test
+        void customMultiValuesCriterionResolvesComponentType() {
+            var form = new AnyOfForm();
+            form.values = List.of(1, 2);
+
+            assertThat(form.toConditions(dsl))
+                    .containsExactly(Fields.integer("custom_col").in(1, 2));
+        }
+
+        @Test
+        void nullConditionFromCriterionIsSkipped() {
+            var form = new NullResultForm();
+            form.value = "x";
+
+            assertThat(form.toConditions(dsl)).isEmpty();
+        }
+
+        @Test
+        void criterionWithPrivateConstructorIsUsable() {
+            var form = new PrivateCtorForm();
+            form.value = "x";
+
+            assertThat(form.toConditions(dsl)).hasSize(1);
+        }
+
+        @Test
+        void criterionInstanceIsSharedWithoutValueLeak() {
+            var a = new SharedStateFormA();
+            a.value = "x";
+            var b = new SharedStateFormB();
+            b.value = "y";
+
+            assertThat(a.toConditions(dsl))
+                    .containsExactly(Fields.string("col_a").like("x%"));
+            var first = SharedState.lastUsed;
+            assertThat(b.toConditions(dsl))
+                    .containsExactly(Fields.string("col_b").like("y%"));
+            assertThat(SharedState.lastUsed).isSameAs(first);
+            assertThat(a.toConditions(dsl))
+                    .containsExactly(Fields.string("col_a").like("x%"));
         }
     }
 }

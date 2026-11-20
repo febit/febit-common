@@ -13,13 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.common.jooq;
+package org.febit.common.jooq.annotation;
 
-import java.lang.annotation.*;
+import org.springframework.core.annotation.AliasFor;
 
-@Target({ElementType.TYPE})
+import org.febit.common.jooq.Criteria;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@CriterionMapping(using = Criteria.In.class)
+@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface OrderMappingBy {
-
-    Class<?> value();
+public @interface In {
+    @AliasFor(annotation = CriterionMapping.class)
+    String value() default "";
 }

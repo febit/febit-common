@@ -20,6 +20,22 @@ import org.jooq.Configuration;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import org.febit.common.jooq.annotation.Contains;
+import org.febit.common.jooq.annotation.CriterionMapping;
+import org.febit.common.jooq.annotation.EndsWith;
+import org.febit.common.jooq.annotation.Equals;
+import org.febit.common.jooq.annotation.GreaterEquals;
+import org.febit.common.jooq.annotation.GreaterThan;
+import org.febit.common.jooq.annotation.In;
+import org.febit.common.jooq.annotation.IsNotNull;
+import org.febit.common.jooq.annotation.IsNull;
+import org.febit.common.jooq.annotation.Keyword;
+import org.febit.common.jooq.annotation.LessEquals;
+import org.febit.common.jooq.annotation.LessThan;
+import org.febit.common.jooq.annotation.NotContains;
+import org.febit.common.jooq.annotation.NotIn;
+import org.febit.common.jooq.annotation.OrderMappingBy;
+import org.febit.common.jooq.annotation.StartsWith;
 import org.febit.common.jooq.foo.FooPO;
 import org.febit.common.jooq.foo.FooRecord;
 import org.febit.common.jooq.foo.FooStatus;
@@ -638,9 +654,9 @@ class IBasicQueryDaoTest {
 
         static class PageSortMapping {
             String id;
-            @Column("created_at")
+            @CriterionMapping("created_at")
             String createdAt;
-            @Column("updated_at")
+            @CriterionMapping("updated_at")
             String updatedAt;
         }
 

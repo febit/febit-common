@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.febit.common.jooq;
+package org.febit.common.jooq.annotation;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.febit.common.jooq.Criteria;
+import org.febit.common.jooq.Criterion;
 
 import java.lang.annotation.*;
 
-@Target({ElementType.FIELD, ElementType.TYPE})
+@Target({ElementType.FIELD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Column {
+public @interface CriterionMapping {
 
     String table() default "";
 
@@ -36,39 +36,7 @@ public @interface Column {
 
     boolean ignoreCase() default false;
 
-    Operator operator() default Operator.NONE;
-
-    @Getter
-    @RequiredArgsConstructor
-    enum Operator {
-        NONE("none"),
-
-        KEYWORD("Keyword"),
-
-        STARTS_WITH("Starts With"),
-        ENDS_WITH("Ends With"),
-        CONTAINS("Contains"),
-        NOT_CONTAINS("Not Contains"),
-
-        IN("In"),
-        NOT_IN("Not In"),
-
-        IS_NULL("Is Null"),
-        IS_NOT_NULL("Is Not Null"),
-
-        EQ("=="),
-        GT(">"),
-        GE(">="),
-        LT("<"),
-        LE("<="),
-        ;
-
-        private final String title;
-
-        public boolean multiValues() {
-            return this == IN || this == NOT_IN;
-        }
-    }
+    Class<? extends Criterion> using() default Criteria.Equals.class;
 
     @Retention(RetentionPolicy.RUNTIME)
     @interface Name {
