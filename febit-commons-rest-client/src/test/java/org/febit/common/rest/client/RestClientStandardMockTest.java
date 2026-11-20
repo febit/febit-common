@@ -168,11 +168,12 @@ class RestClientStandardMockTest {
     void text() {
         responseText(HttpStatus.OK, "Hello, World!");
 
-        assertThrows(UnknownContentTypeException.class, () -> client.get()
+        // StringHttpMessageConverter is one of Spring's default converters, so text/plain is readable
+        var text = client.get()
                 .uri("/test")
                 .retrieve()
-                .body(String.class)
-        );
+                .body(String.class);
+        assertEquals("Hello, World!", text);
 
         responseText(HttpStatus.OK, "Hello, World!");
         assertThrows(UnknownContentTypeException.class, () -> client.get()

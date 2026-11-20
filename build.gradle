@@ -161,9 +161,7 @@ configure(subprojects.findAll {
 
       dependencySet(group: 'io.swagger.core.v3', version: "${LIBS.versions.swagger.get()}") {
         entry 'swagger-annotations'
-        entry 'swagger-annotations-jakarta'
         entry 'swagger-core'
-        entry 'swagger-core-jakarta'
       }
       dependencySet(group: 'io.etcd', version: "${LIBS.versions.jetcd.get()}") {
         entry 'jetcd-grpc'
