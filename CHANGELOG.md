@@ -1,6 +1,57 @@
 # Changelog
 
-## [4.2.0] - not yet released
+## [4.2.0-M2] - 2026-11-23
+
+### Breaking Changes
+
+- **jooq**: Replaced the closed `Column` / `Column.Operator` mapping with an extensible criterion SPI —
+  `@CriterionMapping(using = ...)` now selects a `Criterion`, with built-ins in `Criteria` (keyword, string
+  matching, equality, comparison, `in`, null checks); custom criteria simply implement `Criterion`
+- **jooq**: Moved the criterion annotations out of `SearchForm` into `org.febit.common.jooq.annotation`
+  (`Keyword`, `Contains`, `NotContains`, `StartsWith`, `EndsWith`, `Equals`, `GreaterThan`, `GreaterEquals`,
+  `LessThan`, `LessEquals`, `In`, `NotIn`, `IsNull`, `IsNotNull`); `Column` became `CriterionMapping` and
+  `OrderMappingBy` moved to the same package
+- **jooq**: Removed `SearchFormUtils` — use `CriterionBindings.collect(dsl, form, consumer)` to collect
+  conditions; `SortUtils.SortEntry` / `resolveEntry` became `SortUtils.SortBinding` / `resolveBinding`
+
+### Improvements
+
+- **rest-client**: `text/plain` responses can now be read directly as `String` through Spring's default
+  `StringHttpMessageConverter` (previously raised `UnknownContentTypeException`)
+
+### Dependencies
+
+- Gradle Wrapper 9.7.1 → 9.9.1
+- commons-lang3 3.20.0 → 3.22.0
+- caffeine 3.3.0 → 3.3.1
+- h2database 2.5.250 → 2.5.252
+- jackson 3.2.3 → 3.3.0
+- jetcd 0.8.7 → 0.8.8
+- jool 0.9.15 → 0.9.16
+- jooq 3.21.8 → 3.21.9
+- kafka-clients 4.3.1 → 4.4.0
+- micrometer 1.18.0-M2 → 1.18.0
+- okhttp 5.5.0 → 5.5.1
+- rabbitmq amqp-client 5.36.0 → 5.37.1
+- slf4j 2.0.19 → 2.0.20
+- snakeyaml-engine 3.1.1 → 3.2
+- spotbugs 4.10.4 → 4.10.5
+- spring 7.1.0-M2 → 7.1.0
+- spring-amqp 4.2.0-M2 → 4.2.0
+- spring-boot 4.2.0-M2 → 4.2.0
+- swagger 2.2.55 → 3.0.0 — Jakarta artifacts merged into the main ones (`swagger-annotations-jakarta` /
+  `swagger-core-jakarta` → `swagger-annotations` / `swagger-core`)
+
+### Build
+
+- Declared Maven Central centrally in `settings.gradle` with `FAIL_ON_PROJECT_REPOS`, dropping the
+  per-subproject `repositories` block
+
+### Tests
+
+- Expanded coverage for the new jOOQ criterion bindings and sort mapping, plus caffeine debouncer/throttle,
+  jsonrpc2 channels, lang utilities (`LazyImpl`, `PeriodDurationParser`, `UncheckedException`, `MpscPipeImpl`,
+  `ExecutorUtils`, `DiscardOutputStream`), jwt, jcommander and kafka components
 
 ## [4.2.0-M1] - 2026-09-30
 

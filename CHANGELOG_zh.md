@@ -1,6 +1,57 @@
 # Changelog
 
-## [4.2.0] - 尚未发布
+## [4.2.0-M2] - 2026-11-23
+
+### Breaking Changes
+
+- **jooq**: 用可扩展的 Criterion SPI 取代封闭的 `Column` / `Column.Operator` 映射 ——
+  `@CriterionMapping(using = ...)` 现在选择具体的 `Criterion`，内置实现位于 `Criteria`（keyword、字符串匹配、
+  相等、比较、`in`、null 判断）；自定义条件只需实现 `Criterion`
+- **jooq**: 原本嵌套在 `SearchForm` 中的条件注解全部移至 `org.febit.common.jooq.annotation`
+  （`Keyword`、`Contains`、`NotContains`、`StartsWith`、`EndsWith`、`Equals`、`GreaterThan`、`GreaterEquals`、
+  `LessThan`、`LessEquals`、`In`、`NotIn`、`IsNull`、`IsNotNull`）；`Column` 改为 `CriterionMapping`，
+  `OrderMappingBy` 也移入该包
+- **jooq**: 移除 `SearchFormUtils`，改用 `CriterionBindings.collect(dsl, form, consumer)` 收集条件；
+  `SortUtils.SortEntry` / `resolveEntry` 改为 `SortUtils.SortBinding` / `resolveBinding`
+
+### Improvements
+
+- **rest-client**: `text/plain` 响应现在可通过 Spring 默认的 `StringHttpMessageConverter` 直接读取为 `String`
+  （此前会抛 `UnknownContentTypeException`）
+
+### Dependencies
+
+- Gradle Wrapper 9.7.1 → 9.9.1
+- commons-lang3 3.20.0 → 3.22.0
+- caffeine 3.3.0 → 3.3.1
+- h2database 2.5.250 → 2.5.252
+- jackson 3.2.3 → 3.3.0
+- jetcd 0.8.7 → 0.8.8
+- jool 0.9.15 → 0.9.16
+- jooq 3.21.8 → 3.21.9
+- kafka-clients 4.3.1 → 4.4.0
+- micrometer 1.18.0-M2 → 1.18.0
+- okhttp 5.5.0 → 5.5.1
+- rabbitmq amqp-client 5.36.0 → 5.37.1
+- slf4j 2.0.19 → 2.0.20
+- snakeyaml-engine 3.1.1 → 3.2
+- spotbugs 4.10.4 → 4.10.5
+- spring 7.1.0-M2 → 7.1.0
+- spring-amqp 4.2.0-M2 → 4.2.0
+- spring-boot 4.2.0-M2 → 4.2.0
+- swagger 2.2.55 → 3.0.0 —— Jakarta 产物合并进主 artifact（`swagger-annotations-jakarta` /
+  `swagger-core-jakarta` → `swagger-annotations` / `swagger-core`）
+
+### Build
+
+- Maven Central 仓库统一声明到 `settings.gradle`（`FAIL_ON_PROJECT_REPOS`），移除各子项目的 `repositories`
+  配置
+
+### Tests
+
+- 补充 jOOQ 条件绑定与排序映射的测试覆盖，并扩充 caffeine 防抖/节流、jsonrpc2 channel、lang 工具类
+  （`LazyImpl`、`PeriodDurationParser`、`UncheckedException`、`MpscPipeImpl`、`ExecutorUtils`、
+  `DiscardOutputStream`）、jwt、jcommander 与 kafka 组件的测试
 
 ## [4.2.0-M1] - 2026-09-30
 
